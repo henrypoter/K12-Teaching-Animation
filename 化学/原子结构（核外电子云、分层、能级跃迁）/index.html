@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>原子结构：电子云、能级与跃迁</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f1a30 0%, #1a2c42 100%);
+            color: #ecf0f1;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            max-width: 900px;
+        }
+
+        h1 {
+            color: #f1c40f;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .subtitle {
+            color: #bdc3c7;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            max-width: 1200px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .main-canvas-container {
+            flex: 1;
+            min-width: 600px;
+            background-color: rgba(44, 62, 80, 0.7);
+            border-radius: 15px;
+            padding: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #atomCanvas {
+            display: block;
+            width: 100%;
+            height: 500px;
+            background-color: rgba(15, 26, 48, 0.9);
+            border-radius: 10px;
+        }
+
+        .controls-panel {
+            width: 320px;
+            background-color: rgba(44, 62, 80, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .panel-section {
+            border-bottom: 1px solid rgba(189, 195, 199, 0.2);
+            padding-bottom: 20px;
+        }
+
+        .panel-section:last-child {
+            border-bottom: none;
+        }
+
+        h2 {
+            color: #3498db;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        h2 i {
+            font-size: 1.2rem;
+        }
+
+        .scene-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .scene-btn {
+            padding: 12px 10px;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .scene-btn:hover {
+            background-color: #3498db;
+            transform: translateY(-2px);
+        }
+
+        .scene-btn.active {
+            background-color: #1abc9c;
+            border-color: #1abc9c;
+            box-shadow: 0 0 15px rgba(26, 188, 156, 0.5);
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .control-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #bdc3c7;
+            font-size: 0.95rem;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            height: 8px;
+            -webkit-appearance: none;
+            background: linear-gradient(to right, #2c3e50, #3498db);
+            border-radius: 4px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background-color: #f1c40f;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(241, 196, 15, 0.8);
+        }
+
+        .slider-value {
+            min-width: 40px;
+            text-align: center;
+            font-weight: bold;
+            color: #f1c40f;
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            background-color: #34495e;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .btn:hover {
+            background-color: #4a6b8f;
+            transform: translateY(-2px);
+        }
+
+        .btn.primary {
+            background-color: #3498db;
+        }
+
+        .btn.primary:hover {
+            background-color: #2980b9;
+        }
+
+        .btn.warning {
+            background-color: #f39c12;
+        }
+
+        .btn.warning:hover {
+            background-color: #e67e22;
+        }
+
+        .btn.success {
+            background-color: #2ecc71;
+        }
+
+        .btn.success:hover {
+            background-color: #27ae60;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .info-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background-color: rgba(44, 62, 80, 0.85);
+            border-radius: 10px;
+            padding: 15px;
+            border-left: 5px solid #1abc9c;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        .info-title {
+            color: #f1c40f;
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            max-width: 900px;
+        }
+
+        @media (max-width: 1000px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .main-canvas-container, .controls-panel {
+                width: 100%;
+                min-width: unset;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>原子结构：电子云、能级与跃迁</h1>
+        <p class="subtitle">探索微观世界的量子特性 - 电子概率分布、量子化能级与光子发射</p>
+    </div>
+
+    <div class="container">
+        <div class="main-canvas-container">
+            <canvas id="atomCanvas" width="800" height="500"></canvas>
+            <div class="info-panel">
+                <div class="info-title" id="infoTitle">欢迎来到原子世界</div>
+                <div id="infoText">请选择一个场景开始探索。电子云模型展示了电子在原子核周围出现的概率分布，而不是固定的轨道。</div>
+            </div>
+        </div>
+
+        <div class="controls-panel">
+            <div class="panel-section">
+                <h2>📚 学习场景</h2>
+                <div class="scene-buttons">
+                    <button class="scene-btn active" data-scene="electronCloud">电子云概率模型</button>
+                    <button class="scene-btn" data-scene="energyLevels">能级与壳层</button>
+                    <button class="scene-btn" data-scene="orbitals">轨道形状</button>
+                    <button class="scene-btn" data-scene="transitions">能级跃迁</button>
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <h2>⚙️ 模拟控制</h2>
+                <div class="control-group">
+                    <div class="control-label">电子出现频率：<span id="speedValue" class="slider-value">中速</span></div>
+                    <div class="slider-container">
+                        <input type="range" id="speedSlider" min="1" max="10" value="5">
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button id="playBtn" class="btn primary">▶ 运行模拟</button>
+                    <button id="resetBtn" class="btn">🔄 重置</button>
+                    <button id="clearBtn" class="btn">🗑️ 清除轨迹</button>
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <h2>🔬 原子参数</h2>
+                <div class="control-group">
+                    <div class="control-label">选择元素：</div>
+                    <select id="elementSelect" class="btn" style="width:100%; padding:10px;">
+                        <option value="H">氢 (H) - 1个电子</option>
+                        <option value="He">氦 (He) - 2个电子</option>
+                        <option value="Li">锂 (Li) - 3个电子</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-label">能级跃迁能量：<span id="energyValue" class="slider-value">0.0 eV</span></div>
+                    <div class="slider-container">
+                        <input type="range" id="energySlider" min="0" max="15" value="0" step="0.5">
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button id="exciteBtn" class="btn warning">⚡ 激发原子</button>
+                    <button id="autoDecayBtn" class="btn success">🔄 自动衰减: 关</button>
+                    <button id="spectrumBtn" class="btn">🌈 显示光谱</button>
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <h2>👁️ 显示选项</h2>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="showPoints" checked>
+                        <span>概率点</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="showCloud" checked>
+                        <span>电子云轮廓</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="showLevels" checked>
+                        <span>能级线</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="showLabels">
+                        <span>轨道标签</span>
+                    </label>
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #f1c40f;"></div>
+                        <span>原子核</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #3498db;"></div>
+                        <span>电子/概率点</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: rgba(52, 152, 219, 0.2);"></div>
+                        <span>电子云区域</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>教学动画 | 原子结构：核外电子云、分层、能级跃迁 | 设计原理：量子力学概率模型、玻尔能级、电子跃迁</p>
+    </div>
+
+    <script>
+        // 获取Canvas和上下文
+        const canvas = document.getElementById('atomCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 动画状态
+        let animationId = null;
+        let isPlaying = true;
+        let currentScene = 'electronCloud';
+        let points = []; // 存储概率点
+        let orbitals = []; // 存储轨道数据
+        let transitions = []; // 存储跃迁动画
+        let photons = []; // 存储光子
+        let autoDecay = false;
+        let showSpectrum = false;
+        
+        // 原子参数
+        let atom = {
+            element: 'H',
+            electronCount: 1,
+            nucleusRadius: 12,
+            energyLevels: [
+                {n: 1, radius: 80, electrons: 1, color: '#3498db'},
+                {n: 2, radius: 160, electrons: 0, color: '#1abc9c'},
+                {n: 3, radius: 240, electrons: 0, color: '#9b59b6'},
+                {n: 4, radius: 320, electrons: 0, color: '#e74c3c'}
+            ],
+            excitedLevel: 1 // 当前激发到的能级
+        };
+        
+        // 能级跃迁能量 (eV)
+        const transitionEnergies = {
+            '1-2': 10.2,
+            '1-3': 12.1,
+            '1-4': 12.75,
+            '2-3': 1.89,
+            '2-4': 2.55,
+            '3-4': 0.66
+        };
+        
+        // 跃迁对应的颜色
+        const transitionColors = {
+            '1-2': '#e74c3c', // 红色
+            '1-3': '#f39c12', // 橙色
+            '1-4': '#f1c40f', // 黄色
+            '2-3': '#2ecc71', // 绿色
+            '2-4': '#1abc9c', // 蓝绿色
+            '3-4': '#3498db'  // 蓝色
+        };
+        
+        // 轨道形状数据
+        const orbitalShapes = {
+            's': {type: 's', radius: 80, color: 'rgba(52, 152, 219, 0.15)'},
+            'px': {type: 'p', axis: 'x', radius: 120, color: 'rgba(26, 188, 156, 0.15)'},
+            'py': {type: 'p', axis: 'y', radius: 120, color: 'rgba(26, 188, 156, 0.15)'},
+            'pz': {type: 'p', axis: 'z', radius: 120, color: 'rgba(26, 188, 156, 0.15)'}
+        };
+        
+        // 初始化
+        function init() {
+            // 设置Canvas尺寸
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            
+            // 初始化轨道
+            orbitals = [];
+            for (let i = 0; i < 4; i++) {
+                orbitals.push({
+                    x: canvas.width/2,
+                    y: canvas.height/2,
+                    radius: 80 + i * 80,
+                    points: []
+                });
+            }
+            
+            // 设置事件监听器
+            setupEventListeners();
+            
+            // 开始动画循环
+            animate();
+        }
+        
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 场景按钮
+            document.querySelectorAll('.scene-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.scene-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentScene = this.dataset.scene;
+                    updateInfoPanel();
+                    
+                    // 重置一些状态
+                    if (currentScene === 'electronCloud') {
+                        points = [];
+                    }
+                    if (currentScene === 'transitions') {
+                        transitions = [];
+                        photons = [];
+                    }
+                });
+            });
+            
+            // 播放/暂停按钮
+            document.getElementById('playBtn').addEventListener('click', function() {
+                isPlaying = !isPlaying;
+                this.textContent = isPlaying ? '⏸ 暂停模拟' : '▶ 运行模拟';
+            });
+            
+            // 重置按钮
+            document.getElementById('resetBtn').addEventListener('click', function() {
+                points = [];
+                transitions = [];
+                photons = [];
+                atom.excitedLevel = 1;
+                updateAtomFromElement();
+            });
+            
+            // 清除按钮
+            document.getElementById('clearBtn').addEventListener('click', function() {
+                points = [];
+            });
+            
+            // 速度滑块
+            const speedSlider = document.getElementById('speedSlider');
+            const speedValue = document.getElementById('speedValue');
+            speedSlider.addEventListener('input', function() {
+                const speeds = ['极慢', '很慢', '慢', '较慢', '中速', '较快', '快', '很快', '极快', '超快'];
+                speedValue.textContent = speeds[this.value - 1];
+            });
+            
+            // 元素选择
+            document.getElementById('elementSelect').addEventListener('change', function() {
+                atom.element = this.value;
+                updateAtomFromElement();
+            });
+            
+            // 能量滑块
+            const energySlider = document.getElementById('energySlider');
+            const energyValue = document.getElementById('energyValue');
+            energySlider.addEventListener('input', function() {
+                energyValue.textContent = this.value + ' eV';
+            });
+            
+            // 激发按钮
+            document.getElementById('exciteBtn').addEventListener('click', function() {
+                const energy = parseFloat(energySlider.value);
+                triggerTransition(energy);
+            });
+            
+            // 自动衰减按钮
+            document.getElementById('autoDecayBtn').addEventListener('click', function() {
+                autoDecay = !autoDecay;
+                this.textContent = autoDecay ? '🔄 自动衰减: 开' : '🔄 自动衰减: 关';
+                this.classList.toggle('success', autoDecay);
+            });
+            
+            // 光谱按钮
+            document.getElementById('spectrumBtn').addEventListener('click', function() {
+                showSpectrum = !showSpectrum;
+                this.textContent = showSpectrum ? '🌈 隐藏光谱' : '🌈 显示光谱';
+            });
+            
+            // 显示选项
+            document.getElementById('showPoints').addEventListener('change', updateDisplay);
+            document.getElementById('showCloud').addEventListener('change', updateDisplay);
+            document.getElementById('showLevels').addEventListener('change', updateDisplay);
+            document.getElementById('showLabels').addEventListener('change', updateDisplay);
+            
+            // 窗口大小调整
+            window.addEventListener('resize', function() {
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+            });
+        }
+        
+        // 根据选择的元素更新原子参数
+        function updateAtomFromElement() {
+            switch(atom.element) {
+                case 'H':
+                    atom.electronCount = 1;
+                    atom.energyLevels[0].electrons = 1;
+                    atom.energyLevels[1].electrons = 0;
+                    atom.energyLevels[2].electrons = 0;
+                    atom.energyLevels[3].electrons = 0;
+                    break;
+                case 'He':
+                    atom.electronCount = 2;
+                    atom.energyLevels[0].electrons = 2;
+                    atom.energyLevels[1].electrons = 0;
+                    atom.energyLevels[2].electrons = 0;
+                    atom.energyLevels[3].electrons = 0;
+                    break;
+                case 'Li':
+                    atom.electronCount = 3;
+                    atom.energyLevels[0].electrons = 2;
+                    atom.energyLevels[1].electrons = 1;
+                    atom.energyLevels[2].electrons = 0;
+                    atom.energyLevels[3].electrons = 0;
+                    break;
+            }
+            atom.excitedLevel = 1;
+        }
+        
+        // 触发能级跃迁
+        function triggerTransition(energy) {
+            // 查找最匹配的能级跃迁
+            let closestTransition = null;
+            let minDiff = Infinity;
+            
+            for (const [key, value] of Object.entries(transitionEnergies)) {
+                const diff = Math.abs(energy - value);
+                if (diff < minDiff && diff < 1.5) { // 容忍度1.5eV
+                    minDiff = diff;
+                    closestTransition = key;
+                }
+            }
+            
+            if (closestTransition) {
+                const [from, to] = closestTransition.split('-').map(Number);
+                
+                // 检查是否可以从当前能级跃迁
+                if (from === atom.excitedLevel) {
+                    // 添加跃迁动画
+                    transitions.push({
+                        fromLevel: from,
+                        toLevel: to,
+                        progress: 0,
+                        color: transitionColors[closestTransition],
+                        direction: 'up'
+                    });
+                    
+                    // 更新原子激发态
+                    atom.excitedLevel = to;
+                    
+                    // 更新信息面板
+                    updateInfoPanel(`电子从 n=${from} 跃迁到 n=${to}，吸收 ${transitionEnergies[closestTransition].toFixed(2)} eV 能量`);
+                    
+                    // 如果自动衰减开启，稍后触发衰减
+                    if (autoDecay) {
+                        setTimeout(() => {
+                            triggerDecay(to, from);
+                        }, 1500);
+                    }
+                } else {
+                    updateInfoPanel(`当前电子在 n=${atom.excitedLevel}，需要 ${transitionEnergies[closestTransition].toFixed(2)} eV 才能跃迁到 n=${to}`);
+                }
+            } else {
+                updateInfoPanel(`能量 ${energy.toFixed(2)} eV 不匹配任何允许的能级跃迁`);
+            }
+        }
+        
+        // 触发衰减（自发辐射）
+        function triggerDecay(from, to) {
+            const key = `${to}-${from}`;
+            if (transitionColors[key]) {
+                transitions.push({
+                    fromLevel: from,
+                    toLevel: to,
+                    progress: 0,
+                    color: transitionColors[key],
+                    direction: 'down'
+                });
+                
+                // 添加光子
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                const fromRadius = atom.energyLevels[from-1].radius;
+                const angle = Math.random() * Math.PI * 2;
+                
+                photons.push({
+                    x: centerX + Math.cos(angle) * fromRadius,
+                    y: centerY + Math.sin(angle) * fromRadius,
+                    color: transitionColors[key],
+                    radius: 5,
+                    speed: 3,
+                    angle: angle,
+                    life: 100
+                });
+                
+                // 更新原子状态
+                atom.excitedLevel = to;
+                
+                updateInfoPanel(`电子从 n=${from} 衰减到 n=${to}，发射 ${transitionEnergies[key].toFixed(2)} eV 光子`);
+            }
+        }
+        
+        // 更新信息面板
+        function updateInfoPanel(customText) {
+            const infoTitle = document.getElementById('infoTitle');
+            const infoText = document.getElementById('infoText');
+            
+            const sceneInfo = {
+                'electronCloud': {
+                    title: '电子云概率模型',
+                    text: '每个蓝点表示电子可能出现的位置。随着时间推移，点的分布形成"电子云"，显示电子在原子核周围的概率密度。'
+                },
+                'energyLevels': {
+                    title: '能级与壳层',
+                    text: '灰色虚线表示量子化的能级（K, L, M...层）。电子只能存在于这些特定能级上，不能处于能级之间。'
+                },
+                'orbitals': {
+                    title: '轨道形状',
+                    text: 's轨道呈球形对称，p轨道呈哑铃形（沿x、y、z轴）。不同形状的轨道对应不同的角动量量子数。'
+                },
+                'transitions': {
+                    title: '能级跃迁',
+                    text: '电子吸收能量跃迁到高能级（激发态），然后自发跃迁回低能级并发射光子。光子颜色取决于能级差。'
+                }
+            };
+            
+            if (customText) {
+                infoText.textContent = customText;
+            } else {
+                infoTitle.textContent = sceneInfo[currentScene].title;
+                infoText.textContent = sceneInfo[currentScene].text;
+            }
+        }
+        
+        // 更新显示（占位函数）
+        function updateDisplay() {
+            // 显示选项已在绘制函数中处理
+        }
+        
+        // 生成概率点
+        function generateProbabilityPoint() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            // 根据当前场景和能级生成点
+            let radius, angle;
+            
+            if (currentScene === 'electronCloud' || currentScene === 'energyLevels') {
+                // 基于当前激发能级
+                const levelIndex = Math.min(atom.excitedLevel - 1, 3);
+                const baseRadius = atom.energyLevels[levelIndex].radius;
+                
+                // 高斯分布，更靠近能级半径
+                radius = baseRadius * (0.7 + Math.random() * 0.6);
+                angle = Math.random() * Math.PI * 2;
+                
+                // 添加一些随机性
+                radius += (Math.random() - 0.5) * 30;
+            } else if (currentScene === 'orbitals') {
+                // 轨道特定分布
+                const orbitalType = Math.random() > 0.5 ? 's' : 'p';
+                
+                if (orbitalType === 's') {
+                    // s轨道：球形对称
+                    radius = 80 * Math.sqrt(Math.random());
+                    angle = Math.random() * Math.PI * 2;
+                } else {
+                    // p轨道：哑铃形分布
+                    const axis = Math.floor(Math.random() * 3); // 0:x, 1:y, 2:z
+                    radius = 120 * (Math.random() * 0.8 + 0.2);
+                    
+                    if (axis === 0) {
+                        // 沿x轴
+                        angle = Math.random() > 0.5 ? 0 : Math.PI;
+                        radius *= Math.random() > 0.5 ? 1 : -1;
+                    } else if (axis === 1) {
+                        // 沿y轴
+                        angle = Math.random() > 0.5 ? Math.PI/2 : 3*Math.PI/2;
+                        radius *= Math.random() > 0.5 ? 1 : -1;
+                    } else {
+                        // 沿z轴（在2D中表现为点更靠近中心）
+                        radius = 60 * Math.sqrt(Math.random());
+                        angle = Math.random() * Math.PI * 2;
+                    }
+                }
+            }
+            
+            const x = centerX + Math.cos(angle) * radius;
+            const y = centerY + Math.sin(angle) * radius;
+            
+            points.push({
+                x, y,
+                radius: 2,
+                color: atom.energyLevels[Math.min(atom.excitedLevel-1, 3)].color,
+                life: 200 + Math.random() * 100 // 点的存活时间
+            });
+            
+            // 限制点的数量
+            if (points.length > 1000) {
+                points.splice(0, 100);
+            }
+        }
+        
+        // 绘制函数
+        function draw() {
+            // 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            // 绘制能级线（如果开启）
+            if (document.getElementById('showLevels').checked) {
+                for (let i = 0; i < atom.energyLevels.length; i++) {
+                    const level = atom.energyLevels[i];
+                    
+                    // 虚线能级圆
+                    ctx.beginPath();
+                    ctx.setLineDash([5, 5]);
+                    ctx.arc(centerX, centerY, level.radius, 0, Math.PI * 2);
+                    ctx.strokeStyle = i < atom.excitedLevel ? level.color : '#bdc3c7';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                    
+                    // 能级标签
+                    if (document.getElementById('showLabels').checked) {
+                        ctx.fillStyle = i < atom.excitedLevel ? level.color : '#bdc3c7';
+                        ctx.font = 'bold 16px Arial';
+                        ctx.fillText(`n=${i+1}`, centerX + level.radius + 10, centerY);
+                        
+                        // 电子数
+                        ctx.font = '14px Arial';
+                        ctx.fillText(`${level.electrons}e⁻`, centerX + level.radius + 10, centerY + 20);
+                    }
+                }
+            }
+            
+            // 绘制电子云轮廓（如果开启且是相关场景）
+            if (document.getElementById('showCloud').checked && 
+                (currentScene === 'electronCloud' || currentScene === 'orbitals')) {
+                
+                // 根据当前激发能级绘制云轮廓
+                const levelIndex = Math.min(atom.excitedLevel - 1, 3);
+                const cloudRadius = atom.energyLevels[levelIndex].radius;
+                
+                // 绘制半透明电子云区域
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, cloudRadius, 0, Math.PI * 2);
+                const gradient = ctx.createRadialGradient(
+                    centerX, centerY, cloudRadius * 0.3,
+                    centerX, centerY, cloudRadius
+                );
+                gradient.addColorStop(0, 'rgba(52, 152, 219, 0.3)');
+                gradient.addColorStop(1, 'rgba(52, 152, 219, 0.05)');
+                ctx.fillStyle = gradient;
+                ctx.fill();
+                
+                // 绘制云边界
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, cloudRadius, 0, Math.PI * 2);
+                ctx.strokeStyle = 'rgba(52, 152, 219, 0.5)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+            
+            // 绘制轨道形状（如果是轨道场景）
+            if (currentScene === 'orbitals') {
+                // s轨道
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, 80, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(52, 152, 219, 0.15)';
+                ctx.fill();
+                ctx.strokeStyle = '#3498db';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // p轨道（三个方向）
+                // px
+                ctx.beginPath();
+                ctx.ellipse(centerX, centerY, 120, 40, 0, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(26, 188, 156, 0.15)';
+                ctx.fill();
+                ctx.strokeStyle = '#1abc9c';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // py
+                ctx.beginPath();
+                ctx.ellipse(centerX, centerY, 40, 120, 0, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(26, 188, 156, 0.15)';
+                ctx.fill();
+                ctx.strokeStyle = '#1abc9c';
+                ctx.stroke();
+                
+                if (document.getElementById('showLabels').checked) {
+                    ctx.fillStyle = '#3498db';
+                    ctx.font = 'bold 16px Arial';
+                    ctx.fillText('s轨道', centerX, centerY - 100);
+                    
+                    ctx.fillStyle = '#1abc9c';
+                    ctx.fillText('p轨道', centerX + 140, centerY);
+                }
+            }
+            
+            // 绘制概率点（如果开启）
+            if (document.getElementById('showPoints').checked) {
+                for (let i = 0; i < points.length; i++) {
+                    const point = points[i];
+                    
+                    // 更新点寿命
+                    point.life -= 1;
+                    
+                    // 绘制点
+                    ctx.beginPath();
+                    ctx.arc(point.x, point.y, point.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = point.color;
+                    ctx.globalAlpha = point.life / 300; // 逐渐淡出
+                    ctx.fill();
+                    
+                    // 移除死亡的点
+                    if (point.life <= 0) {
+                        points.splice(i, 1);
+                        i--;
+                    }
+                }
+                ctx.globalAlpha = 1.0;
+            }
+            
+            // 绘制原子核
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, atom.nucleusRadius, 0, Math.PI * 2);
+            const nucleusGradient = ctx.createRadialGradient(
+                centerX, centerY, 0,
+                centerX, centerY, atom.nucleusRadius
+            );
+            nucleusGradient.addColorStop(0, '#f1c40f');
+            nucleusGradient.addColorStop(1, '#d35400');
+            ctx.fillStyle = nucleusGradient;
+            ctx.fill();
+            
+            // 绘制跃迁动画
+            for (let i = 0; i < transitions.length; i++) {
+                const transition = transitions[i];
+                
+                const fromRadius = atom.energyLevels[transition.fromLevel-1].radius;
+                const toRadius = atom.energyLevels[transition.toLevel-1].radius;
+                const currentRadius = fromRadius + (toRadius - fromRadius) * transition.progress;
+                
+                // 绘制跃迁箭头
+                ctx.beginPath();
+                if (transition.direction === 'up') {
+                    ctx.arc(centerX, centerY - currentRadius, 8, 0, Math.PI * 2);
+                } else {
+                    ctx.arc(centerX, centerY - currentRadius, 8, 0, Math.PI * 2);
+                }
+                ctx.fillStyle = transition.color;
+                ctx.fill();
+                
+                // 绘制箭头方向
+                ctx.beginPath();
+                if (transition.direction === 'up') {
+                    ctx.moveTo(centerX, centerY - currentRadius - 15);
+                    ctx.lineTo(centerX - 10, centerY - currentRadius);
+                    ctx.lineTo(centerX + 10, centerY - currentRadius);
+                } else {
+                    ctx.moveTo(centerX, centerY - currentRadius + 15);
+                    ctx.lineTo(centerX - 10, centerY - currentRadius);
+                    ctx
+<!--检测到代码截断，自动续写中...-->
+lineTo(centerX + 10, centerY - currentRadius);
+                }
+                ctx.closePath();
+                ctx.fillStyle = transition.color;
+                ctx.fill();
+                
+                // 更新进度
+                transition.progress += 0.02;
+                
+                // 如果动画完成，移除
+                if (transition.progress >= 1) {
+                    transitions.splice(i, 1);
+                    i--;
+                }
+            }
+            
+            // 绘制光子
+            for (let i = 0; i < photons.length; i++) {
+                const photon = photons[i];
+                
+                // 更新位置
+                photon.x += Math.cos(photon.angle) * photon.speed;
+                photon.y += Math.sin(photon.angle) * photon.speed;
+                photon.life -= 1;
+                
+                // 绘制光子
+                ctx.beginPath();
+                ctx.arc(photon.x, photon.y, photon.radius, 0, Math.PI * 2);
+                const photonGradient = ctx.createRadialGradient(
+                    photon.x, photon.y, 0,
+                    photon.x, photon.y, photon.radius
+                );
+                photonGradient.addColorStop(0, photon.color);
+                photonGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+                ctx.fillStyle = photonGradient;
+                ctx.fill();
+                
+                // 绘制光尾
+                ctx.beginPath();
+                ctx.moveTo(photon.x, photon.y);
+                ctx.lineTo(
+                    photon.x - Math.cos(photon.angle) * 15,
+                    photon.y - Math.sin(photon.angle) * 15
+                );
+                ctx.strokeStyle = photon.color;
+                ctx.lineWidth = 3;
+                ctx.stroke();
+                
+                // 移除死亡的光子
+                if (photon.life <= 0 || 
+                    photon.x < 0 || photon.x > canvas.width || 
+                    photon.y < 0 || photon.y > canvas.height) {
+                    photons.splice(i, 1);
+                    i--;
+                }
+            }
+            
+            // 绘制光谱（如果开启）
+            if (showSpectrum && currentScene === 'transitions') {
+                const spectrumWidth = 200;
+                const spectrumHeight = 60;
+                const spectrumX = canvas.width - spectrumWidth - 20;
+                const spectrumY = 20;
+                
+                // 光谱背景
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                ctx.fillRect(spectrumX, spectrumY, spectrumWidth, spectrumHeight);
+                
+                // 光谱标题
+                ctx.fillStyle = '#f1c40f';
+                ctx.font = 'bold 14px Arial';
+                ctx.fillText('氢原子发射光谱', spectrumX + 10, spectrumY + 20);
+                
+                // 绘制谱线
+                const lines = [
+                    {name: 'Hα', color: '#e74c3c', x: spectrumX + 30},
+                    {name: 'Hβ', color: '#f39c12', x: spectrumX + 70},
+                    {name: 'Hγ', color: '#f1c40f', x: spectrumX + 110},
+                    {name: 'Hδ', color: '#2ecc71', x: spectrumX + 150}
+                ];
+                
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i];
+                    
+                    // 谱线
+                    ctx.beginPath();
+                    ctx.moveTo(line.x, spectrumY + 30);
+                    ctx.lineTo(line.x, spectrumY + 50);
+                    ctx.strokeStyle = line.color;
+                    ctx.lineWidth = 3;
+                    ctx.stroke();
+                    
+                    // 标签
+                    ctx.fillStyle = '#ecf0f1';
+                    ctx.font = '12px Arial';
+                    ctx.fillText(line.name, line.x - 8, spectrumY + 55);
+                }
+            }
+            
+            // 绘制当前场景标题
+            ctx.fillStyle = '#ecf0f1';
+            ctx.font = 'bold 20px Arial';
+            ctx.textAlign = 'left';
+            
+            const sceneTitles = {
+                'electronCloud': '电子云概率模型',
+                'energyLevels': '能级与壳层',
+                'orbitals': '轨道形状 (s, p)',
+                'transitions': '能级跃迁与光子发射'
+            };
+            
+            ctx.fillText(sceneTitles[currentScene] || '原子结构', 20, 40);
+            
+            // 绘制当前元素和状态
+            ctx.font = '16px Arial';
+            ctx.fillText(`元素: ${atom.element} | 电子数: ${atom.electronCount} | 当前能级: n=${atom.excitedLevel}`, 20, 70);
+            
+            // 绘制经典轨道对比（仅电子云场景）
+            if (currentScene === 'electronCloud') {
+                ctx.strokeStyle = 'rgba(231, 76, 60, 0.3)';
+                ctx.setLineDash([5, 3]);
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, 100, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                ctx.fillStyle = 'rgba(231, 76, 60, 0.7)';
+                ctx.font = '14px Arial';
+                ctx.fillText('经典轨道模型（错误）', centerX + 110, centerY - 10);
+            }
+        }
+        
+        // 动画循环
+        function animate() {
+            draw();
+            
+            // 如果正在播放，生成新的概率点
+            if (isPlaying) {
+                const speed = parseInt(document.getElementById('speedSlider').value);
+                const pointsPerFrame = Math.floor(speed / 2) + 1;
+                
+                for (let i = 0; i < pointsPerFrame; i++) {
+                    generateProbabilityPoint();
+                }
+                
+                // 随机自动衰减（如果开启）
+                if (autoDecay && currentScene === 'transitions' && atom.excitedLevel > 1) {
+                    if (Math.random() < 0.01) { // 1%概率每帧
+                        const from = atom.excitedLevel;
+                        const to = Math.floor(Math.random() * (from - 1)) + 1;
+                        triggerDecay(from, to);
+                    }
+                }
+            }
+            
+            animationId = requestAnimationFrame(animate);
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>金属与酸反应微观动画 - Zn + 2HCl → ZnCl₂ + H₂↑</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #0d1b2a;
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            max-width: 800px;
+        }
+        
+        h1 {
+            color: #4ecdc4;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
+        
+        .subtitle {
+            color: #a8a9ad;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+        
+        .equation {
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ffffff;
+            margin: 15px 0;
+            border-left: 4px solid #4361ee;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 1000px;
+            gap: 20px;
+        }
+        
+        .animation-area {
+            width: 100%;
+            height: 500px;
+            background-color: rgba(13, 27, 42, 0.8);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        #animationCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 200px;
+        }
+        
+        .control-group h3 {
+            color: #4ecdc4;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 10px 18px;
+            background-color: #4361ee;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s ease;
+            min-width: 100px;
+        }
+        
+        button:hover {
+            background-color: #3a56d4;
+            transform: translateY(-2px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .toggle-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .toggle-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .toggle-btn.active {
+            background-color: #4ecdc4;
+            color: #0d1b2a;
+        }
+        
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+        }
+        
+        .switch-label {
+            font-size: 0.95rem;
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #555;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: #4ecdc4;
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        .info-panel {
+            width: 100%;
+            padding: 15px;
+            background-color: rgba(67, 97, 238, 0.1);
+            border-radius: 10px;
+            border-left: 4px solid #4361ee;
+        }
+        
+        .step-info {
+            font-size: 1.1rem;
+            line-height: 1.5;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .step-highlight {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            width: 100%;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+        
+        .legend-text {
+            font-size: 0.9rem;
+        }
+        
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            color: #a8a9ad;
+            font-size: 0.9rem;
+            padding: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .animation-area {
+                height: 400px;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            .control-group {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>金属与酸反应微观动画</h1>
+        <div class="subtitle">锌与盐酸反应：Zn + 2HCl → ZnCl₂ + H₂↑</div>
+        <div class="equation">Zn + 2HCl → ZnCl₂ + H₂↑</div>
+    </div>
+    
+    <div class="container">
+        <div class="animation-area">
+            <canvas id="animationCanvas"></canvas>
+        </div>
+        
+        <div class="info-panel">
+            <div class="step-info" id="stepInfo">点击"播放"按钮开始动画演示</div>
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <h3>动画控制</h3>
+                <div class="buttons">
+                    <button id="playPauseBtn">播放</button>
+                    <button id="resetBtn">重置</button>
+                    <button id="prevStepBtn">上一步</button>
+                    <button id="nextStepBtn">下一步</button>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <h3>视图切换</h3>
+                <div class="toggle-buttons">
+                    <button id="macroViewBtn" class="toggle-btn active">宏观视图</button>
+                    <button id="microViewBtn" class="toggle-btn">微观视图</button>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <h3>显示选项</h3>
+                <div class="toggle-switch">
+                    <span class="switch-label">显示粒子标签</span>
+                    <label class="switch">
+                        <input type="checkbox" id="showLabelsToggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-switch">
+                    <span class="switch-label">显示电子转移</span>
+                    <label class="switch">
+                        <input type="checkbox" id="showElectronsToggle" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #a8a9ad;"></div>
+                <div class="legend-text">锌原子/离子 (Zn / Zn²⁺)</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #ff6b6b;"></div>
+                <div class="legend-text">氢离子 (H⁺)</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #4ecdc4;"></div>
+                <div class="legend-text">氯离子 (Cl⁻)</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #ffffff;"></div>
+                <div class="legend-text">氢分子 (H₂)</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #00b4d8;"></div>
+                <div class="legend-text">电子 (e⁻)</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        教学动画设计 | 金属与酸反应微观过程 | 使用Canvas实现
+    </div>
+
+    <script>
+        // 获取Canvas元素和上下文
+        const canvas = document.getElementById('animationCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 设置Canvas尺寸
+        function resizeCanvas() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        }
+        
+        // 初始调整Canvas尺寸
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // 动画状态
+        let animationState = {
+            currentStep: 0,
+            isPlaying: false,
+            isMacroView: true,
+            showLabels: true,
+            showElectrons: true,
+            animationTime: 0,
+            stepProgress: 0
+        };
+        
+        // 步骤信息
+        const stepInfo = [
+            "初始状态：锌片放入稀盐酸中，盐酸电离出H⁺和Cl⁻",
+            "锌原子与氢离子接触：锌原子失去电子，氢离子获得电子",
+            "电子转移：锌原子失去2个电子变成Zn²⁺进入溶液",
+            "氢离子获得电子：2个H⁺各获得1个电子变成氢原子(H)",
+            "氢气分子形成：两个氢原子结合成氢气分子(H₂)",
+            "气泡生成：氢气分子聚集形成气泡从锌表面脱离",
+            "反应完成：Zn²⁺与Cl⁻结合，氢气逸出，锌片逐渐溶解"
+        ];
+        
+        // 粒子定义
+        const particles = {
+            // 锌片（由多个锌原子组成）
+            zincAtoms: [],
+            // 氢离子
+            hydrogenIons: [],
+            // 氯离子
+            chlorideIons: [],
+            // 锌离子（反应后生成）
+            zincIons: [],
+            // 氢分子（反应后生成）
+            hydrogenMolecules: [],
+            // 电子
+            electrons: [],
+            // 气泡
+            bubbles: []
+        };
+        
+        // 初始化粒子
+        function initParticles() {
+            // 清空所有粒子
+            for (let key in particles) {
+                particles[key] = [];
+            }
+            
+            const canvasWidth = canvas.width;
+            const canvasHeight = canvas.height;
+            
+            // 创建锌片（左侧，由多个锌原子组成）
+            const zincX = canvasWidth * 0.2;
+            const zincY = canvasHeight * 0.5;
+            const zincWidth = canvasWidth * 0.15;
+            const zincHeight = canvasHeight * 0.3;
+            
+            // 创建锌原子网格
+            const atomSpacing = 25;
+            const rows = Math.floor(zincHeight / atomSpacing);
+            const cols = Math.floor(zincWidth / atomSpacing);
+            
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    particles.zincAtoms.push({
+                        x: zincX + c * atomSpacing,
+                        y: zincY - zincHeight/2 + r * atomSpacing,
+                        radius: 10,
+                        color: '#a8a9ad',
+                        label: 'Zn',
+                        isReacted: false,
+                        originalX: zincX + c * atomSpacing,
+                        originalY: zincY - zincHeight/2 + r * atomSpacing
+                    });
+                }
+            }
+            
+            // 创建氢离子和氯离子（随机分布在溶液中）
+            const solutionLeft = zincX + zincWidth + 20;
+            const solutionRight = canvasWidth * 0.9;
+            const solutionTop = canvasHeight * 0.2;
+            const solutionBottom = canvasHeight * 0.8;
+            
+            // 创建氢离子（红色，带正电）
+            for (let i = 0; i < 25; i++) {
+                particles.hydrogenIons.push({
+                    x: Math.random() * (solutionRight - solutionLeft) + solutionLeft,
+                    y: Math.random() * (solutionBottom - solutionTop) + solutionTop,
+                    radius: 8,
+                    color: '#ff6b6b',
+                    label: 'H⁺',
+                    vx: (Math.random() - 0.5) * 0.5,
+                    vy: (Math.random() - 0.5) * 0.5,
+                    isReacted: false
+                });
+            }
+            
+            // 创建氯离子（蓝绿色，带负电）
+            for (let i = 0; i < 25; i++) {
+                particles.chlorideIons.push({
+                    x: Math.random() * (solutionRight - solutionLeft) + solutionLeft,
+                    y: Math.random() * (solutionBottom - solutionTop) + solutionTop,
+                    radius: 12,
+                    color: '#4ecdc4',
+                    label: 'Cl⁻',
+                    vx: (Math.random() - 0.5) * 0.5,
+                    vy: (Math.random() - 0.5) * 0.5
+                });
+            }
+            
+            // 初始化电子（在锌原子周围）
+            for (let i = 0; i < 10; i++) {
+                particles.electrons.push({
+                    x: zincX + Math.random() * zincWidth,
+                    y: zincY - zincHeight/2 + Math.random() * zincHeight,
+                    radius: 4,
+                    color: '#00b4d8',
+                    label: 'e⁻',
+                    orbitRadius: 15,
+                    orbitSpeed: 0.05 + Math.random() * 0.03,
+                    orbitAngle: Math.random() * Math.PI * 2,
+                    attachedTo: null, // 依附于哪个粒子
+                    isMoving: false,
+                    targetX: 0,
+                    targetY: 0,
+                    speed: 0
+                });
+            }
+        }
+        
+        // 绘制粒子
+        function drawParticle(particle) {
+            ctx.beginPath();
+            ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+            ctx.fillStyle = particle.color;
+            ctx.fill();
+            
+            // 绘制粒子标签
+            if (animationState.showLabels && particle.label) {
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(particle.label, particle.x, particle.y);
+            }
+            
+            // 如果是氢离子，绘制正电荷符号
+            if (particle.label === 'H⁺') {
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 10px Arial';
+                ctx.fillText('+', particle.x + particle.radius + 5, particle.y - particle.radius - 5);
+            }
+            
+            // 如果是氯离子，绘制负电荷符号
+            if (particle.label === 'Cl⁻') {
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 10px Arial';
+                ctx.fillText('-', particle.x + particle.radius + 7, particle.y - particle.radius - 7);
+            }
+            
+            // 如果是锌离子，绘制电荷符号
+            if (particle.label === 'Zn²⁺') {
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 10px Arial';
+                ctx.fillText('2+', particle.x + particle.radius + 7, particle.y - particle.radius - 7);
+            }
+        }
+        
+        // 绘制氢分子（两个白色球体加键）
+        function drawHydrogenMolecule(molecule) {
+            // 绘制两个氢原子
+            ctx.beginPath();
+            ctx.arc(molecule.x1, molecule.y1, 8, 0, Math.PI * 2);
+            ctx.fillStyle = '#ffffff';
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.arc(molecule.x2, molecule.y2, 8, 0, Math.PI * 2);
+            ctx.fillStyle = '#ffffff';
+            ctx.fill();
+            
+            // 绘制化学键
+            ctx.beginPath();
+            ctx.moveTo(molecule.x1, molecule.y1);
+            ctx.lineTo(molecule.x2, molecule.y2);
+            ctx.strokeStyle = '#cccccc';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 绘制标签
+            if (animationState.showLabels) {
+                ctx.fillStyle = '#0d1b2a';
+                ctx.font = 'bold 14px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('H₂', (molecule.x1 + molecule.x2) / 2, (molecule.y1 + molecule.y2) / 2);
+            }
+        }
+        
+        // 绘制气泡
+        function drawBubble(bubble) {
+            ctx.beginPath();
+            ctx.arc(bubble.x, bubble.y, bubble.radius, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            
+            // 气泡内部的高光
+            ctx.beginPath();
+            ctx.arc(bubble.x - bubble.radius/3, bubble.y - bubble.radius/3, bubble.radius/4, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.fill();
+        }
+        
+        // 绘制宏观视图
+        function drawMacroView() {
+            const canvasWidth = canvas.width;
+            const canvasHeight = canvas.height;
+            
+            // 绘制背景
+            ctx.fillStyle = '#0d1b2a';
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+            
+            // 绘制烧杯
+            const beakerX = canvasWidth * 0.5;
+            const beakerY = canvasHeight * 0.6;
+            const beakerWidth = canvasWidth * 0.4;
+            const beakerHeight = canvasHeight * 0.5;
+            
+            // 烧杯底部
+            ctx.beginPath();
+            ctx.ellipse(beakerX, beakerY + beakerHeight/2, beakerWidth/2, beakerHeight/10, 0, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 烧杯侧面
+            ctx.beginPath();
+            ctx.moveTo(beakerX - beakerWidth/2, beakerY - beakerHeight/2);
+            ctx.lineTo(beakerX - beakerWidth/2, beakerY + beakerHeight/2);
+            ctx.moveTo(beakerX + beakerWidth/2, beakerY - beakerHeight/2);
+            ctx.lineTo(beakerX + beakerWidth/2, beakerY + beakerHeight/2);
+            ctx.stroke();
+            
+            // 烧杯顶部
+            ctx.beginPath();
+            ctx.moveTo(beakerX - beakerWidth/2, beakerY - beakerHeight/2);
+            ctx.lineTo(beakerX + beakerWidth/2, beakerY - beakerHeight/2);
+            ctx.stroke();
+            
+            // 绘制溶液（半透明蓝色）
+            ctx.fillStyle = 'rgba(64, 156, 255, 0.3)';
+            ctx.fillRect(beakerX - beakerWidth/2, beakerY - beakerHeight/4, beakerWidth, beakerHeight/2 + beakerHeight/4);
+            
+            // 绘制锌片（灰色矩形）
+            const zincX = beakerX - beakerWidth/4;
+            const zincY = beakerY;
+            const zincWidth = beakerWidth/6;
+            const zincHeight = beakerHeight/3;
+            
+            ctx.fillStyle = '#a8a9ad';
+            ctx.fillRect(zincX - zincWidth/2, zincY - zincHeight/2, zincWidth, zincHeight);
+            
+            // 绘制气泡（从锌片表面上升）
+            for (let i = 0; i < 15; i++) {
+                const bubbleX = zincX + Math.sin(animationState.animationTime * 0.5 + i) * 5;
+                const bubbleY = zincY - zincHeight/2 - i * 15 - (animationState.animationTime * 20) % 100;
+                const bubbleRadius = 5 + Math.sin(animationState.animationTime + i) * 2;
+                
+                ctx.beginPath();
+                ctx.arc(bubbleX, bubbleY, bubbleRadius, 0, Math.PI * 2);
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
+            
+            // 绘制标签
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 20px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('锌片 (Zn)', zincX, zincY + zincHeight/2 + 30);
+            
+            ctx.fillStyle = '#4ecdc4';
+            ctx.font = 'bold 20px Arial';
+            ctx.fillText('稀盐酸 (HCl)', beakerX, beakerY - beakerHeight/2 - 20);
+            
+            // 绘制反应方程式
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 24px Arial';
+            ctx.fillText('Zn + 2HCl → ZnCl₂ + H₂↑', canvasWidth/2, canvasHeight - 40);
+            
+            // 高亮当前步骤对应的部分
+            ctx.fillStyle = '#ff6b6b';
+            if (animationState.currentStep === 0) {
+                ctx.fillText('Zn', canvasWidth/2 - 100, canvasHeight - 40);
+                ctx.fillText('2HCl', canvasWidth/2 - 40, canvasHeight - 40);
+            } else if (animationState.currentStep >= 1 && animationState.currentStep <= 4) {
+                ctx.fillText('Zn', canvasWidth/2 - 100, canvasHeight - 40);
+                ctx.fillText('2HCl', canvasWidth/2 - 40, canvasHeight - 40);
+            } else if (animationState.currentStep >= 5) {
+                ctx.fillText('ZnCl₂', canvasWidth/2 + 40, canvasHeight - 40);
+                ctx.fillText('H₂↑', canvasWidth/2 + 120, canvasHeight - 40);
+            }
+            
+            // 绘制步骤说明
+            ctx.fillStyle = '#e0e0e0';
+            ctx.font = '18px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText('宏观视图：锌片与稀盐酸反应产生氢气气泡', 20, 40);
+        }
+        
+        // 绘制微观视图
+        function drawMicroView() {
+            const canvasWidth = canvas.width;
+            const canvasHeight = canvas.height;
+            
+            // 绘制背景
+            ctx.fillStyle = '#0d1b2a';
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+            
+            // 绘制溶液区域背景
+            ctx.fillStyle = 'rgba(64, 156, 255, 0.1)';
+            ctx.fillRect(canvasWidth * 0.3, 0, canvasWidth * 0.7, canvasHeight);
+            
+            // 绘制锌片区域（左侧）
+            const zincX = canvasWidth * 0.2;
+            const zincY = canvasHeight * 0.5;
+            const zincWidth = canvasWidth * 0.15;
+            const zincHeight = canvasHeight * 0.3;
+            
+            ctx.fillStyle = 'rgba(168, 169, 173, 0.2)';
+            ctx.fillRect(zincX - zincWidth/2, zincY - zincHeight/2, zincWidth, zincHeight);
+            
+            // 绘制锌原子
+            particles.zincAtoms.forEach(atom => {
+                if (!atom.isReacted) {
+                    drawParticle(atom);
+                }
+            });
+            
+            // 绘制氢离子
+            particles.hydrogenIons.forEach(ion => {
+                if (!ion.isReacted) {
+                    drawParticle(ion);
+                }
+            });
+            
+            // 绘制氯离子
+            particles.chlorideIons.forEach(ion => {
+                drawParticle(ion);
+            });
+            
+            // 绘制锌离子
+            particles.zincIons.forEach(ion => {
+                drawParticle(ion);
+            });
+            
+            // 绘制氢分子
+            particles.hydrogenMolecules.forEach(molecule => {
+                drawHydrogenMolecule(molecule);
+            });
+            
+            // 绘制气泡
+            particles.bubbles.forEach(bubble => {
+                drawBubble(bubble);
+            });
+            
+            // 绘制电子
+            if (animationState.showElectrons) {
+                particles.electrons.forEach(electron => {
+                    drawParticle(electron);
+                });
+            }
+            
+            // 绘制步骤说明
+            ctx.fillStyle = '#e0e0e0';
+            ctx.font = '18px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText('微观视图：观察粒子间的相互作用与电子转移', 20, 40);
+            
+            // 绘制当前步骤的额外说明
+            if (animationState.currentStep === 2 || animationState.currentStep === 3) {
+                ctx.fillStyle = '#00b4d8';
+                ctx.font = 'bold 16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('电子从锌原子转移到氢离子', canvasWidth/2, 80);
+            }
+            
+            // 绘制反应方程式
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 20px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Zn + 2HCl → ZnCl₂ + H₂↑', canvasWidth/2, canvasHeight - 30);
+            
+            // 高亮当前步骤对应的部分
+            ctx.fillStyle = '#ff6b6b';
+            if (animationState.currentStep === 0) {
+                ctx.fillText('Zn', canvasWidth/2 - 90, canvasHeight - 30);
+                ctx.fillText('2HCl', canvasWidth/2 - 35, canvasHeight - 30);
+            } else if (animationState.currentStep >= 1 && animationState.currentStep <= 4) {
+                ctx.fillText('Zn', canvasWidth/2 - 90, canvasHeight - 30);
+                ctx.fillText('2HCl', canvasWidth/2 - 35, canvasHeight - 30);
+            } else if (animationState.currentStep >= 5) {
+                ctx.fillText('ZnCl₂', canvasWidth/2 + 35, canvasHeight - 30);
+                ctx.fillText('H₂↑', canvasWidth/2 + 110, canvasHeight - 30);
+            }
+        }
+        
+        // 更新粒子状态
+        function updateParticles() {
+            const canvasWidth = canvas.width;
+            const canvasHeight = canvas.height;
+            
+            // 更新氢离子和氯离子的位置（布朗运动）
+            particles.hydrogenIons.forEach(ion => {
+                if (!ion.isReacted) {
+                    ion.x += ion.vx;
+                    ion.y += ion.vy;
+                    
+                    // 边界检查
+                    if (ion.x < canvasWidth * 0.3 || ion.x > canvasWidth * 0.9) ion.vx *= -1;
+                    if (ion.y < canvasHeight * 0.1 || ion.y > canvasHeight * 0.9) ion.vy *= -1;
+                    
+                    // 随机改变方向
+                    if (Math.random() < 0.02) {
+                        ion.vx = (Math.random() - 0.5) * 0.5;
+                        ion.vy = (Math.random() - 0.5) * 0.5;
+                    }
+                }
+            });
+            
+            particles.chlorideIons.forEach(ion => {
+                ion.x += ion.vx;
+                ion.y += ion.vy;
+                
+                // 边界检查
+                if (ion.x < canvasWidth * 0.3 || ion.x > canvasWidth * 0.9) ion.vx *= -1;
+                if (ion.y < canvasHeight * 0.1 || ion.y > canvasHeight * 0.9) ion.vy *= -1;
+                
+                // 随机改变方向
+                if (Math.random() < 0.02) {
+                    ion.vx = (Math.random() - 0.5) * 0.5;
+                    ion.vy = (Math.random() - 0.5) * 0.5;
+                }
+            });
+            
+            // 更新电子
+            particles.electrons.forEach(electron => {
+                if (electron.attachedTo) {
+                    // 电子依附于某个粒子（如氢离子）
+                    electron.x = electron.attachedTo.x;
+                    electron.y = electron.attachedTo.y;
+                } else if (electron.isMoving) {
+                    // 电子正在移动
+                    const dx = electron.targetX - electron.x;
+                    const dy = electron.targetY - electron.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 5) {
+                        electron.isMoving = false;
+                    } else {
+                        electron.x += (dx / distance) * electron.speed;
+                        electron.y += (dy / distance) * electron.speed;
+                    }
+                } else {
+                    // 电子在锌原子周围轨道运动
+                    electron.orbitAngle += electron.orbitSpeed;
+                    const zincAtom = particles.zincAtoms[Math.floor(Math.random() * particles.zincAtoms.length)];
+                    if (zincAtom && !zincAtom.isReacted) {
+                        electron.x = zincAtom.x + Math.cos(electron.orbitAngle) * electron.orbitRadius;
+                        electron.y = zincAtom.y + Math.sin(electron.orbitAngle) * electron.orbitRadius;
+                    }
+                }
+            });
+            
+            // 更新锌离子位置
+            particles.zincIons.forEach(ion => {
+                ion.x += ion.vx || 0;
+                ion.y += ion.vy || 0;
+                
+                // 随机运动
+                if (Math.random() < 0.05) {
+                    ion.vx = (Math.random() - 0.5) * 0.3;
+                    ion.vy = (Math.random() - 0.5) * 0.3;
+                }
+            });
+            
+            // 更新氢分子位置
+            particles.hydrogenMolecules.forEach(molecule => {
+                molecule.x1 += molecule.vx || 0;
+                molecule.y1 += molecule.vy || 0;
+                molecule.x2 += molecule.vx || 0;
+                molecule.y2 += molecule.vy || 0;
+                
+                // 向上漂浮
+                if (molecule.vy === undefined) {
+                    molecule.vx = (Math.random() - 0.5) * 0.2;
+                    molecule.vy = -0.5 - Math.random() * 0.5;
+                }
+                
+                // 如果氢分子到达顶部，转换为气泡
+                if (molecule.y1 < canvasHeight * 0.1 && molecule.y2 < canvasHeight * 0.1) {
+                    const index = particles.hydrogenMolecules.indexOf(molecule);
+                    if (index > -1) {
+                        particles.hydrogenMolecules.splice(index, 1);
+                        
+                        // 创建气泡
+                        particles.bubbles.push({
+                            x: (molecule.x1 + molecule.x2) / 2,
+                            y: (molecule.y1 + molecule.y2) / 2,
+                            radius: 15,
+                            vx: (Math.random() - 0.5) * 0.3,
+                            vy: -1 - Math.random() * 0.5
+                        });
+                    }
+                }
+            });
+            
+            // 更新气泡位置
+            particles.bubbles.forEach(bubble => {
+                bubble.x += bubble.vx;
+                bubble.y += bubble.vy;
+                bubble.radius *= 1.01; // 气泡上升时变大
+                
+                // 如果气泡到达顶部或变得太大，移除它
+                if (bubble.y < 0 || bubble.radius > 40) {
+                    const index = particles.bubbles.indexOf(bubble);
+                    if (index > -1) {
+                        particles.bubbles.splice(index, 1);
+                    }
+                }
+            });
+            
+            // 根据当前步骤执行特定动画
+            if (animationState.isPlaying || animationState.stepProgress > 0) {
+                animationState.stepProgress += 0.01;
+                if (animationState.stepProgress > 1) {
+                    animationState.stepProgress = 0;
+                }
+                
+                // 步骤1: 氢离子向锌片移动
+                if (animationState.currentStep === 1) {
+                    const progress = animationState.stepProgress;
+                    particles.hydrogenIons.forEach((ion, index) => {
+                        if (index < 5 && !ion.isReacted) { // 前5个氢离子参与反应
+                            const targetX = canvasWidth * 0.25;
+                            const targetY = canvasHeight * 0.5 + (index - 2) * 20;
+                            
+                            ion.x = ion.x + (targetX - ion.x) * 0.02;
+                            ion.y = ion.y + (targetY - ion.y) * 0.02;
+                        }
+                    });
+                }
+                
+                // 步骤2: 电子从锌原子转移到氢离子
+                if (animationState.currentStep === 2) {
+                    const progress = animationState.stepProgress;
+                    
+                    // 让前2个电子开始移动
+                    particles.electrons.forEach((electron, index) => {
+                        if (index < 2 && !electron.isMoving && !electron.attachedTo) {
+                            electron.isMoving = true;
+                            electron.targetX = particles.hydrogenIons[index].x;
+                            electron.targetY = particles.hydrogenIons[index].y;
+                            electron.speed = 3;
+                        }
+                    });
+                    
+                    // 检查电子是否
+<!--检测到代码截断，自动续写中...-->
+// 检查电子是否到达氢离子
+                    particles.electrons.forEach((electron, index) => {
+                        if (index < 2 && electron.isMoving) {
+                            const ion = particles.hydrogenIons[index];
+                            const dx = ion.x - electron.x;
+                            const dy = ion.y - electron.y;
+                            const distance = Math.sqrt(dx * dx + dy * dy);
+                            
+                            if (distance < 10) {
+                                electron.isMoving = false;
+                                electron.attachedTo = ion;
+                                electron.x = ion.x;
+                                electron.y = ion.y;
+                            }
+                        }
+                    });
+                }
+                
+                // 步骤3: 锌原子变成锌离子进入溶液
+                if (animationState.currentStep === 3) {
+                    const progress = animationState.stepProgress;
+                    
+                    // 前2个锌原子反应
+                    particles.zincAtoms.forEach((atom, index) => {
+                        if (index < 2 && !atom.isReacted) {
+                            atom.isReacted = true;
+                            
+                            // 创建锌离子
+                            particles.zincIons.push({
+                                x: atom.x,
+                                y: atom.y,
+                                radius: 8,
+                                color: '#a8a9ad',
+                                label: 'Zn²⁺',
+                                vx: 0.5 + Math.random() * 0.5,
+                                vy: (Math.random() - 0.5) * 0.5
+                            });
+                        }
+                    });
+                }
+                
+                // 步骤4: 氢离子获得电子变成氢原子，然后结合成氢分子
+                if (animationState.currentStep === 4) {
+                    const progress = animationState.stepProgress;
+                    
+                    // 前2个氢离子反应
+                    particles.hydrogenIons.forEach((ion, index) => {
+                        if (index < 2 && !ion.isReacted) {
+                            ion.isReacted = true;
+                            ion.color = '#ffffff';
+                            ion.label = 'H';
+                            ion.radius = 6;
+                        }
+                    });
+                    
+                    // 如果两个氢原子都准备好了，创建氢分子
+                    if (particles.hydrogenIons[0].isReacted && particles.hydrogenIons[1].isReacted) {
+                        // 检查是否已经创建了氢分子
+                        if (particles.hydrogenMolecules.length === 0) {
+                            particles.hydrogenMolecules.push({
+                                x1: particles.hydrogenIons[0].x,
+                                y1: particles.hydrogenIons[0].y,
+                                x2: particles.hydrogenIons[1].x,
+                                y2: particles.hydrogenIons[1].y,
+                                vx: 0,
+                                vy: 0
+                            });
+                            
+                            // 从氢离子数组中移除
+                            particles.hydrogenIons.splice(0, 2);
+                        }
+                    }
+                }
+                
+                // 步骤5: 氢分子形成气泡
+                if (animationState.currentStep === 5) {
+                    const progress = animationState.stepProgress;
+                    
+                    // 氢分子向上移动
+                    particles.hydrogenMolecules.forEach(molecule => {
+                        molecule.vy = -0.5;
+                    });
+                }
+                
+                // 步骤6: 反应完成，更多粒子参与反应
+                if (animationState.currentStep === 6) {
+                    const progress = animationState.stepProgress;
+                    
+                    // 让更多氢离子向锌片移动
+                    particles.hydrogenIons.forEach((ion, index) => {
+                        if (index < 10 && !ion.isReacted) {
+                            const targetX = canvasWidth * 0.25;
+                            const targetY = canvasHeight * 0.5 + (index - 5) * 15;
+                            
+                            ion.x = ion.x + (targetX - ion.x) * 0.01;
+                            ion.y = ion.y + (targetY - ion.y) * 0.01;
+                        }
+                    });
+                    
+                    // 随机让锌原子反应
+                    if (Math.random() < 0.05 && particles.zincAtoms.length > 0) {
+                        const randomIndex = Math.floor(Math.random() * Math.min(5, particles.zincAtoms.length));
+                        const atom = particles.zincAtoms[randomIndex];
+                        
+                        if (atom && !atom.isReacted) {
+                            atom.isReacted = true;
+                            
+                            // 创建锌离子
+                            particles.zincIons.push({
+                                x: atom.x,
+                                y: atom.y,
+                                radius: 8,
+                                color: '#a8a9ad',
+                                label: 'Zn²⁺',
+                                vx: 0.5 + Math.random() * 0.5,
+                                vy: (Math.random() - 0.5) * 0.5
+                            });
+                        }
+                    }
+                }
+            }
+        }
+        
+        // 主渲染函数
+        function render() {
+            // 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 更新粒子状态
+            updateParticles();
+            
+            // 根据当前视图绘制
+            if (animationState.isMacroView) {
+                drawMacroView();
+            } else {
+                drawMicroView();
+            }
+            
+            // 更新动画时间
+            animationState.animationTime += 0.05;
+            
+            // 继续动画循环
+            requestAnimationFrame(render);
+        }
+        
+        // 初始化
+        function init() {
+            initParticles();
+            updateStepInfo();
+            render();
+        }
+        
+        // 更新步骤信息
+        function updateStepInfo() {
+            const stepInfoElement = document.getElementById('stepInfo');
+            const currentStep = animationState.currentStep;
+            
+            if (currentStep >= 0 && currentStep < stepInfo.length) {
+                stepInfoElement.innerHTML = `<span class="step-highlight">步骤 ${currentStep + 1}/${stepInfo.length}:</span> ${stepInfo[currentStep]}`;
+            }
+        }
+        
+        // 播放/暂停动画
+        function togglePlayPause() {
+            animationState.isPlaying = !animationState.isPlaying;
+            const playPauseBtn = document.getElementById('playPauseBtn');
+            
+            if (animationState.isPlaying) {
+                playPauseBtn.textContent = '暂停';
+            } else {
+                playPauseBtn.textContent = '播放';
+            }
+        }
+        
+        // 重置动画
+        function resetAnimation() {
+            animationState.currentStep = 0;
+            animationState.isPlaying = false;
+            animationState.animationTime = 0;
+            animationState.stepProgress = 0;
+            
+            document.getElementById('playPauseBtn').textContent = '播放';
+            initParticles();
+            updateStepInfo();
+        }
+        
+        // 下一步
+        function nextStep() {
+            if (animationState.currentStep < stepInfo.length - 1) {
+                animationState.currentStep++;
+                animationState.stepProgress = 0;
+                updateStepInfo();
+                
+                // 如果当前是最后一步，停止播放
+                if (animationState.currentStep === stepInfo.length - 1) {
+                    animationState.isPlaying = false;
+                    document.getElementById('playPauseBtn').textContent = '播放';
+                }
+            }
+        }
+        
+        // 上一步
+        function prevStep() {
+            if (animationState.currentStep > 0) {
+                animationState.currentStep--;
+                animationState.stepProgress = 0;
+                updateStepInfo();
+            }
+        }
+        
+        // 切换到宏观视图
+        function switchToMacroView() {
+            animationState.isMacroView = true;
+            document.getElementById('macroViewBtn').classList.add('active');
+            document.getElementById('microViewBtn').classList.remove('active');
+        }
+        
+        // 切换到微观视图
+        function switchToMicroView() {
+            animationState.isMacroView = false;
+            document.getElementById('microViewBtn').classList.add('active');
+            document.getElementById('macroViewBtn').classList.remove('active');
+        }
+        
+        // 切换粒子标签显示
+        function toggleLabels() {
+            animationState.showLabels = !animationState.showLabels;
+        }
+        
+        // 切换电子显示
+        function toggleElectrons() {
+            animationState.showElectrons = !animationState.showElectrons;
+        }
+        
+        // 自动播放步骤
+        function autoPlaySteps() {
+            if (animationState.isPlaying) {
+                animationState.stepProgress += 0.005;
+                
+                if (animationState.stepProgress >= 1) {
+                    animationState.stepProgress = 0;
+                    
+                    if (animationState.currentStep < stepInfo.length - 1) {
+                        animationState.currentStep++;
+                        updateStepInfo();
+                    } else {
+                        // 如果是最后一步，停止播放
+                        animationState.isPlaying = false;
+                        document.getElementById('playPauseBtn').textContent = '播放';
+                    }
+                }
+            }
+        }
+        
+        // 设置自动播放检查
+        setInterval(autoPlaySteps, 50);
+        
+        // 事件监听器
+        document.getElementById('playPauseBtn').addEventListener('click', togglePlayPause);
+        document.getElementById('resetBtn').addEventListener('click', resetAnimation);
+        document.getElementById('prevStepBtn').addEventListener('click', prevStep);
+        document.getElementById('nextStepBtn').addEventListener('click', nextStep);
+        document.getElementById('macroViewBtn').addEventListener('click', switchToMacroView);
+        document.getElementById('microViewBtn').addEventListener('click', switchToMicroView);
+        document.getElementById('showLabelsToggle').addEventListener('change', toggleLabels);
+        document.getElementById('showElectronsToggle').addEventListener('change', toggleElectrons);
+        
+        // 初始化应用
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

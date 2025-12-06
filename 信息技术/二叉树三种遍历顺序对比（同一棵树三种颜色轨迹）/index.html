@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>二叉树三种遍历顺序对比动画</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eaeaea;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+        }
+
+        .color-box {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            border-radius: 3px;
+        }
+
+        .preorder-color {
+            background-color: #FF5252;
+        }
+
+        .inorder-color {
+            background-color: #448AFF;
+        }
+
+        .postorder-color {
+            background-color: #4CAF50;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        @media (min-width: 992px) {
+            .container {
+                flex-direction: row;
+            }
+            
+            .visualization-section {
+                flex: 2;
+            }
+            
+            .control-section {
+                flex: 1;
+            }
+        }
+
+        .visualization-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .tree-container {
+            position: relative;
+            height: 500px;
+            margin: 20px 0;
+            overflow: hidden;
+            border-radius: 8px;
+            background-color: #fefefe;
+            border: 1px solid #eee;
+        }
+
+        #treeCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .control-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .control-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .control-title {
+            font-size: 1.2em;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed #eee;
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            background-color: #3498db;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        #playPauseBtn {
+            background-color: #2ecc71;
+        }
+
+        #playPauseBtn:hover:not(:disabled) {
+            background-color: #27ae60;
+        }
+
+        #resetBtn {
+            background-color: #e74c3c;
+        }
+
+        #resetBtn:hover:not(:disabled) {
+            background-color: #c0392b;
+        }
+
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .speed-control label {
+            font-weight: 500;
+            color: #555;
+        }
+
+        #speedSlider {
+            flex: 1;
+            height: 8px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #ddd;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        #speedSlider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3498db;
+            cursor: pointer;
+        }
+
+        #speedSlider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3498db;
+            cursor: pointer;
+            border: none;
+        }
+
+        .output-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .output-box {
+            border-radius: 8px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-left: 5px solid;
+        }
+
+        .output-title {
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .output-title .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .preorder-output {
+            border-left-color: #FF5252;
+        }
+
+        .preorder-output .output-title {
+            color: #FF5252;
+        }
+
+        .preorder-output .dot {
+            background-color: #FF5252;
+        }
+
+        .inorder-output {
+            border-left-color: #448AFF;
+        }
+
+        .inorder-output .output-title {
+            color: #448AFF;
+        }
+
+        .inorder-output .dot {
+            background-color: #448AFF;
+        }
+
+        .postorder-output {
+            border-left-color: #4CAF50;
+        }
+
+        .postorder-output .output-title {
+            color: #4CAF50;
+        }
+
+        .postorder-output .dot {
+            background-color: #4CAF50;
+        }
+
+        .sequence {
+            font-size: 1.3em;
+            font-weight: 600;
+            letter-spacing: 2px;
+            min-height: 1.5em;
+            color: #2c3e50;
+        }
+
+        .current-step {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+            border-left: 5px solid #f1c40f;
+        }
+
+        .current-step-title {
+            font-weight: 700;
+            color: #f39c12;
+            margin-bottom: 8px;
+        }
+
+        #stepDescription {
+            font-size: 1.1em;
+            min-height: 1.5em;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #7f8c8d;
+            font-size: 0.9em;
+            padding-top: 15px;
+            border-top: 1px solid #eaeaea;
+        }
+
+        .instructions {
+            background-color: #e8f4fc;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-left: 5px solid #3498db;
+        }
+
+        .instructions h3 {
+            color: #3498db;
+            margin-bottom: 10px;
+        }
+
+        .instructions ul {
+            padding-left: 20px;
+        }
+
+        .instructions li {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>二叉树三种遍历顺序对比</h1>
+        <p class="subtitle">同一棵树上的先序、中序、后序遍历轨迹可视化</p>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="color-box preorder-color"></div>
+                <span>先序遍历 (Pre-order)</span>
+            </div>
+            <div class="legend-item">
+                <div class="color-box inorder-color"></div>
+                <span>中序遍历 (In-order)</span>
+            </div>
+            <div class="legend-item">
+                <div class="color-box postorder-color"></div>
+                <span>后序遍历 (Post-order)</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="instructions">
+        <h3>使用说明</h3>
+        <ul>
+            <li>动画将同步展示三种遍历算法在同一棵二叉树上的执行过程。</li>
+            <li>每种遍历使用不同颜色的轨迹表示，节点被访问时会高亮显示对应颜色。</li>
+            <li>使用下方控制面板控制动画播放，观察三种遍历访问节点的时机差异。</li>
+            <li>右侧实时显示三种遍历已访问的节点序列。</li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <section class="visualization-section">
+            <h2>遍历过程可视化</h2>
+            <div class="tree-container">
+                <canvas id="treeCanvas"></canvas>
+            </div>
+            
+            <div class="current-step">
+                <div class="current-step-title">当前步骤说明</div>
+                <div id="stepDescription">点击"播放"按钮开始动画</div>
+            </div>
+        </section>
+        
+        <section class="control-section">
+            <div class="control-panel">
+                <h3 class="control-title">动画控制</h3>
+                <div class="button-group">
+                    <button id="playPauseBtn">播放</button>
+                    <button id="nextStepBtn">下一步</button>
+                    <button id="prevStepBtn">上一步</button>
+                    <button id="resetBtn">重置</button>
+                </div>
+                
+                <div class="speed-control">
+                    <label for="speedSlider">播放速度:</label>
+                    <input type="range" id="speedSlider" min="1" max="10" value="5">
+                </div>
+            </div>
+            
+            <div class="output-panel">
+                <h3 class="control-title">遍历结果序列</h3>
+                
+                <div class="output-box preorder-output">
+                    <div class="output-title">
+                        <div class="dot"></div>
+                        <span>先序遍历 (根-左-右)</span>
+                    </div>
+                    <div id="preorderSequence" class="sequence">-</div>
+                </div>
+                
+                <div class="output-box inorder-output">
+                    <div class="output-title">
+                        <div class="dot"></div>
+                        <span>中序遍历 (左-根-右)</span>
+                    </div>
+                    <div id="inorderSequence" class="sequence">-</div>
+                </div>
+                
+                <div class="output-box postorder-output">
+                    <div class="output-title">
+                        <div class="dot"></div>
+                        <span>后序遍历 (左-右-根)</span>
+                    </div>
+                    <div id="postorderSequence" class="sequence">-</div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <footer>
+        <p>教学动画设计 | 二叉树遍历可视化 | 使用HTML5 Canvas实现</p>
+    </footer>
+
+    <script>
+        // 二叉树节点定义
+        class TreeNode {
+            constructor(value, x, y) {
+                this.value = value;
+                this.x = x;
+                this.y = y;
+                this.left = null;
+                this.right = null;
+                this.radius = 25;
+                
+                // 访问状态标记
+                this.visitedPreorder = false;
+                this.visitedInorder = false;
+                this.visitedPostorder = false;
+                
+                // 当前高亮状态
+                this.highlighted = false;
+                this.highlightColor = null;
+            }
+            
+            draw(ctx) {
+                // 绘制节点连接线（先画线，后画节点）
+                if (this.left) {
+                    ctx.beginPath();
+                    ctx.moveTo(this.x, this.y);
+                    ctx.lineTo(this.left.x, this.left.y);
+                    ctx.strokeStyle = '#666';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                }
+                
+                if (this.right) {
+                    ctx.beginPath();
+                    ctx.moveTo(this.x, this.y);
+                    ctx.lineTo(this.right.x, this.right.y);
+                    ctx.strokeStyle = '#666';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                }
+                
+                // 绘制节点
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                
+                // 节点填充色
+                if (this.highlighted && this.highlightColor) {
+                    ctx.fillStyle = this.highlightColor;
+                } else {
+                    ctx.fillStyle = 'white';
+                }
+                
+                ctx.fill();
+                
+                // 节点边框
+                ctx.lineWidth = 3;
+                if (this.highlighted && this.highlightColor) {
+                    ctx.strokeStyle = this.highlightColor;
+                } else {
+                    ctx.strokeStyle = '#ddd';
+                }
+                ctx.stroke();
+                
+                // 绘制访问标记点
+                const markRadius = 6;
+                let markCount = 0;
+                
+                if (this.visitedPreorder) {
+                    ctx.beginPath();
+                    ctx.arc(this.x - this.radius/2, this.y - this.radius/2, markRadius, 0, Math.PI * 2);
+                    ctx.fillStyle = '#FF5252';
+                    ctx.fill();
+                    markCount++;
+                }
+                
+                if (this.visitedInorder) {
+                    ctx.beginPath();
+                    ctx.arc(this.x + this.radius/2, this.y - this.radius/2, markRadius, 0, Math.PI * 2);
+                    ctx.fillStyle = '#448AFF';
+                    ctx.fill();
+                    markCount++;
+                }
+                
+                if (this.visitedPostorder) {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y + this.radius/2, markRadius, 0, Math.PI * 2);
+                    ctx.fillStyle = '#4CAF50';
+                    ctx.fill();
+                    markCount++;
+                }
+                
+                // 绘制节点值
+                ctx.fillStyle = this.highlighted ? 'white' : '#333';
+                ctx.font = 'bold 18px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(this.value, this.x, this.y);
+            }
+        }
+
+        // 遍历动画管理器
+        class TraversalAnimation {
+            constructor(canvasId) {
+                this.canvas = document.getElementById(canvasId);
+                this.ctx = this.canvas.getContext('2d');
+                this.tree = null;
+                this.animationId = null;
+                
+                // 遍历状态
+                this.preorderSteps = [];
+                this.inorderSteps = [];
+                this.postorderSteps = [];
+                
+                this.currentStepIndex = 0;
+                this.isPlaying = false;
+                this.speed = 5; // 1-10，值越大速度越快
+                
+                // 轨迹点存储
+                this.preorderPath = [];
+                this.inorderPath = [];
+                this.postorderPath = [];
+                
+                // 初始化树
+                this.initTree();
+                
+                // 生成遍历步骤
+                this.generateTraversalSteps();
+                
+                // 调整画布大小
+                this.resizeCanvas();
+                window.addEventListener('resize', () => this.resizeCanvas());
+                
+                // 绘制初始树
+                this.draw();
+            }
+            
+            resizeCanvas() {
+                const container = this.canvas.parentElement;
+                this.canvas.width = container.clientWidth;
+                this.canvas.height = container.clientHeight;
+                this.draw();
+            }
+            
+            initTree() {
+                // 创建一棵示例二叉树 (A为根节点)
+                const width = this.canvas.width;
+                const height = this.canvas.height;
+                
+                // 节点位置计算
+                const rootX = width / 2;
+                const rootY = 80;
+                const levelHeight = 100;
+                const levelWidth = width / 4;
+                
+                // 创建节点
+                const nodeA = new TreeNode('A', rootX, rootY);
+                const nodeB = new TreeNode('B', rootX - levelWidth, rootY + levelHeight);
+                const nodeC = new TreeNode('C', rootX + levelWidth, rootY + levelHeight);
+                const nodeD = new TreeNode('D', rootX - levelWidth - levelWidth/2, rootY + levelHeight*2);
+                const nodeE = new TreeNode('E', rootX - levelWidth + levelWidth/2, rootY + levelHeight*2);
+                const nodeF = new TreeNode('F', rootX + levelWidth - levelWidth/2, rootY + levelHeight*2);
+                const nodeG = new TreeNode('G', rootX + levelWidth + levelWidth/2, rootY + levelHeight*2);
+                
+                // 构建树结构
+                nodeA.left = nodeB;
+                nodeA.right = nodeC;
+                nodeB.left = nodeD;
+                nodeB.right = nodeE;
+                nodeC.left = nodeF;
+                nodeC.right = nodeG;
+                
+                this.tree = nodeA;
+            }
+            
+            // 生成遍历步骤
+            generateTraversalSteps() {
+                // 先序遍历步骤生成
+                const preorder = (node) => {
+                    if (!node) return;
+                    
+                    this.preorderSteps.push({
+                        type: 'visit',
+                        traversal: 'preorder',
+                        node: node,
+                        description: `先序：访问节点 ${node.value}`
+                    });
+                    
+                    this.preorderSteps.push({
+                        type: 'move',
+                        traversal: 'preorder',
+                        from: node,
+                        to: node.left,
+                        description: `先序：移动到 ${node.left ? node.left.value : '空'} 的左子树`
+                    });
+                    
+                    preorder(node.left);
+                    
+                    this.preorderSteps.push({
+                        type: 'move',
+                        traversal: 'preorder',
+                        from: node,
+                        to: node.right,
+                        description: `先序：移动到 ${node.right ? node.right.value : '空'} 的右子树`
+                    });
+                    
+                    preorder(node.right);
+                };
+                
+                // 中序遍历步骤生成
+                const inorder = (node) => {
+                    if (!node) return;
+                    
+                    this.inorderSteps.push({
+                        type: 'move',
+                        traversal: 'inorder',
+                        from: node,
+                        to: node.left,
+                        description: `中序：移动到 ${node.left ? node.left.value : '空'} 的左子树`
+                    });
+                    
+                    inorder(node.left);
+                    
+                    this.inorderSteps.push({
+                        type: 'visit',
+                        traversal: 'inorder',
+                        node: node,
+                        description: `中序：访问节点 ${node.value}`
+                    });
+                    
+                    this.inorderSteps.push({
+                        type: 'move',
+                        traversal: 'inorder',
+                        from: node,
+                        to: node.right,
+                        description: `中序：移动到 ${node.right ? node.right.value : '空'} 的右子树`
+                    });
+                    
+                    inorder(node.right);
+                };
+                
+                // 后序遍历步骤生成
+                const postorder = (node) => {
+                    if (!node) return;
+                    
+                    this.postorderSteps.push({
+                        type: 'move',
+                        traversal: 'postorder',
+                        from: node,
+                        to: node.left,
+                        description: `后序：移动到 ${node.left ? node.left.value : '空'} 的左子树`
+                    });
+                    
+                    postorder(node.left);
+                    
+                    this.postorderSteps.push({
+                        type: 'move',
+                        traversal: 'postorder',
+                        from: node,
+                        to: node.right,
+                        description: `后序：移动到 ${node.right ? node.right.value : '空'} 的右子树`
+                    });
+                    
+                    postorder(node.right);
+                    
+                    this.postorderSteps.push({
+                        type: 'visit',
+                        traversal: 'postorder',
+                        node: node,
+                        description: `后序：访问节点 ${node.value}`
+                    });
+                };
+                
+                // 生成步骤
+                preorder(this.tree);
+                inorder(this.tree);
+                postorder(this.tree);
+                
+                // 同步步骤：将三种遍历的步骤交错合并
+                this.syncedSteps = [];
+                const maxLength = Math.max(
+                    this.preorderSteps.length, 
+                    this.inorderSteps.length, 
+                    this.postorderSteps.length
+                );
+                
+                for (let i = 0; i < maxLength; i++) {
+                    const stepGroup = [];
+                    
+                    if (i < this.preorderSteps.length) {
+                        stepGroup.push(this.preorderSteps[i]);
+                    }
+                    
+                    if (i < this.inorderSteps.length) {
+                        stepGroup.push(this.inorderSteps[i]);
+                    }
+                    
+                    if (i < this.postorderSteps.length) {
+                        stepGroup.push(this.postorderSteps[i]);
+                    }
+                    
+                    this.syncedSteps.push(stepGroup);
+                }
+            }
+            
+            // 执行下一步
+            nextStep() {
+                if (this.currentStepIndex >= this.syncedSteps.length) {
+                    this.pause();
+                    return;
+                }
+                
+                const stepGroup = this.syncedSteps[this.currentStepIndex];
+                let stepDescription = "";
+                
+                // 执行当前步骤组中的所有步骤
+                stepGroup.forEach(step => {
+                    if (step.type === 'visit') {
+                        // 访问节点
+                        step.node[`visited${step.traversal.charAt(0).toUpperCase() + step.traversal.slice(1)}`] = true;
+                        step.node.highlighted = true;
+                        
+                        // 设置高亮颜色
+                        if (step.traversal === 'preorder') {
+                            step.node.highlightColor = '#FF5252';
+                            this.preorderPath.push({x: step.node.x, y: step.node.y});
+                        } else if (step.traversal === 'inorder') {
+                            step.node.highlightColor = '#448AFF';
+                            this.inorderPath.push({x: step.node.x, y: step.node.y});
+                        } else if (step.traversal === 'postorder') {
+                            step.node.highlightColor = '#4CAF50';
+                            this.postorderPath.push({x: step.node.x, y: step.node.y});
+                        }
+                        
+                        // 更新序列显示
+                        this.updateSequenceDisplay(step.traversal, step.node.value);
+                        
+                        stepDescription = step.description;
+                    } else if (step.type === 'move') {
+                        // 移动轨迹
+                        if (step.from && step.to) {
+                            if (step.traversal === 'preorder') {
+                                this.preorderPath.push({x: step.from.x, y: step.from.y});
+                                this.preorderPath.push({x: step.to.x, y: step.to.y});
+                            } else if (step.traversal === 'inorder') {
+                                this.inorderPath.push({x: step.from.x, y: step.from.y});
+                                this.inorderPath.push({x: step.to.x, y: step.to.y});
+                            } else if (step.traversal === 'postorder') {
+                                this.postorderPath.push({x: step.from.x, y: step.from.y});
+                                this.postorderPath.push({x: step.to.x, y: step.to.y});
+                            }
+                        }
+                        
+                        if (stepDescription === "") {
+                            stepDescription = step.description;
+                        }
+                    }
+                });
+                
+                // 更新步骤说明
+                document.getElementById('stepDescription').textContent = stepDescription || `步骤 ${this.currentStepIndex + 1}/${this.syncedSteps.length}`;
+                
+                this.currentStepIndex++;
+                this.draw();
+                
+                // 检查是否完成
+                if (this.currentStepIndex >= this.syncedSteps.length) {
+                    document.getElementById('stepDescription').textContent = "遍历完成！";
+                    this.disableButton('nextStepBtn');
+                    this.disableButton('playPauseBtn');
+                }
+                
+                // 更新按钮状态
+                this.updateButtonStates();
+            }
+            
+            // 执行上一步
+            prevStep() {
+                if (this.currentStepIndex <= 0) return;
+                
+                this.currentStepIndex--;
+                const stepGroup = this.syncedSteps[this.currentStepIndex];
+                
+                // 撤销当前步骤组中的所有步骤
+                stepGroup.forEach(step => {
+                    if (step.type === 'visit') {
+                        // 撤销访问节点
+                        step.node[`visited${step.traversal.charAt(0).toUpperCase() + step.traversal.slice(1)}`] = false;
+                        step.node.highlighted = false;
+                        step.node.highlightColor = null;
+                        
+                        // 从序列中移除节点
+                        this.removeFromSequenceDisplay(step.traversal, step.node.value);
+                        
+                        // 从路径中移除点
+                        if (step.traversal === 'preorder' && this.preorderPath.length > 0) {
+                            this.preorderPath.pop();
+                        } else if (step.traversal === 'inorder' && this.inorderPath.length > 0) {
+                            this.inorderPath.pop();
+                        } else if (step.traversal === 'postorder' && this.postorderPath.length > 0) {
+                            this.postorderPath.pop();
+                        }
+                    } else if (step.type === 'move') {
+                        // 从路径中移除移动点
+                        if (step.from && step.to) {
+                            if (step.traversal === 'preorder' && this.preorderPath.length >= 2) {
+                                this.preorderPath.pop();
+                                this.preorderPath.pop();
+                            } else if (step.traversal === 'inorder' && this.inorderPath.length >= 2) {
+                                this.inorderPath.pop();
+                                this.inorderPath.pop();
+                            } else if (step.traversal === 'postorder' && this.postorderPath.length >= 2) {
+                                this.postorderPath.pop();
+                                this.postorderPath.pop();
+                            }
+                        }
+                    }
+                });
+                
+                // 更新步骤说明
+                if (this.currentStepIndex > 0) {
+                    const prevStepGroup = this.syncedSteps[this.currentStepIndex - 1];
+                    let prevDescription = "";
+                    prevStepGroup.forEach(step => {
+                        if (step.type === 'visit') {
+                            prevDescription = step.description;
+                        }
+                    });
+                    document.getElementById('stepDescription').textContent = prevDescription || `步骤 ${this.currentStepIndex}/${this.syncedSteps.length}`;
+                } else {
+                    document.getElementById('stepDescription').textContent = "点击'播放'按钮开始动画";
+                }
+                
+                this.draw();
+                this.updateButtonStates();
+            }
+            
+            // 更新序列显示
+            updateSequenceDisplay(traversalType, value) {
+                const sequenceId = traversalType + 'Sequence';
+                const sequenceElement = document.getElementById(sequenceId);
+                let currentSequence = sequenceElement.textContent;
+                
+                if (currentSequence === '-') {
+                    sequenceElement.textContent = value;
+                } else {
+                    sequenceElement.textContent = currentSequence + ' → ' + value;
+                }
+            }
+            
+            // 从序列显示中移除节点
+            removeFromSequenceDisplay(traversalType, value) {
+                const sequenceId = traversalType + 'Sequence';
+                const sequenceElement = document.getElementById(sequenceId);
+                let currentSequence = sequenceElement.textContent;
+                
+                if (currentSequence.includes(' → ')) {
+                    const parts = currentSequence.split(' → ');
+                    parts.pop(); // 移除最后一个
+                    sequenceElement.textContent = parts.length > 0 ? parts.join(' → ') : '-';
+                } else {
+                    sequenceElement.textContent = '-';
+                }
+            }
+            
+            // 绘制树和轨迹
+            draw() {
+                // 清除画布
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // 绘制轨迹
+                this.drawPath(this.preorderPath, '#FF5252');
+                this.drawPath(this.inorderPath, '#448AFF');
+                this.drawPath(this.postorderPath, '#4CAF50');
+                
+                // 绘制树（递归绘制所有节点）
+                this.drawTree(this.tree);
+            }
+            
+            // 绘制路径
+            drawPath(path, color) {
+                if (path.length < 2) return;
+                
+                this.ctx.beginPath();
+                this.ctx.moveTo(path[0].x, path[0].y);
+                
+                for (let i = 1; i < path.length; i++) {
+                    this.ctx.lineTo(path[i].x, path[i].y);
+                }
+                
+                this.ctx.strokeStyle = color;
+                this.ctx.lineWidth = 3;
+                this.ctx.lineCap = 'round';
+                this.ctx.lineJoin = 'round';
+                this.ctx.stroke();
+                
+                // 绘制路径点
+                for (let i = 0; i < path.length; i++) {
+                    this.ctx.beginPath();
+                    this.ctx.arc(path[i].x, path[i].y, 4, 0, Math.PI * 2);
+                    this.ctx.fillStyle = color;
+                    this.ctx.fill();
+                }
+            }
+            
+            // 递归绘制树
+            drawTree(node) {
+                if (!node) return;
+                
+                // 先绘制子节点
+                if (node.left) this.drawTree(node.left);
+                if (node.right) this.drawTree(node.right);
+                
+                // 绘制当前节点
+                node.draw(this.ctx);
+            }
+            
+            // 播放动画
+            play() {
+                if (this.isPlaying) return;
+                
+                this.isPlaying = true;
+                document.getElementById('playPauseBtn').textContent = '暂停';
+                this.enableButton('nextStepBtn');
+                this.enableButton('prevStepBtn');
+                
+                const animate = () => {
+                    if (!this.isPlaying) return;
+                    
+                    this.nextStep();
+                    
+                    if (this.currentStepIndex < this.syncedSteps.length) {
+                        // 根据速度计算延迟时间（速度值1-10，对应延迟1000ms-100ms）
+                        const delay = 1100 - (this.speed * 100);
+                        setTimeout(() => {
+                            this.animationId = requestAnimationFrame(animate);
+                        }, delay);
+                    } else {
+                        this.pause();
+                    }
+                };
+                
+                this.animationId = requestAnimationFrame(animate);
+            }
+            
+            // 暂停动画
+            pause() {
+                this.isPlaying = false;
+                document.getElementById('playPauseBtn').textContent = '播放';
+                
+                if (this.animationId) {
+                    cancelAnimationFrame(this.animationId);
+                    this.animationId = null;
+                }
+            }
+            
+            // 重置动画
+            reset() {
+                this.pause();
+                this.currentStepIndex = 0;
+                
+                // 重置所有节点状态
+                const resetNode = (node) => {
+                    if (!node) return;
+                    
+                    node.visitedPreorder = false;
+                    node.visitedInorder = false;
+                    node.visitedPostorder = false;
+                    node.highlighted = false;
+                    node.highlightColor = null;
+                    
+                    resetNode(node.left);
+                    resetNode(node.right);
+                };
+                
+                resetNode(this.tree);
+                
+                // 清空路径
+                this.preorderPath = [];
+                this.inorderPath = [];
+                this.postorderPath = [];
+                
+                // 重置序列显示
+                document.getElementById('preorderSequence').textContent = '-';
+                document.getElementById('inorderSequence').textContent = '-';
+                document.getElementById('postorderSequence').textContent = '-';
+                document.getElementById('stepDescription').textContent = "点击'播放'按钮开始动画";
+                
+                // 重置按钮状态
+                this.enableButton('playPauseBtn');
+                this.enableButton('nextStepBtn');
+                this.enableButton('prevStepBtn');
+                
+                this.draw();
+            }
+            
+            // 设置速度
+            setSpeed(speed) {
+                this.speed = speed;
+            }
+            
+            // 更新按钮状态
+            updateButtonStates() {
+                if (this.currentStepIndex <= 0) {
+                    this.disableButton('prevStepBtn');
+                } else {
+                    this.enableButton('prevStepBtn');
+                }
+                
+                if (this.currentStepIndex >= this.syncedSteps.length) {
+                    this.disableButton('nextStepBtn');
+                } else {
+                    this.enableButton('nextStepBtn');
+                }
+            }
+            
+            disableButton(buttonId) {
+                document.getElementById(buttonId).disabled = true;
+            }
+            
+            enableButton(buttonId) {
+                document.getElementById(buttonId).disabled = false;
+            }
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            // 创建动画管理器
+            const animation = new TraversalAnimation('treeCanvas');
+            
+            // 绑定按钮事件
+            document.getElementById('playPauseBtn').addEventListener('click', () => {
+                if (animation.isPlaying) {
+                    animation.pause();
+                } else {
+                    animation.play();
+                }
+            });
+            
+            document.getElementById('nextStepBtn').addEventListener('click', () => {
+                animation.pause();
+                animation.nextStep();
+            });
+            
+            document.getElementById('prevStepBtn').addEventListener('click', () => {
+                animation.pause();
+                animation.prevStep();
+            });
+            
+            document.getElementById('resetBtn').addEventListener('click', () => {
+                animation.reset();
+            });
+            
+            // 绑定速度滑块事件
+            const speedSlider = document.getElementById('speedSlider');
+            speedSlider.addEventListener('input', () => {
+                animation.setSpeed(parseInt(speedSlider.value));
+            });
+            
+            // 初始按钮状态
+            animation.updateButtonStates();
+        });
+    </script>
+</body>
+</html>

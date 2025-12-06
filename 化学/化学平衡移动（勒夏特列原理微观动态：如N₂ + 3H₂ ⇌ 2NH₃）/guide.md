@@ -1,0 +1,1613 @@
+# 需求：化学平衡移动（勒夏特列原理微观动态：如N₂ + 3H₂ ⇌ 2NH₃）
+
+### 1. 专业思考
+
+### 1. 专业思考
+
+#### 用户需求分析
+1.  **目标用户**：主要为高中或大学低年级的化学学习者。他们已具备化学反应速率、可逆反应等基础知识，但难以从微观粒子层面理解平衡移动的动态过程和勒夏特列原理的实质。
+2.  **核心痛点**：
+    *   **抽象性**：平衡移动是一个动态、微观的过程，传统静态图表或文字描述难以直观展示。
+    *   **动态关联性**：学生难以将“浓度/压力/温度”等宏观条件的改变，与“正逆反应速率相对变化”这一微观动态，以及最终“平衡移动方向”的结果三者联系起来。
+    *   **勒夏特列原理的理解**：原理表述为“减弱这种改变”，学生容易机械记忆，但对其背后的微观动力学原因（速率变化）理解不深。
+3.  **学习目标**：
+    *   **微观可视化**：清晰观察合成氨反应中，N₂、H₂、NH₃分子在反应容器中的随机运动和碰撞反应。
+    *   **理解动态平衡**：在平衡状态下，看到正逆反应仍在持续进行，但各组分浓度保持不变。
+    *   **建立因果链**：通过交互操作改变条件（如增加N₂浓度），能立即观察到：
+        *   宏观条件改变。
+        *   微观上，正反应速率瞬间增大，逆反应速率不变。
+        *   可视化结果：NH₃分子数增多，平衡正向移动，直到建立新平衡。
+    *   **掌握原理**：通过多情景模拟，帮助学生从“速率竞争”的角度内化勒夏特列原理。
+
+#### 教学设计思路
+1.  **核心概念**：围绕 **“条件改变 → 正逆反应速率相对变化 → 平衡移动方向”** 这一核心逻辑链展开。
+2.  **认知规律**：
+    *   **从具体到抽象**：使用颜色、形状鲜明的粒子（小球）代表不同分子，将抽象概念具象化。
+    *   **从静态到动态**：先展示平衡态的“动态静止”，再通过交互打破平衡，观察动态变化过程。
+    *   **从观察到解释**：动画本身展示现象，同时配合动态图表（反应速率-时间图、浓度-时间图）和数据面板进行定量化解释，实现可视化与理论分析的结合。
+3.  **交互设计**：
+    *   **“先观察，后操作”模式**：动画初始自动运行，展示动态平衡。用户熟悉界面后，再进行交互。
+    *   **清晰的因果触发**：设置明确的控制面板（如“增加N₂”、“增大压强”、“升高温度”按钮），每次操作都对应一个清晰的宏观条件改变。
+    *   **即时反馈与对比**：条件改变后，粒子运动、速率曲线、浓度曲线和数据面板同步变化。提供“重置”和“对比”功能，方便比较不同条件下的结果。
+    *   **可控的节奏**：允许用户暂停、慢速播放动画，以便仔细观察关键瞬间（如速率刚变化时）。
+4.  **视觉呈现**：
+    *   **主场景**：一个模拟的“反应容器”视窗，粒子在其中做布朗运动，碰撞时可能发生反应（伴随特效）。
+    *   **分子设计**：
+        *   N₂：两个连在一起的蓝色小球。
+        *   H₂：两个连在一起的浅灰色小球。
+        *   NH₃：一个中心氮（蓝色）连接三个氢（浅灰色）的三角锥形结构。
+    *   **辅助信息面板**：
+        *   **动态曲线图**：实时绘制正逆反应速率随时间变化的曲线，以及各物质浓度/分子数随时间变化的曲线。
+        *   **数据仪表盘**：实时显示当前正逆反应速率值、各物质分子数。
+        *   **原理提示框**：在关键操作后，用简洁文字提示当前现象对应的勒夏特列原理。
+
+#### 配色方案选择
+*   **主色调**：采用深蓝色（`#1a237e`）或深灰色（`#263238`）作为背景和面板底色，营造科学、专注的实验室氛围，并能突出前景的彩色粒子。
+*   **分子配色**（遵循一定化学标识惯例，同时保证高对比度和辨识度）：
+    *   **氮气 (N₂)**：蓝色系。使用`#2196F3`（亮蓝）或 `#1565C0`（中蓝）。
+    *   **氢气 (H₂)**：浅中性色。使用`#B0BEC5`（浅灰蓝）或 `#90A4AE`（灰），避免与背景混淆。
+    *   **氨气 (NH₃)**：复合色。氮原子部分沿用蓝色（`#1565C0`），氢原子部分沿用浅灰色（`#B0BEC5`），通过连接线表明它是一个分子。
+*   **UI与数据可视化配色**：
+    *   **正反应速率/曲线**：绿色（`#4CAF50`），象征“进行”、“生成”。
+    *   **逆反应速率/曲线**：橙色（`#FF9800`），象征“分解”、“消耗”。
+    *   **控制按钮**：中性色（`#607D8B`）， hover状态为 `#455A64`。
+    *   **强调/提示**：使用醒目的 `#FF5252`（红色）或 `#FFC107`（琥珀色）用于重要提示或高亮。
+    *   **图表坐标轴/文字**：白色（`#FFFFFF`）或浅灰色（`#ECEFF1`）。
+
+#### 交互功能列表
+1.  **动画控制**：
+    *   开始 / 暂停 / 继续
+    *   重置（回到初始平衡状态）
+    *   速度调节滑块（慢速 - 常速 - 快速）
+2.  **条件改变控制面板**：
+    *   **浓度**：
+        *   按钮：“向容器中注入N₂”、“注入H₂”、“注入NH₃”
+        *   按钮：“移出部分N₂”、“移出部分H₂”、“移出部分NH₃”（通过点击分子实现）
+    *   **压强**（通过改变容器体积模拟）：
+        *   按钮：“增大压强”（缩小容器体积）
+        *   按钮：“减小压强”（扩大容器体积）
+        *   滑块：连续调节容器体积（可选高级功能）
+    *   **温度**：
+        *   按钮：“升高温度”
+        *   按钮：“降低温度”
+        *   温度计图标与数值显示
+    *   **催化剂**：按钮：“加入催化剂”（同等加快正逆反应速率，平衡不移动但更快达到）。
+3.  **可视化面板开关**：
+    *   显示/隐藏“粒子运动视图”。
+    *   显示/隐藏“反应速率-时间曲线图”。
+    *   显示/隐藏“物质浓度-时间曲线图”。
+    *   显示/隐藏“实时数据仪表盘”。
+4.  **提示与引导**：
+    *   **原理浮动提示**：当进行条件改变操作后，在画面合适位置出现一段简短的文字，解释当前现象如何体现了勒夏特列原理（如“增加反应物浓度，平衡向减少反应物的方向（正方向）移动”）。
+    *   **高亮显示**：在改变条件的瞬间，受影响的分子或速率曲线可以短暂高亮。
+    *   **分步引导模式**（可选）：为初学者设计一个引导教程，一步步带领用户操作并观察。
+
+### 2. HTML_CODE
+
+### 2. HTML_CODE
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>化学平衡移动微观动画 - 勒夏特列原理 (N₂ + 3H₂ ⇌ 2NH₃)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #334155;
+        }
+
+        h1 {
+            color: #60a5fa;
+            font-size: 2.4rem;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .simulation-panel {
+            flex: 3;
+            min-width: 300px;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid #475569;
+        }
+
+        .control-panel {
+            flex: 2;
+            min-width: 300px;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid #475569;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .panel-title {
+            color: #38bdf8;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #475569;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel-title i {
+            font-size: 1.2rem;
+        }
+
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            background: #0f172a;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid #475569;
+            margin-bottom: 15px;
+        }
+
+        #reactionCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+
+        .molecule-preview {
+            width: 60px;
+            height: 40px;
+            position: relative;
+        }
+
+        .control-section {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 12px;
+            padding: 18px;
+            border: 1px solid #475569;
+        }
+
+        .section-title {
+            color: #22d3ee;
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .control-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .control-btn:hover {
+            background: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .control-btn:active {
+            transform: translateY(0);
+        }
+
+        .control-btn.remove {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .control-btn.remove:hover {
+            background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+        }
+
+        .control-btn.temp {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .control-btn.temp:hover {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+        }
+
+        .control-btn.catalyst {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .control-btn.catalyst:hover {
+            background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+        }
+
+        .slider-container {
+            margin: 15px 0;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .slider {
+            width: 100%;
+            height: 8px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #475569;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .data-panel {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .data-item {
+            background: rgba(15, 23, 42, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid #475569;
+        }
+
+        .data-label {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+        }
+
+        .data-value {
+            color: #22d3ee;
+            font-size: 1.8rem;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+        }
+
+        .data-unit {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-left: 4px;
+        }
+
+        .animation-controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .anim-btn {
+            background: #475569;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 120px;
+            justify-content: center;
+        }
+
+        .anim-btn:hover {
+            background: #64748b;
+            transform: translateY(-2px);
+        }
+
+        .anim-btn.primary {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+        }
+
+        .anim-btn.primary:hover {
+            background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
+        }
+
+        .principle-display {
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 25px;
+            border-left: 5px solid #3b82f6;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .principle-title {
+            color: #60a5fa;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+
+        .principle-text {
+            color: #cbd5e1;
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+
+        .highlight {
+            color: #fbbf24;
+            font-weight: 600;
+        }
+
+        .reaction-equation {
+            text-align: center;
+            font-size: 1.8rem;
+            margin: 20px 0;
+            color: #cbd5e1;
+            font-weight: 600;
+        }
+
+        .reaction-equation .n2 {
+            color: #3b82f6;
+        }
+
+        .reaction-equation .h2 {
+            color: #94a3b8;
+        }
+
+        .reaction-equation .nh3 {
+            color: #22d3ee;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #475569;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 1100px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .data-panel {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .data-panel {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .button-group {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .canvas-container {
+                height: 400px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .button-group {
+                grid-template-columns: 1fr;
+            }
+            
+            .data-panel {
+                grid-template-columns: 1fr;
+            }
+            
+            .canvas-container {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>化学平衡移动微观动画</h1>
+            <div class="subtitle">勒夏特列原理可视化：N₂ + 3H₂ ⇌ 2NH₃ 反应</div>
+            <div class="reaction-equation">
+                <span class="n2">N₂</span> + <span class="h2">3H₂</span> ⇌ <span class="nh3">2NH₃</span> + 热量
+            </div>
+        </header>
+
+        <div class="main-content">
+            <div class="simulation-panel">
+                <div class="panel-title">
+                    <span>🔬 微观粒子模拟</span>
+                </div>
+                <div class="canvas-container">
+                    <canvas id="reactionCanvas"></canvas>
+                </div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="molecule-preview">
+                            <canvas id="n2Preview" width="60" height="40"></canvas>
+                        </div>
+                        <span>氮气 (N₂) - 反应物</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="molecule-preview">
+                            <canvas id="h2Preview" width="60" height="40"></canvas>
+                        </div>
+                        <span>氢气 (H₂) - 反应物</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="molecule-preview">
+                            <canvas id="nh3Preview" width="60" height="40"></canvas>
+                        </div>
+                        <span>氨气 (NH₃) - 生成物</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-panel">
+                <div class="control-section">
+                    <div class="section-title">⚙️ 动画控制</div>
+                    <div class="animation-controls">
+                        <button class="anim-btn" id="pauseBtn">
+                            <span>⏸️ 暂停</span>
+                        </button>
+                        <button class="anim-btn primary" id="resetBtn">
+                            <span>🔄 重置</span>
+                        </button>
+                        <button class="anim-btn" id="speedBtn">
+                            <span>🐢 慢速</span>
+                        </button>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>动画速度</span>
+                            <span id="speedValue">1.0x</span>
+                        </div>
+                        <input type="range" min="0.1" max="3" step="0.1" value="1" class="slider" id="speedSlider">
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <div class="section-title">🧪 浓度改变</div>
+                    <div class="button-group">
+                        <button class="control-btn" id="addN2">
+                            <span>+</span> 增加 N₂
+                        </button>
+                        <button class="control-btn" id="addH2">
+                            <span>+</span> 增加 H₂
+                        </button>
+                        <button class="control-btn" id="addNH3">
+                            <span>+</span> 增加 NH₃
+                        </button>
+                        <button class="control-btn remove" id="removeN2">
+                            <span>-</span> 减少 N₂
+                        </button>
+                        <button class="control-btn remove" id="removeH2">
+                            <span>-</span> 减少 H₂
+                        </button>
+                        <button class="control-btn remove" id="removeNH3">
+                            <span>-</span> 减少 NH₃
+                        </button>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <div class="section-title">📊 压强与温度</div>
+                    <div class="button-group">
+                        <button class="control-btn" id="increasePressure">
+                            <span>⬆️</span> 增大压强
+                        </button>
+                        <button class="control-btn remove" id="decreasePressure">
+                            <span>⬇️</span> 减小压强
+                        </button>
+                        <button class="control-btn temp" id="increaseTemp">
+                            <span>🔥</span> 升高温度
+                        </button>
+                        <button class="control-btn temp" id="decreaseTemp">
+                            <span>❄️</span> 降低温度
+                        </button>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>温度: <span id="tempValue">298</span> K</span>
+                            <span>压强: <span id="pressureValue">1.0</span> atm</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <div class="section-title">⚡ 催化剂</div>
+                    <div class="button-group">
+                        <button class="control-btn catalyst" id="addCatalyst">
+                            <span>✨</span> 加入催化剂
+                        </button>
+                        <button class="control-btn remove" id="removeCatalyst">
+                            <span>🚫</span> 移除催化剂
+                        </button>
+                    </div>
+                    <div style="margin-top: 10px; color: #94a3b8; font-size: 0.9rem;">
+                        催化剂状态: <span id="catalystStatus">未使用</span>
+                    </div>
+                </div>
+
+                <div class="data-panel">
+                    <div class="data-item">
+                        <div class="data-label">N₂ 分子数</div>
+                        <div class="data-value" id="n2Count">40</div>
+                        <span class="data-unit">个</span>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">H₂ 分子数</div>
+                        <div class="data-value" id="h2Count">120</div>
+                        <span class="data-unit">个</span>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">NH₃ 分子数</div>
+                        <div class="data-value" id="nh3Count">30</div>
+                        <span class="data-unit">个</span>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">正反应速率</div>
+                        <div class="data-value" id="forwardRate">12.5</div>
+                        <span class="data-unit">/s</span>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">逆反应速率</div>
+                        <div class="data-value" id="reverseRate">12.5</div>
+                        <span class="data-unit">/s</span>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">平衡状态</div>
+                        <div class="data-value" id="equilibriumStatus">是</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="principle-display">
+            <div class="principle-title">🧠 勒夏特列原理提示</div>
+            <div class="principle-text" id="principleText">
+                系统处于动态平衡状态。改变平衡条件（浓度、压强、温度）时，平衡会向着<span class="highlight">减弱这种改变</span>的方向移动。
+                <br><br>
+                当前：<span class="highlight">正逆反应速率相等</span>，各物质浓度保持恒定。
+            </div>
+        </div>
+
+        <footer>
+            <p>化学平衡移动教学动画 | 勒夏特列原理微观可视化 | 设计：教育技术专家</p>
+            <p>提示：点击上方按钮改变条件，观察平衡移动和粒子变化</p>
+        </footer>
+    </div>
+
+    <script>
+        // 获取Canvas元素和上下文
+        const canvas = document.getElementById('reactionCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 预览Canvas
+        const n2PreviewCtx = document.getElementById('n2Preview').getContext('2d');
+        const h2PreviewCtx = document.getElementById('h2Preview').getContext('2d');
+        const nh3PreviewCtx = document.getElementById('nh3Preview').getContext('2d');
+        
+        // 设置Canvas尺寸
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+        }
+        
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        
+        // 颜色定义
+        const COLORS = {
+            N2: '#3b82f6',      // 蓝色
+            H2: '#94a3b8',      // 浅灰色
+            NH3_N: '#22d3ee',   // 青色（氮）
+            NH3_H: '#cbd5e1',   // 浅灰色（氢）
+            BACKGROUND: '#0f172a',
+            CONTAINER: '#1e293b',
+            BOND: '#475569',
+            FORWARD: '#10b981', // 绿色 - 正反应
+            REVERSE: '#f59e0b', // 橙色 - 逆反应
+            HIGHLIGHT: '#fbbf24' // 高亮黄色
+        };
+        
+        // 绘制分子预览
+        function drawMoleculePreviews() {
+            // 绘制N2预览
+            n2PreviewCtx.clearRect(0, 0, 60, 40);
+            n2PreviewCtx.fillStyle = COLORS.N2;
+            n2PreviewCtx.beginPath();
+            n2PreviewCtx.arc(20, 20, 8, 0, Math.PI * 2);
+            n2PreviewCtx.fill();
+            n2PreviewCtx.beginPath();
+            n2PreviewCtx.arc(40, 20, 8, 0, Math.PI * 2);
+            n2PreviewCtx.fill();
+            n2PreviewCtx.strokeStyle = COLORS.BOND;
+            n2PreviewCtx.lineWidth = 2;
+            n2PreviewCtx.beginPath();
+            n2PreviewCtx.moveTo(28, 20);
+            n2PreviewCtx.lineTo(32, 20);
+            n2PreviewCtx.stroke();
+            
+            // 绘制H2预览
+            h2PreviewCtx.clearRect(0, 0, 60, 40);
+            h2PreviewCtx.fillStyle = COLORS.H2;
+            h2PreviewCtx.beginPath();
+            h2PreviewCtx.arc(20, 20, 6, 0, Math.PI * 2);
+            h2PreviewCtx.fill();
+            h2PreviewCtx.beginPath();
+            h2PreviewCtx.arc(40, 20, 6, 0, Math.PI * 2);
+            h2PreviewCtx.fill();
+            h2PreviewCtx.strokeStyle = COLORS.BOND;
+            h2PreviewCtx.lineWidth = 2;
+            h2PreviewCtx.beginPath();
+            h2PreviewCtx.moveTo(26, 20);
+            h2PreviewCtx.lineTo(34, 20);
+            h2PreviewCtx.stroke();
+            
+            // 绘制NH3预览
+            nh3PreviewCtx.clearRect(0, 0, 60, 40);
+            const centerX = 30, centerY = 20;
+            const radius = 10;
+            
+            // 绘制氮原子（中心）
+            nh3PreviewCtx.fillStyle = COLORS.NH3_N;
+            nh3PreviewCtx.beginPath();
+            nh3PreviewCtx.arc(centerX, centerY, 8, 0, Math.PI * 2);
+            nh3PreviewCtx.fill();
+            
+            // 绘制三个氢原子
+            nh3PreviewCtx.fillStyle = COLORS.NH3_H;
+            for (let i = 0; i < 3; i++) {
+                const angle = (i * 120 - 90) * Math.PI / 180;
+                const hX = centerX + radius * Math.cos(angle);
+                const hY = centerY + radius * Math.sin(angle);
+                
+                nh3PreviewCtx.beginPath();
+                nh3PreviewCtx.arc(hX, hY, 5, 0, Math.PI * 2);
+                nh3PreviewCtx.fill();
+                
+                // 绘制键
+                nh3PreviewCtx.strokeStyle = COLORS.BOND;
+                nh3PreviewCtx.lineWidth = 2;
+                nh3PreviewCtx.beginPath();
+                nh3PreviewCtx.moveTo(centerX, centerY);
+                nh3PreviewCtx.lineTo(hX, hY);
+                nh3PreviewCtx.stroke();
+            }
+        }
+        
+        // 分子类
+        class Molecule {
+            constructor(type, x, y) {
+                this.type = type; // 'N2', 'H2', 'NH3'
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 2;
+                this.vy = (Math.random() - 0.5) * 2;
+                this.radius = type === 'NH3' ? 12 : type === 'N2' ? 10 : 8;
+                this.highlight = 0;
+                this.rotation = Math.random() * Math.PI * 2;
+                this.rotationSpeed = (Math.random() - 0.5) * 0.05;
+            }
+            
+            update(containerWidth, containerHeight) {
+                // 更新位置
+                this.x += this.vx * simulationSpeed;
+                this.y += this.vy * simulationSpeed;
+                
+                // 边界碰撞
+                if (this.x < this.radius || this.x > containerWidth - this.radius) {
+                    this.vx *= -0.95;
+                    this.x = Math.max(this.radius, Math.min(containerWidth - this.radius, this.x));
+                }
+                if (this.y < this.radius || this.y > containerHeight - this.radius) {
+                    this.vy *= -0.95;
+                    this.y = Math.max(this.radius, Math.min(containerHeight - this.radius, this.y));
+                }
+                
+                // 更新旋转
+                this.rotation += this.rotationSpeed * simulationSpeed;
+                
+                // 更新高亮效果
+                if (this.highlight > 0) {
+                    this.highlight -= 0.02 * simulationSpeed;
+                }
+                
+                // 稍微减慢速度（模拟阻力）
+                this.vx *= 0.999;
+                this.vy *= 0.999;
+            }
+            
+            draw(ctx) {
+                // 绘制高亮效果
+                if (this.highlight > 0) {
+                    ctx.shadowColor = COLORS.HIGHLIGHT;
+                    ctx.shadowBlur = 15 * this.highlight;
+                }
+                
+                if (this.type === 'N2') {
+                    this.drawN2(ctx);
+                } else if (this.type === 'H2') {
+                    this.drawH2(ctx);
+                } else if (this.type === 'NH3') {
+                    this.drawNH3(ctx);
+                }
+                
+                // 重置阴影
+                ctx.shadowColor = 'transparent';
+                ctx.shadowBlur = 0;
+            }
+            
+            drawN2(ctx) {
+                const dx = Math.cos(this.rotation) * 8;
+                const dy = Math.sin(this.rotation) * 8;
+                
+                // 绘制第一个氮原子
+                ctx.fillStyle = COLORS.N2;
+                ctx.beginPath();
+                ctx.arc(this.x - dx, this.y - dy, 8, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 绘制第二个氮原子
+                ctx.beginPath();
+                ctx.arc(this.x + dx, this.y + dy, 8, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 绘制键
+                ctx.strokeStyle = COLORS.BOND;
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(this.x - dx * 0.7, this.y - dy * 0.7);
+                ctx.lineTo(this.x + dx * 0.7, this.y + dy * 0.7);
+                ctx.stroke();
+            }
+            
+            drawH2(ctx) {
+                const dx = Math.cos(this.rotation) * 6;
+                const dy = Math.sin(this.rotation) * 6;
+                
+                // 绘制第一个氢原子
+                ctx.fillStyle = COLORS.H2;
+                ctx.beginPath();
+                ctx.arc(this.x - dx, this.y - dy, 6, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 绘制第二个氢原子
+                ctx.beginPath();
+                ctx.arc(this.x + dx, this.y + dy, 6, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 绘制键
+                ctx.strokeStyle = COLORS.BOND;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(this.x - dx * 0.7, this.y - dy * 0.7);
+                ctx.lineTo(this.x + dx * 0.7, this.y + dy * 0.7);
+                ctx.stroke();
+            }
+            
+            drawNH3(ctx) {
+                // 绘制氮原子（中心）
+                ctx.fillStyle = COLORS.NH3_N;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 10, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 绘制三个氢原子
+                ctx.fillStyle = COLORS.NH3_H;
+                for (let i = 0; i < 3; i++) {
+                    const angle = this.rotation + (i * 120 - 90) * Math.PI / 180;
+                    const hX = this.x + 15 * Math.cos(angle);
+                    const hY = this.y + 15 * Math.sin(angle);
+                    
+                    ctx.beginPath();
+                    ctx.arc(hX, hY, 6, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // 绘制键
+                    ctx.strokeStyle = COLORS.BOND;
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(this.x, this.y);
+                    ctx.lineTo(hX, hY);
+                    ctx.stroke();
+                }
+            }
+            
+            distanceTo(other) {
+                const dx = this.x - other.x;
+                const dy = this.y - other.y;
+                return Math.sqrt(dx * dx + dy * dy);
+            }
+        }
+        
+        // 反应系统类
+        class ReactionSystem {
+            constructor() {
+                this.molecules = [];
+                this.forwardReactions = 0;
+                this.reverseReactions = 0;
+                this.lastReactionTime = 0;
+                this.reactionCooldown = 0;
+                this.catalystActive = false;
+                this.temperature = 298; // K
+                this.pressure = 1.0; // atm
+                this.containerScale = 1.0;
+                this.initializeSystem();
+            }
+            
+            initializeSystem() {
+                this.molecules = [];
+                const width = canvas.width;
+                const height = canvas.height;
+                
+                // 初始分子数量（接近平衡）
+                const initialN2 = 40;
+                const initialH2 = 120;
+                const initialNH3 = 30;
+                
+                // 添加N2分子
+                for (let i = 0; i < initialN2; i++) {
+                    this.molecules.push(new Molecule('N2', 
+                        Math.random() * width * 0.9 + width * 0.05,
+                        Math.random() * height * 0.9 + height * 0.05
+                    ));
+                }
+                
+                // 添加H2分子
+                for (let i = 0; i < initialH2; i++) {
+                    this.molecules.push(new Molecule('H2',
+                        Math.random() * width * 0.9 + width * 0.05,
+                        Math.random() * height * 0.9 + height * 0.05
+                    ));
+                }
+                
+                // 添加NH3分子
+                for (let i = 0; i < initialNH3; i++) {
+                    this.molecules.push(new Molecule('NH3',
+                        Math.random() * width * 0.9 + width * 0.05,
+                        Math.random() * height * 0.9 + height * 0.05
+                    ));
+                }
+                
+                this.updateCounts();
+            }
+            
+            updateCounts() {
+                this.n2Count = this.molecules.filter(m => m.type === 'N2').length;
+                this.h2Count = this.molecules.filter(m => m.type === 'H2').length;
+                this.nh3Count = this.molecules.filter(m => m.type === 'NH3').length;
+            }
+            
+            addMolecule(type, count = 1) {
+                const width = canvas.width;
+                const height = canvas.height;
+                
+                for (let i = 0; i < count; i++) {
+                    const molecule = new Molecule(type,
+                        Math.random() * width * 0.9 + width * 0.05,
+                        Math.random() * height * 0.9 + height * 0.05
+                    );
+                    
+                    // 高亮新添加的分子
+                    molecule.highlight = 1.0;
+                    this.molecules.push(molecule);
+                }
+                
+                this.updateCounts();
+                this.updatePrincipleText(`增加了 ${count} 个 ${this.getMoleculeName(type)} 分子`);
+            }
+            
+            removeMolecule(type, count = 1) {
+                const moleculesOfType = this.molecules.filter(m => m.type === type);
+                const toRemove = Math.min(count, moleculesOfType.length);
+                
+                for (let i = 0; i < toRemove; i++) {
+                    const index = this.molecules.indexOf(moleculesOfType[i]);
+                    if (index > -1) {
+                        this.molecules.splice(index, 1);
+                    }
+                }
+                
+                this.updateCounts();
+                this.updatePrincipleText(`减少了 ${toRemove} 个 ${this.getMoleculeName(type)} 分子`);
+            }
+            
+            getMoleculeName(type) {
+                const names = {
+                    'N2': '氮气(N₂)',
+                    'H2': '氢气(H₂)',
+                    'NH3': '氨气(NH₃)'
+                };
+                return names[type] || type;
+            }
+            
+            updatePrincipleText(text) {
+                const principleText = document.getElementById('principleText');
+                principleText.innerHTML = `<span class="highlight">${text}</span>。平衡将向减弱这种改变的方向移动。<br><br>观察粒子变化和反应速率变化。`;
+                
+                // 3秒后恢复默认文本
+                clearTimeout(this.principleTimeout);
+                this.principleTimeout = setTimeout(() => {
+                    principleText.innerHTML = `系统处于动态平衡状态。改变平衡条件（浓度、压强、温度）时，平衡会向着<span class="highlight">减弱这种改变</span>的方向移动。<br><br>当前：<span class="highlight">正逆反应速率相等</span>，各物质浓度保持恒定。`;
+                }, 3000);
+            }
+            
+            update() {
+                const width = canvas.width;
+                const height = canvas.height;
+                
+                // 更新所有分子
+                for (const molecule of this.molecules) {
+                    molecule.update(width, height);
+                }
+                
+                // 检查反应
+                this.checkReactions();
+                
+                // 更新反应速率显示
+                this.updateRateDisplays();
+                
+                // 更新数据面板
+                this.updateDataPanel();
+            }
+            
+            checkReactions() {
+                const now = Date.now();
+                if (now - this.lastReactionTime < this.reactionCooldown) return;
+                
+                // 计算反应概率（基于浓度、温度、催化剂）
+                let forwardProb = 0.001 * (this.n2Count / 40) * Math.pow(this.h2Count / 120, 3) * 
+                                 Math.exp(-(10000 / this.temperature)) * (this.catalystActive ? 5 : 1);
+                let reverseProb = 0.001 * Math.pow(this.nh3Count / 30, 2) * 
+                                 Math.exp(-(8000 / this.temperature)) * (this.catalystActive ? 5 : 1);
+                
+                // 调整压强影响（增大压强有利于正向反应）
+                forwardProb *= Math.pow(this.pressure, 2); // 因为正向反应体积减小
+                
+                // 随机决定是否发生反应
+                if (Math.random() < forwardProb && this.n2Count >= 1 && this.h2Count >= 3) {
+                   
+<!--检测到代码截断，自动续写中...-->
+this.performForwardReaction();
+                    this.forwardReactions++;
+                    this.lastReactionTime = now;
+                    this.reactionCooldown = 100; // 反应冷却时间
+                }
+                
+                if (Math.random() < reverseProb && this.nh3Count >= 2) {
+                    this.performReverseReaction();
+                    this.reverseReactions++;
+                    this.lastReactionTime = now;
+                    this.reactionCooldown = 100;
+                }
+            }
+            
+            performForwardReaction() {
+                // 找到1个N2和3个H2进行反应
+                const n2Molecules = this.molecules.filter(m => m.type === 'N2');
+                const h2Molecules = this.molecules.filter(m => m.type === 'H2');
+                
+                if (n2Molecules.length >= 1 && h2Molecules.length >= 3) {
+                    // 移除反应物
+                    const n2Index = this.molecules.indexOf(n2Molecules[0]);
+                    const h2Indices = [
+                        this.molecules.indexOf(h2Molecules[0]),
+                        this.molecules.indexOf(h2Molecules[1]),
+                        this.molecules.indexOf(h2Molecules[2])
+                    ];
+                    
+                    // 计算生成NH3的位置（取反应物的平均位置）
+                    const avgX = (n2Molecules[0].x + h2Molecules[0].x + h2Molecules[1].x + h2Molecules[2].x) / 4;
+                    const avgY = (n2Molecules[0].y + h2Molecules[0].y + h2Molecules[1].y + h2Molecules[2].y) / 4;
+                    
+                    // 移除反应物
+                    this.molecules.splice(n2Index, 1);
+                    // 从后往前移除，避免索引变化
+                    h2Indices.sort((a, b) => b - a).forEach(index => {
+                        this.molecules.splice(index, 1);
+                    });
+                    
+                    // 生成2个NH3分子
+                    for (let i = 0; i < 2; i++) {
+                        const nh3 = new Molecule('NH3', 
+                            avgX + (Math.random() - 0.5) * 20,
+                            avgY + (Math.random() - 0.5) * 20
+                        );
+                        nh3.highlight = 1.0; // 高亮新生成的分子
+                        this.molecules.push(nh3);
+                    }
+                    
+                    this.updateCounts();
+                }
+            }
+            
+            performReverseReaction() {
+                // 找到2个NH3进行分解
+                const nh3Molecules = this.molecules.filter(m => m.type === 'NH3');
+                
+                if (nh3Molecules.length >= 2) {
+                    // 移除2个NH3
+                    const indices = [
+                        this.molecules.indexOf(nh3Molecules[0]),
+                        this.molecules.indexOf(nh3Molecules[1])
+                    ];
+                    
+                    // 计算生成物的位置
+                    const avgX = (nh3Molecules[0].x + nh3Molecules[1].x) / 2;
+                    const avgY = (nh3Molecules[0].y + nh3Molecules[1].y) / 2;
+                    
+                    // 从后往前移除
+                    indices.sort((a, b) => b - a).forEach(index => {
+                        this.molecules.splice(index, 1);
+                    });
+                    
+                    // 生成1个N2和3个H2
+                    const n2 = new Molecule('N2', 
+                        avgX + (Math.random() - 0.5) * 20,
+                        avgY + (Math.random() - 0.5) * 20
+                    );
+                    n2.highlight = 1.0;
+                    this.molecules.push(n2);
+                    
+                    for (let i = 0; i < 3; i++) {
+                        const h2 = new Molecule('H2',
+                            avgX + (Math.random() - 0.5) * 30,
+                            avgY + (Math.random() - 0.5) * 30
+                        );
+                        h2.highlight = 1.0;
+                        this.molecules.push(h2);
+                    }
+                    
+                    this.updateCounts();
+                }
+            }
+            
+            updateRateDisplays() {
+                // 计算反应速率（基于最近的反应次数）
+                const forwardRate = this.forwardReactions * 10;
+                const reverseRate = this.reverseReactions * 10;
+                
+                // 更新显示
+                document.getElementById('forwardRate').textContent = forwardRate.toFixed(1);
+                document.getElementById('reverseRate').textContent = reverseRate.toFixed(1);
+                
+                // 每秒钟重置计数
+                if (Date.now() - this.lastRateReset > 1000) {
+                    this.forwardReactions = 0;
+                    this.reverseReactions = 0;
+                    this.lastRateReset = Date.now();
+                }
+            }
+            
+            updateDataPanel() {
+                document.getElementById('n2Count').textContent = this.n2Count;
+                document.getElementById('h2Count').textContent = this.h2Count;
+                document.getElementById('nh3Count').textContent = this.nh3Count;
+                
+                // 更新平衡状态
+                const forwardRate = parseFloat(document.getElementById('forwardRate').textContent);
+                const reverseRate = parseFloat(document.getElementById('reverseRate').textContent);
+                const isBalanced = Math.abs(forwardRate - reverseRate) < 0.5;
+                
+                document.getElementById('equilibriumStatus').textContent = isBalanced ? '是' : '否';
+                document.getElementById('equilibriumStatus').style.color = isBalanced ? '#10b981' : '#f59e0b';
+            }
+            
+            draw(ctx) {
+                // 绘制容器背景
+                ctx.fillStyle = COLORS.BACKGROUND;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // 绘制容器边框
+                ctx.strokeStyle = COLORS.CONTAINER;
+                ctx.lineWidth = 3;
+                ctx.strokeRect(5, 5, canvas.width - 10, canvas.height - 10);
+                
+                // 绘制所有分子
+                for (const molecule of this.molecules) {
+                    molecule.draw(ctx);
+                }
+                
+                // 绘制反应速率指示器
+                this.drawRateIndicator(ctx);
+            }
+            
+            drawRateIndicator(ctx) {
+                const width = 200;
+                const height = 20;
+                const x = canvas.width - width - 20;
+                const y = 20;
+                
+                // 背景
+                ctx.fillStyle = 'rgba(30, 41, 59, 0.8)';
+                ctx.fillRect(x, y, width, height);
+                
+                // 正反应速率条
+                const forwardRate = parseFloat(document.getElementById('forwardRate').textContent);
+                const reverseRate = parseFloat(document.getElementById('reverseRate').textContent);
+                const maxRate = Math.max(forwardRate, reverseRate, 20);
+                
+                const forwardWidth = (forwardRate / maxRate) * (width - 4);
+                const reverseWidth = (reverseRate / maxRate) * (width - 4);
+                
+                // 正反应（绿色）
+                ctx.fillStyle = COLORS.FORWARD;
+                ctx.fillRect(x + 2, y + 2, forwardWidth, height / 2 - 3);
+                
+                // 逆反应（橙色）
+                ctx.fillStyle = COLORS.REVERSE;
+                ctx.fillRect(x + 2, y + height / 2 + 1, reverseWidth, height / 2 - 3);
+                
+                // 标签
+                ctx.fillStyle = '#e2e8f0';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'left';
+                ctx.fillText('正反应', x - 50, y + height / 4 + 3);
+                ctx.fillText('逆反应', x - 50, y + 3 * height / 4 + 3);
+            }
+            
+            changePressure(increase) {
+                if (increase) {
+                    this.pressure *= 1.5;
+                    this.containerScale *= 0.8; // 缩小容器模拟增大压强
+                    this.updatePrincipleText('增大了压强（缩小容器体积）');
+                } else {
+                    this.pressure /= 1.5;
+                    this.containerScale *= 1.25; // 扩大容器模拟减小压强
+                    this.updatePrincipleText('减小了压强（扩大容器体积）');
+                }
+                
+                this.pressure = Math.max(0.1, Math.min(10, this.pressure));
+                this.containerScale = Math.max(0.3, Math.min(2, this.containerScale));
+                
+                document.getElementById('pressureValue').textContent = this.pressure.toFixed(1);
+            }
+            
+            changeTemperature(increase) {
+                if (increase) {
+                    this.temperature += 50;
+                    this.updatePrincipleText('升高了温度（吸热反应逆向移动）');
+                } else {
+                    this.temperature -= 50;
+                    this.updatePrincipleText('降低了温度（放热反应正向移动）');
+                }
+                
+                this.temperature = Math.max(200, Math.min(500, this.temperature));
+                document.getElementById('tempValue').textContent = this.temperature;
+            }
+            
+            toggleCatalyst(active) {
+                this.catalystActive = active;
+                document.getElementById('catalystStatus').textContent = active ? '已激活' : '未使用';
+                document.getElementById('catalystStatus').style.color = active ? '#10b981' : '#94a3b8';
+                
+                this.updatePrincipleText(active ? 
+                    '加入了催化剂（同等加快正逆反应速率，平衡不移动）' : 
+                    '移除了催化剂');
+            }
+        }
+        
+        // 全局变量
+        let reactionSystem = new ReactionSystem();
+        let animationId = null;
+        let isPaused = false;
+        let simulationSpeed = 1.0;
+        let lastRateReset = Date.now();
+        
+        // 初始化
+        function init() {
+            drawMoleculePreviews();
+            reactionSystem.lastRateReset = Date.now();
+            updateAnimation();
+            
+            // 设置初始显示
+            document.getElementById('tempValue').textContent = reactionSystem.temperature;
+            document.getElementById('pressureValue').textContent = reactionSystem.pressure.toFixed(1);
+        }
+        
+        // 动画循环
+        function updateAnimation() {
+            if (!isPaused) {
+                reactionSystem.update();
+                reactionSystem.draw(ctx);
+            }
+            
+            animationId = requestAnimationFrame(updateAnimation);
+        }
+        
+        // 事件监听器
+        document.getElementById('pauseBtn').addEventListener('click', function() {
+            isPaused = !isPaused;
+            this.innerHTML = isPaused ? '<span>▶️ 继续</span>' : '<span>⏸️ 暂停</span>';
+        });
+        
+        document.getElementById('resetBtn').addEventListener('click', function() {
+            reactionSystem = new ReactionSystem();
+            reactionSystem.lastRateReset = Date.now();
+            isPaused = false;
+            document.getElementById('pauseBtn').innerHTML = '<span>⏸️ 暂停</span>';
+            simulationSpeed = 1.0;
+            document.getElementById('speedSlider').value = 1.0;
+            document.getElementById('speedValue').textContent = '1.0x';
+            document.getElementById('speedBtn').innerHTML = '<span>🐢 慢速</span>';
+            document.getElementById('catalystStatus').textContent = '未使用';
+            document.getElementById('catalystStatus').style.color = '#94a3b8';
+            
+            document.getElementById('tempValue').textContent = reactionSystem.temperature;
+            document.getElementById('pressureValue').textContent = reactionSystem.pressure.toFixed(1);
+            
+            reactionSystem.updatePrincipleText('系统已重置到初始平衡状态');
+        });
+        
+        document.getElementById('speedBtn').addEventListener('click', function() {
+            if (simulationSpeed === 1.0) {
+                simulationSpeed = 0.3;
+                this.innerHTML = '<span>🐌 极慢</span>';
+            } else if (simulationSpeed === 0.3) {
+                simulationSpeed = 2.0;
+                this.innerHTML = '<span>🐇 快速</span>';
+            } else {
+                simulationSpeed = 1.0;
+                this.innerHTML = '<span>🐢 慢速</span>';
+            }
+            document.getElementById('speedSlider').value = simulationSpeed;
+            document.getElementById('speedValue').textContent = simulationSpeed.toFixed(1) + 'x';
+        });
+        
+        document.getElementById('speedSlider').addEventListener('input', function() {
+            simulationSpeed = parseFloat(this.value);
+            document.getElementById('speedValue').textContent = simulationSpeed.toFixed(1) + 'x';
+            
+            if (simulationSpeed < 0.5) {
+                document.getElementById('speedBtn').innerHTML = '<span>🐌 极慢</span>';
+            } else if (simulationSpeed > 1.5) {
+                document.getElementById('speedBtn').innerHTML = '<span>🐇 快速</span>';
+            } else {
+                document.getElementById('speedBtn').innerHTML = '<span>🐢 慢速</span>';
+            }
+        });
+        
+        // 浓度控制
+        document.getElementById('addN2').addEventListener('click', () => reactionSystem.addMolecule('N2', 10));
+        document.getElementById('addH2').addEventListener('click', () => reactionSystem.addMolecule('H2', 30));
+        document.getElementById('addNH3').addEventListener('click', () => reactionSystem.addMolecule('NH3', 10));
+        document.getElementById('removeN2').addEventListener('click', () => reactionSystem.removeMolecule('N2', 10));
+        document.getElementById('removeH2').addEventListener('click', () => reactionSystem.removeMolecule('H2', 30));
+        document.getElementById('removeNH3').addEventListener('click', () => reactionSystem.removeMolecule('NH3', 10));
+        
+        // 压强和温度控制
+        document.getElementById('increasePressure').addEventListener('click', () => reactionSystem.changePressure(true));
+        document.getElementById('decreasePressure').addEventListener('click', () => reactionSystem.changePressure(false));
+        document.getElementById('increaseTemp').addEventListener('click', () => reactionSystem.changeTemperature(true));
+        document.getElementById('decreaseTemp').addEventListener('click', () => reactionSystem.changeTemperature(false));
+        
+        // 催化剂控制
+        document.getElementById('addCatalyst').addEventListener('click', () => reactionSystem.toggleCatalyst(true));
+        document.getElementById('removeCatalyst').addEventListener('click', () => reactionSystem.toggleCatalyst(false));
+        
+        // 页面加载时初始化
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
+
+### 3. 过程输出
+
+### 3. 使用指南
+
+## 化学平衡移动交互式教学动画使用指南
+
+欢迎使用“化学平衡移动微观动画”！本工具旨在通过直观的动态可视化，帮助您深入理解勒夏特列原理的微观本质。无论您是学生、教师还是化学爱好者，都能通过交互操作，亲眼见证平衡移动的奇妙过程。
+
+---
+
+### 🎯 核心教学目标
+
+通过本动画，您将能够：
+1. **直观观察**合成氨反应（N₂ + 3H₂ ⇌ 2NH₃）中分子的随机运动和碰撞
+2. **理解动态平衡**的本质——正逆反应持续进行但宏观浓度不变
+3. **建立完整认知链**：宏观条件改变 → 微观速率变化 → 平衡移动方向
+4. **从速率竞争角度**内化勒夏特列原理，超越机械记忆
+
+---
+
+### 🎮 主要功能详解
+
+#### 1. **动画控制区**（左上控制面板）
+- **⏸️ 暂停/继续**：随时冻结画面，仔细观察分子状态
+- **🔄 重置**：一键恢复到初始平衡状态
+- **🐢 速度调节**：
+  - 滑块：精细控制动画速度（0.1x - 3.0x）
+  - 快捷按钮：在“极慢(0.3x)”、“慢速(1.0x)”、“快速(2.0x)”间切换
+  - **教学提示**：分析反应瞬间时建议使用慢速，观察长期趋势时可用快速
+
+#### 2. **浓度改变实验区**
+- **增加反应物/生成物**（+按钮）：
+  - 点击“增加N₂”或“增加H₂”立即向容器注入10个相应分子
+  - 点击“增加NH₃”注入10个氨分子
+  - **观察重点**：新分子以高亮黄色显示，注意正逆反应速率的变化顺序
+
+- **减少物质**（-按钮）：
+  - 从容器中移除相应分子
+  - **关键现象**：移除反应物会导致正反应速率立即下降
+
+#### 3. **压强与温度实验区**
+- **压强改变**：
+  - “增大压强”模拟缩小容器体积（分子更密集）
+  - “减小压强”模拟扩大容器体积
+  - **设计特色**：容器边框会相应缩放，直观展示体积变化
+
+- **温度改变**：
+  - 每点击一次改变50K（范围200K-500K）
+  - **热力学提示**：合成氨是放热反应（ΔH < 0），升高温度有利于逆反应
+
+#### 4. **催化剂实验区**
+- **加入催化剂**：同等倍数加快正逆反应速率
+- **核心观察**：平衡位置不变，但**更快达到平衡**
+- 催化剂状态实时显示，便于对比
+
+---
+
+### 📊 数据监控面板
+
+#### 实时数据仪表盘
+| 指标 | 显示内容 | 教学意义 |
+|------|----------|----------|
+| **分子计数** | N₂、H₂、NH₃的实时数量 | 直观展示各物质浓度变化 |
+| **反应速率** | 正反应(绿色)、逆反应(橙色)速率值 | 揭示平衡移动的动力学原因 |
+| **平衡状态** | “是/否”及颜色标识 | 判断系统是否处于平衡态 |
+
+#### 速率指示器（右上角）
+- 双色条形图实时显示正逆反应速率相对大小
+- **绿色条**：正反应速率（N₂+3H₂→2NH₃）
+- **橙色条**：逆反应速率（2NH₃→N₂+3H₂）
+- **平衡判据**：两色条长度相近时系统处于平衡
+
+---
+
+### 🎨 视觉编码系统
+
+#### 分子设计（遵循化学惯例）
+| 分子 | 颜色 | 形状 | 大小 |
+|------|------|------|------|
+| **N₂** | 蓝色 (#3b82f6) | 双原子，有化学键 | 中等 |
+| **H₂** | 浅灰色 (#94a3b8) | 双原子，键较短 | 较小 |
+| **NH₃** | 氮(青色)、氢(浅灰) | 三角锥形结构 | 较大 |
+
+#### 交互反馈设计
+1. **高亮效果**：新添加/生成的分子会闪烁黄色光晕
+2. **反应特效**：发生反应时分子位置会基于质心计算
+3. **原理提示框**：每次操作后显示对应的勒夏特列原理表述
+4. **容器缩放**：改变压强时容器边框动态变化
+
+---
+
+### 🧪 推荐教学流程
+
+#### 第一阶段：观察与发现（5分钟）
+1. 点击“重置”确保初始状态
+2. 观察平衡状态下：
+   - 分子的无规则运动（布朗运动）
+   - 正逆反应速率基本相等（看速率条和数据）
+   - 各物质分子数基本稳定
+
+#### 第二阶段：浓度实验（10分钟）
+**实验1：增加反应物浓度**
+1. 点击“增加N₂”（加入10个N₂分子）
+2. **立即观察**：
+   - 正反应速率瞬间增大（绿色条变长）
+   - 逆反应速率暂时不变
+   - NH₃分子数逐渐增加
+3. **等待新平衡**：观察直到速率再次相等
+
+**实验2：增加生成物浓度**
+1. 重置系统
+2. 点击“增加NH₃”
+3. 注意观察：**逆反应速率首先增大**
+
+#### 第三阶段：压强与温度（10分钟）
+**压强实验对比**
+1. 重置后点击“增大压强”
+2. 观察：分子更密集 → 碰撞更频繁 → **正向反应优势**（体积减小方向）
+3. 与“减小压强”对比实验
+
+**温度实验（理解反应热效应）**
+1. 记录初始NH₃数量
+2. 点击“升高温度”2次（到398K）
+3. 观察：NH₃数量**减少**（放热反应逆向移动）
+4. 点击“降低温度”恢复
+
+#### 第四阶段：催化剂探究（5分钟）
+1. 重置系统
+2. 点击“加入催化剂”
+3. 观察：正逆反应速率**同步增加**
+4. 进行浓度改变实验，验证平衡位置不变
+
+---
+
+### 💡 教学要点与常见问题
+
+#### 关键教学点
+1. **速率变化的顺序性**：条件改变时，**直接受影响的反应速率先变化**
+   - 增加N₂ → 正反应速率立即增加
+   - 增加NH₃ → 逆反应速率立即增加
+
+2. **平衡移动的“滞后性”**：速率变化导致浓度变化，浓度变化又影响另一速率
+   - 形成反馈调节，最终达到新平衡
+
+3. **勒夏特列原理的微观解释**：
+   > “减弱这种改变” = 系统通过速率调整来抵消外界扰动
+
+#### 常见学生疑问解答
+**Q：为什么增大压强平衡正向移动？**
+A：观察分子数变化：正向反应1+3=4个分子 → 2个分子，体积减小。增大压强时，系统倾向于向分子数少的方向移动，以“减弱”压强的增加。
+
+**Q：催化剂为什么不改变平衡？**
+A：催化剂同等降低正逆反应的活化能，速率增加倍数相同。就像同时加快进出水速度，最终水位（平衡浓度）不变。
+
+**Q：如何判断是否达到平衡？**
+A：两个标准：
+1. 各物质分子数不再明显变化
+2. 正逆反应速率基本相等（看数据面板和速率条）
+
+---
+
+### 🚀 高级使用建议
+
+#### 对于教师：
+1. **课堂演示模式**：
+   - 使用投影仪全屏展示
+   - 关键操作前提醒学生观察重点
+   - 配合“暂停”功能进行讲解
+
+2. **探究式学习设计**：
+   ```markdown
+   探究任务：验证勒夏特列原理
+   1. 预测：升高温度，平衡向____方向移动
+   2. 实验：操作并记录NH₃分子数变化
+   3. 解释：为什么？（从反应热角度）
+   ```
+
+3. **数据记录与分析**：
+   - 让学生记录每次操作后的分子数变化
+   - 绘制“条件-速率-平衡位置”关系图
+
+#### 对于学生：
+1. **自主学习流程**：
+   - 先完整观看一遍所有功能演示
+   - 针对每个原理进行验证性实验
+   - 尝试“反直觉”操作（如增加NH₃后会发生什么？）
+
+2. **考前复习**：
+   - 用动画快速回顾各种条件改变的影响
+   - 特别注意温度影响的特殊性（与浓度、压强不同）
+
+#### 技术优化提示：
+1. **性能调整**：如果动画卡顿，可减少分子数（通过移除操作）
+2. **浏览器建议**：使用Chrome或Edge获得最佳性能
+3. **移动端适配**：支持平板设备，建议横屏使用
+
+---
+
+### 📚 教学资源整合建议
+
+本动画可与以下教学内容结合：
+1. **课前预习**：动态平衡的微观图景建立
+2. **课中探究**：勒夏特列原理的实验验证
+3. **课后巩固**：平衡移动的定量分析练习
+4. **习题讲解**：可视化解释经典平衡题目
+
+**推荐搭配实验**：
+- 真实实验：Fe₂O₃催化合成氨演示
+- 虚拟实验：化学平衡常数计算
+- 拓展学习：工业合成氨的工艺条件选择
+
+---
+
+### 🌟 设计特色总结
+
+1. **科学准确性**：反应概率基于阿伦尼乌斯公式简化模型
+2. **教学针对性**：每个交互都对应一个核心概念
+3. **认知友好性**：从具体（分子）到抽象（原理）的渐进设计
+4. **技术先进性**：纯HTML5实现，无需插件，跨平台运行
+
+---
+
+**最后提示**：化学平衡是动态的、辩证的过程。本动画将这一抽象概念转化为可视化的粒子舞蹈，希望您能通过交互探索，不仅记住“平衡会移动”，更理解“为什么会这样移动”。
+
+祝您探索愉快！如有教学反馈或改进建议，欢迎提出。
+
+*教育技术专家团队 设计*
+*“让不可见变为可见，让抽象变得具体”*

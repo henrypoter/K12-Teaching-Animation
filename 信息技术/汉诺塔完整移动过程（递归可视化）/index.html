@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>汉诺塔递归可视化教学动画</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+        }
+        
+        h1 {
+            color: #3498db;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+        
+        .subtitle {
+            color: #bdc3c7;
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .panel {
+            background-color: #34495e;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .panel-title {
+            color: #f1c40f;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #4a6572;
+            font-size: 1.4rem;
+        }
+        
+        #animation-container {
+            height: 450px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        canvas {
+            display: block;
+            background-color: #1a252f;
+            border-radius: 8px;
+        }
+        
+        .recursion-view {
+            display: flex;
+            flex-direction: column;
+            height: 450px;
+        }
+        
+        .code-container {
+            background-color: #1a252f;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .code-line {
+            padding: 5px 10px;
+            margin: 2px 0;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 1rem;
+            line-height: 1.4;
+            transition: background-color 0.3s;
+        }
+        
+        .code-line.highlighted {
+            background-color: rgba(231, 76, 60, 0.3);
+            border-left: 4px solid #e74c3c;
+        }
+        
+        .stack-container {
+            background-color: #1a252f;
+            border-radius: 8px;
+            padding: 15px;
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .stack-frame {
+            background-color: #2c3e50;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-left: 5px solid #3498db;
+            transition: all 0.3s;
+        }
+        
+        .stack-frame.active {
+            background-color: rgba(52, 152, 219, 0.2);
+            border-left-color: #e67e22;
+            box-shadow: 0 0 8px rgba(230, 126, 34, 0.5);
+        }
+        
+        .stack-frame-header {
+            color: #f1c40f;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+        
+        .stack-frame-params {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .param {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .param-name {
+            color: #bdc3c7;
+        }
+        
+        .param-value {
+            color: #2ecc71;
+            font-weight: bold;
+        }
+        
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            background-color: #34495e;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+        
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .control-label {
+            color: #bdc3c7;
+            font-weight: bold;
+        }
+        
+        select, .btn {
+            padding: 10px 16px;
+            border-radius: 6px;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        select {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            border: 1px solid #4a6572;
+        }
+        
+        .btn {
+            font-weight: bold;
+            min-width: 100px;
+        }
+        
+        .btn-start {
+            background-color: #27ae60;
+            color: white;
+        }
+        
+        .btn-start:hover {
+            background-color: #219653;
+        }
+        
+        .btn-pause {
+            background-color: #f39c12;
+            color: white;
+        }
+        
+        .btn-pause:hover {
+            background-color: #e67e22;
+        }
+        
+        .btn-step {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .btn-step:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-reset {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .btn-reset:hover {
+            background-color: #c0392b;
+        }
+        
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            background-color: #34495e;
+            border-radius: 12px;
+            padding: 15px 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+        }
+        
+        .status-item {
+            text-align: center;
+        }
+        
+        .status-label {
+            color: #bdc3c7;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        
+        .status-value {
+            color: #f1c40f;
+            font-size: 1.4rem;
+            font-weight: bold;
+        }
+        
+        .current-step-info {
+            background-color: rgba(52, 152, 219, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .step-description {
+            color: #ecf0f1;
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+        
+        .highlight {
+            color: #f1c40f;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 1100px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .panel {
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+            }
+            
+            .control-group {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .status-bar {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>汉诺塔递归可视化教学动画</h1>
+            <p class="subtitle">通过可视化递归调用栈与动画同步，深入理解汉诺塔问题的递归解决方案。观察每个盘子移动如何对应递归函数的调用与返回。</p>
+        </header>
+        
+        <div class="controls">
+            <div class="control-group">
+                <span class="control-label">盘子数量:</span>
+                <select id="diskCount">
+                    <option value="3">3个盘子</option>
+                    <option value="4" selected>4个盘子</option>
+                    <option value="5">5个盘子</option>
+                    <option value="6">6个盘子</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <button id="btnStart" class="btn btn-start">开始</button>
+                <button id="btnPause" class="btn btn-pause">暂停</button>
+                <button id="btnStep" class="btn btn-step">下一步</button>
+                <button id="btnReset" class="btn btn-reset">重置</button>
+            </div>
+            
+            <div class="control-group">
+                <span class="control-label">动画速度:</span>
+                <select id="animationSpeed">
+                    <option value="slow">慢速</option>
+                    <option value="normal" selected>正常</option>
+                    <option value="fast">快速</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="panel">
+                <h2 class="panel-title">汉诺塔动画视图</h2>
+                <div id="animation-container">
+                    <canvas id="hanoiCanvas" width="800" height="400"></canvas>
+                </div>
+                <div class="current-step-info">
+                    <div id="stepDescription" class="step-description">点击"开始"按钮启动动画</div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2 class="panel-title">递归过程视图</h2>
+                <div class="recursion-view">
+                    <div class="code-container">
+                        <div id="codeDisplay">
+                            <!-- 递归函数代码将通过JS动态生成 -->
+                        </div>
+                    </div>
+                    <div class="stack-container">
+                        <h3 style="color:#f1c40f; margin-bottom:10px;">递归调用栈</h3>
+                        <div id="stackDisplay">
+                            <!-- 调用栈将通过JS动态生成 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-label">总步数</div>
+                <div id="totalSteps" class="status-value">15</div>
+            </div>
+            <div class="status-item">
+                <div class="status-label">当前步数</div>
+                <div id="currentStep" class="status-value">0</div>
+            </div>
+            <div class="status-item">
+                <div class="status-label">递归深度</div>
+                <div id="recursionDepth" class="status-value">0</div>
+            </div>
+            <div class="status-item">
+                <div class="status-label">调用次数</div>
+                <div id="callCount" class="status-value">0</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 汉诺塔可视化类
+        class HanoiVisualizer {
+            constructor() {
+                // 获取DOM元素
+                this.canvas = document.getElementById('hanoiCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.codeDisplay = document.getElementById('codeDisplay');
+                this.stackDisplay = document.getElementById('stackDisplay');
+                this.stepDescription = document.getElementById('stepDescription');
+                this.totalStepsElement = document.getElementById('totalSteps');
+                this.currentStepElement = document.getElementById('currentStep');
+                this.recursionDepthElement = document.getElementById('recursionDepth');
+                this.callCountElement = document.getElementById('callCount');
+                
+                // 控制按钮
+                this.btnStart = document.getElementById('btnStart');
+                this.btnPause = document.getElementById('btnPause');
+                this.btnStep = document.getElementById('btnStep');
+                this.btnReset = document.getElementById('btnReset');
+                this.diskCountSelect = document.getElementById('diskCount');
+                this.speedSelect = document.getElementById('animationSpeed');
+                
+                // 汉诺塔状态
+                this.disks = 4; // 默认4个盘子
+                this.towers = [[], [], []]; // 三个柱子上的盘子
+                this.diskColors = [
+                    '#e74c3c', // 红色
+                    '#f39c12', // 橙色
+                    '#f1c40f', // 黄色
+                    '#2ecc71', // 绿色
+                    '#3498db', // 蓝色
+                    '#9b59b6'  // 紫色
+                ];
+                
+                // 动画状态
+                this.isAnimating = false;
+                this.isPaused = false;
+                this.currentMoveIndex = 0;
+                this.moves = []; // 存储所有移动步骤
+                this.animationSpeed = 800; // 默认动画速度(ms)
+                this.animationInProgress = false;
+                
+                // 递归状态
+                this.callStack = []; // 调用栈
+                this.recursionDepth = 0;
+                this.callCount = 0;
+                this.currentCodeLine = -1;
+                
+                // 初始化
+                this.init();
+                this.setupEventListeners();
+                this.generateCodeDisplay();
+                this.updateStatus();
+            }
+            
+            init() {
+                // 重置状态
+                this.towers = [[], [], []];
+                this.moves = [];
+                this.callStack = [];
+                this.currentMoveIndex = 0;
+                this.recursionDepth = 0;
+                this.callCount = 0;
+                this.currentCodeLine = -1;
+                
+                // 设置盘子数量
+                this.disks = parseInt(this.diskCountSelect.value);
+                
+                // 初始化柱子A上的盘子（从大到小）
+                for (let i = this.disks; i > 0; i--) {
+                    this.towers[0].push(i);
+                }
+                
+                // 计算总步数 (2^n - 1)
+                const totalSteps = Math.pow(2, this.disks) - 1;
+                this.totalStepsElement.textContent = totalSteps;
+                this.currentStepElement.textContent = 0;
+                
+                // 生成移动序列
+                this.generateMoves(this.disks, 0, 2, 1);
+                
+                // 初始绘制
+                this.draw();
+                this.updateStackDisplay();
+                this.updateStepDescription("初始状态: 所有盘子在A柱上");
+            }
+            
+            // 生成汉诺塔移动序列（递归算法）
+            generateMoves(n, from, to, aux) {
+                if (n === 1) {
+                    this.moves.push({from, to, disk: 1});
+                    return;
+                }
+                
+                this.generateMoves(n - 1, from, aux, to);
+                this.moves.push({from, to, disk: n});
+                this.generateMoves(n - 1, aux, to, from);
+            }
+            
+            // 绘制汉诺塔
+            draw() {
+                const ctx = this.ctx;
+                const width = this.canvas.width;
+                const height = this.canvas.height;
+                
+                // 清空画布
+                ctx.clearRect(0, 0, width, height);
+                
+                // 绘制背景
+                ctx.fillStyle = '#1a252f';
+                ctx.fillRect(0, 0, width, height);
+                
+                // 柱子参数
+                const towerWidth = 15;
+                const baseHeight = 20;
+                const baseY = height - 50;
+                const towerHeight = 250;
+                const towerTopY = baseY - towerHeight;
+                
+                // 绘制底座
+                ctx.fillStyle = '#7f8c8d';
+                ctx.fillRect(50, baseY, width - 100, baseHeight);
+                
+                // 绘制三个柱子
+                for (let i = 0; i < 3; i++) {
+                    const x = 50 + (width - 100) / 6 + i * (width - 100) / 3;
+                    
+                    // 柱子
+                    ctx.fillStyle = '#bdc3c7';
+                    ctx.fillRect(x - towerWidth/2, towerTopY, towerWidth, towerHeight);
+                    
+                    // 柱子标签
+                    ctx.fillStyle = '#ecf0f1';
+                    ctx.font = 'bold 24px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(String.fromCharCode(65 + i), x, baseY + 40);
+                    
+                    // 绘制该柱子上的盘子
+                    for (let j = 0; j < this.towers[i].length; j++) {
+                        const diskSize = this.towers[i][j];
+                        const diskWidth = 40 + diskSize * 25;
+                        const diskY = baseY - (j + 1) * 30;
+                        const diskColor = this.diskColors[(diskSize - 1) % this.diskColors.length];
+                        
+                        // 盘子
+                        ctx.fillStyle = diskColor;
+                        ctx.fillRect(x - diskWidth/2, diskY, diskWidth, 25);
+                        
+                        // 盘子边框
+                        ctx.strokeStyle = '#2c3e50';
+                        ctx.lineWidth = 2;
+                        ctx.strokeRect(x - diskWidth/2, diskY, diskWidth, 25);
+                        
+                        // 盘子编号（可选）
+                        ctx.fillStyle = '#2c3e50';
+                        ctx.font = 'bold 14px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.fillText(diskSize, x, diskY + 17);
+                    }
+                }
+                
+                // 绘制标题
+                ctx.fillStyle = '#3498db';
+                ctx.font = 'bold 20px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('汉诺塔动画 (A: 源柱, B: 辅助柱, C: 目标柱)', width/2, 30);
+            }
+            
+            // 生成递归函数代码显示
+            generateCodeDisplay() {
+                const codeLines = [
+                    {text: "function hanoi(n, src, dst, aux) {", line: 1},
+                    {text: "  // 基本情况: 只有一个盘子", line: 2},
+                    {text: "  if (n === 1) {", line: 3},
+                    {text: "    moveDisk(1, src, dst);", line: 4},
+                    {text: "    return;", line: 5},
+                    {text: "  }", line: 6},
+                    {text: "  ", line: 7},
+                    {text: "  // 递归步骤1: 将n-1个盘子从src移到aux", line: 8},
+                    {text: "  hanoi(n-1, src, aux, dst);", line: 9},
+                    {text: "  ", line: 10},
+                    {text: "  // 递归步骤2: 将第n个盘子从src移到dst", line: 11},
+                    {text: "  moveDisk(n, src, dst);", line: 12},
+                    {text: "  ", line: 13},
+                    {text: "  // 递归步骤3: 将n-1个盘子从aux移到dst", line: 14},
+                    {text: "  hanoi(n-1, aux, dst, src);", line: 15},
+                    {text: "}", line: 16}
+                ];
+                
+                this.codeDisplay.innerHTML = '';
+                codeLines.forEach(line => {
+                    const div = document.createElement('div');
+                    div.className = 'code-line';
+                    div.id = `code-line-${line.line}`;
+                    div.textContent = line.text;
+                    this.codeDisplay.appendChild(div);
+                });
+            }
+            
+            // 更新调用栈显示
+            updateStackDisplay() {
+                this.stackDisplay.innerHTML = '';
+                
+                if (this.callStack.length === 0) {
+                    const emptyMsg = document.createElement('div');
+                    emptyMsg.textContent = '调用栈为空';
+                    emptyMsg.style.color = '#7f8c8d';
+                    emptyMsg.style.textAlign = 'center';
+                    emptyMsg.style.padding = '20px';
+                    this.stackDisplay.appendChild(emptyMsg);
+                    return;
+                }
+                
+                // 从栈顶到栈底显示（最新的在最上面）
+                for (let i = this.callStack.length - 1; i >= 0; i--) {
+                    const frame = this.callStack[i];
+                    const frameDiv = document.createElement('div');
+                    frameDiv.className = `stack-frame ${frame.isActive ? 'active' : ''}`;
+                    
+                    const header = document.createElement('div');
+                    header.className = 'stack-frame-header';
+                    header.textContent = `调用 #${frame.id}: hanoi(${frame.n}, ${this.getTowerName(frame.src)}, ${this.getTowerName(frame.dst)}, ${this.getTowerName(frame.aux)})`;
+                    
+                    const paramsDiv = document.createElement('div');
+                    paramsDiv.className = 'stack-frame-params';
+                    
+                    const params = [
+                        {name: 'n', value: frame.n},
+                        {name: 'src', value: this.getTowerName(frame.src)},
+                        {name: 'dst', value: this.getTowerName(frame.dst)},
+                        {name: 'aux', value: this.getTowerName(frame.aux)},
+                        {name: '状态', value: frame.status},
+                        {name: '步骤', value: frame.step || '等待'}
+                    ];
+                    
+                    params.forEach(param => {
+                        const paramDiv = document.createElement('div');
+                        paramDiv.className = 'param';
+                        
+                        const nameSpan = document.createElement('span');
+                        nameSpan.className = 'param-name';
+                        nameSpan.textContent = param.name + ':';
+                        
+                        const valueSpan = document.createElement('span');
+                        valueSpan.className = 'param-value';
+                        valueSpan.textContent = param.value;
+                        
+                        paramDiv.appendChild(nameSpan);
+                        paramDiv.appendChild(valueSpan);
+                        paramsDiv.appendChild(paramDiv);
+                    });
+                    
+                    frameDiv.appendChild(header);
+                    frameDiv.appendChild(paramsDiv);
+                    this.stackDisplay.appendChild(frameDiv);
+                }
+            }
+            
+            // 获取柱子名称
+            getTowerName(index) {
+                return String.fromCharCode(65 + index);
+            }
+            
+            // 更新步骤描述
+            updateStepDescription(description) {
+                this.stepDescription.innerHTML = description;
+            }
+            
+            // 更新状态栏
+            updateStatus() {
+                this.currentStepElement.textContent = this.currentMoveIndex;
+                this.recursionDepthElement.textContent = this.recursionDepth;
+                this.callCountElement.textContent = this.callCount;
+            }
+            
+            // 高亮代码行
+            highlightCodeLine(lineNumber) {
+                // 移除所有高亮
+                document.querySelectorAll('.code-line').forEach(line => {
+                    line.classList.remove('highlighted');
+                });
+                
+                // 高亮指定行
+                if (lineNumber > 0) {
+                    const lineElement = document.getElementById(`code-line-${lineNumber}`);
+                    if (lineElement) {
+                        lineElement.classList.add('highlighted');
+                    }
+                }
+                
+                this.currentCodeLine = lineNumber;
+            }
+            
+            // 执行下一步移动
+            async nextStep() {
+                if (this.currentMoveIndex >= this.moves.length || this.animationInProgress) {
+                    return;
+                }
+                
+                this.animationInProgress = true;
+                const move = this.moves[this.currentMoveIndex];
+                
+                // 模拟递归调用过程
+                this.simulateRecursionForMove(move);
+                
+                // 执行移动动画
+                await this.animateMove(move);
+                
+                // 更新状态
+                this.currentMoveIndex++;
+                this.updateStatus();
+                
+                // 检查是否完成
+                if (this.currentMoveIndex >= this.moves.length) {
+                    this.isAnimating = false;
+                    this.btnStart.textContent = "重新开始";
+                    this.updateStepDescription(`完成! 所有${this.disks}个盘子已从A柱移动到C柱`);
+                }
+                
+                this.animationInProgress = false;
+                
+                // 如果正在自动播放且未暂停，继续下一步
+                if (this.isAnimating && !this.isPaused) {
+                    setTimeout(() => this.nextStep(), this.animationSpeed);
+                }
+            }
+            
+            // 模拟递归调用过程
+            simulateRecursionForMove(move) {
+                // 根据移动的盘子大小确定递归深度
+                const diskSize = move.disk;
+                const remainingDisks = this.disks - diskSize;
+                
+                // 更新调用栈
+                // 这里简化了递归调用的模拟，实际递归调用栈会更复杂
+                this.recursionDepth = remainingDisks + 1;
+                
+                // 添加调用栈帧
+                const frameId = this.callCount + 1;
+                this.callCount++;
+                
+                // 确定当前调用状态
+                let status = "移动盘子";
+                let step = `移动盘子${diskSize}从${this.getTowerName(move.from)}到${this.getTowerName(move.to)}`;
+                
+                // 根据移动的盘子大小确定代码行
+                if (diskSize === 1) {
+                    this.highlightCodeLine(4); // moveDisk(1, src, dst);
+                    status = "基本情况";
+                } else if (diskSize === this.disks) {
+                    this.highlightCodeLine(12); // moveDisk(n, src, dst);
+                    status = "移动最大盘子";
+                } else {
+                    // 随机选择是递归步骤1还是3
+                    const isStep1 = Math.random() > 0.5;
+                    this.highlightCodeLine(isStep1 ? 9 : 15); // hanoi(n-1, src, aux, dst) 或 hanoi(n-1, aux, dst, src)
+                    status = isStep1 ? "递归步骤1" : "递归步骤3";
+                }
+                
+                // 创建新的栈帧
+                const newFrame = {
+                    id: frameId,
+                    n: diskSize,
+                    src: move.from,
+                    dst: move.to,
+                    aux: 3 - move.from - move.to, // 计算辅助柱索引
+                    status: status,
+                    step: step,
+                    isActive: true
+                };
+                
+                // 将之前的栈帧标记为非活动
+                this.callStack.forEach(frame => frame.isActive = false);
+                
+                // 添加新栈帧
+                this.callStack.push(newFrame);
+                
+                // 更新步骤描述
+                this.updateStepDescription(`步骤 ${this.currentMoveIndex + 1}/${this.moves.length}: <span class="highlight">${step}</span> (递归深度: ${this.recursionDepth})`);
+                
+                // 更新调用栈显示
+                this.updateStackDisplay();
+            }
+            
+            // 执行移动动画
+            animateMove(move) {
+                return new Promise(resolve => {
+                    const {from, to, disk} = move;
+                    const animationDuration = this.animationSpeed;
+                    const startTime = Date.now();
+                    
+                    // 从源柱子移除盘子
+                    const diskIndex = this.towers[from].indexOf(disk);
+                    this.towers[from].splice(diskIndex, 1);
+                    
+                    // 获取动画参数
+                    const width = this.canvas.width;
+                    const fromX = 50 + (width - 100) / 6 + from * (width - 100) / 3;
+                    const toX = 50 + (width - 100) / 6 + to * (width - 100) / 3;
+                    const baseY = this.canvas.height - 50;
+                    const liftHeight = 100; // 抬起高度
+                    
+                    // 动画函数
+                    const animate = () => {
+                        const elapsed = Date.now() - startTime;
+                        const progress = Math.min(elapsed / animationDuration, 1);
+                        
+                        // 计算当前位置
+                        let x, y;
+                        
+                        if (progress < 0.3) {
+                            // 第一阶段：向上抬起
+                            const phaseProgress = progress / 0.3;
+                            x = fromX;
+                            y = baseY - (this.towers[to].length + 1) * 30 - liftHeight * phaseProgress;
+                        } else if (progress < 0.7) {
+                            // 第二阶段：水平移动
+                            const phaseProgress = (progress - 0.3) / 0.4;
+                            x = fromX + (toX - fromX) * phaseProgress;
+                            y = baseY - (this.towers[to].length + 1) * 30 - liftHeight;
+                        } else {
+                            // 第三阶段：向下放置
+                            const phaseProgress = (progress - 0.7) / 0.3;
+                            x = toX;
+                            y = baseY - (this.towers[to].length + 1) * 30 - liftHeight * (1 - phaseProgress);
+                        }
+                        
+                        // 绘制
+                        this.draw();
+                        
+                        // 绘制移动中的盘子
+                        const diskWidth = 40 + disk * 25;
+                        const diskColor = this.diskColors[(disk - 1) % this.diskColors.length];
+                        
+                        this.ctx.fillStyle = diskColor;
+                        this.ctx.fillRect(x - diskWidth/2, y, diskWidth, 25);
+                        
+                        // 盘子边框
+                        this.ctx.strokeStyle = '#2c3e50';
+                        this.ctx.lineWidth = 2;
+                        this.ctx.strokeRect(x - diskWidth/2, y, diskWidth, 25);
+                        
+                        // 盘子编号
+                        this.ctx.fillStyle = '#2c3e50';
+                        this.ctx.font = 'bold 14px Arial';
+                        this.ctx.textAlign = 'center';
+                        this.ctx.fillText(disk, x, y + 17);
+                        
+                        // 继续动画或完成
+                        if (progress < 1) {
+                            requestAnimationFrame(animate);
+                        } else {
+                            // 动画完成，将盘子添加到目标柱子
+                            this.towers[to].push(disk);
+                            this.draw();
+                            resolve();
+                        }
+                    };
+                    
+                    // 开始动画
+                    animate();
+                });
+            }
+            
+            // 设置事件监听器
+            setupEventListeners() {
+                // 开始/暂停按钮
+                this.btnStart.addEventListener('click', () => {
+                    if (this.currentMoveIndex >= this.moves.length) {
+                        // 重新开始
+                        this.init();
+                        this.btnStart.textContent = "开始";
+                        return;
+                    }
+                    
+                    if (!this.isAnimating) {
+                        this.isAnimating = true;
+                        this.isPaused = false;
+                        this.btnStart.textContent = "继续";
+                        this.nextStep();
+                    } else if (this.isPaused) {
+                        this.isPaused = false;
+                        this.btnStart.textContent = "继续";
+                        this.nextStep();
+                    }
+                });
+                
+                // 暂停按钮
+                this.btnPause.addEventListener('click', () => {
+                    if (this.isAnimating && !this.isPaused) {
+                        this.isPaused = true;
+                        this.btnStart.textContent = "继续";
+                    }
+                });
+                
+                // 下一步按钮
+                this.btnStep.addEventListener('click', () => {
+                    if (this.isAnimating) {
+                        this.isPaused = true;
+                        this.btnStart.textContent = "继续";
+                    }
+                    this.nextStep();
+                });
+                
+                // 重置按钮
+                this.btnReset.addEventListener('click', () => {
+                    this.init();
+                    this.isAnimating = false;
+                    this.isPaused = false;
+                    this.btnStart.textContent = "开始";
+                });
+                
+                // 盘子数量选择
+                this.diskCountSelect.addEventListener('change', () => {
+                    this.init();
+                    this.isAnimating = false;
+                    this.isPaused = false;
+                    this.btnStart.textContent = "开始";
+                });
+                
+                // 动画速度选择
+                this.speedSelect.addEventListener('change', () => {
+                    const speed = this.speedSelect.value;
+                    switch(speed) {
+                        case 'slow': this.animationSpeed = 1200; break;
+                        case 'normal': this.animationSpeed = 800; break;
+                        case 'fast': this.animationSpeed = 400; break;
+                    }
+                });
+            }
+        }
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            const visualizer = new HanoiVisualizer();
+        });
+    </script>
+</body>
+</html>

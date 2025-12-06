@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>微观世界：过氧化氢分解制取氧气</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0a1929 0%, #1a2b3c 100%);
+            color: #e0f7ff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 1000px;
+        }
+        
+        h1 {
+            color: #4fc3f7;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .subtitle {
+            color: #b3e5fc;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+        
+        .equation-container {
+            background-color: rgba(0, 30, 60, 0.7);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px auto;
+            border: 1px solid #2a4a6a;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            width: fit-content;
+        }
+        
+        .equation {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ffffff;
+        }
+        
+        .equation .reactant {
+            color: #ffcc80;
+        }
+        
+        .equation .product {
+            color: #80deea;
+        }
+        
+        .equation .catalyst {
+            color: #b0bec5;
+            font-size: 1.4rem;
+        }
+        
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 1000px;
+            gap: 20px;
+        }
+        
+        .animation-section {
+            flex: 1;
+            background-color: rgba(10, 25, 41, 0.8);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+            border: 1px solid #2a4a6a;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            background-color: #0a1929;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        #reactionCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        
+        .info-overlay {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background-color: rgba(0, 20, 40, 0.85);
+            padding: 12px 18px;
+            border-radius: 8px;
+            border-left: 4px solid #4fc3f7;
+            max-width: 300px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+        }
+        
+        .info-title {
+            color: #4fc3f7;
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+        
+        .info-text {
+            color: #e0f7ff;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+        
+        .controls-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .control-panel {
+            background-color: rgba(10, 25, 41, 0.8);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+            border: 1px solid #2a4a6a;
+        }
+        
+        .panel-title {
+            color: #4fc3f7;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .panel-title i {
+            font-size: 1.4rem;
+        }
+        
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .btn {
+            background-color: #1a3a5f;
+            color: #e0f7ff;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+            min-width: 120px;
+            justify-content: center;
+        }
+        
+        .btn:hover {
+            background-color: #2a4a7f;
+            transform: translateY(-2px);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-primary {
+            background-color: #1565c0;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0d47a1;
+        }
+        
+        .btn-success {
+            background-color: #2e7d32;
+        }
+        
+        .btn-success:hover {
+            background-color: #1b5e20;
+        }
+        
+        .btn-warning {
+            background-color: #f57c00;
+        }
+        
+        .btn-warning:hover {
+            background-color: #e65100;
+        }
+        
+        .btn-danger {
+            background-color: #c62828;
+        }
+        
+        .btn-danger:hover {
+            background-color: #b71c1c;
+        }
+        
+        .btn-active {
+            box-shadow: 0 0 0 2px #4fc3f7;
+        }
+        
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .speed-label {
+            color: #b3e5fc;
+            font-size: 0.9rem;
+        }
+        
+        .speed-slider {
+            flex: 1;
+            height: 6px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #2a4a6a;
+            border-radius: 3px;
+            outline: none;
+        }
+        
+        .speed-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #4fc3f7;
+            cursor: pointer;
+        }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #2a4a6a;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+        
+        .legend-text {
+            font-size: 0.9rem;
+            color: #b3e5fc;
+        }
+        
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            color: #78909c;
+            font-size: 0.9rem;
+            width: 100%;
+            max-width: 1000px;
+            padding-top: 15px;
+            border-top: 1px solid #2a4a6a;
+        }
+        
+        @media (min-width: 768px) {
+            .main-container {
+                flex-direction: row;
+            }
+            
+            .animation-section {
+                flex: 2;
+            }
+            
+            .controls-section {
+                flex: 1;
+                min-width: 300px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="header">
+        <h1><i class="fas fa-atom"></i> 微观世界：过氧化氢分解制取氧气</h1>
+        <p class="subtitle">可视化过氧化氢在二氧化锰催化下分解为水和氧气的微观过程</p>
+        
+        <div class="equation-container">
+            <div class="equation">
+                <span class="reactant">2H₂O₂</span>
+                <span style="color: #ffffff;"> + </span>
+                <span class="catalyst" title="催化剂">MnO₂</span>
+                <span style="color: #ffffff;"> → </span>
+                <span class="product">2H₂O</span>
+                <span style="color: #ffffff;"> + </span>
+                <span class="product">O₂↑</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="main-container">
+        <div class="animation-section">
+            <div class="canvas-container">
+                <canvas id="reactionCanvas"></canvas>
+                <div class="info-overlay">
+                    <div class="info-title" id="stepTitle">准备开始</div>
+                    <div class="info-text" id="stepDescription">点击下方按钮开始观察过氧化氢分解的微观过程。</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls-section">
+            <div class="control-panel">
+                <div class="panel-title"><i class="fas fa-play-circle"></i> 动画控制</div>
+                <div class="button-group">
+                    <button id="playBtn" class="btn btn-primary">
+                        <i class="fas fa-play"></i> 播放
+                    </button>
+                    <button id="pauseBtn" class="btn btn-warning">
+                        <i class="fas fa-pause"></i> 暂停
+                    </button>
+                    <button id="resetBtn" class="btn btn-danger">
+                        <i class="fas fa-redo"></i> 重置
+                    </button>
+                </div>
+                
+                <div class="speed-control">
+                    <span class="speed-label">动画速度:</span>
+                    <input type="range" min="1" max="10" value="5" class="speed-slider" id="speedSlider">
+                </div>
+            </div>
+            
+            <div class="control-panel">
+                <div class="panel-title"><i class="fas fa-list-ol"></i> 学习步骤</div>
+                <div class="button-group">
+                    <button id="step1Btn" class="btn">
+                        <i class="fas fa-vial"></i> 步骤1: 反应物
+                    </button>
+                    <button id="step2Btn" class="btn">
+                        <i class="fas fa-bolt"></i> 步骤2: 键的断裂
+                    </button>
+                </div>
+                <div class="button-group">
+                    <button id="step3Btn" class="btn">
+                        <i class="fas fa-sync-alt"></i> 步骤3: 原子重组
+                    </button>
+                    <button id="step4Btn" class="btn">
+                        <i class="fas fa-wind"></i> 步骤4: 生成物
+                    </button>
+                </div>
+                <button id="fullProcessBtn" class="btn btn-success" style="width: 100%; margin-top: 5px;">
+                    <i class="fas fa-forward"></i> 连续播放所有步骤
+                </button>
+            </div>
+            
+            <div class="control-panel">
+                <div class="panel-title"><i class="fas fa-eye"></i> 观察视角</div>
+                <div class="button-group">
+                    <button id="overallViewBtn" class="btn btn-active">
+                        <i class="fas fa-globe"></i> 整体视图
+                    </button>
+                    <button id="catalystViewBtn" class="btn">
+                        <i class="fas fa-search"></i> 催化剂特写
+                    </button>
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #ff9999;"></div>
+                        <div class="legend-text">氧原子 (O)</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #cccccc;"></div>
+                        <div class="legend-text">氢原子 (H)</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #aaaaaa;"></div>
+                        <div class="legend-text">催化剂 (MnO₂)</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #ffff00;"></div>
+                        <div class="legend-text">化学键断裂/形成</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>教学动画设计 | 化学反应微观可视化 | 过氧化氢分解制取氧气</p>
+        <p>提示：将鼠标悬停在分子或原子上可以查看详细信息</p>
+    </div>
+
+    <script>
+        // 获取Canvas元素和上下文
+        const canvas = document.getElementById('reactionCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 设置Canvas尺寸
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+        }
+        
+        // 初始调整尺寸
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // 动画状态变量
+        let animationId = null;
+        let currentStep = 0; // 0: 初始, 1: 反应物, 2: 键断裂, 3: 原子重组, 4: 生成物
+        let animationSpeed = 5; // 1-10
+        let isPlaying = false;
+        let isCatalystView = false;
+        let animationProgress = 0; // 0-100
+        let hoveredObject = null;
+        
+        // 颜色定义
+        const colors = {
+            background: '#0a1929',
+            oxygen: '#ff6666',
+            hydrogen: '#e0e0e0',
+            catalyst: '#aaaaaa',
+            bond: '#cccccc',
+            highlight: '#ffff00',
+            text: '#e0f7ff',
+            infoBg: 'rgba(0, 20, 40, 0.9)'
+        };
+        
+        // 分子和原子定义
+        class Atom {
+            constructor(type, x, y) {
+                this.type = type; // 'O' 或 'H'
+                this.x = x;
+                this.y = y;
+                this.radius = this.type === 'O' ? 12 : 8;
+                this.color = this.type === 'O' ? colors.oxygen : colors.hydrogen;
+                this.originalX = x;
+                this.originalY = y;
+                this.vx = 0;
+                this.vy = 0;
+                this.isMoving = false;
+                this.targetX = x;
+                this.targetY = y;
+                this.highlight = false;
+            }
+            
+            draw() {
+                // 绘制原子
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.highlight ? colors.highlight : this.color;
+                ctx.fill();
+                
+                // 绘制原子边框
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.strokeStyle = this.highlight ? '#ffffff' : (this.type === 'O' ? '#cc3333' : '#999999');
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+                
+                // 绘制原子类型标签
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 10px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(this.type, this.x, this.y);
+                
+                // 如果被鼠标悬停，显示详细信息
+                if (this === hoveredObject) {
+                    this.drawInfo();
+                }
+            }
+            
+            drawInfo() {
+                const name = this.type === 'O' ? '氧原子' : '氢原子';
+                const symbol = this.type === 'O' ? 'O' : 'H';
+                
+                ctx.fillStyle = colors.infoBg;
+                ctx.fillRect(this.x - 40, this.y - this.radius - 40, 80, 30);
+                
+                ctx.fillStyle = colors.text;
+                ctx.font = '10px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(`${name} (${symbol})`, this.x, this.y - this.radius - 25);
+            }
+            
+            update() {
+                // 如果原子需要移动，则更新位置
+                if (this.isMoving) {
+                    const dx = this.targetX - this.x;
+                    const dy = this.targetY - this.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance > 1) {
+                        this.vx = dx * 0.05 * (animationSpeed / 5);
+                        this.vy = dy * 0.05 * (animationSpeed / 5);
+                        this.x += this.vx;
+                        this.y += this.vy;
+                    } else {
+                        this.x = this.targetX;
+                        this.y = this.targetY;
+                        this.isMoving = false;
+                    }
+                }
+            }
+            
+            moveTo(x, y) {
+                this.targetX = x;
+                this.targetY = y;
+                this.isMoving = true;
+            }
+        }
+        
+        class Molecule {
+            constructor(type, atoms, bonds) {
+                this.type = type; // 'H2O2', 'H2O', 'O2'
+                this.atoms = atoms;
+                this.bonds = bonds;
+                this.x = atoms.reduce((sum, atom) => sum + atom.x, 0) / atoms.length;
+                this.y = atoms.reduce((sum, atom) => sum + atom.y, 0) / atoms.length;
+                this.highlight = false;
+            }
+            
+            draw() {
+                // 绘制化学键
+                for (const bond of this.bonds) {
+                    const atom1 = this.atoms[bond[0]];
+                    const atom2 = this.atoms[bond[1]];
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(atom1.x, atom1.y);
+                    ctx.lineTo(atom2.x, atom2.y);
+                    ctx.strokeStyle = this.highlight ? colors.highlight : colors.bond;
+                    ctx.lineWidth = this.highlight ? 4 : 3;
+                    ctx.stroke();
+                }
+                
+                // 绘制原子
+                for (const atom of this.atoms) {
+                    atom.draw();
+                }
+                
+                // 如果被鼠标悬停，显示详细信息
+                if (this === hoveredObject) {
+                    this.drawInfo();
+                }
+            }
+            
+            drawInfo() {
+                let name, formula;
+                switch(this.type) {
+                    case 'H2O2': name = '过氧化氢'; formula = 'H₂O₂'; break;
+                    case 'H2O': name = '水'; formula = 'H₂O'; break;
+                    case 'O2': name = '氧气'; formula = 'O₂'; break;
+                }
+                
+                ctx.fillStyle = colors.infoBg;
+                ctx.fillRect(this.x - 50, this.y - 50, 100, 40);
+                
+                ctx.fillStyle = colors.text;
+                ctx.font = 'bold 12px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(name, this.x, this.y - 35);
+                
+                ctx.font = '14px Arial';
+                ctx.fillText(formula, this.x, this.y - 20);
+            }
+            
+            update() {
+                for (const atom of this.atoms) {
+                    atom.update();
+                }
+                
+                // 更新分子中心位置
+                this.x = this.atoms.reduce((sum, atom) => sum + atom.x, 0) / this.atoms.length;
+                this.y = this.atoms.reduce((sum, atom) => sum + atom.y, 0) / this.atoms.length;
+            }
+        }
+        
+        class Catalyst {
+            constructor(x, y, width, height) {
+                this.x = x;
+                this.y = y;
+                this.width = width;
+                this.height = height;
+                this.surfaceAtoms = [];
+                this.generateSurface();
+            }
+            
+            generateSurface() {
+                // 生成催化剂表面原子
+                const atomSpacing = 15;
+                const rows = Math.floor(this.height / atomSpacing);
+                const cols = Math.floor(this.width / atomSpacing);
+                
+                for (let r = 0; r < rows; r++) {
+                    for (let c = 0; c < cols; c++) {
+                        const x = this.x + c * atomSpacing + (r % 2) * atomSpacing/2;
+                        const y = this.y + r * atomSpacing;
+                        
+                        // 随机省略一些原子以创建不规则表面
+                        if (Math.random() > 0.3) {
+                            this.surfaceAtoms.push({
+                                x: x,
+                                y: y,
+                                radius: 6,
+                                type: Math.random() > 0.5 ? 'Mn' : 'O'
+                            });
+                        }
+                    }
+                }
+            }
+            
+            draw() {
+                // 绘制催化剂主体
+                ctx.fillStyle = colors.catalyst;
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+                
+                // 绘制表面纹理
+                ctx.fillStyle = '#888888';
+                for (let i = 0; i < this.surfaceAtoms.length; i++) {
+                    const atom = this.surfaceAtoms[i];
+                    ctx.beginPath();
+                    ctx.arc(atom.x, atom.y, atom.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // 绘制原子标签
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = 'bold 8px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(atom.type, atom.x, atom.y);
+                    ctx.fillStyle = '#888888';
+                }
+                
+                // 如果被鼠标悬停，显示详细信息
+                if (this === hoveredObject) {
+                    this.drawInfo();
+                }
+            }
+            
+            drawInfo() {
+                ctx.fillStyle = colors.infoBg;
+                ctx.fillRect(this.x + this.width/2 - 60, this.y - 40, 120, 30);
+                
+                ctx.fillStyle = colors.text;
+                ctx.font = 'bold 12px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('二氧化锰催化剂', this.x + this.width/2, this.y - 25);
+                ctx.font = '10px Arial';
+                ctx.fillText('MnO₂', this.x + this.width/2, this.y - 10);
+            }
+        }
+        
+        // 创建反应物、生成物和催化剂
+        let h2o2Molecules = [];
+        let h2oMolecules = [];
+        let o2Molecules = [];
+        let catalyst;
+        let freeAtoms = [];
+        
+        function initScene() {
+            // 清空所有数组
+            h2o2Molecules = [];
+            h2oMolecules = [];
+            o2Molecules = [];
+            freeAtoms = [];
+            
+            // 创建催化剂
+            const catalystWidth = canvas.width * 0.7;
+            const catalystHeight = canvas.height * 0.2;
+            catalyst = new Catalyst(
+                canvas.width/2 - catalystWidth/2,
+                canvas.height/2 - catalystHeight/2 + 50,
+                catalystWidth,
+                catalystHeight
+            );
+            
+            // 根据当前步骤初始化场景
+            if (currentStep === 0 || currentStep === 1) {
+                // 步骤1: 反应物 - 创建过氧化氢分子
+                const h2o2Count = 4;
+                for (let i = 0; i < h2o2Count; i++) {
+                    const angle = (i / h2o2Count) * Math.PI * 2;
+                    const radius = Math.min(canvas.width, canvas.height) * 0.3;
+                    const centerX = canvas.width/2 + Math.cos(angle) * radius;
+                    const centerY = canvas.height/2 + Math.sin(angle) * radius - 50;
+                    
+                    // 创建H2O2分子 (H-O-O-H)
+                    const atom1 = new Atom('H', centerX - 25, centerY - 5);
+                    const atom2 = new Atom('O', centerX - 10, centerY);
+                    const atom3 = new Atom('O', centerX + 10, centerY);
+                    const atom4 = new Atom('H', centerX + 25, centerY - 5);
+                    
+                    const bonds = [[0, 1], [1, 2], [2, 3]];
+                    const molecule = new Molecule('H2O2', [atom1, atom2, atom3, atom4], bonds);
+                    h2o2Molecules.push(molecule);
+                }
+            } else if (currentStep === 2) {
+                // 步骤2: 键的断裂 - 过氧化氢分子在催化剂表面分解
+                // 创建一些在催化剂表面的过氧化氢分子
+                const h2o2Count = 3;
+                for (let i = 0; i < h2o2Count; i++) {
+                    const x = catalyst.x + catalyst.width * (0.2 + i * 0.3);
+                    const y = catalyst.y - 40;
+                    
+                    const atom1 = new Atom('H', x - 15, y - 10);
+                    const atom2 = new Atom('O', x - 5, y);
+                    const atom3 = new Atom('O', x + 5, y);
+                    const atom4 = new Atom('H', x + 15, y - 10);
+                    
+                    // 高亮显示即将断裂的键
+                    atom2.highlight = true;
+                    atom3.highlight = true;
+                    
+                    const bonds = [[0, 1], [1, 2], [2, 3]];
+                    const molecule = new Molecule('H2O2', [atom1, atom2, atom3, atom4], bonds);
+                    molecule.highlight = true;
+                    h2o2Molecules.push(molecule);
+                }
+                
+                // 创建一些已经断裂的原子
+                for (let i = 0; i < 4; i++) {
+                    const x = catalyst.x + catalyst.width * (0.1 + i * 0.25);
+                    const y = catalyst.y + 10;
+                    
+                    if (i % 2 === 0) {
+                        freeAtoms.push(new Atom('H', x, y));
+                    } else {
+                        freeAtoms.push(new Atom('O', x, y));
+                    }
+                }
+            } else if (currentStep === 3) {
+                // 步骤3: 原子重组 - 原子在催化剂表面重新组合
+                // 创建一些自由原子
+                for (let i = 0; i < 6; i++) {
+                    const x = catalyst.x + catalyst.width * (0.1 + i * 0.15);
+                    const y = catalyst.y + 10 + (i % 3) * 15;
+                    
+                    if (i % 3 === 0) {
+                        freeAtoms.push(new Atom('H', x, y));
+                    } else {
+                        freeAtoms.push(new Atom('O', x, y));
+                    }
+                }
+                
+                // 创建一些正在形成的水分子
+                const h2oCount = 2;
+                for (let i = 0; i < h2oCount; i++) {
+                    const x = catalyst.x + catalyst.width * (0.3 + i * 0.4);
+                    const y = catalyst.y - 60;
+                    
+                    const atom1 = new Atom('H', x - 10, y - 5);
+                    const atom2 = new Atom('O', x, y);
+                    const atom3 = new Atom('H', x + 10, y - 5);
+                    
+                    // 高亮显示正在形成的键
+                    atom1.highlight = true;
+                    atom2.highlight = true;
+                    atom3.highlight = true;
+                    
+                    const bonds = [[0, 1], [1, 2]];
+                    const molecule = new Molecule('H2O', [atom1, atom2, atom3], bonds);
+                    molecule.highlight = true;
+                    h2oMolecules.push(molecule);
+                }
+                
+                // 创建一个正在形成的氧气分子
+                const o2X = catalyst.x + catalyst.width * 0.7;
+                const o2Y = catalyst.y - 80;
+                
+                const oAtom1 = new Atom('O', o2X - 8, o2Y);
+                const oAtom2 = new Atom('O', o2X + 8, o2Y);
+                
+                oAtom1.highlight = true;
+                oAtom2.highlight = true;
+                
+                const o2Bonds = [[0, 1]];
+                const o2Molecule = new Molecule('O2', [oAtom1, oAtom2], o2Bonds);
+                o2Molecule.highlight = true;
+                o2Molecules.push(o2Molecule);
+            } else if (currentStep === 4) {
+                // 步骤4: 生成物 - 水和氧气分子离开催化剂
+                // 创建水分子
+                const h2oCount = 4;
+                for (let i = 0; i < h2oCount; i++) {
+                    const angle = (i / h2oCount) * Math.PI * 2;
+                    const radius = Math.min(canvas.width, canvas.height) * 0.25;
+                    const centerX = canvas.width/2 + Math.cos(angle) * radius;
+                    const centerY = canvas.height/2 + Math.sin(angle) * radius - 80;
+                    
+                    const atom1 = new Atom('H', centerX - 10, centerY - 5);
+                    const atom2 = new Atom('O', centerX, centerY);
+                    const atom3 = new Atom('H', centerX + 10, centerY - 5);
+                    
+                    const bonds = [[0, 1], [1, 2]];
+                    const molecule = new Molecule('H2O', [atom1, atom2, atom3], bonds);
+                    h2oMolecules.push(molecule);
+                }
+                
+                // 创建氧气分子
+                const o2Count = 2;
+                for (let i = 0; i < o2Count; i++) {
+                    const x = canvas.width/2 + (i - 0.5) * 100;
+                    const y = canvas.height/2 - 120;
+                    
+                    const atom1 = new Atom('O', x - 8, y);
+                    const atom2 = new Atom('O', x + 8, y);
+                    
+                    const bonds = [[0, 1]];
+                    const molecule = new Molecule('O2', [atom1, atom2], bonds);
+                    o2Molecules.push(molecule);
+                }
+                
+                // 催化剂仍然在底部
+                catalyst.y = canvas.height - catalyst.height - 50;
+            }
+        }
+        
+        // 动画循环
+        function animate() {
+            // 清空画布
+            ctx.fillStyle = colors.background;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制催化剂
+            catalyst.draw();
+            
+            // 更新和绘制所有分子和原子
+            for (const molecule of h2o2Molecules) {
+                molecule.update();
+                molecule.draw();
+            }
+            
+            for (const molecule of h2oMolecules) {
+                molecule.update();
+                molecule.draw();
+            }
+            
+            for (const molecule of o2Molecules) {
+                molecule.update();
+                molecule.draw();
+            }
+            
+            for (const atom of freeAtoms) {
+                atom.update();
+                atom.draw();
+            }
+            
+            // 如果动画正在播放，更新进度
+            if (isPlaying) {
+                animationProgress += animationSpeed * 0.5;
+                if (animationProgress >= 100) {
+                    animationProgress = 0;
+                    if (currentStep < 4) {
+                        currentStep++;
+                        updateStepInfo();
+                        initScene();
+                    } else {
+                        isPlaying = false;
+                        document.getElementById('playBtn').innerHTML = '<i class="fas fa-play"></i> 播放';
+                    }
+                }
+            }
+            
+            // 继续动画循环
+            animationId = requestAnimationFrame(animate);
+        }
+        
+        // 更新步骤信息
+        function updateStepInfo() {
+            const stepTitle = document.getElementById('stepTitle');
+            const stepDescription = document.getElementById('stepDescription');
+            
+            switch(currentStep) {
+                case 0:
+                    stepTitle.textContent = '准备开始';
+                    stepDescription.textContent = '点击下方按钮开始观察过氧化氢分解的微观过程。';
+                    break;
+                case 1:
+                    stepTitle.textContent = '步骤1: 反应物';
+                    stepDescription.textContent = '过氧化氢分子(H₂O₂)和二氧化锰催化剂准备就绪。注意过氧化氢分子中的O-O键。';
+                    break;
+                case 2:
+                    stepTitle.textContent = '步骤2: 键的断裂';
+                    stepDescription.textContent = '过氧化氢分子吸附在催化剂表面，O-O键断裂，分解为氢原子和氧原子。';
+                    break;
+                case 3:
+                    stepTitle.textContent = '步骤3: 原子重组';
+                    stepDescription.textContent = '氢原子和氧原子在催化剂表面重新组合，形成水分子(H₂O)和氧分子(O₂)。';
+                    break;
+                case 4:
+                    stepTitle.textContent = '步骤4: 生成物';
+                    stepDescription.textContent = '水分子和氧分子从催化剂表面脱离，催化剂保持不变，可以继续催化反应。';
+                    break;
+            }
+            
+            // 更新步骤按钮的高亮状态
+            document.querySelectorAll('.button-group .btn').forEach(btn => {
+                btn.classList.remove('btn-active');
+            });
+            
+            if (currentStep >= 1) {
+                document.getElementById(`step${currentStep}Btn`).classList.add('btn-active');
+            }
+        }
+        
+        // 鼠标悬停检测
+        function checkHover(mouseX, mouseY) {
+            hoveredObject = null;
+            
+            // 检查催化剂
+            if (mouseX >= catalyst.x && mouseX <= catalyst.x + catalyst.width &&
+                mouseY >= catalyst.y && mouseY <= catalyst.y + catalyst.height) {
+                hoveredObject = catalyst;
+                return;
+            }
+            
+            // 检查所有分子
+            const allMolecules = [...h2o2Molecules, ...h2oMolecules, ...o2Molecules];
+            for (const molecule of allMolecules) {
+                const dx = mouseX - molecule.x;
+                const dy = mouseY - molecule.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < 40) {
+                    hoveredObject = molecule;
+                    return;
+                }
+            }
+            
+            // 检查所有原子
+            const allAtoms = [];
+            for (const molecule of allMolecules) {
+                allAtoms.push(...molecule.atoms);
+            }
+            allAtoms.push(...freeAtoms);
+            
+            for (const atom of allAtoms) {
+                const dx = mouseX - atom.x;
+                const dy = mouseY - atom.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < atom.radius + 5) {
+                    hoveredObject = atom;
+                    return;
+                }
+            }
+        }
+        
+        // 事件监听器
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBounding
+<!--检测到代码截断，自动续写中...-->
+ClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            checkHover(mouseX, mouseY);
+        });
+        
+        // 按钮事件监听
+        document.getElementById('playBtn').addEventListener('click', () => {
+            isPlaying = !isPlaying;
+            if (isPlaying) {
+                document.getElementById('playBtn').innerHTML = '<i class="fas fa-pause"></i> 暂停';
+                if (currentStep === 0) {
+                    currentStep = 1;
+                    initScene();
+                    updateStepInfo();
+                }
+            } else {
+                document.getElementById('playBtn').innerHTML = '<i class="fas fa-play"></i> 播放';
+            }
+        });
+        
+        document.getElementById('pauseBtn').addEventListener('click', () => {
+            isPlaying = false;
+            document.getElementById('playBtn').innerHTML = '<i class="fas fa-play"></i> 播放';
+        });
+        
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            isPlaying = false;
+            currentStep = 0;
+            animationProgress = 0;
+            document.getElementById('playBtn').innerHTML = '<i class="fas fa-play"></i> 播放';
+            initScene();
+            updateStepInfo();
+        });
+        
+        document.getElementById('step1Btn').addEventListener('click', () => {
+            isPlaying = false;
+            currentStep = 1;
+            animationProgress = 0;
+            document.getElementById('playBtn').innerHTML = '<i class="fas fa-play"></i> 播放';
+            initScene();
+            updateStepInfo();
+        });
+        
+        document.getElementById('step2Btn').addEventListener('click', () => {
+            isPlaying = false;
+            currentStep = 2;
+            animationProgress = 0;
+            document.getElementById('playBtn').innerHTML = '<i class="fas fa-play"></i> 播放';
+            initScene();
+            updateStepInfo();
+        });
+        
+        document.getElementById('step3Btn').addEventListener('click', () => {
+            isPlaying = false;
+            currentStep = 3;
+            animationProgress = 0;
+            document.getElementById('playBtn').innerHTML = '<i class="fas fa-play"></i> 播放';
+            initScene();
+            updateStepInfo();
+        });
+        
+        document.getElementById('step4Btn').addEventListener('click', () => {
+            isPlaying = false;
+            currentStep = 4;
+            animationProgress = 0;
+            document.getElementById('playBtn').innerHTML = '<i class="fas fa-play"></i> 播放';
+            initScene();
+            updateStepInfo();
+        });
+        
+        document.getElementById('fullProcessBtn').addEventListener('click', () => {
+            isPlaying = true;
+            currentStep = 1;
+            animationProgress = 0;
+            document.getElementById('playBtn').innerHTML = '<i class="fas fa-pause"></i> 暂停';
+            initScene();
+            updateStepInfo();
+        });
+        
+        document.getElementById('overallViewBtn').addEventListener('click', () => {
+            isCatalystView = false;
+            document.getElementById('overallViewBtn').classList.add('btn-active');
+            document.getElementById('catalystViewBtn').classList.remove('btn-active');
+            // 在实际实现中，这里会调整摄像机视角
+        });
+        
+        document.getElementById('catalystViewBtn').addEventListener('click', () => {
+            isCatalystView = true;
+            document.getElementById('catalystViewBtn').classList.add('btn-active');
+            document.getElementById('overallViewBtn').classList.remove('btn-active');
+            // 在实际实现中，这里会调整摄像机视角
+        });
+        
+        document.getElementById('speedSlider').addEventListener('input', (e) => {
+            animationSpeed = parseInt(e.target.value);
+        });
+        
+        // 初始化场景并开始动画
+        initScene();
+        updateStepInfo();
+        animate();
+        
+        // 添加键盘快捷键
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case ' ':
+                    // 空格键切换播放/暂停
+                    isPlaying = !isPlaying;
+                    if (isPlaying) {
+                        document.getElementById('playBtn').innerHTML = '<i class="fas fa-pause"></i> 暂停';
+                        if (currentStep === 0) {
+                            currentStep = 1;
+                            initScene();
+                            updateStepInfo();
+                        }
+                    } else {
+                        document.getElementById('playBtn').innerHTML = '<i class="fas fa-play"></i> 播放';
+                    }
+                    e.preventDefault();
+                    break;
+                case 'r':
+                case 'R':
+                    // R键重置
+                    isPlaying = false;
+                    currentStep = 0;
+                    animationProgress = 0;
+                    document.getElementById('playBtn').innerHTML = '<i class="fas fa-play"></i> 播放';
+                    initScene();
+                    updateStepInfo();
+                    break;
+                case '1':
+                    document.getElementById('step1Btn').click();
+                    break;
+                case '2':
+                    document.getElementById('step2Btn').click();
+                    break;
+                case '3':
+                    document.getElementById('step3Btn').click();
+                    break;
+                case '4':
+                    document.getElementById('step4Btn').click();
+                    break;
+            }
+        });
+    </script>
+</body>
+</html>

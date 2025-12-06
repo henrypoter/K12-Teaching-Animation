@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>信息技术教学动画 - K12 Teaching Animation</title>
+    <meta name="description" content="信息技术算法与数据结构可视化教学动画集合，包含排序、树、图等经典算法的动态演示">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --success-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --dark-bg: #0f0f23;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-hover: rgba(255, 255, 255, 0.08);
+            --text-primary: #ffffff;
+            --text-secondary: #b4b4c5;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(45deg, #0f0f23 0%, #1a1a3e 50%, #0f0f23 100%);
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveBackground 20s linear infinite;
+        }
+
+        @keyframes moveBackground {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            100% {
+                transform: translate(50px, 50px);
+            }
+        }
+
+        /* Header */
+        header {
+            padding: 3rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .breadcrumb {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--card-bg);
+            border-radius: 50px;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.8s ease-out 0.4s both;
+            transition: all 0.3s ease;
+        }
+
+        .breadcrumb:hover {
+            background: var(--card-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .breadcrumb a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--text-primary);
+        }
+
+        .breadcrumb span {
+            color: var(--text-secondary);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Category Section */
+        .category-section {
+            margin-bottom: 4rem;
+        }
+
+        .category-title {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            padding-left: 1rem;
+            border-left: 4px solid;
+            border-image: var(--primary-gradient) 1;
+            animation: slideInLeft 0.6s ease-out;
+        }
+
+        /* Grid Layout */
+        .animation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        /* Card Styles */
+        .animation-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .animation-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-gradient);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: 0;
+        }
+
+        .animation-card:hover::before {
+            opacity: 0.1;
+        }
+
+        .animation-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+            border-color: rgba(102, 126, 234, 0.5);
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            transition: transform 0.4s ease;
+        }
+
+        .animation-card:hover .card-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+            line-height: 1.4;
+        }
+
+        .card-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tag {
+            padding: 0.25rem 0.75rem;
+            background: rgba(102, 126, 234, 0.2);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .animation-card:hover .tag {
+            background: rgba(102, 126, 234, 0.3);
+            border-color: rgba(102, 126, 234, 0.5);
+            color: var(--text-primary);
+        }
+
+        /* Stats Section */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+            padding: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border-color);
+            margin-top: 4rem;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            .animation-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .category-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-animation"></div>
+
+    <header>
+        <div class="header-content">
+            <h1>💻 信息技术教学动画</h1>
+            <p class="subtitle">算法与数据结构可视化教学动画集合</p>
+            <div class="breadcrumb">
+                <a href="../index.html">🏠 首页</a>
+                <span>/</span>
+                <span>信息技术</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Stats Section -->
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number">40</div>
+                <div class="stat-label">教学动画</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">8</div>
+                <div class="stat-label">主题分类</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">可视化</div>
+            </div>
+        </div>
+
+        <!-- Sorting Algorithms -->
+        <section class="category-section">
+            <h2 class="category-title">🔄 排序算法</h2>
+            <div class="animation-grid">
+                <a href="./冒泡排序（相邻比较+交换，像气泡上升）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🫧</div>
+                        <h3 class="card-title">冒泡排序</h3>
+                        <p class="card-description">相邻元素比较交换，像气泡上升的动画演示</p>
+                        <div class="card-tags">
+                            <span class="tag">基础算法</span>
+                            <span class="tag">O(n²)</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./选择排序（每轮选最小放前面）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🎯</div>
+                        <h3 class="card-title">选择排序</h3>
+                        <p class="card-description">每轮选择最小元素放到前面的排序过程</p>
+                        <div class="card-tags">
+                            <span class="tag">基础算法</span>
+                            <span class="tag">O(n²)</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./插入排序（抓牌整理）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🃏</div>
+                        <h3 class="card-title">插入排序</h3>
+                        <p class="card-description">像抓牌整理一样的插入排序动画</p>
+                        <div class="card-tags">
+                            <span class="tag">基础算法</span>
+                            <span class="tag">O(n²)</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./希尔排序（插入排序的升级版，间隔缩小动画）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🌊</div>
+                        <h3 class="card-title">希尔排序</h3>
+                        <p class="card-description">插入排序的升级版，间隔逐渐缩小的动画</p>
+                        <div class="card-tags">
+                            <span class="tag">进阶算法</span>
+                            <span class="tag">O(n log n)</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./快速排序（挖坑+分治递归，动画必看！）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚡</div>
+                        <h3 class="card-title">快速排序</h3>
+                        <p class="card-description">挖坑填数+分治递归的经典快排动画</p>
+                        <div class="card-tags">
+                            <span class="tag">经典算法</span>
+                            <span class="tag">O(n log n)</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./快速排序的分治递归过程（左右指针交换+递归树）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🌳</div>
+                        <h3 class="card-title">快排递归过程</h3>
+                        <p class="card-description">左右指针交换+递归树可视化</p>
+                        <div class="card-tags">
+                            <span class="tag">递归</span>
+                            <span class="tag">分治</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./归并排序（分治+合并，递归树动画美如艺术品）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🎨</div>
+                        <h3 class="card-title">归并排序</h3>
+                        <p class="card-description">分治合并，递归树动画美如艺术品</p>
+                        <div class="card-tags">
+                            <span class="tag">分治算法</span>
+                            <span class="tag">O(n log n)</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./归并排序的合并过程（两个有序数组合并）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🔗</div>
+                        <h3 class="card-title">归并合并过程</h3>
+                        <p class="card-description">两个有序数组合并的详细过程</p>
+                        <div class="card-tags">
+                            <span class="tag">合并</span>
+                            <span class="tag">双指针</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./堆排序（建大小顶堆 → 每次取根，动画极美）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🏔️</div>
+                        <h3 class="card-title">堆排序</h3>
+                        <p class="card-description">建堆→取根的完整堆排序动画</p>
+                        <div class="card-tags">
+                            <span class="tag">堆结构</span>
+                            <span class="tag">O(n log n)</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./堆排序建堆+调整（下沉动画）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⬇️</div>
+                        <h3 class="card-title">堆调整过程</h3>
+                        <p class="card-description">建堆和下沉调整的详细动画</p>
+                        <div class="card-tags">
+                            <span class="tag">堆调整</span>
+                            <span class="tag">下沉</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./计数排序、桶排序、基数排序（非比较排序，桶里掉数字超好理解）/index.html" class="animation-card"
+                    style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🪣</div>
+                        <h3 class="card-title">非比较排序</h3>
+                        <p class="card-description">计数、桶、基数排序的桶里掉数字动画</p>
+                        <div class="card-tags">
+                            <span class="tag">非比较</span>
+                            <span class="tag">O(n)</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Tree Structures -->
+        <section class="category-section">
+            <h2 class="category-title">🌲 树结构</h2>
+            <div class="animation-grid">
+                <a href="./二叉树遍历（前序、中序、后序递归过程+指针移动）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🌿</div>
+                        <h3 class="card-title">二叉树遍历</h3>
+                        <p class="card-description">前序、中序、后序递归过程+指针移动</p>
+                        <div class="card-tags">
+                            <span class="tag">递归</span>
+                            <span class="tag">遍历</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./二叉树三种遍历顺序对比（同一棵树三种颜色轨迹）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🎨</div>
+                        <h3 class="card-title">遍历顺序对比</h3>
+                        <p class="card-description">同一棵树三种遍历的颜色轨迹对比</p>
+                        <div class="card-tags">
+                            <span class="tag">对比</span>
+                            <span class="tag">可视化</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./二叉搜索树插入、删除、查找（平衡性破坏→红黑树引出）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🔍</div>
+                        <h3 class="card-title">二叉搜索树</h3>
+                        <p class="card-description">插入、删除、查找及平衡性问题</p>
+                        <div class="card-tags">
+                            <span class="tag">BST</span>
+                            <span class="tag">平衡</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./AVL树四种旋转（LL、RR、LR、RL）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🔄</div>
+                        <h3 class="card-title">AVL树旋转</h3>
+                        <p class="card-description">LL、RR、LR、RL四种旋转动画</p>
+                        <div class="card-tags">
+                            <span class="tag">AVL</span>
+                            <span class="tag">旋转</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./平衡二叉树（AVL树四种旋转动画，必看！）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚖️</div>
+                        <h3 class="card-title">平衡二叉树</h3>
+                        <p class="card-description">AVL树完整的平衡维护过程</p>
+                        <div class="card-tags">
+                            <span class="tag">平衡树</span>
+                            <span class="tag">必看</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./红黑树插入+变色+旋转全过程/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🔴</div>
+                        <h3 class="card-title">红黑树</h3>
+                        <p class="card-description">插入、变色、旋转的完整过程</p>
+                        <div class="card-tags">
+                            <span class="tag">红黑树</span>
+                            <span class="tag">复杂</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./堆的插入与删除（上浮、下沉动画）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">📊</div>
+                        <h3 class="card-title">堆的操作</h3>
+                        <p class="card-description">堆的插入上浮和删除下沉动画</p>
+                        <div class="card-tags">
+                            <span class="tag">堆</span>
+                            <span class="tag">上浮下沉</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Graph Algorithms -->
+        <section class="category-section">
+            <h2 class="category-title">🕸️ 图算法</h2>
+            <div class="animation-grid">
+                <a href="./图的深度优先搜索（DFS递归染色）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🎯</div>
+                        <h3 class="card-title">深度优先搜索</h3>
+                        <p class="card-description">DFS递归染色的可视化过程</p>
+                        <div class="card-tags">
+                            <span class="tag">DFS</span>
+                            <span class="tag">递归</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./图的广度优先搜索（BFS一层一层扩散）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🌊</div>
+                        <h3 class="card-title">广度优先搜索</h3>
+                        <p class="card-description">BFS像水波纹一样一层层扩散</p>
+                        <div class="card-tags">
+                            <span class="tag">BFS</span>
+                            <span class="tag">队列</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./Dijkstra算法每一步松弛（距离表实时更新）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🛣️</div>
+                        <h3 class="card-title">Dijkstra算法</h3>
+                        <p class="card-description">每一步松弛操作，距离表实时更新</p>
+                        <div class="card-tags">
+                            <span class="tag">最短路径</span>
+                            <span class="tag">贪心</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./最短路径：Dijkstra算法（松弛过程实时更新距离）/index.html" class="animation-card"
+                    style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">📍</div>
+                        <h3 class="card-title">最短路径</h3>
+                        <p class="card-description">Dijkstra松弛过程的详细演示</p>
+                        <div class="card-tags">
+                            <span class="tag">最短路</span>
+                            <span class="tag">经典</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./Kruskal算法并查集路径压缩+按秩合并/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🌉</div>
+                        <h3 class="card-title">Kruskal算法</h3>
+                        <p class="card-description">并查集路径压缩+按秩合并</p>
+                        <div class="card-tags">
+                            <span class="tag">最小生成树</span>
+                            <span class="tag">并查集</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./最小生成树：Kruskal（并查集+边排序加入）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🌲</div>
+                        <h3 class="card-title">最小生成树</h3>
+                        <p class="card-description">Kruskal算法边排序加入过程</p>
+                        <div class="card-tags">
+                            <span class="tag">MST</span>
+                            <span class="tag">贪心</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./拓扑排序（入度减0→队列弹出）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">📋</div>
+                        <h3 class="card-title">拓扑排序</h3>
+                        <p class="card-description">入度减0→队列弹出的拓扑排序</p>
+                        <div class="card-tags">
+                            <span class="tag">拓扑</span>
+                            <span class="tag">有向图</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Data Structures -->
+        <section class="category-section">
+            <h2 class="category-title">📦 数据结构</h2>
+            <div class="animation-grid">
+                <a href="./数组的插入、删除（元素集体挪动动画）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">📊</div>
+                        <h3 class="card-title">数组操作</h3>
+                        <p class="card-description">数组插入删除时元素集体挪动</p>
+                        <div class="card-tags">
+                            <span class="tag">数组</span>
+                            <span class="tag">基础</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./链表（单向双向循环链表的插入删除节点，指针箭头实时变化）/index.html" class="animation-card"
+                    style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🔗</div>
+                        <h3 class="card-title">链表操作</h3>
+                        <p class="card-description">单向、双向、循环链表的指针变化</p>
+                        <div class="card-tags">
+                            <span class="tag">链表</span>
+                            <span class="tag">指针</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./链表反转（三种方法指针重定向）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">↩️</div>
+                        <h3 class="card-title">链表反转</h3>
+                        <p class="card-description">三种方法的指针重定向动画</p>
+                        <div class="card-tags">
+                            <span class="tag">链表</span>
+                            <span class="tag">经典题</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./栈（弹夹盘子堆叠：进栈出栈）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">📚</div>
+                        <h3 class="card-title">栈结构</h3>
+                        <p class="card-description">像弹夹盘子堆叠的进栈出栈</p>
+                        <div class="card-tags">
+                            <span class="tag">栈</span>
+                            <span class="tag">LIFO</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./栈实现表达式求值（中缀转后缀+计算）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧮</div>
+                        <h3 class="card-title">表达式求值</h3>
+                        <p class="card-description">栈实现中缀转后缀+计算过程</p>
+                        <div class="card-tags">
+                            <span class="tag">栈应用</span>
+                            <span class="tag">表达式</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./队列（排队买饭：先进先出，循环队列更精彩）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🎫</div>
+                        <h3 class="card-title">队列结构</h3>
+                        <p class="card-description">排队买饭的先进先出，循环队列</p>
+                        <div class="card-tags">
+                            <span class="tag">队列</span>
+                            <span class="tag">FIFO</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./队列实现BFS层序遍历（水波纹扩散）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">💧</div>
+                        <h3 class="card-title">队列BFS</h3>
+                        <p class="card-description">队列实现BFS层序遍历水波纹扩散</p>
+                        <div class="card-tags">
+                            <span class="tag">队列应用</span>
+                            <span class="tag">BFS</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./哈希表解决冲突（拉链法 vs 开放定址法）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🔐</div>
+                        <h3 class="card-title">哈希表</h3>
+                        <p class="card-description">拉链法 vs 开放定址法解决冲突</p>
+                        <div class="card-tags">
+                            <span class="tag">哈希</span>
+                            <span class="tag">冲突</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Search Algorithms -->
+        <section class="category-section">
+            <h2 class="category-title">🔍 查找算法</h2>
+            <div class="animation-grid">
+                <a href="./二分查找（左右指针夹逼动画，旋转版也超清晰）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🎯</div>
+                        <h3 class="card-title">二分查找</h3>
+                        <p class="card-description">左右指针夹逼，旋转版超清晰</p>
+                        <div class="card-tags">
+                            <span class="tag">二分</span>
+                            <span class="tag">O(log n)</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Dynamic Programming -->
+        <section class="category-section">
+            <h2 class="category-title">🎲 动态规划</h2>
+            <div class="animation-grid">
+                <a href="./01背包动态规划（二维表格填充过程）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🎒</div>
+                        <h3 class="card-title">01背包</h3>
+                        <p class="card-description">二维表格填充的完整过程</p>
+                        <div class="card-tags">
+                            <span class="tag">DP</span>
+                            <span class="tag">背包</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./最长公共子序列LCS（动态规划表格斜线找路径）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">📏</div>
+                        <h3 class="card-title">最长公共子序列</h3>
+                        <p class="card-description">DP表格斜线找路径的LCS算法</p>
+                        <div class="card-tags">
+                            <span class="tag">DP</span>
+                            <span class="tag">LCS</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Recursion -->
+        <section class="category-section">
+            <h2 class="category-title">🔁 递归算法</h2>
+            <div class="animation-grid">
+                <a href="./汉诺塔（递归最直观演示，盘子移动全过程）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🗼</div>
+                        <h3 class="card-title">汉诺塔</h3>
+                        <p class="card-description">递归最直观演示，盘子移动全过程</p>
+                        <div class="card-tags">
+                            <span class="tag">递归</span>
+                            <span class="tag">经典</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./汉诺塔完整移动过程（递归可视化）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🎭</div>
+                        <h3 class="card-title">汉诺塔完整版</h3>
+                        <p class="card-description">递归可视化的完整移动过程</p>
+                        <div class="card-tags">
+                            <span class="tag">递归</span>
+                            <span class="tag">可视化</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./斐波那契数列递归树（不动画根本看不出指数爆炸）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🌳</div>
+                        <h3 class="card-title">斐波那契递归树</h3>
+                        <p class="card-description">看清指数爆炸的递归树动画</p>
+                        <div class="card-tags">
+                            <span class="tag">递归</span>
+                            <span class="tag">复杂度</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./阶乘递归调用栈动画/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">📚</div>
+                        <h3 class="card-title">阶乘递归</h3>
+                        <p class="card-description">递归调用栈的完整动画演示</p>
+                        <div class="card-tags">
+                            <span class="tag">递归</span>
+                            <span class="tag">调用栈</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 K12 Teaching Animation. All rights reserved.</p>
+        <p style="margin-top: 0.5rem; font-size: 0.85rem;">让算法可视化，让学习更简单 ✨</p>
+    </footer>
+</body>
+
+</html>

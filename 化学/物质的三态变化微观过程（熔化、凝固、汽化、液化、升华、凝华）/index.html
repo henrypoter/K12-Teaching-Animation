@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>物质三态变化微观过程教学动画</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #3498db;
+        }
+
+        h1 {
+            color: #1abc9c;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+
+        .subtitle {
+            color: #bdc3c7;
+            font-size: 1.1rem;
+        }
+
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .control-panel {
+            flex: 1;
+            min-width: 300px;
+            background-color: rgba(44, 62, 80, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid #34495e;
+        }
+
+        .animation-area {
+            flex: 2;
+            min-width: 500px;
+            background-color: #1a252f;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid #34495e;
+        }
+
+        .module-tabs {
+            display: flex;
+            margin-bottom: 25px;
+            background-color: #34495e;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab:hover {
+            background-color: #3d566e;
+        }
+
+        .tab.active {
+            background-color: #2c3e50;
+            border-bottom: 3px solid #1abc9c;
+            color: #1abc9c;
+        }
+
+        .control-group {
+            margin-bottom: 25px;
+        }
+
+        h3 {
+            color: #1abc9c;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .slider-container {
+            margin-bottom: 10px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .slider-label span {
+            font-size: 0.9rem;
+        }
+
+        .temperature-slider {
+            width: 100%;
+            height: 30px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: linear-gradient(to right, #3498db, #ecf0f1, #e67e22);
+            outline: none;
+            border-radius: 15px;
+            border: 2px solid #34495e;
+        }
+
+        .temperature-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #ecf0f1;
+            cursor: pointer;
+            border: 3px solid #2c3e50;
+            box-shadow: 0 0 5px rgba(0,0,0,0.5);
+        }
+
+        .marker-line {
+            position: absolute;
+            height: 100%;
+            width: 2px;
+            background-color: rgba(236, 240, 241, 0.7);
+            top: 0;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-secondary {
+            background-color: #7f8c8d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #6c7b7d;
+        }
+
+        .btn-success {
+            background-color: #2ecc71;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+
+        .info-panel {
+            background-color: rgba(26, 37, 47, 0.9);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .status-dot {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            margin-right: 10px;
+            background-color: #1abc9c;
+        }
+
+        .status-text {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .process-description {
+            margin-bottom: 15px;
+            min-height: 60px;
+            font-size: 1.1rem;
+        }
+
+        .energy-flow {
+            display: flex;
+            align-items: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .energy-icon {
+            font-size: 1.5rem;
+            margin-right: 10px;
+        }
+
+        .heat-absorption {
+            color: #e67e22;
+        }
+
+        .heat-release {
+            color: #3498db;
+        }
+
+        .macro-example {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background-color: rgba(44, 62, 80, 0.8);
+            border-radius: 8px;
+            padding: 15px;
+            max-width: 200px;
+            border: 1px solid #34495e;
+        }
+
+        .macro-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #f1c40f;
+        }
+
+        .macro-icon {
+            font-size: 3rem;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .macro-desc {
+            font-size: 0.9rem;
+        }
+
+        canvas {
+            display: block;
+            background-color: #1a252f;
+        }
+
+        .view-options {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .checkbox-label input {
+            margin-right: 8px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #34495e;
+            color: #95a5a6;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 900px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .animation-area, .control-panel {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>物质三态变化微观过程</h1>
+            <p class="subtitle">探索熔化、凝固、汽化、液化、升华、凝华的微观本质</p>
+        </header>
+
+        <div class="main-content">
+            <div class="control-panel">
+                <div class="module-tabs">
+                    <div class="tab active" data-module="solid-liquid">固态 ↔ 液态</div>
+                    <div class="tab" data-module="liquid-gas">液态 ↔ 气态</div>
+                    <div class="tab" data-module="solid-gas">固态 ↔ 气态</div>
+                </div>
+
+                <div class="control-group">
+                    <h3>温度与能量控制</h3>
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span style="color: #3498db;">冷却</span>
+                            <span style="color: #e67e22;">加热</span>
+                        </div>
+                        <input type="range" min="-50" max="150" value="0" class="temperature-slider" id="tempSlider">
+                        <div class="marker-line" id="meltingLine" style="left: 30%; display: none;"></div>
+                        <div class="marker-line" id="boilingLine" style="left: 70%; display: none;"></div>
+                    </div>
+                    <div style="text-align: center; margin-top: 5px; font-size: 0.9rem;">
+                        当前温度: <span id="currentTemp">0</span>°C
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>动画控制</h3>
+                    <div class="button-group">
+                        <button id="playPauseBtn" class="btn-primary">暂停</button>
+                        <button id="resetBtn" class="btn-secondary">重置</button>
+                        <button id="stepBtn" class="btn-success" disabled>单步前进</button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>视图选项</h3>
+                    <div class="view-options">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showForces" checked>
+                            <span>显示分子间作用力</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showTraces">
+                            <span>显示运动轨迹</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="info-panel">
+                    <div class="status-indicator">
+                        <div class="status-dot" id="statusDot"></div>
+                        <div class="status-text" id="statusText">固态</div>
+                    </div>
+                    
+                    <div class="process-description" id="processDesc">
+                        粒子在晶格位置附近振动，分子间作用力强，排列规则。
+                    </div>
+                    
+                    <div class="energy-flow" id="energyFlow">
+                        <div class="energy-icon">→</div>
+                        <div>温度变化中...</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animation-area">
+                <canvas id="particleCanvas" width="800" height="600"></canvas>
+                
+                <div class="macro-example" id="macroExample">
+                    <div class="macro-title">宏观实例</div>
+                    <div class="macro-icon" id="macroIcon">❄️</div>
+                    <div class="macro-desc" id="macroDesc">冰在室温下逐渐融化成水</div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>教学动画设计 | 微观粒子模型模拟 | 拖动滑块观察温度变化对物质状态的影响</p>
+            <p>注意：本动画中的粒子模型为简化示意图，用于帮助理解微观过程</p>
+        </footer>
+    </div>
+
+    <script>
+        // 全局变量
+        let canvas, ctx;
+        let particles = [];
+        let animationId;
+        let isPlaying = true;
+        let currentModule = 'solid-liquid';
+        let temperature = 0;
+        let showForces = true;
+        let showTraces = false;
+        
+        // 模块配置
+        const modules = {
+            'solid-liquid': {
+                name: '固态 ↔ 液态',
+                meltingPoint: 0,
+                initialTemp: -20,
+                macroIcon: '❄️',
+                macroDesc: '冰在室温下逐渐融化成水',
+                states: {
+                    solid: {
+                        name: '固态',
+                        color: '#3498db',
+                        desc: '粒子在晶格位置附近振动，分子间作用力强，排列规则。',
+                        energy: '温度变化中...'
+                    },
+                    melting: {
+                        name: '熔化中',
+                        color: '#9b59b6',
+                        desc: '加热使粒子振动加剧，晶格结构逐渐破坏，分子间作用力减弱。',
+                        energy: '↑ 吸热过程'
+                    },
+                    liquid: {
+                        name: '液态',
+                        color: '#1abc9c',
+                        desc: '粒子可以相对滑动，排列较密但无序，分子间作用力适中。',
+                        energy: '温度变化中...'
+                    },
+                    freezing: {
+                        name: '凝固中',
+                        color: '#9b59b6',
+                        desc: '冷却使粒子运动减缓，逐渐形成规则排列，分子间作用力增强。',
+                        energy: '↓ 放热过程'
+                    }
+                }
+            },
+            'liquid-gas': {
+                name: '液态 ↔ 气态',
+                boilingPoint: 100,
+                initialTemp: 50,
+                macroIcon: '💧',
+                macroDesc: '水加热沸腾变成水蒸气',
+                states: {
+                    liquid: {
+                        name: '液态',
+                        color: '#1abc9c',
+                        desc: '粒子可以相对滑动，排列较密但无序，分子间作用力适中。',
+                        energy: '温度变化中...'
+                    },
+                    vaporizing: {
+                        name: '汽化中',
+                        color: '#e67e22',
+                        desc: '加热使粒子运动剧烈，部分粒子获得足够能量挣脱液体表面。',
+                        energy: '↑ 吸热过程'
+                    },
+                    gas: {
+                        name: '气态',
+                        color: '#e74c3c',
+                        desc: '粒子高速自由运动，间距很大，分子间作用力很弱。',
+                        energy: '温度变化中...'
+                    },
+                    condensing: {
+                        name: '液化中',
+                        color: '#3498db',
+                        desc: '冷却使粒子运动减慢，相互靠近并聚集，形成液体。',
+                        energy: '↓ 放热过程'
+                    }
+                }
+            },
+            'solid-gas': {
+                name: '固态 ↔ 气态',
+                sublimationPoint: -10,
+                initialTemp: -30,
+                macroIcon: '🧊',
+                macroDesc: '干冰（固态二氧化碳）直接变成气体',
+                states: {
+                    solid: {
+                        name: '固态',
+                        color: '#3498db',
+                        desc: '粒子在晶格位置附近振动，分子间作用力强，排列规则。',
+                        energy: '温度变化中...'
+                    },
+                    sublimating: {
+                        name: '升华中',
+                        color: '#f1c40f',
+                        desc: '加热使表面粒子直接获得足够能量，跳过液态阶段变为气体。',
+                        energy: '↑ 吸热过程'
+                    },
+                    gas: {
+                        name: '气态',
+                        color: '#e74c3c',
+                        desc: '粒子高速自由运动，间距很大，分子间作用力很弱。',
+                        energy: '温度变化中...'
+                    },
+                    depositing: {
+                        name: '凝华中',
+                        color: '#f1c40f',
+                        desc: '冷却使气体粒子直接沉积为固体，跳过液态阶段。',
+                        energy: '↓ 放热过程'
+                    }
+                }
+            }
+        };
+
+        // 粒子类
+        class Particle {
+            constructor(x, y, state) {
+                this.x = x;
+                this.y = y;
+                this.vx = 0;
+                this.vy = 0;
+                this.radius = 6;
+                this.state = state; // 'solid', 'liquid', 'gas'
+                this.color = '#1abc9c';
+                this.trace = [];
+                this.maxTraceLength = 20;
+                this.inLattice = true;
+                this.latticeX = x;
+                this.latticeY = y;
+                this.oscillation = Math.random() * Math.PI * 2;
+            }
+
+            update(temperature, moduleConfig) {
+                // 根据模块和温度确定状态
+                this.determineState(temperature, moduleConfig);
+                
+                // 更新颜色
+                this.updateColor(temperature);
+                
+                // 根据状态更新运动
+                switch(this.state) {
+                    case 'solid':
+                        this.updateSolid();
+                        break;
+                    case 'liquid':
+                        this.updateLiquid(temperature);
+                        break;
+                    case 'gas':
+                        this.updateGas(temperature);
+                        break;
+                }
+                
+                // 边界碰撞
+                this.handleBoundaries();
+                
+                // 记录轨迹
+                if (showTraces) {
+                    this.trace.push({x: this.x, y: this.y});
+                    if (this.trace.length > this.maxTraceLength) {
+                        this.trace.shift();
+                    }
+                } else {
+                    this.trace = [];
+                }
+            }
+
+            determineState(temperature, moduleConfig) {
+                if (currentModule === 'solid-liquid') {
+                    if (temperature < moduleConfig.meltingPoint - 5) {
+                        this.state = 'solid';
+                    } else if (temperature > moduleConfig.meltingPoint + 5) {
+                        this.state = 'liquid';
+                    } else {
+                        this.state = temperature < moduleConfig.meltingPoint ? 'solid' : 'liquid';
+                    }
+                } else if (currentModule === 'liquid-gas') {
+                    if (temperature < moduleConfig.boilingPoint - 10) {
+                        this.state = 'liquid';
+                    } else if (temperature > moduleConfig.boilingPoint + 10) {
+                        this.state = 'gas';
+                    } else {
+                        this.state = temperature < moduleConfig.boilingPoint ? 'liquid' : 'gas';
+                    }
+                } else if (currentModule === 'solid-gas') {
+                    if (temperature < moduleConfig.sublimationPoint - 5) {
+                        this.state = 'solid';
+                    } else if (temperature > moduleConfig.sublimationPoint + 5) {
+                        this.state = 'gas';
+                    } else {
+                        this.state = temperature < moduleConfig.sublimationPoint ? 'solid' : 'gas';
+                    }
+                }
+            }
+
+            updateColor(temperature) {
+                // 根据温度渐变颜色
+                let t = (temperature + 50) / 200; // 归一化到0-1
+                t = Math.max(0, Math.min(1, t));
+                
+                // 从冷蓝色到暖橙色
+                const coldColor = {r: 52, g: 152, b: 219};   // #3498db
+                const warmColor = {r: 230, g: 126, b: 34};  // #e67e22
+                
+                const r = Math.round(coldColor.r + (warmColor.r - coldColor.r) * t);
+                const g = Math.round(coldColor.g + (warmColor.g - coldColor.g) * t);
+                const b = Math.round(coldColor.b + (warmColor.b - coldColor.b) * t);
+                
+                this.color = `rgb(${r}, ${g}, ${b})`;
+            }
+
+            updateSolid() {
+                // 固态粒子在晶格位置附近振动
+                this.oscillation += 0.05;
+                const amplitude = 1.5;
+                this.x = this.latticeX + Math.sin(this.oscillation) * amplitude;
+                this.y = this.latticeY + Math.cos(this.oscillation * 1.3) * amplitude;
+                this.vx = 0;
+                this.vy = 0;
+            }
+
+            updateLiquid(temperature) {
+                // 液态粒子可以滑动，有随机运动
+                const speed = 0.5 + (temperature / 100) * 1.5;
+                
+                // 添加一些随机运动
+                this.vx += (Math.random() - 0.5) * 0.2;
+                this.vy += (Math.random() - 0.5) * 0.2;
+                
+                // 限制速度
+                const maxSpeed = speed;
+                const currentSpeed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+                if (currentSpeed > maxSpeed) {
+                    this.vx = (this.vx / currentSpeed) * maxSpeed;
+                    this.vy = (this.vy / currentSpeed) * maxSpeed;
+                }
+                
+                // 应用速度
+                this.x += this.vx;
+                this.y += this.vy;
+                
+                // 缓慢减速
+                this.vx *= 0.95;
+                this.vy *= 0.95;
+            }
+
+            updateGas(temperature) {
+                // 气态粒子高速自由运动
+                const speed = 2 + (temperature / 100) * 3;
+                
+                // 添加随机加速度
+                this.vx += (Math.random() - 0.5) * 0.5;
+                this.vy += (Math.random() - 0.5) * 0.5;
+                
+                // 限制速度
+                const maxSpeed = speed;
+                const currentSpeed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+                if (currentSpeed > maxSpeed) {
+                    this.vx = (this.vx / currentSpeed) * maxSpeed;
+                    this.vy = (this.vy / currentSpeed) * maxSpeed;
+                }
+                
+                // 应用速度
+                this.x += this.vx;
+                this.y += this.vy;
+            }
+
+            handleBoundaries() {
+                const padding = 50;
+                
+                if (this.x < padding) {
+                    this.x = padding;
+                    this.vx = Math.abs(this.vx) * 0.8;
+                }
+                if (this.x > canvas.width - padding) {
+                    this.x = canvas.width - padding;
+                    this.vx = -Math.abs(this.vx) * 0.8;
+                }
+                if (this.y < padding) {
+                    this.y = padding;
+                    this.vy = Math.abs(this.vy) * 0.8;
+                }
+                if (this.y > canvas.height - padding) {
+                    this.y = canvas.height - padding;
+                    this.vy = -Math.abs(this.vy) * 0.8;
+                }
+            }
+
+            draw() {
+                // 绘制轨迹
+                if (showTraces && this.trace.length > 1) {
+                    ctx.beginPath();
+                    ctx.moveTo(this.trace[0].x, this.trace[0].y);
+                    
+                    for (let i = 1; i < this.trace.length; i++) {
+                        ctx.lineTo(this.trace[i].x, this.trace[i].y);
+                    }
+                    
+                    ctx.strokeStyle = `${this.color}30`;
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+                
+                // 绘制粒子
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                
+                // 添加高光效果
+                ctx.beginPath();
+                ctx.arc(this.x - this.radius/3, this.y - this.radius/3, this.radius/3, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                ctx.fill();
+            }
+        }
+
+        // 初始化粒子系统
+        function initParticles() {
+            particles = [];
+            const moduleConfig = modules[currentModule];
+            
+            // 根据当前模块创建不同排列的粒子
+            if (currentModule === 'solid-liquid' || currentModule === 'solid-gas') {
+                // 创建晶格排列（固态）
+                const rows = 12;
+                const cols = 16;
+                const spacingX = (canvas.width - 100) / cols;
+                const spacingY = (canvas.height - 100) / rows;
+                const offsetX = 50;
+                const offsetY = 50;
+                
+                for (let i = 0; i < rows; i++) {
+                    for (let j = 0; j < cols; j++) {
+                        const x = offsetX + j * spacingX + (i % 2) * spacingX/2;
+                        const y = offsetY + i * spacingY;
+                        const particle = new Particle(x, y, 'solid');
+                        particle.latticeX = x;
+                        particle.latticeY = y;
+                        particles.push(particle);
+                    }
+                }
+            } else if (currentModule === 'liquid-gas') {
+                // 创建液态的随机密集排列
+                const count = 150;
+                for (let i = 0; i < count; i++) {
+                    const x = 50 + Math.random() * (canvas.width - 100);
+                    const y = 50 + Math.random() * (canvas.height - 100);
+                    const particle = new Particle(x, y, 'liquid');
+                    particles.push(particle);
+                }
+            }
+            
+            // 设置初始温度
+            temperature = moduleConfig.initialTemp;
+            document.getElementById('tempSlider').value = temperature;
+            document.getElementById('currentTemp').textContent = temperature;
+            
+            updateUI();
+        }
+
+        // 绘制分子间作用力连线
+        function drawForces() {
+            if (!showForces) return;
+            
+            const maxDistance = 40;
+            
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const p1 = particles[i];
+                    const p2 = particles[j];
+                    
+                    const dx = p1.x - p2.x;
+                    const dy = p1.y - p2.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    // 只在粒子距离较近且状态不是气态时绘制作用力线
+                    if (distance < maxDistance && p1.state !== 'gas' && p2.state !== 'gas') {
+                        // 根据距离调整连线透明度
+                        const alpha = 1 - (distance / maxDistance);
+                        
+                        ctx.beginPath();
+                        ctx.moveTo(p1.x, p1.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        
+                        // 根据状态和距离调整连线颜色和样式
+                        let lineColor;
+                        let lineWidth;
+                        
+                        if (p1.state === 'solid' && p2.state === 'solid') {
+                            lineColor = `rgba(52, 152, 219, ${alpha * 0.7})`; // 蓝色，表示强作用力
+                            lineWidth = 2;
+                        } else {
+                            lineColor = `rgba(26, 188, 156, ${alpha * 0.4})`; // 青色，表示较弱作用力
+                            lineWidth = 1;
+                        }
+                        
+                        ctx.strokeStyle = lineColor;
+                        ctx.lineWidth = lineWidth;
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        // 获取当前状态描述
+        function getCurrentState() {
+            const moduleConfig = modules[currentModule];
+            
+            if (currentModule === 'solid-liquid') {
+                if (temperature < moduleConfig.meltingPoint - 5) {
+                    return moduleConfig.states.solid;
+                } else if (temperature > moduleConfig.meltingPoint + 5) {
+                    return moduleConfig.states.liquid;
+                } else if (temperature < moduleConfig.meltingPoint) {
+                    return moduleConfig.states.freezing;
+                } else {
+                    return moduleConfig.states.melting;
+                }
+            } else if (currentModule === 'liquid-gas') {
+                if (temperature < moduleConfig.boilingPoint - 10) {
+                    return moduleConfig.states.liquid;
+                } else if (temperature > moduleConfig.boilingPoint + 10) {
+                    return moduleConfig.states.gas;
+                } else if (temperature < moduleConfig.boilingPoint) {
+                    return moduleConfig.states.condensing;
+                } else {
+                    return moduleConfig.states.vaporizing;
+                }
+            } else if (currentModule === 'solid-gas') {
+                if (temperature < moduleConfig.sublimationPoint - 5) {
+                    return moduleConfig.states.solid;
+                } else if (temperature > moduleConfig.sublimationPoint + 5) {
+                    return moduleConfig.states.gas;
+                } else if (temperature < moduleConfig.sublimationPoint) {
+                    return moduleConfig.states.depositing;
+                } else {
+                    return moduleConfig.states.sublimating;
+                }
+            }
+        }
+
+        // 更新UI显示
+        function updateUI() {
+            const state = getCurrentState();
+            const moduleConfig = modules[currentModule];
+            
+            // 更新状态指示器
+            document.getElementById('statusText').textContent = state.name;
+            document.getElementById('statusDot').style.backgroundColor = state.color;
+            
+            // 更新过程描述
+            document.getElementById('processDesc').textContent = state.desc;
+            
+            // 更新能量流向
+            const energyFlow = document.getElementById('energyFlow');
+            energyFlow.innerHTML = '';
+            
+            const energyIcon = document.createElement('div');
+            energyIcon.className = 'energy-icon';
+            
+            const energyText = document.createElement('div');
+            
+            if (state.energy.includes('吸热')) {
+                energyIcon.textContent = '↑';
+                energyIcon.style.color = '#e67e22';
+                energyText.className = 'heat-absorption';
+                energyText.textContent = state.energy;
+            } else if (state.energy.includes('放热')) {
+                energyIcon.textContent = '↓';
+                energyIcon.style.color = '#3498db';
+                energyText.className = 'heat-release';
+                energyText.textContent = state.energy;
+            } else {
+                energyIcon.textContent = '→';
+                energyIcon.style.color = '#ecf0f1';
+                energyText.textContent = state.energy;
+            }
+            
+            energyFlow.appendChild(energyIcon);
+            energyFlow.appendChild(energyText);
+            
+            // 更新宏观实例
+            document.getElementById('macroIcon').textContent = moduleConfig.macroIcon;
+            document.getElementById('macroDesc').textContent = moduleConfig.macroDesc;
+            
+            // 更新温度标记线
+            const meltingLine = document.getElementById('meltingLine');
+            const boilingLine = document.getElementById('boilingLine');
+            
+            if (currentModule === 'solid-liquid') {
+                meltingLine.style.display = 'block';
+                meltingLine.style.left = `${((moduleConfig.meltingPoint + 50) / 200) * 100}%`;
+                boilingLine.style.display = 'none';
+            } else if (currentModule === 'liquid-gas') {
+                meltingLine.style.display = 'none';
+                boilingLine.style.display = 'block';
+                boilingLine.style.left = `${((moduleConfig.boilingPoint + 50) / 200) * 100}%`;
+            } else {
+                meltingLine.style.display = 'none';
+                boilingLine.style.display = 'none';
+            }
+        }
+
+        // 动画循环
+        function animate() {
+            // 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制背景网格（辅助参考）
+            ctx.strokeStyle = 'rgba(52, 73, 94, 0.2)';
+            ctx.lineWidth = 1;
+            
+            // 水平线
+            for (let y = 50; y < canvas.height; y += 50) {
+                ctx.beginPath();
+                ctx.moveTo(50, y);
+                ctx.lineTo(canvas.width - 50, y);
+                ctx.stroke();
+            }
+            
+            // 垂直线
+            for (let x = 50; x < canvas.width; x += 50) {
+                ctx.beginPath();
+                ctx.moveTo(x, 50);
+                ctx.lineTo(x, canvas.height - 50);
+                ctx.stroke();
+            }
+            
+            // 更新和绘制粒子
+            const moduleConfig = modules[currentModule];
+            
+            for (const particle of particles) {
+                particle.update(temperature, moduleConfig);
+                particle.draw();
+            }
+            
+            // 绘制分子间作用力
+            drawForces();
+            
+            // 继续动画循环
+            if (isPlaying) {
+                animationId = requestAnimationFrame(animate);
+            }
+        }
+
+        // DOM加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取Canvas上下文
+            canvas = document.getElementById('particleCanvas');
+            ctx = canvas.getContext('2d');
+            
+            // 调整Canvas大小以适应容器
+            function resizeCanvas() {
+                const container = canvas.parentElement;
+                canvas.width = container.clientWidth;
+                canvas.height = container.clientHeight;
+                
+                // 重新初始化粒子以适应新尺寸
+                initParticles();
+            }
+            
+            // 初始调整大小
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            // 初始化粒子
+            initParticles();
+            
+            // 开始动画
+            animate();
+            
+            // 标签页切换事件
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // 更新活动标签
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // 更新当前模块
+                    currentModule = this.dataset.module;
+                    
+                    // 重新初始化粒子
+                    initParticles();
+                });
+            });
+            
+            // 温度滑块事件
+            const tempSlider = document.getElementById('tempSlider');
+            tempSlider.addEventListener('input', function() {
+                temperature = parseInt(this.value);
+                document.getElementById('currentTemp').textContent = temperature;
+                updateUI();
+            });
+            
+            // 播放/暂停按钮
+            document.getElementById('playPauseBtn').addEventListener('click', function() {
+                isPlaying = !isPlaying;
+                this.textContent = isPlaying ? '暂停' : '播放';
+                document.getElementById('stepBtn').disabled = isPlaying;
+                
+                if (isPlaying) {
+                    animate();
+                } else {
+                    cancelAnimationFrame(animationId);
+                }
+            });
+            
+            // 重置按钮
+            document.getElementById('resetBtn').addEventListener('click', function() {
+                initParticles();
+            });
+            
+            // 单步前进按钮
+            document.getElementById('stepBtn').addEventListener('click', function() {
+                if (!isPlaying) {
+                    // 手动执行一帧动画
+                    cancelAnimationFrame(animationId);
+                    animate();
+                }
+            });
+            
+            // 视图选项
+            document.getElementById('showForces').addEventListener('change', function() {
+                showForces = this.checked;
+            });
+            
+            document.getElementById('showTraces').addEventListener('change', function() {
+                showTraces = this.checked;
+            });
+        });
+    </script>
+</body>
+</html>

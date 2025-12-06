@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>配位键形成教学动画 - [Cu(NH₃)₄]²⁺</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 2px solid #3b82f6;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #60a5fa;
+            font-size: 2.4rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .subtitle {
+            color: #cbd5e1;
+            font-size: 1.2rem;
+        }
+
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+        }
+
+        .animation-panel {
+            flex: 1;
+            min-width: 700px;
+            background: rgba(30, 41, 59, 0.9);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .canvas-container {
+            flex: 1;
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #0f172a;
+            border: 2px solid #334155;
+        }
+
+        #animationCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .controls-panel {
+            flex: 0 0 320px;
+            background: rgba(30, 41, 59, 0.9);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .step-indicator {
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .step-title {
+            color: #60a5fa;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .step-title::before {
+            content: "步骤";
+            background: #3b82f6;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .step-description {
+            color: #cbd5e1;
+            font-size: 1.05rem;
+            line-height: 1.7;
+        }
+
+        .step-description .highlight {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .step-description .ion {
+            color: #87ceeb;
+            font-weight: bold;
+        }
+
+        .step-description .ligand {
+            color: #1e3a8a;
+            font-weight: bold;
+        }
+
+        .step-description .bond {
+            color: #9d4edd;
+            font-weight: bold;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .step-buttons {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+
+        .step-btn {
+            padding: 12px 8px;
+            background: #334155;
+            color: #e2e8f0;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .step-btn:hover {
+            background: #475569;
+            transform: translateY(-2px);
+        }
+
+        .step-btn.active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .ctrl-btn {
+            flex: 1;
+            padding: 14px;
+            background: #1e40af;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.05rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-width: 120px;
+        }
+
+        .ctrl-btn:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .ctrl-btn:disabled {
+            background: #475569;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .toggle-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .toggle-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 10px;
+            border: 1px solid #334155;
+        }
+
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.05rem;
+            color: #e2e8f0;
+        }
+
+        .toggle-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .toggle-icon.electron {
+            background: #ffd700;
+            color: #0f172a;
+        }
+
+        .toggle-icon.bond {
+            background: #9d4edd;
+            color: white;
+        }
+
+        .toggle-icon.rotate {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 54px;
+            height: 28px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #475569;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #3b82f6;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .legend {
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 10px;
+        }
+
+        .legend-title {
+            color: #60a5fa;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .legend-items {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .legend-text {
+            color: #cbd5e1;
+            font-size: 0.95rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #94a3b8;
+            font-size: 0.95rem;
+            border-top: 1px solid #334155;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 1100px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            .animation-panel {
+                min-width: 100%;
+            }
+            
+            .controls-panel {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>配位键形成教学动画</h1>
+            <div class="subtitle">[Cu(NH₃)₄]²⁺ 深蓝色配合物的形成过程</div>
+        </header>
+
+        <div class="content">
+            <div class="animation-panel">
+                <div class="canvas-container">
+                    <canvas id="animationCanvas"></canvas>
+                </div>
+            </div>
+
+            <div class="controls-panel">
+                <div class="step-indicator">
+                    <div class="step-title" id="currentStepTitle">1. 反应物介绍</div>
+                    <div class="step-description" id="currentStepDesc">
+                        左侧是浅蓝色的 <span class="ion">Cu²⁺</span> 离子，右侧是四个 <span class="ligand">NH₃</span> 分子。
+                        注意观察 <span class="ligand">NH₃</span> 分子中氮原子上的 <span class="highlight">孤对电子</span>。
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <div class="step-buttons">
+                        <button class="step-btn active" data-step="0">1. 反应物</button>
+                        <button class="step-btn" data-step="1">2. Cu²⁺空轨道</button>
+                        <button class="step-btn" data-step="2">3. NH₃孤对电子</button>
+                        <button class="step-btn" data-step="3">4. 形成第一个键</button>
+                        <button class="step-btn" data-step="4">5. 完整配合物</button>
+                    </div>
+
+                    <div class="control-buttons">
+                        <button class="ctrl-btn" id="prevBtn">
+                            <span>◀</span> 上一步
+                        </button>
+                        <button class="ctrl-btn" id="nextBtn">
+                            下一步 <span>▶</span>
+                        </button>
+                        <button class="ctrl-btn" id="resetBtn">
+                            <span>↺</span> 重置
+                        </button>
+                    </div>
+
+                    <div class="toggle-controls">
+                        <div class="toggle-item">
+                            <div class="toggle-label">
+                                <div class="toggle-icon electron">e⁻</div>
+                                <span>显示孤对电子</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="toggleElectrons" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="toggle-item">
+                            <div class="toggle-label">
+                                <div class="toggle-icon bond">⇌</div>
+                                <span>高亮配位键</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="toggleBonds">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="toggle-item">
+                            <div class="toggle-label">
+                                <div class="toggle-icon rotate">↻</div>
+                                <span>自动旋转</span>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="toggleRotation">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="legend">
+                        <div class="legend-title">图例说明</div>
+                        <div class="legend-items">
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #87ceeb;"></div>
+                                <div class="legend-text">Cu²⁺ 离子</div>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #1e3a8a;"></div>
+                                <div class="legend-text">氮原子 (N)</div>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #d3d3d3;"></div>
+                                <div class="legend-text">氢原子 (H)</div>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #ffd700;"></div>
+                                <div class="legend-text">孤对电子</div>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: rgba(200,200,200,0.6); border: 1px solid #fff;"></div>
+                                <div class="legend-text">空轨道</div>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #9d4edd;"></div>
+                                <div class="legend-text">配位键</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>教学动画设计：配位键形成过程 | [Cu(NH₃)₄]²⁺ 深蓝色配合物 | 仅供教学使用</p>
+        </footer>
+    </div>
+
+    <script>
+        // 获取Canvas和上下文
+        const canvas = document.getElementById('animationCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // 设置Canvas尺寸
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+        }
+
+        // 颜色定义
+        const colors = {
+            background: '#0f172a',
+            cuIon: '#87ceeb',
+            nitrogen: '#1e3a8a',
+            hydrogen: '#d3d3d3',
+            lonePair: '#ffd700',
+            emptyOrbital: 'rgba(200, 200, 200, 0.6)',
+            coordinateBond: '#9d4edd',
+            covalentBond: '#555555',
+            text: '#e2e8f0',
+            highlight: '#3b82f6'
+        };
+
+        // 动画状态
+        let currentStep = 0;
+        const totalSteps = 5;
+        let animationTime = 0;
+        let isAnimating = false;
+        let showElectrons = true;
+        let highlightBonds = false;
+        let autoRotate = false;
+        let rotationAngle = 0;
+
+        // 步骤描述
+        const stepTitles = [
+            "1. 反应物介绍",
+            "2. Cu²⁺的空轨道",
+            "3. NH₃的孤对电子",
+            "4. 形成第一个配位键",
+            "5. 完整配合物 [Cu(NH₃)₄]²⁺"
+        ];
+
+        const stepDescriptions = [
+            `左侧是浅蓝色的 <span class="ion">Cu²⁺</span> 离子，右侧是四个 <span class="ligand">NH₃</span> 分子。注意观察 <span class="ligand">NH₃</span> 分子中氮原子上的 <span class="highlight">孤对电子</span>。`,
+            `<span class="ion">Cu²⁺</span> 离子有 <span class="highlight">4个空轨道</span>（灰色半透明区域），可以接受来自配体的电子对。这些空轨道呈 <span class="highlight">平面正方形</span> 排列。`,
+            `每个 <span class="ligand">NH₃</span> 分子中的氮原子上都有一对 <span class="highlight">孤对电子</span>（黄色）。这些孤对电子可以提供给 <span class="ion">Cu²⁺</span> 的空轨道，形成配位键。`,
+            `第一个 <span class="ligand">NH₃</span> 分子接近 <span class="ion">Cu²⁺</span>，氮原子的 <span class="highlight">孤对电子</span> 填入空轨道，形成第一个 <span class="bond">配位键</span>（紫色）。`,
+            `四个 <span class="ligand">NH₃</span> 分子全部与 <span class="ion">Cu²⁺</span> 配位，形成 <span class="bond">[Cu(NH₃)₄]²⁺</span> 深蓝色配合物。注意其 <span class="highlight">平面正方形</span> 几何构型。`
+        ];
+
+        // 分子数据
+        const molecules = {
+            cuIon: {
+                x: 0,
+                y: 0,
+                radius: 40,
+                orbitals: [
+                    { angle: 0, distance: 80, filled: false },
+                    { angle: Math.PI / 2, distance: 80, filled: false },
+                    { angle: Math.PI, distance: 80, filled: false },
+                    { angle: 3 * Math.PI / 2, distance: 80, filled: false }
+                ]
+            },
+            nh3Molecules: [
+                { x: 200, y: -150, angle: 0, bonded: false, bondProgress: 0 },
+                { x: 200, y: -50, angle: Math.PI / 2, bonded: false, bondProgress: 0 },
+                { x: 200, y: 50, angle: Math.PI, bonded: false, bondProgress: 0 },
+                { x: 200, y: 150, angle: 3 * Math.PI / 2, bonded: false, bondProgress: 0 }
+            ]
+        };
+
+        // 初始化
+        function init() {
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            // 设置初始状态
+            updateStepDisplay();
+            
+            // 开始动画循环
+            requestAnimationFrame(animate);
+        }
+
+        // 动画循环
+        function animate(timestamp) {
+            // 清除画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 更新动画时间
+            if (!isAnimating) {
+                animationTime += 0.016; // 约60fps
+            }
+            
+            // 更新旋转
+            if (autoRotate) {
+                rotationAngle += 0.005;
+            }
+            
+            // 保存画布状态
+            ctx.save();
+            
+            // 将原点移动到画布中心
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+            
+            // 应用旋转
+            if (autoRotate || rotationAngle !== 0) {
+                ctx.rotate(rotationAngle);
+            }
+            
+            // 绘制当前步骤
+            drawStep(currentStep);
+            
+            // 恢复画布状态
+            ctx.restore();
+            
+            // 继续动画循环
+            requestAnimationFrame(animate);
+        }
+
+        // 绘制步骤
+        function drawStep(step) {
+            switch(step) {
+                case 0:
+                    drawStep0();
+                    break;
+                case 1:
+                    drawStep1();
+                    break;
+                case 2:
+                    drawStep2();
+                    break;
+                case 3:
+                    drawStep3();
+                    break;
+                case 4:
+                    drawStep4();
+                    break;
+            }
+        }
+
+        // 步骤0: 反应物介绍
+        function drawStep0() {
+            // 绘制Cu²⁺离子
+            drawCuIon();
+            
+            // 绘制NH3分子（在右侧）
+            molecules.nh3Molecules.forEach((nh3, index) => {
+                drawNH3(nh3.x, nh3.y, nh3.angle, false);
+            });
+            
+            // 绘制箭头和文字
+            ctx.fillStyle = colors.text;
+            ctx.font = '20px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Cu²⁺', molecules.cuIon.x, molecules.cuIon.y + 60);
+            ctx.fillText('NH₃', 280, -130);
+        }
+
+        // 步骤1: Cu²⁺的空轨道
+        function drawStep1() {
+            drawCuIon();
+            
+            // 绘制空轨道
+            molecules.cuIon.orbitals.forEach(orbital => {
+                drawEmptyOrbital(orbital.angle, orbital.distance);
+            });
+            
+            // 绘制轨道说明
+            ctx.fillStyle = colors.text;
+            ctx.font = '18px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('空轨道', 0, -120);
+            ctx.fillText('(可接受电子对)', 0, -95);
+        }
+
+        // 步骤2: NH₃的孤对电子
+        function drawStep2() {
+            drawStep1(); // 包含Cu²⁺和空轨道
+            
+            // 绘制NH3分子（带孤对电子）
+            molecules.nh3Molecules.forEach((nh3, index) => {
+                drawNH3(nh3.x, nh3.y, nh3.angle, true);
+            });
+            
+            // 绘制电子说明
+            ctx.fillStyle = colors.text;
+            ctx.font = '18px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('孤对电子', 280, -180);
+            ctx.fillText('(可提供电子对)', 280, -155);
+        }
+
+        // 步骤3: 形成第一个配位键
+        function drawStep3() {
+            drawCuIon();
+            
+            // 绘制空轨道
+            molecules.cuIon.orbitals.forEach(orbital => {
+                if (orbital.filled) {
+                    drawFilledOrbital(orbital.angle, orbital.distance);
+                } else {
+                    drawEmptyOrbital(orbital.angle, orbital.distance);
+                }
+            });
+            
+            // 更新第一个NH3的位置（动画效果）
+            const progress = Math.min(animationTime * 2, 1);
+            const firstNH3 = molecules.nh3Molecules[0];
+            const targetX = Math.cos(firstNH3.angle) * 80;
+            const targetY = Math.sin(firstNH3.angle) * 80;
+            
+            const currentX = 200 + (targetX - 200) * progress;
+            const currentY = firstNH3.y + (targetY - firstNH3.y) * progress;
+            
+            // 绘制NH3分子
+            drawNH3(currentX, currentY, firstNH3.angle, true);
+            
+            // 绘制电子转移动画
+            if (progress > 0.3 && progress < 0.8) {
+                const electronProgress = (progress - 0.3) / 0.5;
+                drawElectronTransfer(currentX, currentY, 0, 0, electronProgress);
+            }
+            
+            // 绘制配位键（如果已形成）
+            if (progress > 0.8) {
+                molecules.cuIon.orbitals[0].filled = true;
+                drawCoordinateBond(0, 0, currentX, currentY, true);
+            }
+            
+            // 绘制其他NH3分子（在原始位置）
+            for (let i = 1; i < molecules.nh3Molecules.length; i++) {
+                const nh3 = molecules.nh3Molecules[i];
+                drawNH3(nh3.x, nh3.y, nh3.angle, true);
+            }
+        }
+
+        // 步骤4: 完整配合物
+        function drawStep4() {
+            drawCuIon();
+            
+            // 绘制所有配位键
+            molecules.nh3Molecules.forEach((nh3, index) => {
+                const angle = nh3.angle;
+                const x = Math.cos(angle) * 80;
+                const y = Math.sin(angle) * 80;
+                
+                // 绘制NH3分子
+                drawNH3(x, y, angle, showElectrons);
+                
+                // 绘制配位键
+                drawCoordinateBond(0, 0, x, y, highlightBonds);
+                
+                // 标记轨道已填充
+                molecules.cuIon.orbitals[index].filled = true;
+            });
+            
+            // 绘制配合物名称
+            ctx.fillStyle = colors.text;
+            ctx.font = '24px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('[Cu(NH₃)₄]²⁺', 0, 150);
+            ctx.font = '18px Arial';
+            ctx.fillText('深蓝色配合物', 0, 180);
+        }
+
+        // 绘制Cu²⁺离子
+        function drawCuIon() {
+            // 绘制离子球体
+            ctx.beginPath();
+            ctx.arc(molecules.cuIon.x, molecules.cuIon.y, molecules.cuIon.radius, 0, Math.PI * 2);
+            
+            // 创建渐变效果
+            const gradient = ctx.createRadialGradient(
+                molecules.cuIon.x - 10, molecules.cuIon.y - 10, 5,
+                molecules.cuIon.x, molecules.cuIon.y, molecules.cuIon.radius
+            );
+            gradient.addColorStop(0, '#a8e6ff');
+            gradient.addColorStop(1, colors.cuIon);
+            
+            ctx.fillStyle = gradient;
+            ctx.fill();
+            
+            // 绘制边框
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#60a5fa';
+            ctx.stroke();
+            
+            // 绘制离子符号
+            ctx.fillStyle = '#0f172a';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('Cu²⁺', molecules.cuIon.x, molecules.cuIon.y);
+        }
+
+        // 绘制NH3分子
+        function drawNH3(x, y, rotationAngle, showLonePair) {
+            // 氮原子
+            ctx.beginPath();
+            ctx.arc(x, y, 20, 0, Math.PI * 2);
+            ctx.fillStyle = colors.nitrogen;
+            ctx.fill();
+            
+            // 氮原子边框
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#2d4a9e';
+            ctx.stroke();
+            
+            // 氢原子位置（三角锥形）
+            const hDistance = 50;
+            const hAngles = [
+                rotationAngle,
+                rotationAngle + (2 * Math.PI / 3),
+                rotationAngle + (4 * Math.PI / 3)
+            ];
+            
+            // 绘制氢原子和键
+            hAngles.forEach(angle => {
+                const hX = x + Math.cos(angle) * hDistance;
+                const hY = y + Math.sin(angle) * hDistance;
+                
+                // 绘制共价键
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(hX, hY);
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = colors.covalentBond;
+                ctx.stroke();
+                
+                // 绘制氢原子
+                ctx.beginPath();
+                ctx.arc(hX, hY, 12, 0, Math.PI * 2);
+                ctx.fillStyle = colors.hydrogen;
+                ctx.fill();
+                
+                // 氢原子边框
+                ctx.lineWidth = 1;
+                ctx.strokeStyle = '#a0a0a0';
+                ctx.stroke();
+            });
+            
+            // 绘制孤对电子（如果显示）
+            if (showLonePair && showElectrons) {
+                const lonePairX = x - Math.cos(rotationAngle) * 35;
+                const lonePairY = y - Math.sin(rotationAngle) * 35;
+                
+                // 绘制电子云效果
+                ctx.beginPath();
+                ctx.arc(lonePairX, lonePairY, 15, 0, Math.PI * 2);
+                const gradient = ctx.createRadialGradient(
+                    lonePairX, lonePairY, 5,
+                    lonePairX, lonePairY, 15
+                );
+                gradient.addColorStop(0, 'rgba(255, 215, 0, 0.8)');
+                gradient.addColorStop(1, 'rgba(255, 215, 0, 0.2)');
+                ctx.fillStyle = gradient;
+                ctx.fill();
+                
+                // 绘制电子点
+                ctx.beginPath();
+                ctx.arc(lonePairX - 4, lonePairY, 3, 0, Math.PI * 2);
+                ctx.arc(lonePairX + 4, lonePairY, 3, 0, Math.PI * 2);
+                ctx.fillStyle = colors.lonePair;
+                ctx.fill();
+            }
+            
+            // 绘制分子式
+            ctx.fillStyle = colors.text;
+            ctx.font = '16px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('NH₃', x, y + 45);
+        }
+
+        // 绘制空轨道
+        function drawEmptyOrbital(angle, distance) {
+            const x = Math.cos(angle) * distance;
+            const y = Math.sin(angle) * distance;
+            
+            // 绘制轨道形状（椭圆）
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle);
+            
+            // 轨道填充
+            ctx.beginPath();
+            ctx.ellipse(0, 0, 25, 15, 0, 0, Math.PI * 2);
+            ctx.fillStyle = colors.emptyOrbital;
+            ctx.fill();
+            
+            // 轨道边框
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#ffffff';
+            ctx.stroke();
+            
+            // 绘制"+"号
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 20px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('+', 0, 0);
+            
+            ctx.restore();
+        }
+
+        // 绘制已填充轨道
+        function drawFilledOrbital(angle, distance) {
+            const x = Math.cos(angle) * distance;
+            const y = Math.sin(angle) * distance;
+            
+            // 绘制轨道形状
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle);
+            
+            // 轨道填充（更实）
+            ctx.beginPath();
+            ctx.ellipse(0, 0, 25, 15, 0, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(157, 78, 221, 0.3)';
+            ctx.fill();
+            
+            // 轨道边框
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = colors.coordinateBond;
+            ctx.stroke();
+            
+            // 绘制"✓"号
+            ctx.fillStyle = colors.coordinateBond;
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('✓', 0, 0);
+            
+            ctx.restore();
+        }
+
+        // 绘制电子转移动画
+        function drawElectronTransfer(fromX, fromY, toX, toY, progress) {
+            const electronX = fromX + (toX - fromX) * progress;
+            const electronY = fromY + (toY - fromY) * progress;
+            
+            // 绘制电子轨迹
+            ctx.beginPath();
+            ctx.moveTo(fromX, fromY);
+            ctx.lineTo(toX, toY);
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = 'rgba(255, 215, 0, 0.3)';
+            ctx.stroke();
+            
+            // 绘制电子
+            ctx.beginPath();
+            ctx.arc(electronX, electronY, 6, 0, Math.PI * 2);
+            
+            // 电子发光效果
+            const gradient = ctx.createRadialGradient(
+                electronX, electronY, 2,
+                electronX, electronY, 6
+            );
+            gradient.addColorStop(0, '#ffffff');
+            gradient.addColorStop(1, colors.lonePair);
+            
+            ctx.fillStyle = gradient;
+            ctx.fill();
+            
+            // 电子光晕
+            ctx.beginPath();
+            ctx.arc(electronX, electronY, 10, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(255, 215, 0, 0.5)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        // 绘制配位键
+        function drawCoordinateBond(fromX, fromY, toX, toY, highlight) {
+            ctx.beginPath();
+            ctx.moveTo(fromX, fromY);
+            ctx.lineTo(toX, toY);
+            
+            // 设置线条样式
+            ctx.lineWidth = highlight ? 6 : 4;
+            ctx.strokeStyle = highlight ? colors.coordinateBond : colors.coordinateBond;
+            
+            // 如果是高亮模式，添加发光效果
+            if (highlight) {
+                ctx.shadowColor = colors.coordinateBond;
+                ctx.shadowBlur = 15;
+            }
+            
+            ctx.stroke();
+            
+            // 重置阴影
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+            
+            // 绘制箭头（表示电子对方向）
+            const angle = Math.atan2(toY - fromY, toX - fromX);
+            const arrowLength = 15;
+            const arrowX = fromX + (toX - fromX) * 0.7;
+            const arrowY = fromY + (toY - fromY) * 0.7;
+            
+            ctx.save();
+            ctx.translate(arrowX, arrowY);
+            ctx.rotate(angle);
+            
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(-arrowLength, -arrowLength/2);
+            ctx.lineTo(-arrowLength, arrowLength/2);
+            ctx.closePath();
+            ctx.fillStyle = colors.coordinateBond;
+            ctx.fill();
+            
+            ctx.restore();
+        }
+
+        // 更新步骤显示
+        function updateStepDisplay() {
+            document.getElementById('currentStepTitle').textContent = stepTitles[currentStep];
+            document.getElementById('currentStepDesc').innerHTML = stepDescriptions[currentStep];
+            
+            // 更新步骤按钮状态
+            document.querySelectorAll('.step-btn').forEach((btn, index) => {
+                if (index === currentStep) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            // 更新控制按钮状态
+            document.getElementById('prevBtn').disabled = currentStep === 0;
+            document.getElementById('nextBtn').disabled = currentStep === totalSteps - 1;
+            
+            // 重置动画时间
+            animationTime = 0;
+            isAnimating = false;
+            
+            //
+<!--检测到代码截断，自动续写中...-->
+// 重置分子状态
+            resetMolecules();
+        }
+
+        // 重置分子状态
+        function resetMolecules() {
+            molecules.cuIon.orbitals.forEach(orbital => {
+                orbital.filled = false;
+            });
+            
+            molecules.nh3Molecules.forEach(nh3 => {
+                nh3.bonded = false;
+                nh3.bondProgress = 0;
+            });
+        }
+
+        // 步骤切换
+        function goToStep(step) {
+            if (step >= 0 && step < totalSteps) {
+                currentStep = step;
+                updateStepDisplay();
+            }
+        }
+
+        // 下一步
+        function nextStep() {
+            if (currentStep < totalSteps - 1) {
+                goToStep(currentStep + 1);
+            }
+        }
+
+        // 上一步
+        function prevStep() {
+            if (currentStep > 0) {
+                goToStep(currentStep - 1);
+            }
+        }
+
+        // 重置到第一步
+        function resetAnimation() {
+            goToStep(0);
+            rotationAngle = 0;
+        }
+
+        // 事件监听器设置
+        function setupEventListeners() {
+            // 步骤按钮
+            document.querySelectorAll('.step-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const step = parseInt(btn.dataset.step);
+                    goToStep(step);
+                });
+            });
+
+            // 控制按钮
+            document.getElementById('prevBtn').addEventListener('click', prevStep);
+            document.getElementById('nextBtn').addEventListener('click', nextStep);
+            document.getElementById('resetBtn').addEventListener('click', resetAnimation);
+
+            // 切换控制
+            document.getElementById('toggleElectrons').addEventListener('change', (e) => {
+                showElectrons = e.target.checked;
+            });
+
+            document.getElementById('toggleBonds').addEventListener('change', (e) => {
+                highlightBonds = e.target.checked;
+            });
+
+            document.getElementById('toggleRotation').addEventListener('change', (e) => {
+                autoRotate = e.target.checked;
+            });
+
+            // 键盘控制
+            document.addEventListener('keydown', (e) => {
+                switch(e.key) {
+                    case 'ArrowLeft':
+                        prevStep();
+                        break;
+                    case 'ArrowRight':
+                        nextStep();
+                        break;
+                    case 'r':
+                    case 'R':
+                        resetAnimation();
+                        break;
+                    case ' ':
+                        // 空格键切换自动旋转
+                        autoRotate = !autoRotate;
+                        document.getElementById('toggleRotation').checked = autoRotate;
+                        break;
+                }
+            });
+        }
+
+        // 初始化应用
+        window.addEventListener('DOMContentLoaded', () => {
+            init();
+            setupEventListeners();
+        });
+    </script>
+</body>
+</html>

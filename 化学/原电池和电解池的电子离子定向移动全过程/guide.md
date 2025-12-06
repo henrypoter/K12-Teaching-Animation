@@ -1,0 +1,1366 @@
+# 需求：原电池和电解池的电子/离子定向移动全过程
+
+### 1. 专业思考
+
+### 1. 专业思考
+
+#### 用户需求分析
+1.  **目标用户**：高中或大学低年级的化学学习者。他们已具备基本的氧化还原反应、离子、电流等概念，但难以在脑海中动态构建原电池与电解池中微观粒子的协同运动图景。
+2.  **核心痛点**：
+    *   **抽象性**：电子、离子的移动肉眼不可见，学生难以理解“闭合回路”中电荷是如何连续传递的。
+    *   **混淆性**：容易将原电池（自发）和电解池（非自发）的工作原理、电极名称、粒子移动方向混淆。
+    *   **整体性缺失**：常孤立记忆“电子从负极到正极”，但无法与溶液中的离子迁移、电极反应、外电路电流形成一个动态、完整的系统认知。
+3.  **学习目标**：通过动画，学习者应能：
+    *   清晰区分原电池和电解池的定义、能量转换方向及构成条件。
+    *   可视化并描述两种装置中，电子在外电路的定向移动与离子在内电路（电解质溶液）的定向移动如何衔接，构成完整回路。
+    *   准确说出各电极的名称（正/负极，阴/阳极）及其发生的反应类型（氧化/还原）。
+
+#### 教学设计思路
+1.  **核心概念**：围绕“电荷的定向移动形成电流”这一物理本质，串联化学变化。强调**原电池是化学能→电能（自发）**，**电解池是电能→化学能（非自发）**。关键在于展示两种装置中，**外电路（电子传导）与内电路（离子传导）如何通过电极反应耦合**。
+2.  **认知规律**：
+    *   **对比学习**：将原电池与电解池并列呈现，通过对比强化差异。
+    *   **从宏观到微观**：先展示完整的装置（烧杯、电极、导线、灯泡/电源），再高亮并动画演示微观粒子的运动。
+    *   **分步解析与整体循环**：先分解展示“电子移动”、“离子移动”、“电极反应”，最后整合为连续、循环的全过程动画。
+3.  **交互设计**：
+    *   **模式切换**：提供“原电池模式”和“电解池模式”的切换按钮，让用户主动选择学习内容。
+    *   **播放控制**：提供“播放/暂停”、“步进/步退”、“重置”控件，允许学习者控制动画速度，仔细观察关键步骤。
+    *   **粒子高亮与追踪**：允许用户点击或鼠标悬停，高亮特定电子或离子的运动轨迹，并可选择“追踪一个电子”的视角，理解其完整旅程。
+    *   **图层控制**：提供复选框，可单独显示/隐藏“电子流”、“离子流”、“电极反应文本”、“电流方向”等图层，降低认知负荷，便于分步学习。
+4.  **视觉呈现**：
+    *   **装置可视化**：用简洁的卡通风格绘制两个烧杯、电极（如Zn片和Cu片）、导线、负载（灯泡）或电源。原电池的灯泡发光，电解池的电源标志明显。
+    *   **粒子设计**：
+        *   **电子**：用非常小的、闪烁的蓝色圆点表示，带负号“-”或“e-”，沿导线高速移动。
+        *   **阳离子**：用带“+”号的不同颜色圆点表示（如Zn²⁺用浅蓝色，H⁺或Cu²⁺用其他颜色），移动速度较慢。
+        *   **阴离子**：用带“-”号的不同颜色圆点表示（如SO₄²⁻用黄色），移动方向与阳离子相反。
+    *   **动态效果**：粒子移动路径清晰，在电极表面发生反应时（如Zn溶解、Cu析出）有生动的形变或生成/消失效果。电流方向用醒目的箭头叠加显示。
+
+#### 配色方案选择
+*   **背景与装置**：采用浅灰色或极浅的蓝色背景，确保对比度。烧杯、电极等装置使用中性色（浅灰、白色边框），电极金属可用浅金属色（锌为银灰，铜为浅红棕），突出其材质而非颜色本身。
+*   **粒子与高亮色**：
+    *   **电子**：亮蓝色 (`#4A90E2`)，代表负电，在深色导线中非常醒目。
+    *   **阳离子**：暖色调，如红色 (`#E74C3C` 代表 H⁺) 或橙色 (`#E67E22` 代表 Cu²⁺)。
+    *   **阴离子**：冷色调，如绿色 (`#2ECC71` 代表 OH⁻) 或黄色 (`#F1C40F` 代表 SO₄²⁻)。
+    *   **高亮与追踪路径**：使用明亮的荧光色，如亮黄色 (`#FFFF00`) 或青色 (`#00FFFF`)。
+    *   **文本与箭头**：电流方向箭头用深红色 (`#C0392B`)。电极反应方程式用黑色或深灰色，关键物质可着色以对应粒子。
+*   **交互元素**：按钮使用扁平化设计，原电池模式按钮可用绿色系（象征释放能量），电解池模式按钮可用紫色系（象征消耗能量）。激活状态有明显视觉反馈。
+
+#### 交互功能列表
+1.  **模式选择器**：两个大按钮——“原电池” / “电解池”。
+2.  **主动画控制面板**：
+    *   播放/暂停按钮
+    *   步进（下一帧）按钮
+    *   步退（上一帧）按钮
+    *   重置按钮
+    *   速度调节滑块
+3.  **可视化图层控制面板**（复选框）：
+    *   □ 显示电子流
+    *   □ 显示离子流
+    *   □ 显示电极反应方程式
+    *   □ 显示电流方向箭头
+    *   □ 高亮一个电子路径（点击激活后，再点击画面上任意一个电子进行追踪）
+4.  **信息提示**：鼠标悬停在电极、粒子、负载上时，显示简要说明（如“锌负极（发生氧化反应）”、“电子流向此处”等）。
+5.  **对比视图**（可选高级功能）：在屏幕并排显示原电池和电解池的同步动画，用不同颜色标出粒子流向，直观对比。
+
+### 2. HTML_CODE
+
+### 2. HTML_CODE
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>原电池与电解池：电子与离子定向移动全过程</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            width: 100%;
+            max-width: 1200px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto 20px;
+            line-height: 1.5;
+        }
+        
+        .mode-selector {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .mode-btn {
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .mode-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        .mode-btn.active {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+        
+        #galvanic-btn {
+            background: linear-gradient(to right, #2ecc71, #27ae60);
+            color: white;
+        }
+        
+        #electrolytic-btn {
+            background: linear-gradient(to right, #9b59b6, #8e44ad);
+            color: white;
+        }
+        
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+            width: 100%;
+            max-width: 1200px;
+        }
+        
+        .animation-area {
+            flex: 1;
+            min-width: 700px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            padding: 20px;
+            position: relative;
+        }
+        
+        #animation-canvas {
+            width: 100%;
+            height: 500px;
+            display: block;
+            background-color: #f8fafc;
+        }
+        
+        .controls-panel {
+            width: 300px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .control-section {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
+        }
+        
+        .control-section:last-child {
+            border-bottom: none;
+        }
+        
+        .section-title {
+            font-size: 1.2rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section-title i {
+            font-size: 1.1rem;
+        }
+        
+        .playback-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background-color: #3498db;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            box-shadow: 0 3px 5px rgba(0,0,0,0.1);
+        }
+        
+        .control-btn:hover {
+            background-color: #2980b9;
+            transform: scale(1.05);
+        }
+        
+        .control-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .speed-label {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            min-width: 60px;
+        }
+        
+        #speed-slider {
+            flex: 1;
+            height: 8px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #ddd;
+            border-radius: 4px;
+            outline: none;
+        }
+        
+        #speed-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3498db;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .checkbox-item label {
+            cursor: pointer;
+            font-size: 1rem;
+            color: #555;
+            user-select: none;
+        }
+        
+        .legend {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        
+        .info-panel {
+            margin-top: 25px;
+            width: 100%;
+            max-width: 1200px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 25px;
+        }
+        
+        .info-title {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .info-content {
+            line-height: 1.6;
+            color: #555;
+        }
+        
+        .highlight {
+            background-color: #fffacd;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+        
+        .reaction-equation {
+            font-family: 'Cambria', 'Times New Roman', serif;
+            font-size: 1.1rem;
+            background-color: #f9f9f9;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+            margin: 10px 0;
+        }
+        
+        @media (max-width: 1100px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .animation-area {
+                min-width: 90%;
+            }
+            
+            .controls-panel {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>原电池与电解池：电子与离子定向移动全过程</h1>
+        <p class="subtitle">本动画可视化展示原电池（化学能→电能）和电解池（电能→化学能）中电子、离子的定向移动过程，以及电极反应如何连接内外电路形成完整回路。</p>
+        
+        <div class="mode-selector">
+            <button id="galvanic-btn" class="mode-btn active">原电池模式</button>
+            <button id="electrolytic-btn" class="mode-btn">电解池模式</button>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="animation-area">
+            <canvas id="animation-canvas"></canvas>
+        </div>
+        
+        <div class="controls-panel">
+            <div class="control-section">
+                <div class="section-title">动画控制</div>
+                <div class="playback-controls">
+                    <button id="prev-btn" class="control-btn" title="上一步">◀</button>
+                    <button id="play-pause-btn" class="control-btn" title="播放/暂停">▶</button>
+                    <button id="next-btn" class="control-btn" title="下一步">▶</button>
+                    <button id="reset-btn" class="control-btn" title="重置">↺</button>
+                </div>
+                
+                <div class="speed-control">
+                    <div class="speed-label">速度:</div>
+                    <input type="range" id="speed-slider" min="1" max="10" value="5">
+                </div>
+            </div>
+            
+            <div class="control-section">
+                <div class="section-title">显示选项</div>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="show-electrons" checked>
+                        <label for="show-electrons">显示电子流</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="show-ions" checked>
+                        <label for="show-ions">显示离子流</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="show-reactions" checked>
+                        <label for="show-reactions">显示电极反应</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="show-current" checked>
+                        <label for="show-current">显示电流方向</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="highlight-electron">
+                        <label for="highlight-electron">高亮单个电子路径</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="control-section">
+                <div class="section-title">图例说明</div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #4A90E2;"></div>
+                        <div>电子 (e⁻)</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #E74C3C;"></div>
+                        <div>阳离子 (H⁺, Zn²⁺)</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #2ECC71;"></div>
+                        <div>阴离子 (SO₄²⁻, OH⁻)</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #C0392B;"></div>
+                        <div>电流方向</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="info-panel">
+        <div class="info-title">当前模式说明</div>
+        <div class="info-content">
+            <p id="mode-description">
+                <span class="highlight">原电池模式</span>：化学能转化为电能的自发装置。锌片（负极）失去电子发生氧化反应：Zn → Zn²⁺ + 2e⁻；电子通过导线流向铜片（正极），溶液中H⁺在铜片表面得电子发生还原反应：2H⁺ + 2e⁻ → H₂↑。阳离子向正极移动，阴离子向负极移动，形成完整回路。
+            </p>
+            <div id="galvanic-equations" class="reaction-equation">
+                负极（锌）：Zn → Zn²⁺ + 2e⁻ (氧化反应)<br>
+                正极（铜）：2H⁺ + 2e⁻ → H₂↑ (还原反应)<br>
+                总反应：Zn + 2H⁺ → Zn²⁺ + H₂↑
+            </div>
+            <div id="electrolytic-equations" class="reaction-equation" style="display:none;">
+                阴极（铜）：Cu²⁺ + 2e⁻ → Cu (还原反应)<br>
+                阳极（锌）：Zn → Zn²⁺ + 2e⁻ (氧化反应)<br>
+                总反应：Zn + Cu²⁺ → Zn²⁺ + Cu
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 获取Canvas和上下文
+        const canvas = document.getElementById('animation-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 设置Canvas尺寸
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = 500;
+        }
+        
+        // 初始调整尺寸
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // 动画状态
+        let animationId = null;
+        let isPlaying = true;
+        let currentMode = 'galvanic'; // 'galvanic' 或 'electrolytic'
+        let animationSpeed = 5; // 1-10
+        let frameCount = 0;
+        
+        // 显示选项
+        let showElectrons = true;
+        let showIons = true;
+        let showReactions = true;
+        let showCurrent = true;
+        let highlightElectron = false;
+        
+        // 粒子系统
+        const particles = {
+            electrons: [],
+            cations: [],
+            anions: []
+        };
+        
+        // 高亮的电子
+        let highlightedElectron = null;
+        
+        // 装置参数
+        const device = {
+            leftBeaker: { x: canvas.width * 0.2, y: canvas.height * 0.4, width: 180, height: 200 },
+            rightBeaker: { x: canvas.width * 0.65, y: canvas.height * 0.4, width: 180, height: 200 },
+            leftElectrode: { x: 0, y: 0, width: 30, height: 150 },
+            rightElectrode: { x: 0, y: 0, width: 30, height: 150 },
+            wire: { points: [] },
+            bulb: { x: 0, y: 0, radius: 25 },
+            powerSource: { x: 0, y: 0, width: 60, height: 40 }
+        };
+        
+        // 颜色定义
+        const colors = {
+            electron: '#4A90E2',
+            cation: '#E74C3C',
+            anion: '#2ECC71',
+            currentArrow: '#C0392B',
+            zincElectrode: '#BDC3C7',
+            copperElectrode: '#D35400',
+            beaker: '#ECF0F1',
+            wire: '#34495E',
+            bulbOff: '#95A5A6',
+            bulbOn: '#F1C40F',
+            powerSource: '#7F8C8D',
+            background: '#F8F9FA'
+        };
+        
+        // 初始化装置
+        function initDevice() {
+            // 左烧杯（锌电极）
+            device.leftBeaker.x = canvas.width * 0.2;
+            device.leftBeaker.y = canvas.height * 0.4;
+            
+            // 右烧杯（铜电极）
+            device.rightBeaker.x = canvas.width * 0.65;
+            device.rightBeaker.y = canvas.height * 0.4;
+            
+            // 电极位置
+            device.leftElectrode.x = device.leftBeaker.x + device.leftBeaker.width/2 - 15;
+            device.leftElectrode.y = device.leftBeaker.y + 20;
+            
+            device.rightElectrode.x = device.rightBeaker.x + device.rightBeaker.width/2 - 15;
+            device.rightElectrode.y = device.rightBeaker.y + 20;
+            
+            // 导线路径点（用于电子移动）
+            device.wire.points = [
+                {x: device.leftElectrode.x + device.leftElectrode.width, y: device.leftElectrode.y + 20},
+                {x: device.leftElectrode.x + device.leftElectrode.width + 50, y: device.leftElectrode.y + 20},
+                {x: device.leftElectrode.x + device.leftElectrode.width + 50, y: canvas.height * 0.15},
+                {x: device.rightElectrode.x - 50, y: canvas.height * 0.15},
+                {x: device.rightElectrode.x - 50, y: device.rightElectrode.y + 20},
+                {x: device.rightElectrode.x, y: device.rightElectrode.y + 20}
+            ];
+            
+            // 灯泡位置（原电池）
+            device.bulb.x = canvas.width * 0.5;
+            device.bulb.y = canvas.height * 0.15;
+            
+            // 电源位置（电解池）
+            device.powerSource.x = canvas.width * 0.5 - 30;
+            device.powerSource.y = canvas.height * 0.15 - 20;
+        }
+        
+        // 粒子类
+        class Particle {
+            constructor(type, x, y, color, speed, direction) {
+                this.type = type; // 'electron', 'cation', 'anion'
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.speed = speed;
+                this.direction = direction; // 角度（弧度）
+                this.radius = type === 'electron' ? 3 : 5;
+                this.active = true;
+                this.path = []; // 记录路径（用于高亮）
+                this.maxPathLength = 50;
+                
+                // 为电子添加唯一ID
+                if (type === 'electron') {
+                    this.id = Math.random().toString(36).substr(2, 9);
+                }
+            }
+            
+            update() {
+                // 记录位置到路径
+                this.path.push({x: this.x, y: this.y});
+                if (this.path.length > this.maxPathLength) {
+                    this.path.shift();
+                }
+                
+                // 更新位置
+                this.x += Math.cos(this.direction) * this.speed * (animationSpeed / 5);
+                this.y += Math.sin(this.direction) * this.speed * (animationSpeed / 5);
+                
+                // 边界检查和重置逻辑
+                if (this.type === 'electron') {
+                    this.handleElectronBounds();
+                } else if (this.type === 'cation') {
+                    this.handleCationBounds();
+                } else if (this.type === 'anion') {
+                    this.handleAnionBounds();
+                }
+            }
+            
+            handleElectronBounds() {
+                // 电子在导线中移动
+                // 简化处理：如果电子到达导线终点，则重置到起点
+                if (currentMode === 'galvanic') {
+                    // 原电池：电子从左电极到右电极
+                    if (this.x > device.wire.points[device.wire.points.length-1].x + 10) {
+                        this.resetToStart();
+                    }
+                } else {
+                    // 电解池：电子从右电极到左电极（电源驱动）
+                    if (this.x < device.wire.points[0].x - 10) {
+                        this.resetToStart();
+                    }
+                }
+            }
+            
+            handleCationBounds() {
+                // 阳离子向阴极移动
+                // 简化处理：如果到达电极表面，则重置
+                const targetX = currentMode === 'galvanic' ? 
+                    device.rightElectrode.x + device.rightElectrode.width/2 : // 原电池：向正极（铜）
+                    device.leftElectrode.x + device.leftElectrode.width/2;   // 电解池：向阴极（铜）
+                
+                if (Math.abs(this.x - targetX) < 10 && 
+                    this.y > device.leftBeaker.y + 30 && 
+                    this.y < device.leftBeaker.y + device.leftBeaker.height - 30) {
+                    this.resetToStart();
+                }
+                
+                // 烧杯边界检查
+                if (this.y < device.leftBeaker.y + 20 || this.y > device.leftBeaker.y + device.leftBeaker.height - 20) {
+                    this.direction = -this.direction;
+                }
+            }
+            
+            handleAnionBounds() {
+                // 阴离子向阳极移动
+                // 简化处理：如果到达电极表面，则重置
+                const targetX = currentMode === 'galvanic' ? 
+                    device.leftElectrode.x + device.leftElectrode.width/2 : // 原电池：向负极（锌）
+                    device.rightElectrode.x + device.rightElectrode.width/2; // 电解池：向阳极（锌）
+                
+                if (Math.abs(this.x - targetX) < 10 && 
+                    this.y > device.leftBeaker.y + 30 && 
+                    this.y < device.leftBeaker.y + device.leftBeaker.height - 30) {
+                    this.resetToStart();
+                }
+                
+                // 烧杯边界检查
+                if (this.y < device.leftBeaker.y + 20 || this.y > device.leftBeaker.y + device.leftBeaker.height - 20) {
+                    this.direction = -this.direction;
+                }
+            }
+            
+            resetToStart() {
+                if (this.type === 'electron') {
+                    if (currentMode === 'galvanic') {
+                        // 原电池：从锌电极表面产生
+                        this.x = device.leftElectrode.x + device.leftElectrode.width;
+                        this.y = device.leftElectrode.y + 20;
+                        this.direction = 0; // 向右
+                    } else {
+                        // 电解池：从电源负极（右侧）产生
+                        this.x = device.wire.points[device.wire.points.length-1].x;
+                        this.y = device.wire.points[device.wire.points.length-1].y;
+                        this.direction = Math.PI; // 向左
+                    }
+                } else if (this.type === 'cation') {
+                    // 阳离子随机出现在溶液中
+                    this.x = device.leftBeaker.x + 30 + Math.random() * (device.leftBeaker.width - 60);
+                    this.y = device.leftBeaker.y + 40 + Math.random() * (device.leftBeaker.height - 80);
+                    this.direction = currentMode === 'galvanic' ? 
+                        Math.PI * 0.1 : // 原电池：略微向右
+                        Math.PI * 0.9;  // 电解池：略微向左
+                } else if (this.type === 'anion') {
+                    // 阴离子随机出现在溶液中
+                    this.x = device.leftBeaker.x + 30 + Math.random() * (device.leftBeaker.width - 60);
+                    this.y = device.leftBeaker.y + 40 + Math.random() * (device.leftBeaker.height - 80);
+                    this.direction = currentMode === 'galvanic' ? 
+                        Math.PI * 1.1 : // 原电池：略微向左
+                        Math.PI * 1.9;  // 电解池：略微向右
+                }
+                
+                this.path = [];
+            }
+            
+            draw() {
+                if (!this.active) return;
+                
+                // 绘制粒子
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                
+                // 绘制粒子类型标签
+                ctx.font = '10px Arial';
+                ctx.fillStyle = 'white';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                let label = '';
+                if (this.type === 'electron') label = 'e⁻';
+                else if (this.type === 'cation') label = Math.random() > 0.5 ? 'H⁺' : 'Zn²⁺';
+                else if (this.type === 'anion') label = Math.random() > 0.5 ? 'SO₄²⁻' : 'OH⁻';
+                
+                ctx.fillText(label, this.x, this.y);
+                
+                // 如果是高亮的电子，绘制路径
+                if (highlightElectron && highlightedElectron && highlightedElectron.id === this.id) {
+                    ctx.beginPath();
+                    ctx.moveTo(this.path[0].x, this.path[0].y);
+                    for (let i = 1; i < this.path.length; i++) {
+                        ctx.lineTo(this.path[i].x, this.path[i].y);
+                    }
+                    ctx.strokeStyle = '#FFFF00';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    
+                    // 绘制高亮圆圈
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius + 3, 0, Math.PI * 2);
+                    ctx.strokeStyle = '#FFFF00';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                }
+            }
+        }
+        
+        // 初始化粒子
+        function initParticles() {
+            particles.electrons = [];
+            particles.cations = [];
+            particles.anions = [];
+            
+            // 创建电子
+            for (let i = 0; i < 15; i++) {
+                let electron;
+                if (currentMode === 'galvanic') {
+                    electron = new Particle(
+                        'electron',
+                        device.leftElectrode.x + device.leftElectrode.width - i * 10,
+                        device.leftElectrode.y + 20,
+                        colors.electron,
+                        2 + Math.random() * 1,
+                        0 // 向右
+                    );
+                } else {
+                    electron = new Particle(
+                        'electron',
+                        device.wire.points[device.wire.points.length-1].x - i * 10,
+                        device.wire.points[device.wire.points.length-1].y,
+                        colors.electron,
+                        2 + Math.random() * 1,
+                        Math.PI // 向左
+                    );
+                }
+                particles.electrons.push(electron);
+            }
+            
+            // 创建阳离子
+            for (let i = 0; i < 20; i++) {
+                const cation = new Particle(
+                    'cation',
+                    device.leftBeaker.x + 30 + Math.random() * (device.leftBeaker.width - 60),
+                    device.leftBeaker.y + 40 + Math.random() * (device.leftBeaker.height - 80),
+                    colors.cation,
+                    0.5 + Math.random() * 0.5,
+                    currentMode === 'galvanic' ? Math.PI * 0.1 : Math.PI * 0.9
+                );
+                particles.cations.push(cation);
+            }
+            
+            // 创建阴离子
+            for (let i = 0; i < 20; i++) {
+                const anion = new Particle(
+                    'anion',
+                    device.leftBeaker.x + 30 + Math.random() * (device.leftBeaker.width - 60),
+                    device.leftBeaker.y + 40 + Math.random() * (device.leftBeaker.height - 80),
+                    colors.anion,
+                    0.5 + Math.random() * 0.5,
+                    currentMode === 'galvanic' ? Math.PI * 1.1 : Math.PI * 1.9
+                );
+                particles.anions.push(anion);
+            }
+            
+            // 随机选择一个电子进行高亮
+            if (particles.electrons.length > 0) {
+                highlightedElectron = particles.electrons[Math.floor(Math.random() * particles.electrons.length)];
+            }
+        }
+        
+        // 绘制装置
+        function drawDevice() {
+            // 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制烧杯
+            drawBeaker(device.leftBeaker.x, device.leftBeaker.y, device.leftBeaker.width, device.leftBeaker.height, 'ZnSO₄溶液');
+            drawBeaker(device.rightBeaker.x, device.rightBeaker.y, device.rightBeaker.width, device.rightBeaker.height, 'CuSO₄/H₂SO₄溶液');
+            
+            // 绘制电极
+            drawElectrode(device.leftElectrode.x, device.leftElectrode.y, device.leftElectrode.width, device.leftElectrode.height, '锌', colors.zincElectrode);
+            drawElectrode(device.rightElectrode.x, device.rightElectrode.y, device.rightElectrode.width, device.rightElectrode.height, '铜', colors.copperElectrode);
+            
+            // 绘制导线
+            drawWire();
+            
+            // 绘制负载（原电池：灯泡，电解池：电源）
+            if (currentMode === 'galvanic') {
+                drawBulb(device.bulb.x, device.bulb.y, device.bulb.radius, frameCount % 60 < 40);
+            } else {
+                drawPowerSource(device.powerSource.x, device.powerSource.y, device.powerSource.width, device.powerSource.height);
+            }
+            
+            // 绘制电极标签
+            if (currentMode === 'galvanic') {
+                drawElectrodeLabel(device.leftElectrode.x + device.leftElectrode.width/2, device.leftElectrode.y - 10, '负极 (Zn)', '#E74C3C');
+                drawElectrodeLabel(device.rightElectrode.x + device.rightElectrode.width/2, device.rightElectrode.y - 10, '正极 (Cu)', '#2E86C1');
+            } else {
+                drawElectrodeLabel(device.leftElectrode.x + device.leftElectrode.width/2, device.leftElectrode.y - 10, '阴极 (Cu)', '#2E86C1');
+                drawElectrodeLabel(device.rightElectrode.x + device.rightElectrode.width/2, device.rightElectrode.y - 10, '阳极 (Zn)', '#E74C3C');
+            }
+            
+            // 绘制电流方向箭头
+            if (showCurrent) {
+                drawCurrentDirection();
+            }
+            
+            // 绘制电极反应方程式
+            if (showReactions) {
+                drawReactionEquations();
+            }
+        }
+        
+        function drawBeaker(x, y, width, height, label) {
+            // 烧杯主体
+            ctx.beginPath();
+            ctx.rect(x, y, width, height);
+            ctx.fillStyle = colors.beaker;
+            ctx.fill();
+            ctx.strokeStyle = '#BDC3C7';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 烧杯口
+            ctx.beginPath();
+            ctx.moveTo(x - 10, y);
+            ctx.lineTo(x + width + 10, y);
+            ctx.strokeStyle = '#95A5A6';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            // 标签
+            ctx.font = '14px Arial';
+            ctx.fillStyle = '#7F8C8D';
+            ctx.textAlign = 'center';
+            ctx.fillText(label, x + width/2, y + height + 25);
+        }
+        
+        function drawElectrode(x, y, width, height, label, color) {
+            // 电极
+            ctx.beginPath();
+            ctx.rect(x, y, width, height);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.strokeStyle = '#34495E';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            
+            // 电极标签
+            ctx.font = 'bold 16px Arial';
+            ctx.fillStyle = '#2C3E50';
+            ctx.textAlign = 'center';
+            ctx.fillText(label, x + width/2, y + height/2);
+        }
+        
+        function drawWire() {
+            ctx.beginPath();
+            ctx.moveTo(device.wire.points[0].x, device.wire.points[0].y);
+            
+            for (let i = 1; i < device.wire.points.length; i++) {
+                ctx.lineTo(device.wire.points[i].x, device.wire.points[i].y);
+            }
+            
+            ctx.strokeStyle = colors.wire;
+            ctx.lineWidth = 4;
+            ctx.stroke();
+            
+            // 绘制导线连接点
+            device.wire.points.forEach(point => {
+                ctx.beginPath();
+                ctx.arc(point.x, point.y, 5, 0, Math.PI * 2);
+                ctx.fillStyle = colors.wire;
+                ctx.fill();
+            });
+        }
+        
+        function drawBulb(x, y, radius, isOn) {
+            // 灯泡玻璃部分
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fillStyle = isOn ? colors.bulbOn : colors.bulbOff;
+            ctx.fill();
+            ctx.strokeStyle = '#7F8C8D';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 灯泡底座
+            ctx.beginPath();
+            ctx.rect(x - 10, y + radius - 5, 20, 15);
+            ctx.fillStyle = '#34495E';
+            ctx.fill();
+            
+            // 灯泡标签
+            ctx.font = '12px Arial';
+            ctx.fillStyle = '#2C3E50';
+            ctx.textAlign = 'center';
+            ctx.fillText('灯泡', x, y + radius + 25);
+        }
+        
+        function drawPowerSource(x, y, width, height) {
+            // 电源外壳
+            ctx.beginPath();
+            ctx.rect(x, y, width, height);
+            ctx.fillStyle = colors.powerSource;
+            ctx.fill();
+            ctx.strokeStyle = '#34495E';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 正负极符号
+            ctx.font = 'bold 18px Arial';
+            ctx.fillStyle = '#E74C3C';
+            ctx.textAlign = 'center';
+            ctx.fillText('+', x + width/4, y + height/2 + 5);
+            
+            ctx.fillStyle = '#4A90E2';
+            ctx.fillText('−', x + 3*width/4, y + height/2 + 5);
+            
+            // 电源标签
+            ctx.font = '12px Arial';
+            ctx.fillStyle = '#2C3E50';
+            ctx.fillText('电源', x + width/2, y + height + 20);
+        }
+        
+        function drawElectrodeLabel(x, y, text, color) {
+            ctx.font = 'bold 14px Arial';
+            ctx.fillStyle = color;
+            ctx.textAlign = 'center';
+            ctx.fillText(text, x, y);
+        }
+        
+        function drawCurrentDirection() {
+            // 绘制电流方向箭头（与电子流动方向相反）
+            const arrowLength = 15;
+            
+            if (currentMode === 'galvanic') {
+                // 原电池：电流从正极到负极（与电子流相反）
+                const midX = (device.wire.points[2].x + device.wire.points[3].x) / 2;
+                const midY = (device.wire.points[2].y + device.wire.points[3].y) / 2;
+                
+                drawArrow(midX, midY, Math.PI, arrowLength, colors.currentArrow, '电流方向');
+            } else {
+                // 电解池：电流从电源正极到负极
+                const midX = (device.wire.points[2].x + device.wire.points[3].x) / 2;
+                const midY = (device.wire.points[2].y +
+<!--检测到代码截断，自动续写中...-->
+device.wire.points[3].y) / 2;
+                
+                drawArrow(midX, midY, 0, arrowLength, colors.currentArrow, '电流方向');
+            }
+            
+            // 绘制溶液中离子移动方向
+            const solutionY = device.leftBeaker.y + device.leftBeaker.height/2;
+            
+            if (currentMode === 'galvanic') {
+                // 原电池：阳离子→正极，阴离子→负极
+                drawArrow(device.leftBeaker.x + device.leftBeaker.width/2 - 40, solutionY, 0, arrowLength, colors.cation, '阳离子移动');
+                drawArrow(device.leftBeaker.x + device.leftBeaker.width/2 + 40, solutionY, Math.PI, arrowLength, colors.anion, '阴离子移动');
+            } else {
+                // 电解池：阳离子→阴极，阴离子→阳极
+                drawArrow(device.leftBeaker.x + device.leftBeaker.width/2 - 40, solutionY, Math.PI, arrowLength, colors.cation, '阳离子移动');
+                drawArrow(device.leftBeaker.x + device.leftBeaker.width/2 + 40, solutionY, 0, arrowLength, colors.anion, '阴离子移动');
+            }
+        }
+        
+        function drawArrow(x, y, angle, length, color, label) {
+            // 箭头线
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x + Math.cos(angle) * length, y + Math.sin(angle) * length);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            // 箭头头部
+            ctx.beginPath();
+            const headX = x + Math.cos(angle) * length;
+            const headY = y + Math.sin(angle) * length;
+            ctx.moveTo(headX, headY);
+            ctx.lineTo(headX - Math.cos(angle - Math.PI/6) * 10, headY - Math.sin(angle - Math.PI/6) * 10);
+            ctx.lineTo(headX - Math.cos(angle + Math.PI/6) * 10, headY - Math.sin(angle + Math.PI/6) * 10);
+            ctx.closePath();
+            ctx.fillStyle = color;
+            ctx.fill();
+            
+            // 箭头标签
+            if (label) {
+                ctx.font = '12px Arial';
+                ctx.fillStyle = color;
+                ctx.textAlign = 'center';
+                ctx.fillText(label, x + Math.cos(angle) * (length/2), y + Math.sin(angle) * (length/2) - 10);
+            }
+        }
+        
+        function drawReactionEquations() {
+            ctx.font = 'bold 14px "Cambria", "Times New Roman", serif';
+            ctx.fillStyle = '#2C3E50';
+            ctx.textAlign = 'left';
+            
+            if (currentMode === 'galvanic') {
+                // 原电池反应式
+                ctx.fillText('负极 (Zn): Zn → Zn²⁺ + 2e⁻', device.leftElectrode.x - 50, device.leftElectrode.y + device.leftElectrode.height + 40);
+                ctx.fillText('正极 (Cu): 2H⁺ + 2e⁻ → H₂↑', device.rightElectrode.x - 50, device.rightElectrode.y + device.rightElectrode.height + 40);
+            } else {
+                // 电解池反应式
+                ctx.fillText('阴极 (Cu): Cu²⁺ + 2e⁻ → Cu', device.leftElectrode.x - 50, device.leftElectrode.y + device.leftElectrode.height + 40);
+                ctx.fillText('阳极 (Zn): Zn → Zn²⁺ + 2e⁻', device.rightElectrode.x - 50, device.rightElectrode.y + device.rightElectrode.height + 40);
+            }
+        }
+        
+        // 绘制粒子
+        function drawParticles() {
+            if (showElectrons) {
+                particles.electrons.forEach(electron => electron.draw());
+            }
+            
+            if (showIons) {
+                particles.cations.forEach(cation => cation.draw());
+                particles.anions.forEach(anion => anion.draw());
+            }
+        }
+        
+        // 更新粒子
+        function updateParticles() {
+            if (showElectrons) {
+                particles.electrons.forEach(electron => electron.update());
+            }
+            
+            if (showIons) {
+                particles.cations.forEach(cation => cation.update());
+                particles.anions.forEach(anion => anion.update());
+            }
+        }
+        
+        // 动画循环
+        function animate() {
+            drawDevice();
+            updateParticles();
+            drawParticles();
+            
+            frameCount++;
+            
+            if (isPlaying) {
+                animationId = requestAnimationFrame(animate);
+            }
+        }
+        
+        // 切换模式
+        function switchMode(mode) {
+            currentMode = mode;
+            
+            // 更新按钮状态
+            document.getElementById('galvanic-btn').classList.toggle('active', mode === 'galvanic');
+            document.getElementById('electrolytic-btn').classList.toggle('active', mode === 'electrolytic');
+            
+            // 更新说明文本
+            const modeDescription = document.getElementById('mode-description');
+            const galvanicEquations = document.getElementById('galvanic-equations');
+            const electrolyticEquations = document.getElementById('electrolytic-equations');
+            
+            if (mode === 'galvanic') {
+                modeDescription.innerHTML = '<span class="highlight">原电池模式</span>：化学能转化为电能的自发装置。锌片（负极）失去电子发生氧化反应：Zn → Zn²⁺ + 2e⁻；电子通过导线流向铜片（正极），溶液中H⁺在铜片表面得电子发生还原反应：2H⁺ + 2e⁻ → H₂↑。阳离子向正极移动，阴离子向负极移动，形成完整回路。';
+                galvanicEquations.style.display = 'block';
+                electrolyticEquations.style.display = 'none';
+            } else {
+                modeDescription.innerHTML = '<span class="highlight">电解池模式</span>：电能转化为化学能的非自发装置。外接电源驱动电子流动，铜片（阴极）发生还原反应：Cu²⁺ + 2e⁻ → Cu；锌片（阳极）发生氧化反应：Zn → Zn²⁺ + 2e⁻。阳离子向阴极移动，阴离子向阳极移动，形成完整回路。';
+                galvanicEquations.style.display = 'none';
+                electrolyticEquations.style.display = 'block';
+            }
+            
+            // 重新初始化装置和粒子
+            initDevice();
+            initParticles();
+            
+            // 如果动画暂停，重绘一帧
+            if (!isPlaying) {
+                drawDevice();
+                drawParticles();
+            }
+        }
+        
+        // 事件监听器
+        function setupEventListeners() {
+            // 模式切换按钮
+            document.getElementById('galvanic-btn').addEventListener('click', () => switchMode('galvanic'));
+            document.getElementById('electrolytic-btn').addEventListener('click', () => switchMode('electrolytic'));
+            
+            // 播放控制按钮
+            document.getElementById('play-pause-btn').addEventListener('click', () => {
+                isPlaying = !isPlaying;
+                const btn = document.getElementById('play-pause-btn');
+                btn.innerHTML = isPlaying ? '❚❚' : '▶';
+                btn.title = isPlaying ? '暂停' : '播放';
+                
+                if (isPlaying) {
+                    animate();
+                } else {
+                    cancelAnimationFrame(animationId);
+                }
+            });
+            
+            document.getElementById('prev-btn').addEventListener('click', () => {
+                // 步退功能：重新初始化粒子
+                initParticles();
+                if (!isPlaying) {
+                    drawDevice();
+                    drawParticles();
+                }
+            });
+            
+            document.getElementById('next-btn').addEventListener('click', () => {
+                // 步进功能：更新一帧
+                updateParticles();
+                if (!isPlaying) {
+                    drawDevice();
+                    drawParticles();
+                }
+            });
+            
+            document.getElementById('reset-btn').addEventListener('click', () => {
+                initParticles();
+                frameCount = 0;
+                if (!isPlaying) {
+                    drawDevice();
+                    drawParticles();
+                }
+            });
+            
+            // 速度滑块
+            document.getElementById('speed-slider').addEventListener('input', (e) => {
+                animationSpeed = parseInt(e.target.value);
+            });
+            
+            // 显示选项复选框
+            document.getElementById('show-electrons').addEventListener('change', (e) => {
+                showElectrons = e.target.checked;
+            });
+            
+            document.getElementById('show-ions').addEventListener('change', (e) => {
+                showIons = e.target.checked;
+            });
+            
+            document.getElementById('show-reactions').addEventListener('change', (e) => {
+                showReactions = e.target.checked;
+            });
+            
+            document.getElementById('show-current').addEventListener('change', (e) => {
+                showCurrent = e.target.checked;
+            });
+            
+            document.getElementById('highlight-electron').addEventListener('change', (e) => {
+                highlightElectron = e.target.checked;
+            });
+            
+            // Canvas点击事件：选择要跟踪的电子
+            canvas.addEventListener('click', (e) => {
+                if (!highlightElectron) return;
+                
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                // 查找点击的电子
+                for (const electron of particles.electrons) {
+                    const distance = Math.sqrt((electron.x - x) ** 2 + (electron.y - y) ** 2);
+                    if (distance < electron.radius + 5) {
+                        highlightedElectron = electron;
+                        break;
+                    }
+                }
+            });
+        }
+        
+        // 初始化
+        function init() {
+            initDevice();
+            initParticles();
+            setupEventListeners();
+            animate();
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
+
+### 3. 过程输出
+
+### 3. 过程输出
+
+## 《原电池与电解池交互式教学动画》使用指南
+
+欢迎使用“原电池与电解池：电子与离子定向移动全过程”交互式教学动画！本工具旨在通过动态可视化，帮助您深入理解电化学中两种核心装置的工作原理。无论您是学生、教师还是自学者，本动画都将为您提供直观、生动的学习体验。
+
+---
+
+### 一、功能说明
+
+本动画采用HTML5 Canvas技术构建，实现了对原电池（化学能→电能）和电解池（电能→化学能）工作过程的完整模拟。通过粒子系统实时展示电子、阳离子、阴离子的定向移动，并结合电极反应、电流方向等可视化元素，构建了一个完整的电荷传递回路模型。
+
+**核心价值**：将抽象的微观粒子运动转化为可见的动画，解决传统教学中“想象困难”的问题，帮助建立系统化的电化学认知框架。
+
+---
+
+### 二、主要功能
+
+#### 1. **双模式切换**
+   - **原电池模式**：展示锌-铜原电池（Zn-Cu Galvanic Cell）的自发放电过程
+   - **电解池模式**：展示电解池（Electrolytic Cell）在外加电源驱动下的非自发过程
+   - **切换方式**：点击顶部绿色（原电池）或紫色（电解池）按钮
+
+#### 2. **动画播放控制**
+   - **播放/暂停**：控制动画运行与停止
+   - **步进/步退**：逐帧查看粒子移动的关键步骤
+   - **重置**：恢复动画到初始状态
+   - **速度调节**：通过滑块控制粒子移动速度（1-10档）
+
+#### 3. **可视化图层控制**
+   - **显示电子流**：开关蓝色电子（e⁻）的移动轨迹
+   - **显示离子流**：开关阳离子（红色）和阴离子（绿色）的移动
+   - **显示电极反应**：开关电极反应方程式的显示
+   - **显示电流方向**：开关电流方向箭头（红色，与电子流方向相反）
+   - **高亮单个电子路径**：追踪特定电子的完整运动路径（亮黄色轨迹）
+
+#### 4. **交互探索功能**
+   - **点击追踪**：开启“高亮单个电子路径”后，点击任意电子即可追踪其运动
+   - **悬停提示**：鼠标悬停在装置部件上可获得简要说明
+   - **实时方程式**：根据当前模式自动显示对应的电极反应方程式
+
+---
+
+### 三、设计特色
+
+#### 1. **科学准确性**
+   - 严格遵循电化学原理：电子在外电路移动，离子在内电路移动
+   - 正确区分原电池与电解池的电极名称（正/负极 vs 阴/阳极）
+   - 准确反映氧化反应与还原反应的发生位置
+
+#### 2. **教学友好性**
+   - **对比学习设计**：并排对比两种装置，强化差异认知
+   - **分层可视化**：可单独控制不同粒子类型的显示，降低认知负荷
+   - **色彩编码系统**：
+     - 蓝色：电子（e⁻）
+     - 红色：阳离子（H⁺， Zn²⁺）
+     - 绿色：阴离子（SO₄²⁻， OH⁻）
+     - 深红色箭头：电流方向
+
+#### 3. **技术实现**
+   - 基于物理的粒子运动模拟
+   - 平滑的动画过渡和路径追踪
+   - 响应式设计，适配不同屏幕尺寸
+   - 纯前端实现，无需网络连接即可使用
+
+---
+
+### 四、教学要点
+
+#### 原电池模式学习重点：
+1. **能量转换**：化学能→电能（自发过程）
+2. **电极判断**：
+   - 负极（Zn）：发生氧化反应，Zn → Zn²⁺ + 2e⁻
+   - 正极（Cu）：发生还原反应，2H⁺ + 2e⁻ → H₂↑
+3. **电荷流动**：
+   - 电子：从Zn电极→导线→Cu电极
+   - 阳离子：向Cu电极（正极）移动
+   - 阴离子：向Zn电极（负极）移动
+4. **电流方向**：与电子流动方向相反（从正极到负极）
+
+#### 电解池模式学习重点：
+1. **能量转换**：电能→化学能（非自发过程，需外接电源）
+2. **电极判断**：
+   - 阴极（Cu）：发生还原反应，Cu²⁺ + 2e⁻ → Cu
+   - 阳极（Zn）：发生氧化反应，Zn → Zn²⁺ + 2e⁻
+3. **电荷流动**：
+   - 电子：从电源负极→导线→Cu电极（阴极）
+   - 阳离子：向Cu电极（阴极）移动
+   - 阴离子：向Zn电极（阳极）移动
+4. **与原电池的关键区别**：能量来源、电极名称、电子流向
+
+---
+
+### 五、使用建议
+
+#### 对学生：
+1. **初次接触**：先观看完整动画，了解整体过程
+2. **分步学习**：使用“步进”功能，结合图层控制，分别观察电子、离子的移动
+3. **对比分析**：切换两种模式，注意观察电极名称、粒子流向的变化
+4. **自我测试**：关闭反应方程式，尝试描述每个电极发生的反应
+5. **深入探究**：使用“高亮单个电子”功能，理解一个电子从产生到消耗的完整旅程
+
+#### 对教师：
+1. **课堂演示**：全屏展示，作为引入或总结环节
+2. **互动教学**：让学生预测下一步变化，然后播放验证
+3. **小组讨论**：分配不同观察任务（如：A组关注电子，B组关注离子）
+4. **概念强化**：在关键步骤暂停，提问引导学生思考
+5. **对比教学**：同时讲解两种装置时，使用本工具进行直观对比
+
+#### 最佳学习路径：
+1. **整体认知**：先以正常速度观看完整动画2-3遍
+2. **细节分析**：调慢速度，分图层观察不同粒子的运动
+3. **对比理解**：切换模式，找出相同点与不同点
+4. **知识整合**：不看动画，尝试在白板上画出完整过程
+5. **应用迁移**：思考其他电化学装置（如燃料电池、电镀池）的工作原理
+
+---
+
+### 技术支持与反馈
+
+本动画为纯HTML/CSS/JavaScript实现，可在任何现代浏览器中运行。如果您遇到技术问题或对教学内容有改进建议，欢迎通过以下方式优化学习体验：
+
+1. **确保浏览器更新**：使用Chrome、Firefox、Edge等浏览器的最新版本
+2. **全屏模式**：按F11键进入全屏，获得最佳观看效果
+3. **结合实验**：建议与实验室实际操作相结合，理论联系实际
+
+---
+
+**祝您学习愉快，探索电化学的奇妙世界！**
+
+*“理解微观，方能驾驭宏观。”—— 科学可视化团队*

@@ -1,0 +1,1380 @@
+# 需求：苯分子结构与取代反应（六元环+离域π键动画）
+
+### 1. 专业思考
+
+### 1. 专业思考
+
+#### 用户需求分析
+1.  **目标用户**：高中或大学低年级的化学学生，他们正在学习有机化学基础，特别是芳香烃部分。
+2.  **核心需求**：
+    *   **理解苯的结构**：需要直观地理解苯的六元环结构、碳碳键的均等性（介于单键和双键之间），以及由6个p轨道侧面重叠形成的“离域π键”这一抽象概念。
+    *   **理解取代反应机理**：需要可视化苯环上发生亲电取代反应（如溴代）的机理，包括亲电试剂的进攻、σ-络合物的形成（碳正离子中间体）、氢离子的离去和芳香性的恢复。
+    *   **克服常见误区**：澄清苯环不是单双键交替的“凯库勒式”结构，而是所有碳碳键长、键能均等的离域体系。
+3.  **学习场景**：可能是课堂演示、学生课后自主学习或复习。动画需要兼具清晰的讲解性和自主探索的交互性。
+
+#### 教学设计思路
+1.  **核心概念**：
+    *   **苯的稳定结构**：平面正六边形，sp²杂化，C-C键长均等，大π键（离域π键）的形成与电子云分布。
+    *   **亲电取代反应**：以溴代反应为例，展示Br⁺（来自Br₂/FeBr₃）进攻苯环，形成σ-络合物（破坏离域体系），随后失去H⁺恢复稳定芳香体系的过程。
+2.  **认知规律**：
+    *   **从具体到抽象**：先展示苯的分子模型（球棍、比例），再抽象出p轨道和电子云。
+    *   **从静态到动态**：先观察稳定的苯环结构，再动态演示反应过程中电子云的流动和键的断裂与形成。
+    *   **从现象到本质**：通过交互操作，让学生“触发”反应，观察现象，再通过高亮和提示文字揭示背后的机理。
+3.  **交互设计**：
+    *   **模块化导航**：将动画分为清晰的两大模块：“苯的结构”和“溴代反应”，用户可以自由切换。
+    *   **渐进式揭示**：在“结构”模块，通过点击/步骤按钮，逐步展示杂化、σ键骨架、p轨道、电子云合并、最终离域电子云。
+    *   **模拟实验**：在“反应”模块，用户可拖拽“溴分子”靠近苯环，触发动画序列，模拟亲电进攻过程。关键中间体（σ-络合物）会有突出显示和状态说明。
+    *   **对比与强调**：在展示离域π键时，可提供一个“切换”按钮，对比凯库勒式（单双键交替）和真实离域结构（电子云均匀分布）在能量和稳定性上的差异（用简单的能量条表示）。
+4.  **视觉呈现**：
+    *   **分子模型**：采用清晰的球棍模型。碳（灰色）、氢（浅灰色或白色）、溴（深红棕色）。键用实心圆柱体。
+    *   **电子与轨道**：
+        *   p轨道用淡蓝色的哑铃形轮廓表示。
+        *   电子用闪烁的、更小的浅黄色圆点表示。
+        *   **离域π电子云**是整个动画的视觉核心，用半透明的、均匀的黄色“圆环”或“圆盘”表示，悬浮在苯环σ键骨架的上下方，并伴有柔和的光晕和脉动效果，以强调其“离域”和“整体性”。
+    *   **反应过程**：使用平滑的补间动画和路径动画。电子对的转移用流动的箭头或高亮移动的电子点来表示。关键步骤配以简洁的文字标签。
+
+#### 配色方案选择
+*   **主背景**：深蓝灰色（如 `#2c3e50`）或深紫色（如 `#2d1b69`）。深色背景能有效突出彩色的分子模型和发光的电子云，营造科技感和专注的学习氛围。
+*   **分子与键**：
+    *   碳原子：中灰色 (`#808080`)
+    *   氢原子：浅灰色 (`#d3d3d3`) 或淡青色 (`#b0e0e6`)
+    *   溴原子：深红棕色 (`#8b4513`)
+    *   σ键（单键）：浅灰色圆柱 (`#cccccc`)
+*   **电子与轨道**：
+    *   p轨道轮廓：淡蓝色，半透明 (`rgba(173, 216, 230, 0.6)`)
+    *   电子点：亮黄色 (`#ffff00` 或 `#ffeb3b`)，带有发光效果。
+    *   **离域π电子云**：金黄色半透明渐变 (`radial-gradient(circle, rgba(255,255,150,0.7) 0%, rgba(255,200,50,0.3) 70%, transparent 100%)`)，边缘模糊，带有柔和脉动动画。
+*   **UI与提示**：
+    *   按钮/交互区：科技蓝 (`#3498db`) 或亮青色 (`#1abc9c`)。
+    *   说明文字/标签：白色或浅黄色 (`#fff` 或 `#fffacd`)。
+    *   高亮/警示色：反应中间体σ-络合物中的带正电碳，用粉红色高亮 (`#ff69b4`)。
+
+#### 交互功能列表
+1.  **模块选择器**：两个大按钮——“探索苯的结构” / “观察溴代反应”。
+2.  **结构模块控制**：
+    *   “分步演示”按钮：按顺序展示：① 碳原子sp²杂化与σ键骨架 -> ② 每个碳上未杂化的p轨道 -> ③ p轨道侧面重叠 -> ④ 形成离域π电子云。
+    *   “重置”按钮：回到初始状态。
+    *   “对比视图”切换开关：在“凯库勒式（定域）”和“离域大π键”模型间切换，并显示简单的相对能量比较条。
+3.  **反应模块控制**：
+    *   可拖拽的“Br₂”分子模型。
+    *   将Br₂拖入“反应区”（苯环附近）后，自动触发反应动画序列：FeBr₃催化生成Br⁺ -> Br⁺进攻苯环 -> 形成σ-络合物（高亮带正电碳） -> H⁺离去 -> 生成溴苯和HBr。
+    *   “分步播放/暂停”控制条：在触发反应后，可以暂停、前进、后退，观察每一步的细节。
+    *   关键步骤上有固定的文字说明框（如“亲电进攻”、“σ-络合物（中间体）”、“恢复芳香性”）。
+4.  **全局功能**：
+    *   显示/隐藏所有原子标签（C， H， Br）的开关。
+    *   显示/隐藏所有电子和轨道的开关。
+    *   一个简明的“反应机理摘要”弹出面板。
+
+### 2. HTML_CODE
+
+### 2. HTML_CODE
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>苯分子结构与溴代反应 - 交互式教学动画</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #4fc3f7;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+            text-shadow: 0 0 10px rgba(79, 195, 247, 0.5);
+        }
+
+        .subtitle {
+            color: #b0bec5;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        .mode-selector {
+            display: flex;
+            gap: 15px;
+            background: rgba(30, 40, 60, 0.8);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #2c3e50;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .mode-btn {
+            padding: 12px 25px;
+            background: linear-gradient(145deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .mode-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(52, 152, 219, 0.4);
+            background: linear-gradient(145deg, #3cb0fd, #3498db);
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(145deg, #1abc9c, #16a085);
+            box-shadow: 0 0 15px rgba(26, 188, 156, 0.5);
+        }
+
+        .animation-area {
+            width: 100%;
+            height: 500px;
+            background: rgba(20, 25, 40, 0.9);
+            border-radius: 15px;
+            border: 2px solid #34495e;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        #canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .controls {
+            background: rgba(30, 40, 60, 0.8);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #2c3e50;
+            width: 100%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .control-title {
+            color: #4fc3f7;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .control-btn {
+            padding: 10px 18px;
+            background: linear-gradient(145deg, #2c3e50, #34495e);
+            color: #ecf0f1;
+            border: 1px solid #4a6278;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        .control-btn:hover {
+            background: linear-gradient(145deg, #34495e, #2c3e50);
+            border-color: #5d7b9a;
+            transform: translateY(-1px);
+        }
+
+        .control-btn.active {
+            background: linear-gradient(145deg, #1abc9c, #16a085);
+            border-color: #1abc9c;
+            color: white;
+        }
+
+        .toggle-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .toggle-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .reaction-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .reaction-btn {
+            padding: 10px 20px;
+            background: linear-gradient(145deg, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .reaction-btn:hover {
+            background: linear-gradient(145deg, #ff6b6b, #e74c3c);
+            transform: translateY(-2px);
+        }
+
+        .reaction-btn:disabled {
+            background: #7f8c8d;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .info-panel {
+            background: rgba(25, 35, 55, 0.95);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 5px solid #1abc9c;
+            width: 100%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .info-title {
+            color: #1abc9c;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .info-content {
+            color: #bdc3c7;
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+
+        .highlight {
+            color: #f1c40f;
+            font-weight: 600;
+        }
+
+        .warning {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+
+        .success {
+            color: #2ecc71;
+            font-weight: 600;
+        }
+
+        .status-bar {
+            position: absolute;
+            bottom: 15px;
+            left: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #ecf0f1;
+            border: 1px solid #34495e;
+        }
+
+        .legend {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            border: 1px solid #34495e;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .footer {
+            margin-top: 20px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            text-align: center;
+            padding: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .animation-area {
+                height: 400px;
+            }
+            
+            .mode-selector {
+                flex-direction: column;
+            }
+            
+            .btn-group {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>苯分子结构与溴代反应</h1>
+        <p class="subtitle">交互式教学动画 - 探索离域π键与亲电取代反应机理</p>
+    </div>
+
+    <div class="container">
+        <div class="mode-selector">
+            <button id="modeStructure" class="mode-btn active">探索苯的结构</button>
+            <button id="modeReaction" class="mode-btn">观察溴代反应</button>
+        </div>
+
+        <div class="animation-area">
+            <canvas id="canvas"></canvas>
+            <div class="status-bar" id="statusBar">当前模式：探索苯的结构 - 步骤1/4：苯环σ键骨架</div>
+            <div class="legend">
+                <div class="legend-item"><div class="legend-color" style="background-color: #808080;"></div>碳原子 (C)</div>
+                <div class="legend-item"><div class="legend-color" style="background-color: #b0e0e6;"></div>氢原子 (H)</div>
+                <div class="legend-item"><div class="legend-color" style="background-color: #8b4513;"></div>溴原子 (Br)</div>
+                <div class="legend-item"><div class="legend-color" style="background-color: rgba(255, 235, 59, 0.8);"></div>离域π电子云</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div id="structureControls">
+                <div class="control-group">
+                    <div class="control-title">结构演示控制</div>
+                    <div class="btn-group">
+                        <button id="btnStep1" class="control-btn active">步骤1: σ键骨架</button>
+                        <button id="btnStep2" class="control-btn">步骤2: p轨道</button>
+                        <button id="btnStep3" class="control-btn">步骤3: 轨道重叠</button>
+                        <button id="btnStep4" class="control-btn">步骤4: 离域π键</button>
+                        <button id="btnReset" class="control-btn">重置</button>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="control-title">视图选项</div>
+                    <div class="toggle-group">
+                        <label class="toggle-label">
+                            <input type="checkbox" id="toggleLabels" class="toggle-checkbox" checked>
+                            <span>显示原子标签</span>
+                        </label>
+                        <label class="toggle-label">
+                            <input type="checkbox" id="toggleOrbitals" class="toggle-checkbox" checked>
+                            <span>显示轨道/电子</span>
+                        </label>
+                        <label class="toggle-label">
+                            <input type="checkbox" id="toggleComparison" class="toggle-checkbox">
+                            <span>对比凯库勒式</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div id="reactionControls" style="display: none;">
+                <div class="control-group">
+                    <div class="control-title">溴代反应模拟</div>
+                    <div class="reaction-controls">
+                        <button id="btnStartReaction" class="reaction-btn">开始溴代反应</button>
+                        <button id="btnStepForward" class="reaction-btn" disabled>下一步</button>
+                        <button id="btnResetReaction" class="reaction-btn">重置反应</button>
+                    </div>
+                    <div style="margin-top: 15px; color: #bdc3c7; font-size: 0.9rem;">
+                        <p>提示：点击"开始溴代反应"按钮，观察亲电取代反应的全过程。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <div class="info-title" id="infoTitle">苯的分子结构</div>
+            <div class="info-content" id="infoContent">
+                <p>苯（C₆H₆）是一个平面正六边形分子，所有碳原子均为<span class="highlight">sp²杂化</span>，形成σ键骨架。</p>
+                <p>每个碳原子上未参与杂化的<span class="highlight">p轨道</span>相互平行，侧面重叠形成一个覆盖整个苯环的<span class="highlight">离域π键</span>（大π键）。</p>
+                <p>离域π键使苯环具有特殊的稳定性，所有C-C键长均等（140pm），介于单键和双键之间。</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>教学动画设计 | 苯分子结构与取代反应 | 交互式化学学习工具</p>
+    </div>
+
+    <script>
+        // 获取Canvas和上下文
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 设置Canvas尺寸
+        function resizeCanvas() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        }
+        
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        
+        // 动画状态变量
+        let currentMode = 'structure'; // 'structure' 或 'reaction'
+        let currentStep = 1; // 结构演示的步骤 (1-4)
+        let reactionStep = 0; // 反应演示的步骤 (0-5)
+        let showLabels = true;
+        let showOrbitals = true;
+        let showComparison = false;
+        let isReactionRunning = false;
+        
+        // 苯环参数
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const ringRadius = 120;
+        const atomRadius = 18;
+        const bondWidth = 6;
+        
+        // 颜色定义
+        const colors = {
+            carbon: '#808080',
+            hydrogen: '#b0e0e6',
+            bromine: '#8b4513',
+            bond: '#cccccc',
+            pOrbital: 'rgba(173, 216, 230, 0.6)',
+            electron: '#ffeb3b',
+            piCloud: 'rgba(255, 235, 59, 0.15)',
+            piCloudGlow: 'rgba(255, 235, 59, 0.3)',
+            positiveCarbon: '#ff69b4',
+            reactionArrow: '#1abc9c',
+            text: '#ffffff'
+        };
+        
+        // 苯环原子坐标 (6个碳原子)
+        const carbonAtoms = [];
+        for (let i = 0; i < 6; i++) {
+            const angle = (i * Math.PI / 3) - Math.PI / 6;
+            carbonAtoms.push({
+                x: centerX + ringRadius * Math.cos(angle),
+                y: centerY + ringRadius * Math.sin(angle),
+                angle: angle
+            });
+        }
+        
+        // 氢原子坐标 (每个碳原子上连接一个氢原子)
+        const hydrogenAtoms = [];
+        carbonAtoms.forEach((carbon, i) => {
+            const angle = carbon.angle;
+            hydrogenAtoms.push({
+                x: carbon.x + (ringRadius * 0.8) * Math.cos(angle),
+                y: carbon.y + (ringRadius * 0.8) * Math.sin(angle)
+            });
+        });
+        
+        // 溴分子和反应相关元素
+        let bromineMolecule = {
+            x: centerX + 250,
+            y: centerY,
+            br1: { x: 0, y: 0 },
+            br2: { x: 0, y: 0 },
+            dragging: false
+        };
+        
+        let bromoniumIon = null; // Br⁺
+        let sigmaComplex = null; // σ-络合物
+        let bromobenzene = null; // 溴苯
+        
+        // 动画时间控制
+        let animationTime = 0;
+        const animationSpeed = 0.02;
+        
+        // 绘制圆形（带阴影/发光效果）
+        function drawCircle(x, y, radius, color, glow = false) {
+            if (glow) {
+                ctx.shadowColor = color;
+                ctx.shadowBlur = 15;
+            }
+            
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+            
+            if (glow) {
+                ctx.shadowBlur = 0;
+            }
+        }
+        
+        // 绘制键（线）
+        function drawBond(x1, y1, x2, y2, width, color) {
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.lineWidth = width;
+            ctx.strokeStyle = color;
+            ctx.stroke();
+        }
+        
+        // 绘制p轨道（哑铃形）
+        function drawPOrbital(x, y, angle, size) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle);
+            
+            // 绘制哑铃形轨道
+            ctx.beginPath();
+            ctx.ellipse(0, 0, size/2, size, 0, 0, Math.PI * 2);
+            ctx.fillStyle = colors.pOrbital;
+            ctx.fill();
+            
+            // 绘制电子（在轨道中移动）
+            if (showOrbitals) {
+                const electronX = Math.sin(animationTime * 2) * (size/3);
+                drawCircle(electronX, 0, 5, colors.electron, true);
+            }
+            
+            ctx.restore();
+        }
+        
+        // 绘制离域π电子云
+        function drawPiCloud() {
+            if (!showOrbitals) return;
+            
+            // 创建上下两个电子云圆盘
+            const gradient1 = ctx.createRadialGradient(
+                centerX, centerY, ringRadius * 0.7,
+                centerX, centerY, ringRadius * 1.2
+            );
+            gradient1.addColorStop(0, colors.piCloudGlow);
+            gradient1.addColorStop(0.7, colors.piCloud);
+            gradient1.addColorStop(1, 'transparent');
+            
+            const gradient2 = ctx.createRadialGradient(
+                centerX, centerY, ringRadius * 0.7,
+                centerX, centerY, ringRadius * 1.2
+            );
+            gradient2.addColorStop(0, colors.piCloudGlow);
+            gradient2.addColorStop(0.7, colors.piCloud);
+            gradient2.addColorStop(1, 'transparent');
+            
+            // 绘制上方的电子云（带脉动效果）
+            const pulse = 1 + 0.1 * Math.sin(animationTime * 3);
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, ringRadius * 0.9 * pulse, 0, Math.PI * 2);
+            ctx.fillStyle = gradient1;
+            ctx.fill();
+            
+            // 绘制下方的电子云
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, ringRadius * 0.9 * pulse, 0, Math.PI * 2);
+            ctx.fillStyle = gradient2;
+            ctx.fill();
+            ctx.restore();
+        }
+        
+        // 绘制凯库勒式结构（单双键交替）
+        function drawKekuleStructure() {
+            // 绘制单键和双键交替的苯环
+            ctx.lineWidth = bondWidth;
+            
+            for (let i = 0; i < 6; i++) {
+                const current = carbonAtoms[i];
+                const next = carbonAtoms[(i + 1) % 6];
+                
+                if (i % 2 === 0) {
+                    // 双键
+                    ctx.strokeStyle = colors.bond;
+                    drawBond(current.x, current.y, next.x, next.y, bondWidth, colors.bond);
+                    
+                    // 在键的旁边画一条平行线表示双键
+                    const dx = next.x - current.x;
+                    const dy = next.y - current.y;
+                    const length = Math.sqrt(dx * dx + dy * dy);
+                    const perpX = -dy / length * 5;
+                    const perpY = dx / length * 5;
+                    
+                    drawBond(
+                        current.x + perpX, current.y + perpY,
+                        next.x + perpX, next.y + perpY,
+                        bondWidth, colors.bond
+                    );
+                } else {
+                    // 单键
+                    drawBond(current.x, current.y, next.x, next.y, bondWidth, colors.bond);
+                }
+            }
+        }
+        
+        // 绘制苯的σ键骨架
+        function drawSigmaBonds() {
+            ctx.lineWidth = bondWidth;
+            ctx.strokeStyle = colors.bond;
+            
+            // 绘制碳-碳键
+            for (let i = 0; i < 6; i++) {
+                const current = carbonAtoms[i];
+                const next = carbonAtoms[(i + 1) % 6];
+                drawBond(current.x, current.y, next.x, next.y, bondWidth, colors.bond);
+            }
+            
+            // 绘制碳-氢键
+            for (let i = 0; i < 6; i++) {
+                drawBond(carbonAtoms[i].x, carbonAtoms[i].y, hydrogenAtoms[i].x, hydrogenAtoms[i].y, bondWidth, colors.bond);
+            }
+        }
+        
+        // 绘制原子
+        function drawAtoms() {
+            // 绘制碳原子
+            carbonAtoms.forEach((atom, i) => {
+                let color = colors.carbon;
+                
+                // 如果是σ-络合物中的带正电碳，特殊颜色
+                if (sigmaComplex && sigmaComplex.positiveCarbonIndex === i) {
+                    color = colors.positiveCarbon;
+                }
+                
+                drawCircle(atom.x, atom.y, atomRadius, color);
+                
+                if (showLabels) {
+                    ctx.fillStyle = colors.text;
+                    ctx.font = 'bold 16px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('C', atom.x, atom.y);
+                }
+            });
+            
+            // 绘制氢原子
+            hydrogenAtoms.forEach((atom, i) => {
+                // 如果这个氢在反应中已经离去，不绘制
+                if (reactionStep >= 4 && i === 0) return;
+                
+                drawCircle(atom.x, atom.y, atomRadius * 0.7, colors.hydrogen);
+                
+                if (showLabels) {
+                    ctx.fillStyle = colors.text;
+                    ctx.font = 'bold 14px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('H', atom.x, atom.y);
+                }
+            });
+        }
+        
+        // 绘制溴分子
+        function drawBromineMolecule() {
+            if (!bromineMolecule || reactionStep > 0) return;
+            
+            const brDistance = 30;
+            bromineMolecule.br1 = {
+                x: bromineMolecule.x - brDistance/2,
+                y: bromineMolecule.y
+            };
+            bromineMolecule.br2 = {
+                x: bromineMolecule.x + brDistance/2,
+                y: bromineMolecule.y
+            };
+            
+            // 绘制Br-Br键
+            drawBond(bromineMolecule.br1.x, bromineMolecule.br1.y, 
+                    bromineMolecule.br2.x, bromineMolecule.br2.y, 
+                    bondWidth, colors.bond);
+            
+            // 绘制溴原子
+            drawCircle(bromineMolecule.br1.x, bromineMolecule.br1.y, atomRadius, colors.bromine);
+            drawCircle(bromineMolecule.br2.x, bromineMolecule.br2.y, atomRadius, colors.bromine);
+            
+            if (showLabels) {
+                ctx.fillStyle = colors.text;
+                ctx.font = 'bold 16px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('Br', bromineMolecule.br1.x, bromineMolecule.br1.y);
+                ctx.fillText('Br', bromineMolecule.br2.x, bromineMolecule.br2.y);
+            }
+            
+            // 如果可拖拽，绘制提示
+            if (currentMode === 'reaction' && reactionStep === 0) {
+                ctx.fillStyle = colors.reactionArrow;
+                ctx.font = 'italic 14px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('点击开始反应', bromineMolecule.x, bromineMolecule.y - 40);
+            }
+        }
+        
+        // 绘制反应过程
+        function drawReaction() {
+            // 步骤1: 溴分子靠近苯环（动画）
+            if (reactionStep >= 1) {
+                // 绘制FeBr₃催化剂提示
+                ctx.fillStyle = colors.reactionArrow;
+                ctx.font = 'bold 16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('FeBr₃', centerX, centerY - 180);
+                ctx.fillText('↓', centerX, centerY - 160);
+                
+                // 绘制Br⁺生成
+                const progress = Math.min(1, (reactionStep - 1) * 2);
+                const brPlusX = centerX + 200 * (1 - progress);
+                const brPlusY = centerY;
+                
+                drawCircle(brPlusX, brPlusY, atomRadius, colors.bromine);
+                ctx.fillStyle = colors.text;
+                ctx.font = 'bold 16px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('Br⁺', brPlusX, brPlusY);
+                
+                bromoniumIon = { x: brPlusX, y: brPlusY };
+                
+                // 绘制电子转移箭头
+                if (progress < 1) {
+                    ctx.strokeStyle = colors.reactionArrow;
+                    ctx.lineWidth = 3;
+                    ctx.setLineDash([5, 5]);
+                    ctx.beginPath();
+                    ctx.moveTo(centerX + 200, centerY);
+                    ctx.lineTo(brPlusX, brPlusY);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                }
+            }
+            
+            // 步骤2: Br⁺进攻苯环
+            if (reactionStep >= 2) {
+                const progress = Math.min(1, (reactionStep - 2) * 2);
+                const targetX = carbonAtoms[0].x;
+                const targetY = carbonAtoms[0].y;
+                
+                if (bromoniumIon) {
+                    bromoniumIon.x = centerX + 200 * (1 - progress) + targetX * progress;
+                    bromoniumIon.y = centerY * (1 - progress) + targetY * progress;
+                    
+                    drawCircle(bromoniumIon.x, bromoniumIon.y, atomRadius, colors.bromine);
+                    ctx.fillStyle = colors.text;
+                    ctx.font = 'bold 16px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('Br⁺', bromoniumIon.x, bromoniumIon.y);
+                    
+                    // 绘制进攻箭头
+                    ctx.strokeStyle = colors.reactionArrow;
+                    ctx.lineWidth = 3;
+                    ctx.beginPath();
+                    ctx.moveTo(centerX + 200, centerY);
+                    ctx.lineTo(targetX, targetY);
+                    ctx.stroke();
+                    
+                    // 绘制"亲电进攻"文字
+                    ctx.fillStyle = colors.reactionArrow;
+                    ctx.font = 'bold 14px Arial';
+                    ctx.fillText('亲电进攻', (centerX + 200 + targetX)/2, (centerY + targetY)/2 - 20);
+                }
+            }
+            
+            // 步骤3: 形成σ-络合物
+            if (reactionStep >= 3) {
+                sigmaComplex = {
+                    positiveCarbonIndex: 0,
+                    bromineAttached: true
+                };
+                
+                // 绘制σ-络合物中的新键（C-Br键）
+                drawBond(carbonAtoms[0].x, carbonAtoms[0].y, 
+                        carbonAtoms[0].x + 40, carbonAtoms[0].y - 40, 
+                        bondWidth, colors.bond);
+                
+                // 绘制带正电的碳原子（已经在drawAtoms中处理）
+                // 绘制"σ-络合物"文字
+                ctx.fillStyle = colors.positiveCarbon;
+                ctx.font = 'bold 16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('σ-络合物（中间体）', centerX, centerY + 180);
+                
+                // 绘制离域π键被破坏的提示
+                ctx.fillStyle = '#e74c3c';
+                ctx.font = 'italic 14px Arial';
+                ctx.fillText('离域π键暂时破坏', centerX, centerY + 200);
+            }
+            
+            // 步骤4: H⁺离去
+            if (reactionStep >= 4) {
+                const progress = Math.min(1, (reactionStep - 4) * 2);
+                const hPlusX = hydrogenAtoms[0].x + 100 * progress;
+                const hPlusY = hydrogenAtoms[0].y - 50 * progress;
+                
+                // 绘制离去的H⁺
+                drawCircle(hPlusX, hPlusY, atomRadius * 0.7, colors.hydrogen);
+                ctx.fillStyle = colors.text;
+                ctx.font = 'bold 14px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('H⁺', hPlusX, hPlusY);
+                
+                // 绘制离去箭头
+                ctx.strokeStyle = colors.reactionArrow;
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                ctx.moveTo(hydrogenAtoms[0].x, hydrogenAtoms[0].y);
+                ctx.lineTo(hPlusX, hPlusY);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+            
+            // 步骤5: 生成溴苯，恢复芳香性
+            if (reactionStep >= 5) {
+                bromobenzene = {
+                    x: carbonAtoms[0].x + 40,
+                    y: carbonAtoms[0].y - 40
+                };
+                
+                // 绘制溴苯中的Br原子
+                drawCircle(bromobenzene.x, bromobenzene.y, atomRadius, colors.bromine);
+                ctx.fillStyle = colors.text;
+                ctx.font = 'bold 16px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('Br', bromobenzene.x, bromobenzene.y);
+                
+                // 绘制恢复的离域π键
+                drawPiCloud();
+                
+                // 绘制"恢复芳香性"文字
+                ctx.fillStyle = '#2ecc71';
+                ctx.font = 'bold 16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('✓ 恢复芳香性', centerX, centerY + 180);
+                
+                // 绘制产物HBr
+                ctx.fillStyle = colors.text;
+                ctx.font = 'bold 18px Arial';
+                ctx.fillText('HBr', centerX + 200, centerY + 100);
+            }
+        }
+        
+        // 绘制能量比较条（凯库勒式 vs 离域式）
+        function drawEnergyComparison() {
+            const barWidth = 200;
+            const barHeight = 25;
+            const barX = centerX - barWidth/2;
+            const barY = centerY + 180;
+            
+            // 绘制背景
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+            ctx.fillRect(barX, barY, barWidth, barHeight);
+            
+            // 绘制凯库勒式能量条（较高）
+            const kekuleEnergy = 150;
+            ctx.fillStyle = '#e74c3c';
+            ctx.fillRect(barX + 5, barY + 5, barWidth - 10, 7);
+            
+            // 绘制离域式能量条（较低）
+            const delocalizedEnergy = 100;
+            ctx.fillStyle = '#2ecc71';
+            ctx.fillRect(barX + 5, barY + 13, (barWidth - 10) * (delocalizedEnergy/kekuleEnergy), 7);
+            
+            // 绘制标签
+            ctx.fillStyle = colors.text;
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText('凯库勒式（能量较高）', barX, barY - 5);
+            ctx.textAlign = 'right';
+            ctx.fillText('离域结构（能量较低，更稳定）', barX + barWidth, barY + 40);
+        }
+        
+        // 主绘制函数
+        function draw() {
+            // 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 根据模式绘制
+            if (currentMode === 'structure') {
+                // 绘制苯环结构
+                if (showComparison && currentStep === 4) {
+                    drawKekuleStructure();
+                    drawEnergyComparison();
+                } else {
+                    drawSigmaBonds();
+                }
+                
+                drawAtoms();
+                
+                // 根据当前步骤绘制轨道和电子云
+                if (showOrbitals) {
+                    if (currentStep >= 2) {
+                        // 绘制p轨道
+                        carbonAtoms.forEach(atom => {
+                            drawPOrbital(atom.x, atom.y, Math.PI/2, 60);
+                        });
+                    }
+                    
+                    if (currentStep >= 3) {
+                        // 绘制轨道重叠提示
+                        ctx.strokeStyle = colors.electron;
+                        ctx.lineWidth = 2;
+                        ctx.setLineDash([5, 5]);
+                        
+                        for (let i = 0; i < 6; i++) {
+                            const current = carbonAtoms[i];
+                            const next = carbonAtoms[(i + 1) % 6];
+                            
+                            ctx.beginPath();
+                            ctx.moveTo(current.x, current.y + 40);
+                            ctx.lineTo(next.x, next.y + 40);
+                            ctx.stroke();
+                        }
+                        ctx.setLineDash([]);
+                    }
+                    
+                    if (currentStep >= 4 && !showComparison) {
+                        drawPiCloud();
+                    }
+                }
+                
+                // 更新状态栏
+                const stepNames = [
+                    '步骤1/4：苯环σ键骨架',
+                    '步骤2/4：p轨道',
+                    '步骤3/4：轨道重叠',
+                    '步骤4/4：离域π键'
+                ];
+                document.getElementById('statusBar').textContent = 
+                    `当前模式：探索苯的结构 - ${stepNames[currentStep - 1]}`;
+                    
+            } else if (currentMode === 'reaction') {
+                // 绘制反应模式
+                drawSigmaBonds();
+                drawAtoms();
+                
+                if (showOrbitals && reactionStep < 5) {
+                    drawPiCloud();
+                }
+                
+                drawBromineMolecule();
+                drawReaction();
+                
+                // 更新状态栏
+                const stepNames = [
+                    '准备：溴分子',
+                    '步骤1：FeBr₃催化生成Br⁺',
+                    '步骤2：Br
+<!--检测到代码截断，自动续写中...-->
+进攻苯环',
+                    '步骤3：形成σ-络合物',
+                    '步骤4：H⁺离去',
+                    '步骤5：生成溴苯，恢复芳香性'
+                ];
+                document.getElementById('statusBar').textContent = 
+                    `当前模式：观察溴代反应 - ${stepNames[reactionStep]}`;
+            }
+            
+            // 更新动画时间
+            animationTime += animationSpeed;
+            
+            // 请求下一帧
+            requestAnimationFrame(draw);
+        }
+        
+        // 初始化UI事件
+        function initUI() {
+            // 模式切换
+            document.getElementById('modeStructure').addEventListener('click', () => {
+                setMode('structure');
+            });
+            
+            document.getElementById('modeReaction').addEventListener('click', () => {
+                setMode('reaction');
+            });
+            
+            // 结构演示控制
+            document.getElementById('btnStep1').addEventListener('click', () => setStep(1));
+            document.getElementById('btnStep2').addEventListener('click', () => setStep(2));
+            document.getElementById('btnStep3').addEventListener('click', () => setStep(3));
+            document.getElementById('btnStep4').addEventListener('click', () => setStep(4));
+            document.getElementById('btnReset').addEventListener('click', resetStructure);
+            
+            // 视图选项
+            document.getElementById('toggleLabels').addEventListener('change', (e) => {
+                showLabels = e.target.checked;
+            });
+            
+            document.getElementById('toggleOrbitals').addEventListener('change', (e) => {
+                showOrbitals = e.target.checked;
+            });
+            
+            document.getElementById('toggleComparison').addEventListener('change', (e) => {
+                showComparison = e.target.checked;
+                updateInfoPanel();
+            });
+            
+            // 反应控制
+            document.getElementById('btnStartReaction').addEventListener('click', startReaction);
+            document.getElementById('btnStepForward').addEventListener('click', nextReactionStep);
+            document.getElementById('btnResetReaction').addEventListener('click', resetReaction);
+            
+            // Canvas点击事件（用于拖拽溴分子）
+            canvas.addEventListener('mousedown', handleCanvasMouseDown);
+            canvas.addEventListener('mousemove', handleCanvasMouseMove);
+            canvas.addEventListener('mouseup', handleCanvasMouseUp);
+            canvas.addEventListener('mouseleave', handleCanvasMouseUp);
+        }
+        
+        // 设置模式
+        function setMode(mode) {
+            currentMode = mode;
+            
+            // 更新按钮状态
+            document.getElementById('modeStructure').classList.toggle('active', mode === 'structure');
+            document.getElementById('modeReaction').classList.toggle('active', mode === 'reaction');
+            
+            // 显示/隐藏控制面板
+            document.getElementById('structureControls').style.display = mode === 'structure' ? 'block' : 'none';
+            document.getElementById('reactionControls').style.display = mode === 'reaction' ? 'block' : 'none';
+            
+            // 重置状态
+            if (mode === 'structure') {
+                resetStructure();
+            } else {
+                resetReaction();
+            }
+            
+            updateInfoPanel();
+        }
+        
+        // 设置结构演示步骤
+        function setStep(step) {
+            currentStep = step;
+            
+            // 更新按钮状态
+            document.getElementById('btnStep1').classList.toggle('active', step === 1);
+            document.getElementById('btnStep2').classList.toggle('active', step === 2);
+            document.getElementById('btnStep3').classList.toggle('active', step === 3);
+            document.getElementById('btnStep4').classList.toggle('active', step === 4);
+            
+            updateInfoPanel();
+        }
+        
+        // 重置结构演示
+        function resetStructure() {
+            currentStep = 1;
+            setStep(1);
+            showComparison = false;
+            document.getElementById('toggleComparison').checked = false;
+        }
+        
+        // 开始反应
+        function startReaction() {
+            if (reactionStep === 0) {
+                reactionStep = 1;
+                isReactionRunning = true;
+                document.getElementById('btnStartReaction').disabled = true;
+                document.getElementById('btnStepForward').disabled = false;
+                
+                // 自动播放反应
+                const autoPlay = setInterval(() => {
+                    if (reactionStep < 5) {
+                        nextReactionStep();
+                    } else {
+                        clearInterval(autoPlay);
+                        isReactionRunning = false;
+                    }
+                }, 1500);
+            }
+        }
+        
+        // 下一步反应
+        function nextReactionStep() {
+            if (reactionStep < 5) {
+                reactionStep++;
+                updateInfoPanel();
+            }
+            
+            if (reactionStep === 5) {
+                document.getElementById('btnStepForward').disabled = true;
+            }
+        }
+        
+        // 重置反应
+        function resetReaction() {
+            reactionStep = 0;
+            bromoniumIon = null;
+            sigmaComplex = null;
+            bromobenzene = null;
+            isReactionRunning = false;
+            
+            document.getElementById('btnStartReaction').disabled = false;
+            document.getElementById('btnStepForward').disabled = true;
+            
+            updateInfoPanel();
+        }
+        
+        // 更新信息面板
+        function updateInfoPanel() {
+            const infoTitle = document.getElementById('infoTitle');
+            const infoContent = document.getElementById('infoContent');
+            
+            if (currentMode === 'structure') {
+                infoTitle.textContent = '苯的分子结构';
+                
+                if (showComparison && currentStep === 4) {
+                    infoContent.innerHTML = `
+                        <p><span class="warning">凯库勒式结构</span>假设苯环是单双键交替的六元环，但这无法解释：</p>
+                        <p>1. 苯的异常稳定性（不易发生加成反应）</p>
+                        <p>2. 所有C-C键长均等（140pm）</p>
+                        <p>3. 邻位二取代物只有一种</p>
+                        <p><span class="success">离域π键模型</span>成功解释了这些现象：</p>
+                        <p>• 6个p电子离域在整个环上，形成大π键</p>
+                        <p>• 电子云均匀分布，键长均等</p>
+                        <p>• 离域使体系能量降低约150kJ/mol（共振稳定化能）</p>
+                    `;
+                } else {
+                    const stepInfo = [
+                        `<p>苯（C₆H₆）是一个平面正六边形分子，所有碳原子均为<span class="highlight">sp²杂化</span>，形成σ键骨架。</p>
+                         <p>碳原子间通过<span class="highlight">σ键</span>连接成环，每个碳原子还连接一个氢原子。</p>`,
+                        
+                        `<p>每个碳原子上未参与杂化的<span class="highlight">p轨道</span>垂直于分子平面。</p>
+                         <p>这些p轨道相互平行，每个轨道中含有一个未成对电子。</p>`,
+                        
+                        `<p>相邻碳原子的p轨道通过<span class="highlight">侧面重叠</span>发生相互作用。</p>
+                         <p>这种重叠使电子不再定域在两个原子之间，而是开始离域。</p>`,
+                        
+                        `<p>6个p轨道完全重叠，形成一个覆盖整个苯环的<span class="highlight">离域π键</span>（大π键）。</p>
+                         <p>π电子云像两个"救生圈"分布在苯环平面的上下方。</p>
+                         <p>离域π键使苯具有特殊的<span class="success">芳香性</span>：异常稳定、易取代、难加成。</p>`
+                    ];
+                    
+                    infoContent.innerHTML = stepInfo[currentStep - 1];
+                }
+            } else {
+                infoTitle.textContent = '苯的溴代反应机理';
+                
+                const stepInfo = [
+                    `<p>苯的溴代反应是典型的<span class="highlight">亲电取代反应</span>。</p>
+                     <p>需要<span class="warning">FeBr₃</span>作为催化剂，将Br₂转化为更强的亲电试剂Br⁺。</p>
+                     <p>点击"开始溴代反应"按钮观察反应全过程。</p>`,
+                    
+                    `<p><span class="highlight">步骤1：生成亲电试剂</span></p>
+                     <p>FeBr₃与Br₂反应：Br₂ + FeBr₃ → Br⁺ + FeBr₄⁻</p>
+                     <p>生成带正电的<span class="warning">溴正离子（Br⁺）</span>，这是真正的亲电试剂。</p>`,
+                    
+                    `<p><span class="highlight">步骤2：亲电进攻</span></p>
+                     <p>Br⁺进攻苯环的π电子云，与一个碳原子形成新的C-Br键。</p>
+                     <p>被进攻的碳原子由sp²杂化变为sp³杂化，苯环的<span class="warning">离域π键被暂时破坏</span>。</p>`,
+                    
+                    `<p><span class="highlight">步骤3：形成σ-络合物</span></p>
+                     <p>生成带正电的中间体——<span class="warning">σ-络合物</span>（或称为碳正离子中间体）。</p>
+                     <p>此时苯环的芳香性暂时消失，体系能量升高。</p>`,
+                    
+                    `<p><span class="highlight">步骤4：失去质子</span></p>
+                     <p>σ-络合物不稳定，迅速失去一个质子（H⁺）。</p>
+                     <p>FeBr₄⁻作为碱，接受质子生成HBr和FeBr₃（催化剂再生）。</p>`,
+                    
+                    `<p><span class="highlight">步骤5：恢复芳香性</span></p>
+                     <p>失去H⁺后，碳原子恢复sp²杂化，<span class="success">离域π键重新形成</span>。</p>
+                     <p>最终生成<span class="success">溴苯</span>和HBr，苯环的芳香性完全恢复。</p>
+                     <p>总反应：C₆H₆ + Br₂ → C₆H₅Br + HBr（FeBr₃催化）</p>`
+                ];
+                
+                infoContent.innerHTML = stepInfo[reactionStep];
+            }
+        }
+        
+        // 鼠标事件处理（用于拖拽溴分子）
+        function handleCanvasMouseDown(e) {
+            if (currentMode !== 'reaction' || reactionStep !== 0) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // 检查是否点击了溴分子
+            const dx = x - bromineMolecule.x;
+            const dy = y - bromineMolecule.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance < 50) {
+                bromineMolecule.dragging = true;
+                canvas.style.cursor = 'grabbing';
+            }
+        }
+        
+        function handleCanvasMouseMove(e) {
+            if (!bromineMolecule.dragging) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            bromineMolecule.x = e.clientX - rect.left;
+            bromineMolecule.y = e.clientY - rect.top;
+            
+            // 如果拖拽到反应区，自动开始反应
+            const dx = bromineMolecule.x - centerX;
+            const dy = bromineMolecule.y - centerY;
+            const distanceToCenter = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distanceToCenter < ringRadius + 100) {
+                startReaction();
+                bromineMolecule.dragging = false;
+                canvas.style.cursor = 'default';
+            }
+        }
+        
+        function handleCanvasMouseUp() {
+            bromineMolecule.dragging = false;
+            canvas.style.cursor = 'default';
+        }
+        
+        // 初始化
+        function init() {
+            resizeCanvas();
+            initUI();
+            updateInfoPanel();
+            draw(); // 开始动画循环
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
+
+### 3. 过程输出
+
+### 3. 使用指南
+
+## 苯分子结构与溴代反应交互式教学动画使用指南
+
+欢迎使用这款专门为化学学习设计的交互式教学动画！本工具旨在通过直观、动态的可视化方式，帮助您深入理解苯分子的独特结构和芳香烃亲电取代反应的核心机理。无论您是高中生、大学生还是化学爱好者，都能通过互动探索获得清晰的概念认知。
+
+---
+
+### 一、功能说明
+
+本动画包含两大核心学习模块：
+
+1.  **结构探索模块**：逐步揭示苯分子的电子结构，从基础的σ键骨架到抽象的离域π键。
+2.  **反应模拟模块**：动态演示苯的溴代反应（亲电取代）全过程，展示从进攻到产物生成的每一步机理。
+
+您可以通过顶部的模式选择按钮在两个模块间自由切换，每个模块都配有独立的控制面板和详细的知识点讲解。
+
+---
+
+### 二、主要功能与操作
+
+#### 1. 模式切换
+*   **探索苯的结构**：点击此按钮进入结构学习模块。您将分步学习苯环的构成。
+*   **观察溴代反应**：点击此按钮进入反应机理模块。您可以启动并观察完整的溴代反应模拟。
+
+#### 2. 结构模块控制
+*   **分步演示**：使用“步骤1”至“步骤4”按钮，按逻辑顺序学习：
+    *   **步骤1：σ键骨架** – 查看苯环的平面六边形结构及C-H键。
+    *   **步骤2：p轨道** – 观察每个碳原子上垂直于环平面的p轨道及其中的电子。
+    *   **步骤3：轨道重叠** – 了解相邻p轨道如何开始侧面重叠。
+    *   **步骤4：离域π键** – 可视化最终形成的、覆盖整个苯环的“电子云救生圈”。
+*   **视图选项**：
+    *   `显示原子标签`：开关原子符号（C, H, Br）的显示。
+    *   `显示轨道/电子`：开关p轨道和电子云的显示，便于聚焦不同层次的结构。
+    *   `对比凯库勒式`：在步骤4时开启，可直观对比错误的单双键交替模型与正确的离域模型在能量和稳定性上的巨大差异。
+*   **重置**：一键回到初始状态。
+
+#### 3. 反应模块控制
+*   **开始溴代反应**：点击此按钮，动画将自动播放完整的反应序列。您也可以将画面右侧的溴分子拖向苯环来触发反应。
+*   **下一步**：在反应开始后，可手动控制，逐步观察反应机理的每一个关键步骤。
+*   **重置反应**：使动画回到反应前的初始状态，以便重复观看。
+*   **状态栏与图例**：画面左下角的状态栏会提示当前所处步骤，右上角的图例解释了不同颜色代表的原子和结构。
+
+#### 4. 智能信息面板
+画面下方的信息面板会根据您当前的操作（模式、步骤）**动态更新讲解内容**，提供即时的、针对性的理论知识说明，将可视化现象与化学原理紧密结合。
+
+---
+
+### 三、设计特色
+
+1.  **渐进式认知设计**：严格遵循从具体到抽象、从静态到动态的认知规律，引导用户层层深入地构建知识体系。
+2.  **专业级可视化**：
+    *   采用球棍模型清晰展示原子与键。
+    *   使用半透明发光效果渲染“离域π电子云”，生动体现其离域性和整体性。
+    *   反应机理中，用颜色高亮、箭头指示和粒子运动来表现电子转移、键的断裂与形成。
+3.  **对比纠错功能**：独有的“凯库勒式对比”功能，直接可视化离域结构带来的稳定性优势，有力纠正常见误解。
+4.  **交互与叙事结合**：既支持自主探索（分步控制、视图切换），也提供自动叙事（一键播放反应），满足不同学习风格的需求。
+5.  **沉浸式视觉体验**：采用深色科技感背景，突出核心教学内容，减少视觉干扰，营造专注的学习环境。
+
+---
+
+### 四、核心教学要点
+
+通过本动画，请重点关注以下核心概念：
+
+*   **苯的结构本质**：苯不是单双键交替，而是所有碳碳键完全均等的**离域体系**。六个p电子共享于整个环的上方和下方，形成一个**大π键**，这是苯具有“芳香性”的结构基础。
+*   **离域与稳定**：离域π键的形成显著降低了分子的能量（共振稳定化能），使苯异常稳定，不易发生类似烯烃的加成反应。
+*   **亲电取代机理**：苯的典型反应是取代而非加成。以溴代为例，理解 **“催化生成亲电试剂（Br⁺）→ 亲电进攻 → 形成σ-络合物（中间体）→ 失去H⁺恢复芳香性”** 这一通用机理。关键在于认识到反应中**芳香性暂时被破坏后又恢复**的过程。
+
+---
+
+### 五、使用建议
+
+1.  **初次学习**：建议按顺序操作。先进入“结构模块”，从步骤1到步骤4完整观看一遍，理解离域π键的形成。然后切换到“反应模块”，点击“开始溴代反应”观看全过程，再使用“下一步”功能仔细剖析每一步。
+2.  **复习与探究**：
+    *   在结构模块，尝试关闭“轨道/电子”视图，仅看骨架，再打开，强化空间想象。
+    *   反复使用“对比凯库勒式”功能，加深对苯环稳定性的理解。
+    *   在反应模块，在“σ-络合物”步骤暂停，思考此时分子的结构与稳定性变化。
+3.  **教学演示**：教师可将此动画用于课堂讲解。在演示时，可配合控制步骤，随时暂停并提问，引导学生预测下一步或解释当前现象，实现互动教学。
+4.  **关联思考**：学习后，可尝试思考：
+    *   苯的硝化、磺化反应是否遵循相似的亲电取代机理？
+    *   如何用离域理论解释苯环上取代反应的定位规律？
+
+希望这款精心设计的交互式动画能成为您探索有机化学奥秘的得力助手，祝您学习愉快，收获满满！

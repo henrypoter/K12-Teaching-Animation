@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>电解饱和食盐水微观动画</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 1000px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .subtitle {
+            color: #34495e;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+        
+        .equation {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 12px 20px;
+            display: inline-block;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #2980b9;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-left: 5px solid #3498db;
+        }
+        
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            max-width: 1000px;
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .animation-area {
+            flex: 1;
+            min-width: 600px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            overflow: hidden;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .canvas-container {
+            flex: 1;
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            background-color: #e8f4f8;
+            border: 2px solid #bdc3c7;
+        }
+        
+        #electrolysisCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .control-panel {
+            background-color: #f8f9fa;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            padding: 20px;
+            min-width: 300px;
+            max-width: 350px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .panel-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+        
+        .section-title {
+            color: #2c3e50;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #ecf0f1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section-title i {
+            color: #3498db;
+        }
+        
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+            flex: 1;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background-color: #ecf0f1;
+            color: #2c3e50;
+            flex: 1;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #d5dbdb;
+            transform: translateY(-2px);
+        }
+        
+        .speed-controls {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .speed-btn {
+            flex: 1;
+            padding: 8px 5px;
+        }
+        
+        .speed-btn.active {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .mode-controls {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .mode-btn {
+            flex: 1;
+            padding: 8px 5px;
+        }
+        
+        .mode-btn.active {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+        
+        .info-panel {
+            margin-top: 10px;
+            background-color: #fffde7;
+            border-radius: 8px;
+            padding: 12px;
+            border-left: 4px solid #f1c40f;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            min-height: 70px;
+        }
+        
+        .step-info {
+            color: #d35400;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .hint {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            text-align: center;
+            margin-top: 10px;
+            font-style: italic;
+        }
+        
+        .toggle-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .toggle-btn {
+            padding: 8px 12px;
+            font-size: 0.85rem;
+        }
+        
+        @media (max-width: 950px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .animation-area, .control-panel {
+                width: 100%;
+                max-width: 100%;
+                min-width: unset;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="header">
+        <h1><i class="fas fa-atom"></i> 电解饱和食盐水微观过程</h1>
+        <p class="subtitle">观察离子迁移、电子转移与三产物生成的同步动画</p>
+        <div class="equation">2NaCl + 2H₂O → H₂↑ + Cl₂↑ + 2NaOH</div>
+    </div>
+    
+    <div class="container">
+        <div class="animation-area">
+            <div class="canvas-container">
+                <canvas id="electrolysisCanvas" width="800" height="500"></canvas>
+            </div>
+            <p class="hint"><i class="fas fa-mouse-pointer"></i> 提示：将鼠标悬停在粒子、电极或气泡上查看详细信息</p>
+        </div>
+        
+        <div class="control-panel">
+            <div class="panel-section">
+                <div class="section-title"><i class="fas fa-play-circle"></i> 动画控制</div>
+                <div class="controls">
+                    <div class="button-group">
+                        <button id="playBtn" class="btn-primary"><i class="fas fa-play"></i> 播放</button>
+                        <button id="pauseBtn" class="btn-secondary"><i class="fas fa-pause"></i> 暂停</button>
+                        <button id="resetBtn" class="btn-secondary"><i class="fas fa-redo"></i> 重置</button>
+                    </div>
+                    
+                    <div>
+                        <div class="section-title" style="font-size: 1rem; margin-bottom: 10px;"><i class="fas fa-tachometer-alt"></i> 播放速度</div>
+                        <div class="speed-controls">
+                            <button id="slowBtn" class="speed-btn btn-secondary">慢速</button>
+                            <button id="normalBtn" class="speed-btn btn-secondary active">常速</button>
+                            <button id="fastBtn" class="speed-btn btn-secondary">快速</button>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="section-title" style="font-size: 1rem; margin-bottom: 10px;"><i class="fas fa-list-ol"></i> 演示模式</div>
+                        <div class="mode-controls">
+                            <button id="continuousBtn" class="mode-btn btn-secondary active">连续动画</button>
+                            <button id="stepBtn" class="mode-btn btn-secondary">分步讲解</button>
+                        </div>
+                    </div>
+                    
+                    <div class="toggle-group">
+                        <button id="labelsToggle" class="toggle-btn btn-secondary"><i class="fas fa-tag"></i> 显示标签</button>
+                        <button id="ohHighlightToggle" class="toggle-btn btn-secondary"><i class="fas fa-highlighter"></i> 高亮OH⁻</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel-section">
+                <div class="section-title"><i class="fas fa-info-circle"></i> 当前信息</div>
+                <div class="info-panel">
+                    <div id="stepInfo" class="step-info">准备开始电解...</div>
+                    <div id="infoText">点击"播放"按钮开始动画，观察微观粒子如何运动并生成三种产物。</div>
+                </div>
+            </div>
+            
+            <div class="panel-section">
+                <div class="section-title"><i class="fas fa-palette"></i> 粒子图例</div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #3498db;"></div>
+                        <span>Na⁺ (钠离子)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #2ecc71;"></div>
+                        <span>Cl⁻ (氯离子)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #e74c3c;"></div>
+                        <span>H⁺ (氢离子)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: linear-gradient(45deg, #e74c3c 50%, white 50%);"></div>
+                        <span>OH⁻ (氢氧根)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #ecf0f1;"></div>
+                        <span>H₂ (氢气)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #f1c40f;"></div>
+                        <span>Cl₂ (氯气)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #f39c12; border: 2px dashed #e67e22;"></div>
+                        <span>电子 (e⁻)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 获取Canvas元素和上下文
+        const canvas = document.getElementById('electrolysisCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 调整Canvas大小以适应容器
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            initCanvasDimensions();
+        }
+        
+        // 初始化Canvas尺寸相关变量
+        let canvasWidth, canvasHeight;
+        function initCanvasDimensions() {
+            canvasWidth = canvas.width;
+            canvasHeight = canvas.height;
+        }
+        
+        // 动画状态
+        let animationId = null;
+        let isPlaying = false;
+        let speed = 1.0; // 1.0 = 正常速度
+        let isStepMode = false;
+        let currentStep = 0;
+        let showLabels = true;
+        let highlightOH = true;
+        
+        // 电解池参数
+        const cell = {
+            x: 0,
+            y: 0,
+            width: 0,
+            height: 0,
+            leftCompartment: { x: 0, width: 0, color: 'rgba(224, 247, 250, 0.7)' },
+            rightCompartment: { x: 0, width: 0, color: 'rgba(224, 247, 250, 0.7)' },
+            membrane: { x: 0, width: 5 }
+        };
+        
+        // 电极参数
+        const electrodes = {
+            anode: { x: 0, y: 0, width: 15, height: 80, name: '阳极 (石墨)' },
+            cathode: { x: 0, y: 0, width: 15, height: 80, name: '阴极 (石墨)' }
+        };
+        
+        // 电源参数
+        const powerSupply = {
+            x: 0,
+            y: 0,
+            width: 80,
+            height: 40
+        };
+        
+        // 粒子数组
+        let particles = [];
+        let electrons = [];
+        let gasBubbles = [];
+        
+        // 鼠标交互
+        let mouse = { x: 0, y: 0, hoveredItem: null };
+        
+        // 初始化电解池布局
+        function initLayout() {
+            // 电解池尺寸和位置
+            cell.x = canvasWidth * 0.1;
+            cell.y = canvasHeight * 0.2;
+            cell.width = canvasWidth * 0.8;
+            cell.height = canvasHeight * 0.6;
+            
+            // 电解池左右室
+            cell.leftCompartment.width = cell.width * 0.45;
+            cell.leftCompartment.x = cell.x;
+            cell.rightCompartment.width = cell.width * 0.45;
+            cell.rightCompartment.x = cell.x + cell.width * 0.55;
+            
+            // 隔膜
+            cell.membrane.x = cell.x + cell.width * 0.5 - cell.membrane.width / 2;
+            
+            // 电极位置
+            electrodes.anode.x = cell.leftCompartment.x + cell.leftCompartment.width * 0.7;
+            electrodes.anode.y = cell.y + 30;
+            electrodes.cathode.x = cell.rightCompartment.x + cell.rightCompartment.width * 0.3;
+            electrodes.cathode.y = cell.y + 30;
+            
+            // 电源位置
+            powerSupply.x = canvasWidth / 2 - powerSupply.width / 2;
+            powerSupply.y = cell.y - 70;
+        }
+        
+        // 粒子类
+        class Particle {
+            constructor(type, x, y) {
+                this.type = type; // 'Na+', 'Cl-', 'H+', 'OH-'
+                this.x = x;
+                this.y = y;
+                this.radius = 0;
+                this.color = '';
+                this.label = '';
+                this.speed = 0;
+                this.targetX = x;
+                this.targetY = y;
+                this.isMoving = false;
+                this.initProperties();
+            }
+            
+            initProperties() {
+                switch(this.type) {
+                    case 'Na+':
+                        this.radius = 10;
+                        this.color = '#3498db';
+                        this.label = 'Na⁺';
+                        this.speed = 0.5;
+                        break;
+                    case 'Cl-':
+                        this.radius = 10;
+                        this.color = '#2ecc71';
+                        this.label = 'Cl⁻';
+                        this.speed = 0.5;
+                        break;
+                    case 'H+':
+                        this.radius = 6;
+                        this.color = '#e74c3c';
+                        this.label = 'H⁺';
+                        this.speed = 0.8;
+                        break;
+                    case 'OH-':
+                        this.radius = 10;
+                        this.color = '#e74c3c'; // 红色部分
+                        this.color2 = 'white'; // 白色部分
+                        this.label = 'OH⁻';
+                        this.speed = 0.6;
+                        break;
+                }
+            }
+            
+            update() {
+                // 向目标位置移动
+                if (this.isMoving) {
+                    const dx = this.targetX - this.x;
+                    const dy = this.targetY - this.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance > 1) {
+                        this.x += (dx / distance) * this.speed * speed;
+                        this.y += (dy / distance) * this.speed * speed;
+                    } else {
+                        this.isMoving = false;
+                    }
+                }
+                
+                // 限制在电解池内
+                const margin = this.radius + 5;
+                if (this.x < cell.x + margin) this.x = cell.x + margin;
+                if (this.x > cell.x + cell.width - margin) this.x = cell.x + cell.width - margin;
+                if (this.y < cell.y + margin) this.y = cell.y + margin;
+                if (this.y > cell.y + cell.height - margin) this.y = cell.y + cell.height - margin;
+            }
+            
+            draw() {
+                // 绘制粒子
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                
+                if (this.type === 'OH-') {
+                    // OH-特殊绘制（红白各半）
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                    
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius * 0.7, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color2;
+                    ctx.fill();
+                    
+                    // 边框
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.strokeStyle = this.color;
+                    ctx.lineWidth = 1.5;
+                    ctx.stroke();
+                } else {
+                    ctx.fillStyle = this.color;
+                    ctx.fill();
+                    
+                    // 边框
+                    ctx.strokeStyle = 'rgba(0,0,0,0.2)';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+                
+                // 绘制标签
+                if (showLabels) {
+                    ctx.fillStyle = 'white';
+                    ctx.font = 'bold 12px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(this.label, this.x, this.y);
+                }
+                
+                // 如果高亮OH-且是OH-粒子
+                if (highlightOH && this.type === 'OH-') {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius + 3, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(231, 76, 60, 0.5)';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                }
+                
+                // 鼠标悬停效果
+                if (this.isHovered()) {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius + 5, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(241, 196, 15, 0.8)';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    
+                    // 显示详细信息
+                    this.drawTooltip();
+                }
+            }
+            
+            isHovered() {
+                const dx = this.x - mouse.x;
+                const dy = this.y - mouse.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                return distance < this.radius + 5;
+            }
+            
+            drawTooltip() {
+                let text = '';
+                switch(this.type) {
+                    case 'Na+': text = '钠离子 (Na⁺) - 不参与放电，向阴极迁移'; break;
+                    case 'Cl-': text = '氯离子 (Cl⁻) - 在阳极失去电子生成氯气'; break;
+                    case 'H+': text = '氢离子 (H⁺) - 在阴极获得电子生成氢气'; break;
+                    case 'OH-': text = '氢氧根离子 (OH⁻) - 阴极区浓度增加，形成NaOH'; break;
+                }
+                
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+                ctx.fillRect(mouse.x + 10, mouse.y - 30, 220, 40);
+                
+                ctx.fillStyle = 'white';
+                ctx.font = '13px Arial';
+                ctx.textAlign = 'left';
+                ctx.fillText(text, mouse.x + 15, mouse.y - 10);
+            }
+        }
+        
+        // 电子类
+        class Electron {
+            constructor(x, y, targetX, targetY) {
+                this.x = x;
+                this.y = y;
+                this.targetX = targetX;
+                this.targetY = targetY;
+                this.radius = 4;
+                this.color = '#f39c12';
+                this.speed = 3;
+                this.life = 100; // 电子存在时间
+                this.active = true;
+            }
+            
+            update() {
+                const dx = this.targetX - this.x;
+                const dy = this.targetY - this.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance > 1 && this.life > 0) {
+                    this.x += (dx / distance) * this.speed * speed;
+                    this.y += (dy / distance) * this.speed * speed;
+                    this.life--;
+                } else {
+                    this.active = false;
+                }
+            }
+            
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                
+                // 发光效果
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius + 3, 0, Math.PI * 2);
+                ctx.strokeStyle = 'rgba(243, 156, 18, 0.5)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // 虚线边框
+                ctx.setLineDash([3, 3]);
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius + 1, 0, Math.PI * 2);
+                ctx.strokeStyle = '#e67e22';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+        }
+        
+        // 气泡类
+        class GasBubble {
+            constructor(type, x, y) {
+                this.type = type; // 'H2' 或 'Cl2'
+                this.x = x;
+                this.y = y;
+                this.radius = 5;
+                this.speed = 0.7;
+                this.color = '';
+                this.label = '';
+                this.initProperties();
+            }
+            
+            initProperties() {
+                if (this.type === 'H2') {
+                    this.color = '#ecf0f1';
+                    this.label = 'H₂';
+                } else {
+                    this.color = '#f1c40f';
+                    this.label = 'Cl₂';
+                }
+            }
+            
+            update() {
+                // 气泡向上移动
+                this.y -= this.speed * speed;
+                
+                // 缓慢增大
+                if (this.radius < 12) {
+                    this.radius += 0.05 * speed;
+                }
+            }
+            
+            draw() {
+                // 绘制气泡
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                
+                // 气泡高光
+                ctx.beginPath();
+                ctx.arc(this.x - this.radius * 0.3, this.y - this.radius * 0.3, this.radius * 0.4, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+                ctx.fill();
+                
+                // 边框
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.strokeStyle = 'rgba(0,0,0,0.2)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                
+                // 标签
+                if (showLabels) {
+                    ctx.fillStyle = 'rgba(0,0,0,0.7)';
+                    ctx.font = 'bold 10px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(this.label, this.x, this.y);
+                }
+                
+                // 鼠标悬停效果
+                if (this.isHovered()) {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius + 5, 0, Math.PI * 2);
+                    ctx.strokeStyle = 'rgba(241, 196, 15, 0.8)';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    
+                    // 显示详细信息
+                    this.drawTooltip();
+                }
+            }
+            
+            isHovered() {
+                const dx = this.x - mouse.x;
+                const dy = this.y - mouse.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                return distance < this.radius + 5;
+            }
+            
+            drawTooltip() {
+                let text = '';
+                if (this.type === 'H2') {
+                    text = '氢气 (H₂) - 阴极产物，由H⁺获得电子生成';
+                } else {
+                    text = '氯气 (Cl₂) - 阳极产物，由Cl⁻失去电子生成';
+                }
+                
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+                ctx.fillRect(mouse.x + 10, mouse.y - 30, 200, 40);
+                
+                ctx.fillStyle = 'white';
+                ctx.font = '13px Arial';
+                ctx.textAlign = 'left';
+                ctx.fillText(text, mouse.x + 15, mouse.y - 10);
+            }
+        }
+        
+        // 初始化粒子
+        function initParticles() {
+            particles = [];
+            electrons = [];
+            gasBubbles = [];
+            
+            // 创建Na+和Cl-粒子（均匀分布）
+            for (let i = 0; i < 25; i++) {
+                // Na+在左室
+                particles.push(new Particle('Na+', 
+                    cell.leftCompartment.x + Math.random() * cell.leftCompartment.width,
+                    cell.y + 50 + Math.random() * (cell.height - 100)
+                ));
+                
+                // Na+在右室
+                particles.push(new Particle('Na+', 
+                    cell.rightCompartment.x + Math.random() * cell.rightCompartment.width,
+                    cell.y + 50 + Math.random() * (cell.height - 100)
+                ));
+                
+                // Cl-在左室
+                particles.push(new Particle('Cl-', 
+                    cell.leftCompartment.x + Math.random() * cell.leftCompartment.width,
+                    cell.y + 50 + Math.random() * (cell.height - 100)
+                ));
+                
+                // Cl-在右室
+                particles.push(new Particle('Cl-', 
+                    cell.rightCompartment.x + Math.random() * cell.rightCompartment.width,
+                    cell.y + 50 + Math.random() * (cell.height - 100)
+                ));
+            }
+            
+            // 创建H+和OH-粒子（均匀分布，数量较少）
+            for (let i = 0; i < 15; i++) {
+                // H+在左室
+                particles.push(new Particle('H+', 
+                    cell.leftCompartment.x + Math.random() * cell.leftCompartment.width,
+                    cell.y + 50 + Math.random() * (cell.height - 100)
+                ));
+                
+                // H+在右室
+                particles.push(new Particle('H+', 
+                    cell.rightCompartment.x + Math.random() * cell.rightCompartment.width,
+                    cell.y + 50 + Math.random() * (cell.height - 100)
+                ));
+                
+                // OH-在左室
+                particles.push(new Particle('OH-', 
+                    cell.leftCompartment.x + Math.random() * cell.leftCompartment.width,
+                    cell.y + 50 + Math.random() * (cell.height - 100)
+                ));
+                
+                // OH-在右室
+                particles.push(new Particle('OH-', 
+                    cell.rightCompartment.x + Math.random() * cell.rightCompartment.width,
+                    cell.y + 50 + Math.random() * (cell.height - 100)
+                ));
+            }
+        }
+        
+        // 开始电解过程
+        function startElectrolysis() {
+            // 重置步骤
+            currentStep = 0;
+            
+            // 清除现有电子和气泡
+            electrons = [];
+            gasBubbles = [];
+            
+            // 设置步骤信息
+            updateStepInfo(1, "通电：电子开始从电源负极流向阴极，从阳极流向电源正极");
+            
+            // 如果是分步模式，只执行第一步
+            if (isStepMode) {
+                return;
+            }
+            
+            // 连续模式：开始电解过程
+            setTimeout(() => {
+                updateStepInfo(2, "离子迁移：Cl⁻向阳极移动，H⁺向阴极移动，Na⁺向阴极迁移");
+                startIonMigration();
+            }, 2000);
+            
+            setTimeout(() => {
+                updateStepInfo(3, "电极反应：阳极Cl⁻失去电子生成Cl₂，阴极H⁺获得电子生成H₂");
+                startElectrodeReactions();
+            }, 4000);
+            
+            setTimeout(() => {
+                updateStepInfo(4, "产物生成：H₂和Cl₂气泡上升，阴极区OH⁻浓度增加形成NaOH");
+                showFinalProducts();
+            }, 8000);
+        }
+        
+        // 开始离子迁移
+        function startIonMigration() {
+            // 设置粒子移动目标
+            particles.forEach(p => {
+                if (p.type === 'Cl-') {
+                    // Cl-向阳极移动（左室）
+                    p.targetX = electrodes.anode.x + electrodes.anode.width / 2;
+                    p.targetY = electrodes.anode.y + electrodes.anode.height * 0.7;
+                    p.isMoving = true;
+                } else if (p.type === 'H+') {
+                    // H+向阴极移动（右室）
+                    p.targetX = electrodes.cathode.x + electrodes.cathode.width / 2;
+                    p.targetY = electrodes.cathode.y + electrodes.cathode.height * 0.7;
+                    p.isMoving = true;
+                } else if (p.type === 'Na+') {
+                    // Na+向阴极区迁移（右室）
+                    if (p.x < cell.membrane.x) {
+                        p.targetX = electrodes.cathode.x - 30;
+                        p.targetY = p.y;
+                        p.isMoving = true;
+                    }
+                }
+            });
+        }
+        
+        // 开始电极反应
+        function startElectrodeReactions() {
+            // 创建电子流
+            const electronInterval = setInterval(() => {
+                // 从阳极到电源正极的电子
+                electrons.push(new Electron(
+                    electrodes.anode.x + electrodes.anode.width / 2,
+                    electrodes.anode.y + 10,
+                    powerSupply.x + powerSupply.width - 10,
+                    powerSupply.y + powerSupply.height / 2
+                ));
+                
+                // 从电源负极到阴极的电子
+                electrons.push(new Electron(
+                    powerSupply.x + 10,
+                    powerSupply.y + powerSupply.height / 2,
+                    electrodes.cathode.x + electrodes.cathode.width / 2,
+                    electrodes.cathode.y + 10
+                ));
+                
+                // 生成气泡（每隔一段时间）
+                if (Math.random() > 0.7) {
+                    // 阳极生成Cl2气泡
+                    gasBubbles.push(new GasBubble('Cl2', 
+                        electrodes.anode.x + electrodes.anode.width / 2,
+                        electrodes.anode.y + electrodes.anode.height
+                    ));
+                }
+                
+                if (Math.random() > 0.7) {
+                    // 阴极生成H2气泡
+                    gasBubbles.push(new GasBubble('H2', 
+                        electrodes.cathode.x + electrodes.cathode.width / 2,
+                        electrodes.cathode.y + electrodes.cathode.height
+                    ));
+                }
+            }, 300);
+            
+            // 10秒后停止生成电子
+            setTimeout(() => {
+                clearInterval(electronInterval);
+            }, 10000);
+        }
+        
+        // 显示最终产物
+        function showFinalProducts() {
+            updateStepInfo(5, "电解完成：生成H₂、Cl₂和NaOH三种产物");
+            
+            // 改变阴极区背景色表示碱性增强
+            cell.rightCompartment.color = 'rgba(255, 243, 224, 0.7)';
+            
+            // 显示NaOH文字
+            setTimeout(() => {
+                // 在信息面板显示完成信息
+                document.getElementById('infoText').innerHTML = 
+                    "电解完成！三种产物已生成：<br>" +
+                    "1. 氢气(H₂)在阴极产生<br>" +
+                    "2. 氯气(Cl₂)在阳极产生<br>" +
+                    "3. 氢氧化钠(NaOH)在阴极区溶液中形成";
+            }, 1000);
+        }
+        
+        // 更新步骤信息
+        function updateStepInfo(step, text) {
+            currentStep = step;
+            document.getElementById('stepInfo').textContent = `步骤 ${step}: ${text}`;
+            
+            if (step === 1) {
+                document.getElementById('infoText').textContent = 
+                    "电路接通，电子开始定向移动。注意电子流动方向：从电源负极到阴极，从阳极到电源正极。";
+            } else if (step === 2) {
+                document.getElementById('infoText').textContent = 
+                    "离子在电场作用下定向迁移：阴离子(Cl⁻)向阳极移动，阳离子(H⁺、Na⁺)向阴极移动。";
+            } else if (step === 3) {
+                document.getElementById('infoText').textContent = 
+                    "电极发生氧化还原反应：阳极Cl⁻失去电子被氧化为Cl₂，阴极H⁺获得电子被还原为H₂。";
+            } else if (step === 4) {
+                document.getElementById('infoText').textContent = 
+                    "气体产物以气泡形式逸出，阴极区H⁺减少使OH⁻浓度相对增加，与Na⁺结合形成NaOH。";
+            }
+        }
+        
+        // 下一步（分步模式）
+        function nextStep() {
+            if (!isStepMode) return;
+            
+            currentStep++;
+            
+            if (currentStep === 1) {
+                updateStepInfo(1, "通电：电子开始从电源负极流向阴极，从阳极流向电源正极");
+            } else if (currentStep === 2) {
+                updateStepInfo(2, "离子迁移：Cl⁻向阳极移动，H⁺向阴极移动，Na
+<!--检测到代码截断，自动续写中...-->
+⁺向阴极迁移");
+                startIonMigration();
+            } else if (currentStep === 3) {
+                updateStepInfo(3, "电极反应：阳极Cl⁻失去电子生成Cl₂，阴极H⁺获得电子生成H₂");
+                startElectrodeReactions();
+            } else if (currentStep === 4) {
+                updateStepInfo(4, "产物生成：H₂和Cl₂气泡上升，阴极区OH⁻浓度增加形成NaOH");
+                showFinalProducts();
+            } else if (currentStep > 4) {
+                currentStep = 4;
+                document.getElementById('infoText').textContent = "分步演示已完成。点击'重置'按钮重新开始。";
+            }
+        }
+
+        // 绘制电解池
+        function drawElectrolysisCell() {
+            // 绘制电解池外框
+            ctx.strokeStyle = '#7f8c8d';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(cell.x, cell.y, cell.width, cell.height);
+            
+            // 绘制左室背景
+            ctx.fillStyle = cell.leftCompartment.color;
+            ctx.fillRect(cell.leftCompartment.x, cell.y, cell.leftCompartment.width, cell.height);
+            
+            // 绘制右室背景
+            ctx.fillStyle = cell.rightCompartment.color;
+            ctx.fillRect(cell.rightCompartment.x, cell.y, cell.rightCompartment.width, cell.height);
+            
+            // 绘制隔膜
+            ctx.fillStyle = 'rgba(149, 165, 166, 0.5)';
+            ctx.fillRect(cell.membrane.x, cell.y, cell.membrane.width, cell.height);
+            
+            // 绘制电极
+            drawElectrode(electrodes.anode, '阳极');
+            drawElectrode(electrodes.cathode, '阴极');
+            
+            // 绘制电源
+            drawPowerSupply();
+            
+            // 绘制导线
+            drawWires();
+            
+            // 绘制电极标签
+            if (showLabels) {
+                ctx.fillStyle = '#2c3e50';
+                ctx.font = 'bold 14px Arial';
+                ctx.textAlign = 'center';
+                
+                // 阳极标签
+                ctx.fillText('阳极 (+)', electrodes.anode.x + electrodes.anode.width/2, electrodes.anode.y - 10);
+                
+                // 阴极标签
+                ctx.fillText('阴极 (-)', electrodes.cathode.x + electrodes.cathode.width/2, electrodes.cathode.y - 10);
+            }
+            
+            // 电极悬停效果
+            if (isElectrodeHovered(electrodes.anode)) {
+                drawElectrodeTooltip(electrodes.anode, '阳极: 2Cl⁻ - 2e⁻ → Cl₂↑');
+            }
+            
+            if (isElectrodeHovered(electrodes.cathode)) {
+                drawElectrodeTooltip(electrodes.cathode, '阴极: 2H⁺ + 2e⁻ → H₂↑');
+            }
+        }
+        
+        // 绘制电极
+        function drawElectrode(electrode, label) {
+            // 电极柱
+            ctx.fillStyle = '#2c3e50';
+            ctx.fillRect(electrode.x, electrode.y, electrode.width, electrode.height);
+            
+            // 电极金属光泽
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.fillRect(electrode.x + 2, electrode.y + 2, electrode.width - 4, 10);
+        }
+        
+        // 绘制电源
+        function drawPowerSupply() {
+            // 电源外壳
+            ctx.fillStyle = '#34495e';
+            ctx.fillRect(powerSupply.x, powerSupply.y, powerSupply.width, powerSupply.height);
+            
+            // 电源正负极标志
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('+', powerSupply.x + 20, powerSupply.y + powerSupply.height/2);
+            ctx.fillText('-', powerSupply.x + powerSupply.width - 20, powerSupply.y + powerSupply.height/2);
+            
+            // 电源标签
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = 'bold 12px Arial';
+            ctx.fillText('直流电源', powerSupply.x + powerSupply.width/2, powerSupply.y - 10);
+        }
+        
+        // 绘制导线
+        function drawWires() {
+            ctx.strokeStyle = '#e67e22';
+            ctx.lineWidth = 3;
+            ctx.setLineDash([]);
+            
+            // 从电源正极到阳极
+            ctx.beginPath();
+            ctx.moveTo(powerSupply.x, powerSupply.y + powerSupply.height/2);
+            ctx.lineTo(powerSupply.x - 30, powerSupply.y + powerSupply.height/2);
+            ctx.lineTo(powerSupply.x - 30, electrodes.anode.y + electrodes.anode.height/2);
+            ctx.lineTo(electrodes.anode.x + electrodes.anode.width, electrodes.anode.y + electrodes.anode.height/2);
+            ctx.stroke();
+            
+            // 从电源负极到阴极
+            ctx.beginPath();
+            ctx.moveTo(powerSupply.x + powerSupply.width, powerSupply.y + powerSupply.height/2);
+            ctx.lineTo(powerSupply.x + powerSupply.width + 30, powerSupply.y + powerSupply.height/2);
+            ctx.lineTo(powerSupply.x + powerSupply.width + 30, electrodes.cathode.y + electrodes.cathode.height/2);
+            ctx.lineTo(electrodes.cathode.x, electrodes.cathode.y + electrodes.cathode.height/2);
+            ctx.stroke();
+            
+            // 绘制电子流动方向指示
+            if (isPlaying || currentStep >= 1) {
+                // 阳极到电源正极方向
+                drawArrow(
+                    electrodes.anode.x + electrodes.anode.width + 5,
+                    electrodes.anode.y + electrodes.anode.height/2,
+                    powerSupply.x - 25,
+                    electrodes.anode.y + electrodes.anode.height/2,
+                    '#f39c12'
+                );
+                
+                // 电源负极到阴极方向
+                drawArrow(
+                    powerSupply.x + powerSupply.width + 25,
+                    electrodes.cathode.y + electrodes.cathode.height/2,
+                    electrodes.cathode.x - 5,
+                    electrodes.cathode.y + electrodes.cathode.height/2,
+                    '#f39c12'
+                );
+                
+                // 电子流标签
+                ctx.fillStyle = '#d35400';
+                ctx.font = 'bold 12px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('电子流方向', canvasWidth/2, powerSupply.y - 25);
+            }
+        }
+        
+        // 绘制箭头
+        function drawArrow(fromX, fromY, toX, toY, color) {
+            const headlen = 10;
+            const dx = toX - fromX;
+            const dy = toY - fromY;
+            const angle = Math.atan2(dy, dx);
+            
+            // 绘制线
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            
+            ctx.beginPath();
+            ctx.moveTo(fromX, fromY);
+            ctx.lineTo(toX, toY);
+            ctx.stroke();
+            
+            // 绘制箭头头部
+            ctx.setLineDash([]);
+            ctx.beginPath();
+            ctx.moveTo(toX, toY);
+            ctx.lineTo(toX - headlen * Math.cos(angle - Math.PI/6), toY - headlen * Math.sin(angle - Math.PI/6));
+            ctx.lineTo(toX - headlen * Math.cos(angle + Math.PI/6), toY - headlen * Math.sin(angle + Math.PI/6));
+            ctx.closePath();
+            ctx.fillStyle = color;
+            ctx.fill();
+        }
+        
+        // 检查电极是否被悬停
+        function isElectrodeHovered(electrode) {
+            return mouse.x >= electrode.x - 10 && 
+                   mouse.x <= electrode.x + electrode.width + 10 && 
+                   mouse.y >= electrode.y && 
+                   mouse.y <= electrode.y + electrode.height;
+        }
+        
+        // 绘制电极提示
+        function drawElectrodeTooltip(electrode, text) {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+            const tooltipWidth = 250;
+            const tooltipHeight = 50;
+            const tooltipX = mouse.x + 15;
+            const tooltipY = mouse.y - tooltipHeight - 10;
+            
+            // 确保提示框不超出画布
+            const adjustedX = tooltipX + tooltipWidth > canvasWidth ? 
+                mouse.x - tooltipWidth - 15 : tooltipX;
+            
+            ctx.fillRect(adjustedX, tooltipY, tooltipWidth, tooltipHeight);
+            
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 14px Arial';
+            ctx.textAlign = 'left';
+            
+            // 电极名称
+            ctx.fillText(electrode.name, adjustedX + 10, tooltipY + 20);
+            
+            // 反应式
+            ctx.font = '13px Arial';
+            ctx.fillText(text, adjustedX + 10, tooltipY + 40);
+        }
+        
+        // 绘制NaOH产物指示
+        function drawNaOHIndicator() {
+            if (currentStep >= 4) {
+                // 在阴极区底部绘制NaOH文字
+                ctx.fillStyle = 'rgba(52, 152, 219, 0.9)';
+                ctx.font = 'bold 24px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('NaOH', 
+                    cell.rightCompartment.x + cell.rightCompartment.width/2,
+                    cell.y + cell.height - 30
+                );
+                
+                // 绘制晶体示意
+                for (let i = 0; i < 5; i++) {
+                    const x = cell.rightCompartment.x + cell.rightCompartment.width/2 - 40 + i * 20;
+                    const y = cell.y + cell.height - 50;
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                    ctx.lineTo(x + 8, y - 10);
+                    ctx.lineTo(x + 16, y);
+                    ctx.lineTo(x + 8, y + 10);
+                    ctx.closePath();
+                    ctx.fillStyle = 'rgba(52, 152, 219, 0.6)';
+                    ctx.fill();
+                    ctx.strokeStyle = '#2980b9';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+            }
+        }
+        
+        // 主绘制函数
+        function draw() {
+            // 清除画布
+            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+            
+            // 绘制电解池
+            drawElectrolysisCell();
+            
+            // 绘制粒子
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            
+            // 绘制电子
+            electrons.forEach(e => {
+                e.update();
+                e.draw();
+            });
+            
+            // 移除不活跃的电子
+            electrons = electrons.filter(e => e.active);
+            
+            // 绘制气泡
+            gasBubbles.forEach(b => {
+                b.update();
+                b.draw();
+            });
+            
+            // 移除超出画布的气泡
+            gasBubbles = gasBubbles.filter(b => b.y > 0 && b.y < canvasHeight);
+            
+            // 绘制NaOH产物指示
+            drawNaOHIndicator();
+            
+            // 绘制总方程式
+            ctx.fillStyle = 'rgba(41, 128, 185, 0.9)';
+            ctx.font = 'bold 18px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('2NaCl + 2H₂O → H₂↑ + Cl₂↑ + 2NaOH', canvasWidth/2, 30);
+            
+            // 继续动画循环
+            if (isPlaying) {
+                animationId = requestAnimationFrame(draw);
+            }
+        }
+        
+        // 重置动画
+        function resetAnimation() {
+            isPlaying = false;
+            currentStep = 0;
+            
+            // 停止动画循环
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+            
+            // 重置电解池颜色
+            cell.leftCompartment.color = 'rgba(224, 247, 250, 0.7)';
+            cell.rightCompartment.color = 'rgba(224, 247, 250, 0.7)';
+            
+            // 重新初始化粒子
+            initParticles();
+            
+            // 更新信息面板
+            updateStepInfo(0, "准备开始电解...");
+            document.getElementById('infoText').textContent = 
+                "点击'播放'按钮开始动画，观察微观粒子如何运动并生成三种产物。";
+            
+            // 绘制初始状态
+            draw();
+        }
+        
+        // 事件监听器
+        function setupEventListeners() {
+            // 播放按钮
+            document.getElementById('playBtn').addEventListener('click', () => {
+                if (!isPlaying) {
+                    isPlaying = true;
+                    if (isStepMode && currentStep === 0) {
+                        nextStep();
+                    } else if (!isStepMode && currentStep === 0) {
+                        startElectrolysis();
+                    }
+                    draw();
+                }
+            });
+            
+            // 暂停按钮
+            document.getElementById('pauseBtn').addEventListener('click', () => {
+                isPlaying = false;
+                if (animationId) {
+                    cancelAnimationFrame(animationId);
+                }
+            });
+            
+            // 重置按钮
+            document.getElementById('resetBtn').addEventListener('click', resetAnimation);
+            
+            // 速度控制按钮
+            document.getElementById('slowBtn').addEventListener('click', () => {
+                speed = 0.5;
+                document.querySelectorAll('.speed-btn').forEach(btn => btn.classList.remove('active'));
+                document.getElementById('slowBtn').classList.add('active');
+            });
+            
+            document.getElementById('normalBtn').addEventListener('click', () => {
+                speed = 1.0;
+                document.querySelectorAll('.speed-btn').forEach(btn => btn.classList.remove('active'));
+                document.getElementById('normalBtn').classList.add('active');
+            });
+            
+            document.getElementById('fastBtn').addEventListener('click', () => {
+                speed = 2.0;
+                document.querySelectorAll('.speed-btn').forEach(btn => btn.classList.remove('active'));
+                document.getElementById('fastBtn').classList.add('active');
+            });
+            
+            // 模式控制按钮
+            document.getElementById('continuousBtn').addEventListener('click', () => {
+                isStepMode = false;
+                document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+                document.getElementById('continuousBtn').classList.add('active');
+                resetAnimation();
+            });
+            
+            document.getElementById('stepBtn').addEventListener('click', () => {
+                isStepMode = true;
+                document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+                document.getElementById('stepBtn').classList.add('active');
+                resetAnimation();
+                
+                // 更新信息面板提示
+                document.getElementById('infoText').textContent = 
+                    "分步演示模式已启用。点击'播放'按钮开始第一步，然后使用'播放'按钮继续下一步。";
+            });
+            
+            // 标签显示切换
+            document.getElementById('labelsToggle').addEventListener('click', function() {
+                showLabels = !showLabels;
+                this.innerHTML = showLabels ? 
+                    '<i class="fas fa-tag"></i> 隐藏标签' : 
+                    '<i class="fas fa-tag"></i> 显示标签';
+                draw();
+            });
+            
+            // OH⁻高亮切换
+            document.getElementById('ohHighlightToggle').addEventListener('click', function() {
+                highlightOH = !highlightOH;
+                this.innerHTML = highlightOH ? 
+                    '<i class="fas fa-highlighter"></i> 取消高亮' : 
+                    '<i class="fas fa-highlighter"></i> 高亮OH⁻';
+                draw();
+            });
+            
+            // 鼠标移动事件（用于悬停效果）
+            canvas.addEventListener('mousemove', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                mouse.x = e.clientX - rect.left;
+                mouse.y = e.clientY - rect.top;
+                
+                // 检查悬停状态
+                let hovered = false;
+                
+                // 检查粒子
+                particles.forEach(p => {
+                    if (p.isHovered()) {
+                        hovered = true;
+                        mouse.hoveredItem = p;
+                    }
+                });
+                
+                // 检查气泡
+                gasBubbles.forEach(b => {
+                    if (b.isHovered()) {
+                        hovered = true;
+                        mouse.hoveredItem = b;
+                    }
+                });
+                
+                // 检查电极
+                if (isElectrodeHovered(electrodes.anode) || isElectrodeHovered(electrodes.cathode)) {
+                    hovered = true;
+                }
+                
+                if (!hovered) {
+                    mouse.hoveredItem = null;
+                }
+                
+                // 重绘以显示悬停效果
+                if (isPlaying) {
+                    // 如果动画正在播放，不需要单独重绘，因为下一帧会绘制
+                } else {
+                    draw();
+                }
+            });
+            
+            // 在分步模式下，播放按钮用作下一步按钮
+            canvas.addEventListener('click', (e) => {
+                if (isStepMode && isPlaying) {
+                    nextStep();
+                }
+            });
+            
+            // 窗口大小调整
+            window.addEventListener('resize', () => {
+                resizeCanvas();
+                initLayout();
+                resetAnimation();
+            });
+        }
+        
+        // 初始化函数
+        function init() {
+            resizeCanvas();
+            initLayout();
+            initParticles();
+            setupEventListeners();
+            draw();
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

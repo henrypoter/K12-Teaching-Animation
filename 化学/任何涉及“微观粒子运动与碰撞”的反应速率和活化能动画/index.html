@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>微观粒子运动与反应速率 | 活化能教学动画</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f1a2f 0%, #1a2b3c 100%);
+            color: #ecf0f1;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            max-width: 900px;
+        }
+
+        h1 {
+            color: #4d96ff;
+            margin-bottom: 8px;
+            font-size: 2.2rem;
+        }
+
+        .subtitle {
+            color: #aaaaaa;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            max-width: 1200px;
+            justify-content: center;
+        }
+
+        .main-panel {
+            flex: 1;
+            min-width: 600px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .canvas-container {
+            position: relative;
+            flex-grow: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #0a0e17;
+            border: 1px solid #2d3436;
+        }
+
+        #mainCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .canvas-overlay {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            color: #ffd93d;
+            pointer-events: none;
+        }
+
+        .control-panel {
+            width: 320px;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .panel-section {
+            background-color: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+        }
+
+        .panel-section.catalyst {
+            border-left-color: #2ecc71;
+        }
+
+        .panel-section.data {
+            border-left-color: #ff9a3d;
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #ecf0f1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        h2 i {
+            font-style: normal;
+            font-size: 1.1em;
+        }
+
+        .control-group {
+            margin-bottom: 18px;
+        }
+
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #aaaaaa;
+            font-size: 0.95rem;
+        }
+
+        .value-display {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+
+        .value-display span:last-child {
+            color: #ffd93d;
+            font-weight: bold;
+        }
+
+        .slider-container {
+            width: 100%;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #2d3436;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #3498db;
+            cursor: pointer;
+            border: 2px solid #ecf0f1;
+        }
+
+        input[type="range"]#tempSlider::-webkit-slider-thumb {
+            background: #ff6b6b;
+        }
+
+        input[type="range"]#eaSlider::-webkit-slider-thumb {
+            background: #ffd93d;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-grow: 1;
+            min-width: 120px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        #resetBtn {
+            background-color: #95a5a6;
+        }
+
+        #catalystBtn {
+            background-color: #2ecc71;
+        }
+
+        #catalystBtn:hover {
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.4);
+        }
+
+        .toggle-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .toggle-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .data-display {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .data-item {
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .data-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ff9a3d;
+            margin: 5px 0;
+        }
+
+        .data-label {
+            font-size: 0.85rem;
+            color: #aaaaaa;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+        }
+
+        .footer {
+            margin-top: 25px;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            max-width: 900px;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 1000px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .main-panel {
+                min-width: 90vw;
+                height: 500px;
+            }
+            
+            .control-panel {
+                width: 90vw;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>微观粒子运动与化学反应速率</h1>
+        <p class="subtitle">通过粒子碰撞模型探索活化能、温度、浓度和催化剂对反应速率的影响</p>
+    </div>
+
+    <div class="container">
+        <div class="main-panel">
+            <div class="canvas-container">
+                <canvas id="mainCanvas"></canvas>
+                <div class="canvas-overlay">活化能阈值: <span id="eaValueOverlay">100</span> 能量单位</div>
+            </div>
+        </div>
+
+        <div class="control-panel">
+            <div class="panel-section">
+                <h2><i>⚙️</i> 动画控制</h2>
+                <div class="button-group">
+                    <button id="startBtn">开始</button>
+                    <button id="pauseBtn">暂停</button>
+                    <button id="resetBtn">重置</button>
+                </div>
+                
+                <div class="toggle-group">
+                    <div class="toggle-item">
+                        <input type="checkbox" id="showCurve" checked>
+                        <label for="showCurve">显示能量分布</label>
+                    </div>
+                    <div class="toggle-item">
+                        <input type="checkbox" id="highlightCollisions" checked>
+                        <label for="highlightCollisions">高亮有效碰撞</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <h2><i>🌡️</i> 反应条件</h2>
+                
+                <div class="control-group">
+                    <div class="value-display">
+                        <span>温度</span>
+                        <span id="tempValue">300 K</span>
+                    </div>
+                    <div class="slider-container">
+                        <input type="range" id="tempSlider" min="100" max="500" value="300" step="10">
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="value-display">
+                        <span>粒子A浓度</span>
+                        <span id="concentrationAValue">30</span>
+                    </div>
+                    <div class="slider-container">
+                        <input type="range" id="concentrationASlider" min="5" max="60" value="30" step="1">
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="value-display">
+                        <span>粒子B浓度</span>
+                        <span id="concentrationBValue">30</span>
+                    </div>
+                    <div class="slider-container">
+                        <input type="range" id="concentrationBSlider" min="5" max="60" value="30" step="1">
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="value-display">
+                        <span>活化能 (Ea)</span>
+                        <span id="eaValue">100</span>
+                    </div>
+                    <div class="slider-container">
+                        <input type="range" id="eaSlider" min="20" max="200" value="100" step="5">
+                    </div>
+                    <div style="font-size: 0.8rem; color: #7f8c8d; margin-top: 4px;">
+                        活化能是反应发生所需的最低能量
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-section catalyst">
+                <h2><i>⚗️</i> 催化剂</h2>
+                <p style="color: #aaaaaa; margin-bottom: 15px; font-size: 0.95rem;">
+                    催化剂通过提供替代反应路径降低活化能，但不改变总能量。
+                </p>
+                <button id="catalystBtn">添加催化剂</button>
+                <div style="margin-top: 10px; font-size: 0.9rem;">
+                    <span>当前状态: </span>
+                    <span id="catalystStatus" style="color: #ff6b6b;">未使用</span>
+                </div>
+            </div>
+
+            <div class="panel-section data">
+                <h2><i>📊</i> 实时数据</h2>
+                <div class="data-display">
+                    <div class="data-item">
+                        <div class="data-value" id="totalCollisions">0</div>
+                        <div class="data-label">总碰撞次数</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-value" id="effectiveCollisions">0</div>
+                        <div class="data-label">有效碰撞次数</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-value" id="reactionRate">0.0</div>
+                        <div class="data-label">反应速率</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-value" id="efficiency">0%</div>
+                        <div class="data-label">有效碰撞率</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #ff6b6b;"></div>
+            <span>粒子 A (反应物)</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #4d96ff;"></div>
+            <span>粒子 B (反应物)</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #6bcf7f;"></div>
+            <span>粒子 C (产物)</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #ffd93d;"></div>
+            <span>活化能阈值</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #ff9a3d;"></div>
+            <span>高能量粒子</span>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p><strong>教学提示：</strong> 观察温度如何影响粒子运动速度，活化能如何决定有效碰撞的比例，以及催化剂如何通过降低活化能门槛来加速反应。</p>
+        <p>有效碰撞 = 能量 ≥ 活化能 + 正确取向的碰撞 | 反应速率 ∝ 有效碰撞频率</p>
+    </div>
+
+    <script>
+        // 获取Canvas和上下文
+        const canvas = document.getElementById('mainCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // 设置Canvas尺寸
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+        }
+        
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // 获取DOM元素
+        const startBtn = document.getElementById('startBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const catalystBtn = document.getElementById('catalystBtn');
+        const tempSlider = document.getElementById('tempSlider');
+        const concentrationASlider = document.getElementById('concentrationASlider');
+        const concentrationBSlider = document.getElementById('concentrationBSlider');
+        const eaSlider = document.getElementById('eaSlider');
+        const showCurve = document.getElementById('showCurve');
+        const highlightCollisions = document.getElementById('highlightCollisions');
+        
+        const tempValue = document.getElementById('tempValue');
+        const concentrationAValue = document.getElementById('concentrationAValue');
+        const concentrationBValue = document.getElementById('concentrationBValue');
+        const eaValue = document.getElementById('eaValue');
+        const eaValueOverlay = document.getElementById('eaValueOverlay');
+        const catalystStatus = document.getElementById('catalystStatus');
+        
+        const totalCollisionsEl = document.getElementById('totalCollisions');
+        const effectiveCollisionsEl = document.getElementById('effectiveCollisions');
+        const reactionRateEl = document.getElementById('reactionRate');
+        const efficiencyEl = document.getElementById('efficiency');
+
+        // 颜色常量
+        const COLOR_A = '#ff6b6b';
+        const COLOR_B = '#4d96ff';
+        const COLOR_C = '#6bcf7f';
+        const COLOR_THRESHOLD = '#ffd93d';
+        const COLOR_HIGH_ENERGY = '#ff9a3d';
+        const COLOR_CURVE = '#aaaaaa';
+        const BG_COLOR = '#0a0e17';
+
+        // 粒子类
+        class Particle {
+            constructor(type, x, y, vx, vy, radius) {
+                this.type = type; // 'A', 'B', 或 'C'
+                this.x = x;
+                this.y = y;
+                this.vx = vx;
+                this.vy = vy;
+                this.radius = radius;
+                this.energy = Math.sqrt(vx*vx + vy*vy) * 5; // 简化能量计算
+                this.color = type === 'A' ? COLOR_A : (type === 'B' ? COLOR_B : COLOR_C);
+                this.highlight = false;
+                this.highlightTimer = 0;
+            }
+            
+            update() {
+                // 更新位置
+                this.x += this.vx;
+                this.y += this.vy;
+                
+                // 边界碰撞
+                if (this.x - this.radius < 0 || this.x + this.radius > canvas.width) {
+                    this.vx = -this.vx;
+                    this.x = Math.max(this.radius, Math.min(canvas.width - this.radius, this.x));
+                }
+                if (this.y - this.radius < 0 || this.y + this.radius > canvas.height) {
+                    this.vy = -this.vy;
+                    this.y = Math.max(this.radius, Math.min(canvas.height - this.radius, this.y));
+                }
+                
+                // 更新能量（基于速度）
+                this.energy = Math.sqrt(this.vx*this.vx + this.vy*this.vy) * 5;
+                
+                // 更新高亮计时器
+                if (this.highlightTimer > 0) {
+                    this.highlightTimer--;
+                    this.highlight = true;
+                } else {
+                    this.highlight = false;
+                }
+            }
+            
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                
+                // 如果粒子能量高，使用高亮颜色
+                let drawColor = this.color;
+                if (this.energy > activationEnergy && this.type !== 'C') {
+                    // 根据能量比例混合颜色
+                    const energyRatio = Math.min(1, (this.energy - activationEnergy) / 50);
+                    drawColor = mixColors(this.color, COLOR_HIGH_ENERGY, energyRatio);
+                }
+                
+                // 如果被高亮（有效碰撞）
+                if (this.highlight) {
+                    ctx.shadowColor = '#ffffff';
+                    ctx.shadowBlur = 15;
+                }
+                
+                ctx.fillStyle = drawColor;
+                ctx.fill();
+                
+                // 重置阴影
+                ctx.shadowColor = 'transparent';
+                ctx.shadowBlur = 0;
+                
+                // 如果是产物C，画一个小内圈表示不同
+                if (this.type === 'C') {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius * 0.6, 0, Math.PI * 2);
+                    ctx.fillStyle = '#ffffff';
+                    ctx.globalAlpha = 0.3;
+                    ctx.fill();
+                    ctx.globalAlpha = 1.0;
+                }
+            }
+            
+            // 高亮粒子（用于有效碰撞）
+            highlightParticle() {
+                this.highlightTimer = 20; // 高亮持续20帧
+            }
+        }
+
+        // 颜色混合辅助函数
+        function mixColors(color1, color2, ratio) {
+            const r1 = parseInt(color1.substr(1, 2), 16);
+            const g1 = parseInt(color1.substr(3, 2), 16);
+            const b1 = parseInt(color1.substr(5, 2), 16);
+            
+            const r2 = parseInt(color2.substr(1, 2), 16);
+            const g2 = parseInt(color2.substr(3, 2), 16);
+            const b2 = parseInt(color2.substr(5, 2), 16);
+            
+            const r = Math.round(r1 * (1 - ratio) + r2 * ratio);
+            const g = Math.round(g1 * (1 - ratio) + g2 * ratio);
+            const b = Math.round(b1 * (1 - ratio) + b2 * ratio);
+            
+            return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+        }
+
+        // 全局变量
+        let particles = [];
+        let animationId = null;
+        let isRunning = false;
+        let lastTime = 0;
+        
+        // 反应参数
+        let temperature = 300; // K
+        let concentrationA = 30;
+        let concentrationB = 30;
+        let activationEnergy = 100; // 活化能
+        let catalystActive = false;
+        
+        // 统计数据
+        let totalCollisions = 0;
+        let effectiveCollisions = 0;
+        let productsCount = 0;
+        let lastProductTime = 0;
+        let reactionRate = 0;
+
+        // 初始化粒子
+        function initParticles() {
+            particles = [];
+            
+            // 创建A粒子
+            for (let i = 0; i < concentrationA; i++) {
+                const speed = 1 + Math.random() * (temperature / 150);
+                const angle = Math.random() * Math.PI * 2;
+                particles.push(new Particle(
+                    'A',
+                    Math.random() * (canvas.width - 40) + 20,
+                    Math.random() * (canvas.height - 40) + 20,
+                    Math.cos(angle) * speed,
+                    Math.sin(angle) * speed,
+                    8
+                ));
+            }
+            
+            // 创建B粒子
+            for (let i = 0; i < concentrationB; i++) {
+                const speed = 1 + Math.random() * (temperature / 150);
+                const angle = Math.random() * Math.PI * 2;
+                particles.push(new Particle(
+                    'B',
+                    Math.random() * (canvas.width - 40) + 20,
+                    Math.random() * (canvas.height - 40) + 20,
+                    Math.cos(angle) * speed,
+                    Math.sin(angle) * speed,
+                    8
+                ));
+            }
+            
+            // 重置统计数据
+            totalCollisions = 0;
+            effectiveCollisions = 0;
+            productsCount = 0;
+            reactionRate = 0;
+            updateStats();
+        }
+
+        // 检测和处理碰撞
+        function handleCollisions() {
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const p1 = particles[i];
+                    const p2 = particles[j];
+                    
+                    // 只检查A和B之间的碰撞
+                    if ((p1.type === 'A' && p2.type === 'B') || (p1.type === 'B' && p2.type === 'A')) {
+                        const dx = p2.x - p1.x;
+                        const dy = p2.y - p1.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        // 如果发生碰撞
+                        if (distance < p1.radius + p2.radius) {
+                            totalCollisions++;
+                            
+                            // 计算相对速度（用于能量计算）
+                            const relativeSpeed = Math.sqrt(
+                                Math.pow(p1.vx - p2.vx, 2) + 
+                                Math.pow(p1.vy - p2.vy, 2)
+                            );
+                            const collisionEnergy = relativeSpeed * 8;
+                            
+                            // 有效碰撞：能量足够高
+                            const effectiveEnergy = catalystActive ? 
+                                activationEnergy * 0.6 : activationEnergy;
+                            
+                            if (collisionEnergy >= effectiveEnergy) {
+                                effectiveCollisions++;
+                                
+                                // 高亮碰撞粒子
+                                if (highlightCollisions.checked) {
+                                    p1.highlightParticle();
+                                    p2.highlightParticle();
+                                }
+                                
+                                // 有一定概率生成产物C（模拟取向因素）
+                                if (Math.random() < 0.7) {
+                                    createProduct(p1, p2);
+                                }
+                            }
+                            
+                            // 弹性碰撞响应（简化版）
+                            const angle = Math.atan2(dy, dx);
+                            const sin = Math.sin(angle);
+                            const cos = Math.cos(angle);
+                            
+                            // 旋转速度
+                            const vx1 = p1.vx * cos + p1.vy * sin;
+                            const vy1 = p1.vy * cos - p1.vx * sin;
+                            const vx2 = p2.vx * cos + p2.vy * sin;
+                            const vy2 = p2.vy * cos - p2.vx * sin;
+                            
+                            // 交换x方向速度（一维弹性碰撞）
+                            const finalVx1 = vx2;
+                            const finalVx2 = vx1;
+                            
+                            // 旋转回原始坐标系
+                            p1.vx = finalVx1 * cos - vy1 * sin;
+                            p1.vy = vy1 * cos + finalVx1 * sin;
+                            p2.vx = finalVx2 * cos - vy2 * sin;
+                            p2.vy = vy2 * cos + finalVx2 * sin;
+                            
+                            // 防止粒子重叠
+                            const overlap = (p1.radius + p2.radius - distance) / 2;
+                            p1.x -= overlap * (dx / distance);
+                            p1.y -= overlap * (dy / distance);
+                            p2.x += overlap * (dx / distance);
+                            p2.y += overlap * (dy / distance);
+                        }
+                    }
+                }
+            }
+        }
+
+        // 创建产物C
+        function createProduct(p1, p2) {
+            // 移除原来的两个粒子
+            const index1 = particles.indexOf(p1);
+            const index2 = particles.indexOf(p2);
+            
+            // 确保index2 > index1，这样先删除index2不会影响index1
+            if (index1 > index2) {
+                particles.splice(index1, 1);
+                particles.splice(index2, 1);
+            } else {
+                particles.splice(index2, 1);
+                particles.splice(index1, 1);
+            }
+            
+            // 创建新的产物C粒子
+            const avgX = (p1.x + p2.x) / 2;
+            const avgY = (p1.y + p2.y) / 2;
+            const avgVx = (p1.vx + p2.vx) / 2;
+            const avgVy = (p1.vy + p2.vy) / 2;
+            
+            particles.push(new Particle(
+                'C',
+                avgX,
+                avgY,
+                avgVx * 0.8,
+                avgVy * 0.8,
+                10
+            ));
+            
+            productsCount++;
+            lastProductTime = Date.now();
+        }
+
+        // 绘制能量分布曲线
+        function drawEnergyDistribution() {
+            if (!showCurve.checked) return;
+            
+            const curveWidth = canvas.width * 0.8;
+            const curveHeight = 100;
+            const curveX = canvas.width * 0.1;
+            const curveY = 30;
+            
+            // 计算粒子能量分布
+            const energyBins = new Array(20).fill(0);
+            let maxCount = 1;
+            
+            for (const p of particles) {
+                if (p.type === 'C') continue; // 不计入产物
+                
+                const energy = p.energy;
+                const binIndex = Math.min(19, Math.floor(energy / 10));
+                energyBins[binIndex]++;
+                maxCount = Math.max(maxCount, energyBins[binIndex]);
+            }
+            
+            // 绘制背景
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+            ctx.fillRect(curveX - 5, curveY - 5, curveWidth + 10, curveHeight + 10);
+            
+            // 绘制坐标轴
+            ctx.strokeStyle = COLOR_CURVE;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(curveX, curveY + curveHeight);
+            ctx.lineTo(curveX + curveWidth, curveY + curveHeight);
+            ctx.moveTo(curveX, curveY);
+            ctx.lineTo(curveX, curveY + curveHeight);
+            ctx.stroke();
+            
+            // 绘制曲线
+            ctx.strokeStyle = COLOR_CURVE;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            for (let i = 0; i < energyBins.length; i++) {
+                const x = curveX + (i / energyBins.length) * curveWidth;
+                const height = (energyBins[i] / maxCount) * curveHeight;
+                const y = curveY + curveHeight - height;
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.stroke();
+            
+            // 填充曲线下方区域
+            ctx.fillStyle = 'rgba(170, 170, 170, 0.2)';
+            ctx.beginPath();
+            ctx.moveTo(curveX, curveY + curveHeight);
+            for (let i = 0; i < energyBins.length; i++) {
+                const x = curveX + (i / energyBins.length) * curveWidth;
+                const height = (energyBins[i] / maxCount) * curveHeight;
+                const y = curveY + curveHeight - height;
+                ctx.lineTo(x, y);
+            }
+            ctx.lineTo(curveX + curveWidth, curveY + curveHeight);
+            ctx.closePath();
+            ctx.fill();
+            
+            // 绘制活化能阈值线
+            const eaX = curveX + (activationEnergy / 200) * curveWidth;
+            ctx.strokeStyle = COLOR_THRESHOLD;
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 3]);
+            ctx.beginPath();
+            ctx.moveTo(eaX, curveY);
+            ctx.lineTo(eaX, curveY + curveHeight);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // 填充高能量区域
+            const fillStartX = catalystActive ? 
+                curveX + (activationEnergy * 0.6 / 200) * curveWidth : eaX;
+            
+            ctx.fillStyle = 'rgba(255, 154, 61, 0.3)';
+            ctx.fillRect(fillStartX, curveY, curveX + curveWidth - fillStartX, curveHeight);
+            
+            // 添加标签
+            ctx.fillStyle = COLOR_CURVE;
+            ctx.font = '12px Arial';
+            ctx.fillText('能量分布', curveX + 5, curveY - 5);
+            ctx.fillText('低', curveX - 15, curveY + curveHeight + 15);
+            ctx.fillText('高', curveX + curveWidth - 10, curveY + curveHeight + 15);
+            
+            ctx.fillStyle = COLOR_THRESHOLD;
+            ctx.fillText(`活化能: ${activationEnergy}`, eaX + 5, curveY + 15);
+            
+            if (catalystActive) {
+                ctx.fillStyle = '#2ecc71';
+                ctx.fillText(`催化剂降低活化能`, fillStartX + 5, curveY + 30);
+            }
+        }
+
+        // 更新统计数据显示
+        function updateStats() {
+            totalCollisionsEl.textContent = totalCollisions;
+            effectiveCollisionsEl.textContent = effectiveCollisions;
+            
+            // 计算反应速率（最近5秒内的平均产物生成速率）
+            const now = Date.now();
+            const timeWindow = 5000; // 5秒
+            const recentProducts = Math.min(productsCount, 10); // 简化计算
+            
+            reactionRate = recentProducts / (timeWindow / 1000); // 产物/秒
+            reactionRateEl.textContent = reactionRate.toFixed(2);
+            
+            // 计算有效碰撞率
+            const efficiency = totalCollisions > 0 ? 
+                Math.round((effectiveCollisions / totalCollisions) * 100) : 0;
+            efficiencyEl.textContent = `${efficiency}%`;
+            
+            // 更新UI显示
+            tempValue.textContent = `${temperature} K`;
+            concentrationAValue.textContent = concentrationA;
+            concentrationBValue.textContent = concentrationB;
+            eaValue.textContent = activationEnergy;
+            eaValueOverlay.textContent = activationEnergy;
+            
+            catalystStatus.textContent = catalystActive ? '已激活' : '未使用';
+            catalystStatus.style.color = catalystActive ? '#2ecc71' : '#ff6b6b';
+            catalystBtn.textContent = catalystActive ? '移除催化剂' : '添加催化剂';
+        }
+
+        // 主动画循环
+        function animate(timestamp) {
+            if (!lastTime) lastTime = timestamp;
+            const deltaTime = timestamp - lastTime;
+            lastTime = timestamp;
+            
+            // 清空画布
+            ctx.fillStyle = BG_COLOR;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 更新所有粒子
+            for (const particle of particles) {
+                particle.update();
+            }
+            
+            // 处理碰撞
+            handleCollisions();
+            
+            // 绘制所有粒子
+            for (const particle of particles) {
+                particle.draw();
+            }
+            
+            // 绘制能量分布曲线
+            drawEnergyDistribution();
+            
+            // 更新统计数据
+            updateStats();
+            
+            // 继续动画循环
+            if (isRunning) {
+                animationId = requestAnimationFrame(animate);
+            }
+        }
+
+        // 开始动画
+        function startAnimation() {
+            if (!isRunning) {
+                isRunning = true;
+                lastTime = 0;
+                animationId = requestAnimationFrame(animate);
+            }
+        }
+
+        // 暂停动画
+        function pauseAnimation() {
+            isRunning = false;
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+        }
+
+        // 重置动画
+        function resetAnimation() {
+            pauseAnimation();
+            temperature = 300;
+            concentrationA = 30;
+            concentrationB = 30;
+            activationEnergy = 100;
+            catalystActive = false;
+            
+            // 更新滑块
+            tempSlider.value = temperature;
+            concentrationASlider.value = concentrationA;
+            concentrationBSlider.value = concentrationB;
+            eaSlider.value = activationEnergy;
+            
+            initParticles();
+            updateStats();
+        }
+
+        // 切换催化剂
+        function toggleCatalyst() {
+            catalystActive = !catalystActive;
+            updateStats();
+        }
+
+        // 事件监听器
+        startBtn.addEventListener('click', startAnimation);
+        pauseBtn.addEventListener('click', pauseAnimation);
+        resetBtn.addEventListener('click', resetAnimation);
+        catalystBtn.addEventListener('click', toggleCatalyst);
+
+        tempSlider.addEventListener('input', function() {
+            temperature = parseInt(this.value);
+            
+            // 更新所有粒子的速度（基于温度）
+            const speedFactor = temperature / 300;
+            for (const p of particles) {
+                p.vx *= speedFactor;
+                p.vy *= speedFactor;
+            }
+            
+            updateStats();
+        });
+
+        concentrationASlider.addEventListener('input', function() {
+            const newCount = parseInt(this.value);
+            const diff = newCount - concentrationA;
+            
+            if (diff > 0) {
+                // 添加A粒子
+                for (let i = 0; i < diff; i++) {
+                    const speed = 1 + Math.random() * (temperature / 150);
+                    const angle = Math.random() * Math.PI * 2;
+                    particles.push(new Particle(
+                        'A',
+                        Math.random() * (canvas.width - 40) + 20,
+                        Math.random() * (canvas.height - 40) + 20,
+                        Math.cos(angle) * speed,
+                        Math.sin(angle) * speed,
+                        8
+                    ));
+                }
+            }
+<!--检测到代码截断，自动续写中...-->
+} else if (diff < 0) {
+                // 移除A粒子
+                let removed = 0;
+                for (let i = particles.length - 1; i >= 0 && removed < -diff; i--) {
+                    if (particles[i].type === 'A') {
+                        particles.splice(i, 1);
+                        removed++;
+                    }
+                }
+            }
+            
+            concentrationA = newCount;
+            updateStats();
+        });
+
+        concentrationBSlider.addEventListener('input', function() {
+            const newCount = parseInt(this.value);
+            const diff = newCount - concentrationB;
+            
+            if (diff > 0) {
+                // 添加B粒子
+                for (let i = 0; i < diff; i++) {
+                    const speed = 1 + Math.random() * (temperature / 150);
+                    const angle = Math.random() * Math.PI * 2;
+                    particles.push(new Particle(
+                        'B',
+                        Math.random() * (canvas.width - 40) + 20,
+                        Math.random() * (canvas.height - 40) + 20,
+                        Math.cos(angle) * speed,
+                        Math.sin(angle) * speed,
+                        8
+                    ));
+                }
+            } else if (diff < 0) {
+                // 移除B粒子
+                let removed = 0;
+                for (let i = particles.length - 1; i >= 0 && removed < -diff; i--) {
+                    if (particles[i].type === 'B') {
+                        particles.splice(i, 1);
+                        removed++;
+                    }
+                }
+            }
+            
+            concentrationB = newCount;
+            updateStats();
+        });
+
+        eaSlider.addEventListener('input', function() {
+            activationEnergy = parseInt(this.value);
+            updateStats();
+        });
+
+        // 初始化
+        initParticles();
+        startAnimation();
+
+        // 添加预设场景示例（可通过控制台调用）
+        window.demoScenes = {
+            lowTemp: function() {
+                pauseAnimation();
+                temperature = 150;
+                tempSlider.value = temperature;
+                initParticles();
+                startAnimation();
+            },
+            highTemp: function() {
+                pauseAnimation();
+                temperature = 450;
+                tempSlider.value = temperature;
+                initParticles();
+                startAnimation();
+            },
+            highEa: function() {
+                pauseAnimation();
+                activationEnergy = 180;
+                eaSlider.value = activationEnergy;
+                initParticles();
+                startAnimation();
+            },
+            withCatalyst: function() {
+                pauseAnimation();
+                catalystActive = true;
+                initParticles();
+                startAnimation();
+            }
+        };
+    </script>
+</body>
+</html>

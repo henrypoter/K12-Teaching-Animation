@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>酯化反应微观机理教学动画</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0d3b66 0%, #2d3047 100%);
+            color: #f8f9fa;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            color: #ffd166;
+            margin-bottom: 10px;
+            font-size: 2.2em;
+        }
+
+        .subtitle {
+            color: #a8dadc;
+            font-size: 1.1em;
+        }
+
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .animation-panel {
+            flex: 3;
+            min-width: 300px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #reactionCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .control-panel {
+            flex: 2;
+            min-width: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .mode-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 12px;
+            background: #468faf;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .mode-btn:hover {
+            background: #5aa5c5;
+            transform: translateY(-2px);
+        }
+
+        .mode-btn.active {
+            background: #2a9d8f;
+            box-shadow: 0 0 15px rgba(42, 157, 143, 0.5);
+        }
+
+        .control-section {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        h3 {
+            color: #ffd166;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            background: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-reset {
+            background: #e63946;
+        }
+
+        .btn-step {
+            background: #2a9d8f;
+        }
+
+        .slider-container {
+            margin: 15px 0;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .slider {
+            width: 100%;
+            height: 8px;
+            -webkit-appearance: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            outline: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #ffd166;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .toggle-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 10px 0;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #e76f51;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(30px);
+        }
+
+        .info-panel {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .step-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #2a9d8f;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .step-info.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #a8dadc;
+            font-size: 0.9em;
+            margin-top: 20px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .animation-panel, .control-panel {
+                min-width: 100%;
+            }
+            
+            .canvas-container {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>酯化反应微观机理教学动画</h1>
+            <p class="subtitle">可视化展示：可逆反应 · 脱水过程 · 分子间力的断裂与重组</p>
+        </header>
+
+        <div class="main-content">
+            <div class="animation-panel">
+                <div class="canvas-container">
+                    <canvas id="reactionCanvas"></canvas>
+                </div>
+                
+                <div class="info-panel">
+                    <h3>反应方程式</h3>
+                    <p style="text-align: center; font-size: 1.2em; margin: 10px 0;">
+                        CH₃COOH + CH₃CH₂OH ⇌ CH₃COOCH₂CH₃ + H₂O
+                    </p>
+                    <p style="color: #a8dadc; text-align: center;">
+                        乙酸 + 乙醇 ⇌ 乙酸乙酯 + 水
+                    </p>
+                </div>
+            </div>
+
+            <div class="control-panel">
+                <div class="mode-selector">
+                    <button class="mode-btn active" id="autoMode">自动讲解模式</button>
+                    <button class="mode-btn" id="interactiveMode">互动探索模式</button>
+                </div>
+
+                <div class="control-section">
+                    <h3>动画控制</h3>
+                    <div class="btn-group">
+                        <button class="btn" id="playBtn">▶ 播放</button>
+                        <button class="btn" id="pauseBtn">⏸ 暂停</button>
+                        <button class="btn btn-step" id="nextBtn">⏭ 下一步</button>
+                        <button class="btn btn-step" id="prevBtn">⏮ 上一步</button>
+                        <button class="btn btn-reset" id="resetBtn">↺ 重置</button>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>动画速度</span>
+                            <span id="speedValue">1.0x</span>
+                        </div>
+                        <input type="range" min="0.1" max="3" step="0.1" value="1" class="slider" id="speedSlider">
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>反应条件</h3>
+                    <div class="toggle-group">
+                        <span>催化剂 (H⁺)</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="catalystToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="toggle-group">
+                        <span>加热 (△)</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="heatToggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>当前步骤说明</h3>
+                    <div class="step-info active" id="stepInfo1">
+                        <strong>步骤 1: 初始状态</strong>
+                        <p>乙酸（羧酸）和乙醇（醇）分子在溶液中自由运动。注意观察分子间的氢键作用（虚线表示）。</p>
+                    </div>
+                    <div class="step-info" id="stepInfo2">
+                        <strong>步骤 2: 质子化</strong>
+                        <p>在酸催化下，羧基中的羰基氧原子质子化，带正电荷，增强了羰基碳的亲电性。</p>
+                    </div>
+                    <div class="step-info" id="stepInfo3">
+                        <strong>步骤 3: 亲核进攻</strong>
+                        <p>醇分子中的氧原子（亲核试剂）进攻羰基碳原子，形成新的C-O键。</p>
+                    </div>
+                    <div class="step-info" id="stepInfo4">
+                        <strong>步骤 4: 质子转移</strong>
+                        <p>质子从新形成的氧原子转移到原来羰基的羟基氧原子上。</p>
+                    </div>
+                    <div class="step-info" id="stepInfo5">
+                        <strong>步骤 5: 脱水</strong>
+                        <p>水分子从中间体上脱离，形成酯键（-COO-）。这是酯化反应的关键步骤！</p>
+                    </div>
+                    <div class="step-info" id="stepInfo6">
+                        <strong>步骤 6: 去质子化</strong>
+                        <p>催化剂（H⁺）释放，恢复催化活性，同时生成最终产物乙酸乙酯。</p>
+                    </div>
+                    <div class="step-info" id="stepInfo7">
+                        <strong>步骤 7: 动态平衡</strong>
+                        <p>酯化反应是可逆的！正逆反应同时进行，最终达到动态平衡状态。</p>
+                    </div>
+                </div>
+
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #333333;"></div>
+                        <span>碳原子 (C)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ffffff; border: 1px solid #ccc;"></div>
+                        <span>氢原子 (H)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ff0000;"></div>
+                        <span>氧原子 (O)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #e76f51;"></div>
+                        <span>催化剂 (H⁺)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ff9900;"></div>
+                        <span>键断裂</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #4caf50;"></div>
+                        <span>键形成</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>教学动画设计：酯化反应微观机理 | 使用 HTML5 Canvas 实现 | 仅供教学使用</p>
+        </footer>
+    </div>
+
+    <script>
+        // 获取Canvas和上下文
+        const canvas = document.getElementById('reactionCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // 设置Canvas尺寸
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // 原子颜色定义
+        const ATOM_COLORS = {
+            C: '#333333',
+            H: '#ffffff',
+            O: '#ff0000',
+            Hplus: '#e76f51'
+        };
+
+        // 反应步骤定义
+        const STEPS = {
+            INITIAL: 0,
+            PROTONATION: 1,
+            NUCLEOPHILIC_ATTACK: 2,
+            PROTON_TRANSFER: 3,
+            DEHYDRATION: 4,
+            DEPROTONATION: 5,
+            EQUILIBRIUM: 6
+        };
+
+        // 动画状态
+        let currentStep = STEPS.INITIAL;
+        let isPlaying = false;
+        let animationSpeed = 1.0;
+        let time = 0;
+        let isInteractiveMode = false;
+        let catalystEnabled = true;
+        let heatEnabled = false;
+
+        // 分子定义
+        class Atom {
+            constructor(type, x, y, charge = 0) {
+                this.type = type;
+                this.x = x;
+                this.y = y;
+                this.radius = type === 'H' ? 12 : 18;
+                this.charge = charge;
+                this.originalX = x;
+                this.originalY = y;
+                this.targetX = x;
+                this.targetY = y;
+                this.vx = 0;
+                this.vy = 0;
+            }
+
+            draw() {
+                ctx.save();
+                
+                // 绘制原子球
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                
+                let color = ATOM_COLORS[this.type];
+                if (this.type === 'H' && this.charge > 0) {
+                    color = ATOM_COLORS.Hplus;
+                }
+                
+                const gradient = ctx.createRadialGradient(
+                    this.x - this.radius/3, this.y - this.radius/3, 1,
+                    this.x, this.y, this.radius
+                );
+                
+                if (this.type === 'H') {
+                    gradient.addColorStop(0, '#ffffff');
+                    gradient.addColorStop(1, '#cccccc');
+                } else {
+                    gradient.addColorStop(0, color);
+                    gradient.addColorStop(1, this.darkenColor(color, 30));
+                }
+                
+                ctx.fillStyle = gradient;
+                ctx.fill();
+                
+                // 绘制边框
+                ctx.strokeStyle = this.darkenColor(color, 50);
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                
+                // 绘制电荷标记
+                if (Math.abs(this.charge) > 0) {
+                    ctx.fillStyle = '#ffd166';
+                    ctx.font = 'bold 14px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    const chargeSymbol = this.charge > 0 ? 'δ⁺' : 'δ⁻';
+                    ctx.fillText(chargeSymbol, this.x, this.y);
+                }
+                
+                ctx.restore();
+            }
+
+            darkenColor(color, percent) {
+                const num = parseInt(color.slice(1), 16);
+                const amt = Math.round(2.55 * percent);
+                const R = (num >> 16) - amt;
+                const G = (num >> 8 & 0x00FF) - amt;
+                const B = (num & 0x0000FF) - amt;
+                return `#${(0x1000000 + (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+                    (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
+                    (B < 255 ? B < 1 ? 0 : B : 255)).toString(16).slice(1)}`;
+            }
+
+            update(deltaTime) {
+                // 平滑移动到目标位置
+                const dx = this.targetX - this.x;
+                const dy = this.targetY - this.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance > 0.1) {
+                    const speed = 0.05 * animationSpeed;
+                    this.x += dx * speed;
+                    this.y += dy * speed;
+                }
+                
+                // 热运动效果
+                if (heatEnabled && currentStep === STEPS.INITIAL) {
+                    this.x += (Math.random() - 0.5) * 2;
+                    this.y += (Math.random() - 0.5) * 2;
+                }
+            }
+        }
+
+        class Bond {
+            constructor(atom1, atom2, type = 'single', isBreaking = false, isForming = false) {
+                this.atom1 = atom1;
+                this.atom2 = atom2;
+                this.type = type;
+                this.isBreaking = isBreaking;
+                this.isForming = isForming;
+                this.progress = 0;
+            }
+
+            draw() {
+                const dx = this.atom2.x - this.atom1.x;
+                const dy = this.atom2.y - this.atom1.y;
+                const length = Math.sqrt(dx * dx + dy * dy);
+                const angle = Math.atan2(dy, dx);
+                
+                ctx.save();
+                
+                // 计算键的起点和终点（考虑原子半径）
+                const startX = this.atom1.x + Math.cos(angle) * this.atom1.radius;
+                const startY = this.atom1.y + Math.sin(angle) * this.atom1.radius;
+                const endX = this.atom2.x - Math.cos(angle) * this.atom2.radius;
+                const endY = this.atom2.y - Math.sin(angle) * this.atom2.radius;
+                
+                // 键的颜色和样式
+                let color = '#666666';
+                let lineWidth = 3;
+                
+                if (this.isBreaking) {
+                    color = '#ff9900';
+                    lineWidth = 4;
+                    // 断裂动画效果
+                    const breakPoint = this.progress;
+                    const midX = startX + (endX - startX) * breakPoint;
+                    const midY = startY + (endY - startY) * breakPoint;
+                    
+                    ctx.setLineDash([5, 5]);
+                    ctx.strokeStyle = color;
+                    ctx.lineWidth = lineWidth;
+                    ctx.beginPath();
+                    ctx.moveTo(startX, startY);
+                    ctx.lineTo(midX, midY);
+                    ctx.stroke();
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(midX, midY);
+                    ctx.lineTo(endX, endY);
+                    ctx.stroke();
+                } else if (this.isForming) {
+                    color = '#4caf50';
+                    lineWidth = 4;
+                    // 形成动画效果
+                    const formLength = length * this.progress;
+                    const formEndX = startX + Math.cos(angle) * formLength;
+                    const formEndY = startY + Math.sin(angle) * formLength;
+                    
+                    ctx.strokeStyle = color;
+                    ctx.lineWidth = lineWidth;
+                    ctx.beginPath();
+                    ctx.moveTo(startX, startY);
+                    ctx.lineTo(formEndX, formEndY);
+                    ctx.stroke();
+                } else {
+                    // 正常键
+                    ctx.strokeStyle = color;
+                    ctx.lineWidth = lineWidth;
+                    ctx.beginPath();
+                    ctx.moveTo(startX, startY);
+                    ctx.lineTo(endX, endY);
+                    ctx.stroke();
+                    
+                    // 如果是双键，绘制第二条线
+                    if (this.type === 'double') {
+                        const offset = 4;
+                        const perpX = -Math.sin(angle) * offset;
+                        const perpY = Math.cos(angle) * offset;
+                        
+                        ctx.beginPath();
+                        ctx.moveTo(startX + perpX, startY + perpY);
+                        ctx.lineTo(endX + perpX, endY + perpY);
+                        ctx.stroke();
+                    }
+                }
+                
+                ctx.restore();
+            }
+
+            update(deltaTime) {
+                if (this.isBreaking || this.isForming) {
+                    this.progress += 0.02 * animationSpeed;
+                    if (this.progress > 1) this.progress = 1;
+                }
+            }
+        }
+
+        // 创建分子
+        let atoms = [];
+        let bonds = [];
+        let waterMolecule = null;
+        let catalyst = null;
+        let electronArrow = null;
+
+        function initMolecules() {
+            atoms = [];
+            bonds = [];
+            
+            // 乙酸分子 (CH3COOH)
+            const acidAtoms = [
+                new Atom('C', canvas.width * 0.3, canvas.height * 0.5), // C1
+                new Atom('O', canvas.width * 0.25, canvas.height * 0.45), // O1 (羰基)
+                new Atom('O', canvas.width * 0.25, canvas.height * 0.55), // O2 (羟基)
+                new Atom('H', canvas.width * 0.2, canvas.height * 0.55), // H1 (羟基氢)
+                new Atom('C', canvas.width * 0.35, canvas.height * 0.45), // C2 (甲基)
+                new Atom('H', canvas.width * 0.35, canvas.height * 0.4), // H2
+                new Atom('H', canvas.width * 0.4, canvas.height * 0.45), // H3
+                new Atom('H', canvas.width * 0.35, canvas.height * 0.5), // H4
+            ];
+            
+            // 乙醇分子 (CH3CH2OH)
+            const alcoholAtoms = [
+                new Atom('C', canvas.width * 0.7, canvas.height * 0.5), // C3
+                new Atom('C', canvas.width * 0.65, canvas.height * 0.55), // C4
+                new Atom('O', canvas.width * 0.75, canvas.height * 0.5), // O3
+                new Atom('H', canvas.width * 0.8, canvas.height * 0.5), // H5 (羟基氢)
+                new Atom('H', canvas.width * 0.65, canvas.height * 0.6), // H6
+                new Atom('H', canvas.width * 0.6, canvas.height * 0.55), // H7
+                new Atom('H', canvas.width * 0.7, canvas.height * 0.45), // H8
+                new Atom('H', canvas.width * 0.6, canvas.height * 0.5), // H9
+                new Atom('H', canvas.width * 0.7, canvas.height * 0.6), // H10
+            ];
+            
+            atoms = [...acidAtoms, ...alcoholAtoms];
+            
+            // 乙酸分子键
+            bonds.push(new Bond(acidAtoms[0], acidAtoms[1], 'double')); // C1=O1
+            bonds.push(new Bond(acidAtoms[0], acidAtoms[2], 'single')); // C1-O2
+            bonds.push(new Bond(acidAtoms[2], acidAtoms[3], 'single')); // O2-H1
+            bonds.push(new Bond(acidAtoms[0], acidAtoms[4], 'single')); // C1-C2
+            bonds.push(new Bond(acidAtoms[4], acidAtoms[5], 'single')); // C2-H2
+            bonds.push(new Bond(acidAtoms[4], acidAtoms[6], 'single')); // C2-H3
+            bonds.push(new Bond(acidAtoms[4], acidAtoms[7], 'single')); // C2-H4
+            
+            // 乙醇分子键
+            bonds.push(new Bond(alcoholAtoms[0], alcoholAtoms[1], 'single')); // C3-C4
+            bonds.push(new Bond(alcoholAtoms[0], alcoholAtoms[2], 'single')); // C3-O3
+            bonds.push(new Bond(alcoholAtoms[2], alcoholAtoms[3], 'single')); // O3-H5
+            bonds.push(new Bond(alcoholAtoms[1], alcoholAtoms[4], 'single')); // C4-H6
+            bonds.push(new Bond(alcoholAtoms[1], alcoholAtoms[5], 'single')); // C4-H7
+            bonds.push(new Bond(alcoholAtoms[0], alcoholAtoms[6], 'single')); // C3-H8
+            bonds.push(new Bond(alcoholAtoms[1], alcoholAtoms[7], 'single')); // C4-H9
+            bonds.push(new Bond(alcoholAtoms[0], alcoholAtoms[8], 'single')); // C3-H10
+            
+            // 催化剂 (H⁺)
+            catalyst = new Atom('Hplus', canvas.width * 0.1, canvas.height * 0.2);
+            
+            // 水分子 (初始时隐藏)
+            waterMolecule = {
+                atoms: [
+                    new Atom('O', canvas.width * 0.5, canvas.height * 0.8),
+                    new Atom('H', canvas.width * 0.48, canvas.height * 0.75),
+                    new Atom('H', canvas.width * 0.52, canvas.height * 0.75)
+                ],
+                bonds: [],
+                visible: false
+            };
+            waterMolecule.bonds.push(new Bond(waterMolecule.atoms[0], waterMolecule.atoms[1], 'single'));
+            waterMolecule.bonds.push(new Bond(waterMolecule.atoms[0], waterMolecule.atoms[2], 'single'));
+            
+            // 电子箭头
+            electronArrow = {
+                from: { x: 0, y: 0 },
+                to: { x: 0, y: 0 },
+                visible: false,
+                progress: 0
+            };
+        }
+
+        // 更新步骤
+        function updateStep(step) {
+            currentStep = step;
+            updateStepInfo();
+            
+            // 重置所有动画状态
+            atoms.forEach(atom => {
+                atom.targetX = atom.originalX;
+                atom.targetY = atom.originalY;
+            });
+            
+            bonds.forEach(bond => {
+                bond.isBreaking = false;
+                bond.isForming = false;
+                bond.progress = 0;
+            });
+            
+            waterMolecule.visible = false;
+            electronArrow.visible = false;
+            
+            switch(step) {
+                case STEPS.INITIAL:
+                    // 初始位置
+                    atoms.forEach((atom, i) => {
+                        atom.targetX = atom.originalX;
+                        atom.targetY = atom.originalY;
+                    });
+                    break;
+                    
+                case STEPS.PROTONATION:
+                    if (catalystEnabled) {
+                        // 催化剂移动到羰基氧
+                        catalyst.targetX = atoms[1].x - 30;
+                        catalyst.targetY = atoms[1].y;
+                        atoms[1].charge = 0.3; // 部分正电荷
+                    }
+                    break;
+                    
+                case STEPS.NUCLEOPHILIC_ATTACK:
+                    // 醇的氧原子向羰基碳移动
+                    atoms[10].targetX = atoms[0].x + 40;
+                    atoms[10].targetY = atoms[0].y;
+                    
+                    // 显示电子箭头
+                    electronArrow.from = { x: atoms[10].x, y: atoms[10].y };
+                    electronArrow.to = { x: atoms[0].x, y: atoms[0].y };
+                    electronArrow.visible = true;
+                    
+                    // 标记新键形成
+                    bonds.push(new Bond(atoms[0], atoms[10], 'single', false, true));
+                    break;
+                    
+                case STEPS.PROTON_TRANSFER:
+                    // 质子从醇氧转移到羰基氧
+                    atoms[11].targetX = atoms[2].x;
+                    atoms[11].targetY = atoms[2].y + 30;
+                    
+                    // 标记键的断裂和形成
+                    const alcoholOBond = bonds.find(b => 
+                        (b.atom1 === atoms[10] && b.atom2 === atoms[11]) ||
+                        (b.atom1 === atoms[11] && b.atom2 === atoms[10])
+                    );
+                    if (alcoholOBond) alcoholOBond.isBreaking = true;
+                    
+                    bonds.push(new Bond(atoms[2], atoms[11], 'single', false, true));
+                    break;
+                    
+                case STEPS.DEHYDRATION:
+                    // 水分子形成并脱离
+                    waterMolecule.visible = true;
+                    waterMolecule.atoms[0].targetX = canvas.width * 0.5;
+                    waterMolecule.atoms[0].targetY = canvas.height * 0.8;
+                    waterMolecule.atoms[1].targetX = canvas.width * 0.48;
+                    waterMolecule.atoms[1].targetY = canvas.height * 0.75;
+                    waterMolecule.atoms[2].targetX = canvas.width * 0.52;
+                    waterMolecule.atoms[2].targetY = canvas.height * 0.75;
+                    
+                    // 标记酯键形成
+                    const oldOBond = bonds.find(b => 
+                        (b.atom1 === atoms[0] && b.atom2 === atoms[2]) ||
+                        (b.atom1 === atoms[2] && b.atom2 === atoms[0])
+                    );
+                    if (oldOBond) oldOBond.isBreaking = true;
+                    
+                    // 形成新的酯键 (C=O)
+                    bonds.push(new Bond(atoms[0], atoms[1], 'double', false, true));
+                    break;
+                    
+                case STEPS.DEPROTONATION:
+                    // 催化剂释放
+                    if (catalystEnabled) {
+                        catalyst.targetX = canvas.width * 0.1;
+                        catalyst.targetY = canvas.height * 0.2;
+                        atoms[1].charge = 0; // 电荷恢复
+                    }
+                    break;
+                    
+                case STEPS.EQUILIBRIUM:
+                    // 显示多个分子表示平衡状态
+                    waterMolecule.visible = true;
+                    break;
+            }
+        }
+
+        // 更新步骤信息显示
+        function updateStepInfo() {
+            document.querySelectorAll('.step-info').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            const stepInfo = document.getElementById(`stepInfo${currentStep + 1}`);
+            if (stepInfo) {
+                stepInfo.classList.add('active');
+            }
+        }
+
+        // 绘制函数
+        function draw() {
+            // 清除画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制背景
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, 'rgba(13, 59, 102, 0.3)');
+            gradient.addColorStop(1, 'rgba(45, 48, 71, 0.3)');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制分子间作用力（虚线）
+            if (currentStep === STEPS.INITIAL) {
+                ctx.save();
+                ctx.strokeStyle = 'rgba(168, 218, 220, 0.5)';
+                ctx.setLineDash([5, 5]);
+                ctx.lineWidth = 1;
+                
+                // 乙酸羟基氢和乙醇氧之间的氢键
+                ctx.beginPath();
+                ctx.moveTo(atoms[3].x, atoms[3].y);
+                ctx.lineTo(atoms[10].x, atoms[10].y);
+                ctx.stroke();
+                
+                // 乙酸羰基氧和乙醇羟基氢之间的氢键
+                ctx.beginPath();
+                ctx.moveTo(atoms[1].x, atoms[1].y);
+                ctx.lineTo(atoms[11].x, atoms[11].y);
+                ctx.stroke();
+                
+                ctx.restore();
+            }
+            
+            // 绘制键
+            bonds.forEach(bond => {
+                bond.update(16);
+                bond.draw();
+            });
+            
+            // 绘制水分子键
+            if (waterMolecule.visible) {
+                waterMolecule.bonds.forEach(bond => {
+                    bond.update(16);
+                    bond.draw();
+                });
+            }
+            
+            // 绘制原子
+            atoms.forEach(atom => {
+                atom.update(16);
+                atom.draw();
+            });
+            
+            // 绘制水分子原子
+            if (waterMolecule.visible) {
+                waterMolecule.atoms.forEach(atom => {
+                    atom.update(16);
+                    atom.draw();
+                });
+            }
+            
+            // 绘制催化剂
+            if (catalystEnabled) {
+                catalyst.update(16);
+                catalyst.draw();
+                
+                // 绘制催化剂移动轨迹
+                if (currentStep >= STEPS.PROTONATION && currentStep <= STEPS.DEPROTONATION) {
+                    ctx.save();
+                    ctx.strokeStyle = 'rgba(231, 111, 81, 0.3)';
+                    ctx.setLineDash([3, 3]);
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(canvas.width * 0.1, canvas.height * 0.2);
+                    ctx.lineTo(catalyst.x, catalyst.y);
+                    ctx.stroke();
+                    ctx.restore();
+                }
+            }
+            
+            // 绘制电子箭头
+            if (electronArrow.visible) {
+                electronArrow.progress += 0.02 * animationSpeed;
+                if (electronArrow.progress > 1) electronArrow.progress = 0
+<!--检测到代码截断，自动续写中...-->
+const t = electronArrow.progress;
+                const arrowX = electronArrow.from.x + (electronArrow.to.x - electronArrow.from.x) * t;
+                const arrowY = electronArrow.from.y + (electronArrow.to.y - electronArrow.from.y) * t;
+                
+                ctx.save();
+                ctx.strokeStyle = '#ffd166';
+                ctx.fillStyle = '#ffd166';
+                ctx.lineWidth = 3;
+                ctx.lineCap = 'round';
+                
+                // 绘制箭头线
+                ctx.beginPath();
+                ctx.moveTo(electronArrow.from.x, electronArrow.from.y);
+                ctx.lineTo(arrowX, arrowY);
+                ctx.stroke();
+                
+                // 绘制箭头头部
+                const angle = Math.atan2(electronArrow.to.y - electronArrow.from.y, electronArrow.to.x - electronArrow.from.x);
+                const headlen = 15;
+                ctx.beginPath();
+                ctx.moveTo(arrowX, arrowY);
+                ctx.lineTo(arrowX - headlen * Math.cos(angle - Math.PI/6), arrowY - headlen * Math.sin(angle - Math.PI/6));
+                ctx.moveTo(arrowX, arrowY);
+                ctx.lineTo(arrowX - headlen * Math.cos(angle + Math.PI/6), arrowY - headlen * Math.sin(angle + Math.PI/6));
+                ctx.stroke();
+                
+                // 绘制电子点
+                ctx.beginPath();
+                ctx.arc(arrowX, arrowY, 4, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.restore();
+            }
+            
+            // 绘制步骤标签
+            ctx.save();
+            ctx.fillStyle = 'rgba(42, 157, 143, 0.8)';
+            ctx.fillRect(20, 20, 200, 40);
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            
+            const stepNames = [
+                '初始状态',
+                '质子化',
+                '亲核进攻',
+                '质子转移',
+                '脱水',
+                '去质子化',
+                '动态平衡'
+            ];
+            ctx.fillText(`步骤 ${currentStep + 1}: ${stepNames[currentStep]}`, 30, 40);
+            
+            // 绘制反应进度
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.fillRect(20, canvas.height - 40, canvas.width - 40, 20);
+            ctx.fillStyle = '#2a9d8f';
+            const progressWidth = (currentStep / 6) * (canvas.width - 40);
+            ctx.fillRect(20, canvas.height - 40, progressWidth, 20);
+            
+            ctx.restore();
+            
+            // 绘制热运动效果
+            if (heatEnabled) {
+                ctx.save();
+                ctx.fillStyle = 'rgba(255, 209, 102, 0.1)';
+                for (let i = 0; i < 20; i++) {
+                    const x = Math.random() * canvas.width;
+                    const y = Math.random() * canvas.height;
+                    const size = Math.random() * 3 + 1;
+                    ctx.beginPath();
+                    ctx.arc(x, y, size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.restore();
+            }
+        }
+
+        // 动画循环
+        function animate() {
+            draw();
+            requestAnimationFrame(animate);
+        }
+
+        // 初始化
+        initMolecules();
+        animate();
+
+        // 事件监听器
+        document.getElementById('autoMode').addEventListener('click', function() {
+            isInteractiveMode = false;
+            document.getElementById('autoMode').classList.add('active');
+            document.getElementById('interactiveMode').classList.remove('active');
+        });
+
+        document.getElementById('interactiveMode').addEventListener('click', function() {
+            isInteractiveMode = true;
+            document.getElementById('interactiveMode').classList.add('active');
+            document.getElementById('autoMode').classList.remove('active');
+        });
+
+        document.getElementById('playBtn').addEventListener('click', function() {
+            isPlaying = true;
+            autoAdvance();
+        });
+
+        document.getElementById('pauseBtn').addEventListener('click', function() {
+            isPlaying = false;
+        });
+
+        document.getElementById('nextBtn').addEventListener('click', function() {
+            isPlaying = false;
+            if (currentStep < STEPS.EQUILIBRIUM) {
+                updateStep(currentStep + 1);
+            }
+        });
+
+        document.getElementById('prevBtn').addEventListener('click', function() {
+            isPlaying = false;
+            if (currentStep > STEPS.INITIAL) {
+                updateStep(currentStep - 1);
+            }
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', function() {
+            isPlaying = false;
+            initMolecules();
+            updateStep(STEPS.INITIAL);
+        });
+
+        document.getElementById('speedSlider').addEventListener('input', function(e) {
+            animationSpeed = parseFloat(e.target.value);
+            document.getElementById('speedValue').textContent = animationSpeed.toFixed(1) + 'x';
+        });
+
+        document.getElementById('catalystToggle').addEventListener('change', function(e) {
+            catalystEnabled = e.target.checked;
+            if (!catalystEnabled) {
+                catalyst.targetX = canvas.width * 0.1;
+                catalyst.targetY = canvas.height * 0.2;
+            }
+        });
+
+        document.getElementById('heatToggle').addEventListener('change', function(e) {
+            heatEnabled = e.target.checked;
+        });
+
+        // 自动前进函数
+        function autoAdvance() {
+            if (!isPlaying) return;
+            
+            setTimeout(() => {
+                if (currentStep < STEPS.EQUILIBRIUM) {
+                    updateStep(currentStep + 1);
+                    autoAdvance();
+                } else {
+                    isPlaying = false;
+                }
+            }, 2000 / animationSpeed);
+        }
+
+        // 初始步骤信息显示
+        updateStepInfo();
+
+        // Canvas交互
+        canvas.addEventListener('click', function(e) {
+            if (!isInteractiveMode) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // 检查是否点击了反应物
+            atoms.forEach(atom => {
+                const dx = x - atom.x;
+                const dy = y - atom.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < atom.radius) {
+                    // 如果点击的是醇的氧原子，触发反应
+                    if (atom === atoms[10] && currentStep === STEPS.INITIAL) {
+                        updateStep(STEPS.PROTONATION);
+                        setTimeout(() => updateStep(STEPS.NUCLEOPHILIC_ATTACK), 1000);
+                        setTimeout(() => updateStep(STEPS.PROTON_TRANSFER), 2000);
+                        setTimeout(() => updateStep(STEPS.DEHYDRATION), 3000);
+                        setTimeout(() => updateStep(STEPS.DEPROTONATION), 4000);
+                        setTimeout(() => updateStep(STEPS.EQUILIBRIUM), 5000);
+                    }
+                }
+            });
+        });
+
+        // 拖拽功能
+        let draggedAtom = null;
+        let dragOffsetX = 0;
+        let dragOffsetY = 0;
+
+        canvas.addEventListener('mousedown', function(e) {
+            if (!isInteractiveMode) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // 检查是否点击了原子
+            for (let atom of atoms) {
+                const dx = x - atom.x;
+                const dy = y - atom.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < atom.radius) {
+                    draggedAtom = atom;
+                    dragOffsetX = dx;
+                    dragOffsetY = dy;
+                    break;
+                }
+            }
+        });
+
+        canvas.addEventListener('mousemove', function(e) {
+            if (!draggedAtom || !isInteractiveMode) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            draggedAtom.x = e.clientX - rect.left - dragOffsetX;
+            draggedAtom.y = e.clientY - rect.top - dragOffsetY;
+        });
+
+        canvas.addEventListener('mouseup', function() {
+            draggedAtom = null;
+        });
+
+        canvas.addEventListener('mouseleave', function() {
+            draggedAtom = null;
+        });
+
+        // 键盘控制
+        document.addEventListener('keydown', function(e) {
+            switch(e.key) {
+                case ' ':
+                    isPlaying = !isPlaying;
+                    if (isPlaying) autoAdvance();
+                    break;
+                case 'ArrowRight':
+                    if (currentStep < STEPS.EQUILIBRIUM) {
+                        updateStep(currentStep + 1);
+                    }
+                    break;
+                case 'ArrowLeft':
+                    if (currentStep > STEPS.INITIAL) {
+                        updateStep(currentStep - 1);
+                    }
+                    break;
+                case 'r':
+                case 'R':
+                    initMolecules();
+                    updateStep(STEPS.INITIAL);
+                    break;
+            }
+        });
+    </script>
+</body>
+</html>

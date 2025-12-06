@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>化学平衡的动态建立与移动</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #F7F9FC;
+            color: #2C3E50;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            padding: 25px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #E3F2FD;
+        }
+        
+        h1 {
+            color: #2E86AB;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
+        
+        .subtitle {
+            color: #5D6D7E;
+            font-size: 1.1rem;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .simulation-area {
+            flex: 1;
+            min-width: 500px;
+            background-color: #FFFFFF;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background-color: #F7F9FC;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #E3F2FD;
+            margin-bottom: 15px;
+        }
+        
+        #reactionCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        
+        .balance-indicator {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: rgba(46, 134, 171, 0.9);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: opacity 0.5s;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            flex: 1;
+        }
+        
+        button {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .btn-start {
+            background-color: #2E86AB;
+            color: white;
+        }
+        
+        .btn-pause {
+            background-color: #A23B72;
+            color: white;
+        }
+        
+        .btn-reset {
+            background-color: #5D6D7E;
+            color: white;
+        }
+        
+        .btn-disturb {
+            background-color: #F18F01;
+            color: white;
+        }
+        
+        .btn-toggle {
+            background-color: #4ECDC4;
+            color: white;
+        }
+        
+        .data-panel {
+            flex: 1;
+            min-width: 300px;
+            background-color: #FFFFFF;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .data-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #2E86AB;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .data-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .data-item {
+            background-color: #F7F9FC;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #4ECDC4;
+        }
+        
+        .data-item.reactant {
+            border-left-color: #FF6B6B;
+        }
+        
+        .data-item.product {
+            border-left-color: #FFD166;
+        }
+        
+        .data-label {
+            font-size: 0.95rem;
+            color: #5D6D7E;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .data-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        
+        .rate-data {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        
+        .rate-item {
+            text-align: center;
+        }
+        
+        .rate-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .rate-label {
+            font-size: 0.9rem;
+            color: #5D6D7E;
+        }
+        
+        .chart-container {
+            width: 100%;
+            height: 300px;
+            margin-top: 20px;
+            background-color: #FFFFFF;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .chart-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #2E86AB;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        #chartCanvas {
+            width: 100%;
+            height: calc(100% - 30px);
+            display: block;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+        }
+        
+        .instructions {
+            background-color: #E3F2FD;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 25px;
+        }
+        
+        .instructions h3 {
+            color: #2E86AB;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        @media (max-width: 900px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .simulation-area, .data-panel {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>化学平衡的动态建立与移动</h1>
+            <p class="subtitle">可视化模拟：A + B ⇌ C 反应中分子个数的实时变化与平衡移动</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="simulation-area">
+                <div class="canvas-container">
+                    <canvas id="reactionCanvas"></canvas>
+                    <div class="balance-indicator" id="balanceIndicator">动态平衡达成 ✓</div>
+                </div>
+                
+                <div class="controls">
+                    <div class="control-group">
+                        <button id="startBtn" class="btn-start">
+                            <span>▶</span> 开始反应
+                        </button>
+                        <button id="pauseBtn" class="btn-pause" disabled>
+                            <span>⏸</span> 暂停
+                        </button>
+                        <button id="resetBtn" class="btn-reset">
+                            <span>↺</span> 重置
+                        </button>
+                    </div>
+                    
+                    <div class="control-group">
+                        <button id="addAButton" class="btn-disturb">
+                            <span>+</span> 增加A浓度
+                        </button>
+                        <button id="increasePressure" class="btn-disturb">
+                            <span>↓</span> 增大压强
+                        </button>
+                        <button id="increaseTemp" class="btn-disturb">
+                            <span>↑</span> 升高温度
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button id="toggleArrows" class="btn-toggle">
+                        <span>⇄</span> 显示/隐藏速率箭头
+                    </button>
+                    <button id="toggleChart" class="btn-toggle">
+                        <span>📈</span> 显示/隐藏曲线图
+                    </button>
+                </div>
+            </div>
+            
+            <div class="data-panel">
+                <h2 class="data-title">
+                    <span>📊</span> 实时数据面板
+                </h2>
+                
+                <div class="data-grid">
+                    <div class="data-item reactant">
+                        <div class="data-label">
+                            <span style="color: #FF6B6B">●</span> 反应物 A
+                        </div>
+                        <div class="data-value" id="countA">100</div>
+                    </div>
+                    
+                    <div class="data-item reactant">
+                        <div class="data-label">
+                            <span style="color: #4ECDC4">●</span> 反应物 B
+                        </div>
+                        <div class="data-value" id="countB">80</div>
+                    </div>
+                    
+                    <div class="data-item product">
+                        <div class="data-label">
+                            <span style="color: #FFD166">●</span> 生成物 C
+                        </div>
+                        <div class="data-value" id="countC">0</div>
+                    </div>
+                    
+                    <div class="data-item">
+                        <div class="data-label">
+                            <span>⚖️</span> 平衡常数 K
+                        </div>
+                        <div class="data-value" id="kValue">0.00</div>
+                    </div>
+                </div>
+                
+                <div class="rate-data">
+                    <div class="rate-item">
+                        <div class="rate-value" id="forwardRate">0.00</div>
+                        <div class="rate-label">正反应速率</div>
+                    </div>
+                    
+                    <div class="rate-item">
+                        <div class="rate-value" id="reverseRate">0.00</div>
+                        <div class="rate-label">逆反应速率</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chart-container" id="chartContainer">
+            <h2 class="chart-title">
+                <span>📈</span> 分子个数与反应速率变化曲线
+            </h2>
+            <canvas id="chartCanvas"></canvas>
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #FF6B6B;"></div>
+                    <span>反应物A</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #4ECDC4;"></div>
+                    <span>反应物B</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #FFD166;"></div>
+                    <span>生成物C</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #A23B72;"></div>
+                    <span>正反应速率</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #2E86AB;"></div>
+                    <span>逆反应速率</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h3>
+                <span>💡</span> 使用说明
+            </h3>
+            <ul>
+                <li><strong>开始反应</strong>：观察分子运动、碰撞反应以及分子数量的实时变化。</li>
+                <li><strong>动态平衡</strong>：当正逆反应速率相等时，系统达到动态平衡（分子数量不再变化，但反应仍在进行）。</li>
+                <li><strong>扰动平衡</strong>：使用"增加A浓度"、"增大压强"或"升高温度"按钮，观察平衡如何移动并重新建立。</li>
+                <li><strong>数据解读</strong>：关注实时数据面板和曲线图，理解分子个数、反应速率和平衡常数的变化规律。</li>
+                <li><strong>勒夏特列原理</strong>：系统会抵抗外界条件的改变，向着减弱这种改变的方向移动。</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量和配置
+        const config = {
+            canvasWidth: 800,
+            canvasHeight: 400,
+            containerPadding: 20,
+            particleRadius: 8,
+            reactionRadius: 12,
+            baseSpeed: 1.5,
+            temperature: 1.0, // 温度因子，影响分子速度
+            pressure: 1.0,   // 压强因子，影响容器尺寸
+            showArrows: false,
+            showChart: true,
+            isRunning: false,
+            isBalanced: false,
+            time: 0,
+            timeStep: 0.05,
+            maxHistory: 300,
+            equilibriumThreshold: 0.05
+        };
+        
+        // 反应参数
+        const reaction = {
+            // A + B ⇌ C
+            countA: 100,
+            countB: 80,
+            countC: 0,
+            forwardRate: 0,
+            reverseRate: 0,
+            k: 0,
+            
+            // 反应速率常数
+            kForward: 0.02,
+            kReverse: 0.01,
+            
+            // 历史数据记录
+            history: {
+                time: [],
+                countA: [],
+                countB: [],
+                countC: [],
+                forwardRate: [],
+                reverseRate: []
+            }
+        };
+        
+        // 分子数组
+        let particles = [];
+        
+        // Canvas 上下文
+        let reactionCtx, chartCtx;
+        
+        // DOM 元素
+        let startBtn, pauseBtn, resetBtn, addAButton, increasePressure, increaseTemp;
+        let toggleArrows, toggleChart;
+        let countAElement, countBElement, countCElement, kValueElement;
+        let forwardRateElement, reverseRateElement, balanceIndicator;
+        let chartContainer;
+        
+        // 初始化函数
+        function init() {
+            // 获取Canvas上下文
+            const reactionCanvas = document.getElementById('reactionCanvas');
+            const chartCanvas = document.getElementById('chartCanvas');
+            
+            // 设置Canvas尺寸
+            reactionCanvas.width = reactionCanvas.offsetWidth;
+            reactionCanvas.height = reactionCanvas.offsetHeight;
+            config.canvasWidth = reactionCanvas.width;
+            config.canvasHeight = reactionCanvas.height;
+            
+            chartCanvas.width = chartCanvas.offsetWidth;
+            chartCanvas.height = chartCanvas.offsetHeight;
+            
+            reactionCtx = reactionCanvas.getContext('2d');
+            chartCtx = chartCanvas.getContext('2d');
+            
+            // 获取DOM元素
+            startBtn = document.getElementById('startBtn');
+            pauseBtn = document.getElementById('pauseBtn');
+            resetBtn = document.getElementById('resetBtn');
+            addAButton = document.getElementById('addAButton');
+            increasePressure = document.getElementById('increasePressure');
+            increaseTemp = document.getElementById('increaseTemp');
+            toggleArrows = document.getElementById('toggleArrows');
+            toggleChart = document.getElementById('toggleChart');
+            
+            countAElement = document.getElementById('countA');
+            countBElement = document.getElementById('countB');
+            countCElement = document.getElementById('countC');
+            kValueElement = document.getElementById('kValue');
+            forwardRateElement = document.getElementById('forwardRate');
+            reverseRateElement = document.getElementById('reverseRate');
+            balanceIndicator = document.getElementById('balanceIndicator');
+            chartContainer = document.getElementById('chartContainer');
+            
+            // 设置事件监听器
+            startBtn.addEventListener('click', startReaction);
+            pauseBtn.addEventListener('click', pauseReaction);
+            resetBtn.addEventListener('click', resetReaction);
+            addAButton.addEventListener('click', () => addReactantA(20));
+            increasePressure.addEventListener('click', increaseSystemPressure);
+            increaseTemp.addEventListener('click', increaseSystemTemperature);
+            toggleArrows.addEventListener('click', toggleVelocityArrows);
+            toggleChart.addEventListener('click', toggleChartVisibility);
+            
+            // 初始化粒子
+            createParticles();
+            
+            // 初始化图表
+            updateChart();
+            
+            // 初始渲染
+            drawReaction();
+            updateDataDisplay();
+        }
+        
+        // 创建粒子
+        function createParticles() {
+            particles = [];
+            
+            // 创建A分子
+            for (let i = 0; i < reaction.countA; i++) {
+                particles.push({
+                    type: 'A',
+                    x: Math.random() * (config.canvasWidth - 2 * config.containerPadding) + config.containerPadding,
+                    y: Math.random() * (config.canvasHeight - 2 * config.containerPadding) + config.containerPadding,
+                    vx: (Math.random() - 0.5) * config.baseSpeed * config.temperature,
+                    vy: (Math.random() - 0.5) * config.baseSpeed * config.temperature,
+                    color: '#FF6B6B',
+                    radius: config.particleRadius,
+                    highlight: false,
+                    highlightTime: 0
+                });
+            }
+            
+            // 创建B分子
+            for (let i = 0; i < reaction.countB; i++) {
+                particles.push({
+                    type: 'B',
+                    x: Math.random() * (config.canvasWidth - 2 * config.containerPadding) + config.containerPadding,
+                    y: Math.random() * (config.canvasHeight - 2 * config.containerPadding) + config.containerPadding,
+                    vx: (Math.random() - 0.5) * config.baseSpeed * config.temperature,
+                    vy: (Math.random() - 0.5) * config.baseSpeed * config.temperature,
+                    color: '#4ECDC4',
+                    radius: config.particleRadius,
+                    highlight: false,
+                    highlightTime: 0
+                });
+            }
+            
+            // 创建C分子
+            for (let i = 0; i < reaction.countC; i++) {
+                particles.push({
+                    type: 'C',
+                    x: Math.random() * (config.canvasWidth - 2 * config.containerPadding) + config.containerPadding,
+                    y: Math.random() * (config.canvasHeight - 2 * config.containerPadding) + config.containerPadding,
+                    vx: (Math.random() - 0.5) * config.baseSpeed * config.temperature,
+                    vy: (Math.random() - 0.5) * config.baseSpeed * config.temperature,
+                    color: '#FFD166',
+                    radius: config.particleRadius,
+                    highlight: false,
+                    highlightTime: 0
+                });
+            }
+        }
+        
+        // 开始反应
+        function startReaction() {
+            if (!config.isRunning) {
+                config.isRunning = true;
+                startBtn.disabled = true;
+                pauseBtn.disabled = false;
+                animate();
+            }
+        }
+        
+        // 暂停反应
+        function pauseReaction() {
+            config.isRunning = false;
+            startBtn.disabled = false;
+            pauseBtn.disabled = true;
+        }
+        
+        // 重置反应
+        function resetReaction() {
+            config.isRunning = false;
+            config.isBalanced = false;
+            config.time = 0;
+            config.temperature = 1.0;
+            config.pressure = 1.0;
+            
+            startBtn.disabled = false;
+            pauseBtn.disabled = true;
+            
+            // 重置反应参数
+            reaction.countA = 100;
+            reaction.countB = 80;
+            reaction.countC = 0;
+            reaction.forwardRate = 0;
+            reaction.reverseRate = 0;
+            reaction.k = 0;
+            
+            // 清空历史数据
+            reaction.history = {
+                time: [],
+                countA: [],
+                countB: [],
+                countC: [],
+                forwardRate: [],
+                reverseRate: []
+            };
+            
+            // 重新创建粒子
+            createParticles();
+            
+            // 更新显示
+            updateDataDisplay();
+            drawReaction();
+            updateChart();
+            
+            // 隐藏平衡指示器
+            balanceIndicator.style.opacity = '0';
+        }
+        
+        // 增加反应物A
+        function addReactantA(count) {
+            if (!config.isRunning) return;
+            
+            // 增加A分子数量
+            reaction.countA += count;
+            
+            // 添加新的A粒子（高亮显示）
+            for (let i = 0; i < count; i++) {
+                particles.push({
+                    type: 'A',
+                    x: Math.random() * (config.canvasWidth - 2 * config.containerPadding) + config.containerPadding,
+                    y: Math.random() * (config.canvasHeight - 2 * config.containerPadding) + config.containerPadding,
+                    vx: (Math.random() - 0.5) * config.baseSpeed * config.temperature,
+                    vy: (Math.random() - 0.5) * config.baseSpeed * config.temperature,
+                    color: '#FF6B6B',
+                    radius: config.particleRadius,
+                    highlight: true,
+                    highlightTime: 60 // 高亮显示60帧
+                });
+            }
+            
+            // 平衡被打破
+            config.isBalanced = false;
+            balanceIndicator.style.opacity = '0';
+            
+            updateDataDisplay();
+        }
+        
+        // 增大系统压强（压缩容器）
+        function increaseSystemPressure() {
+            if (!config.isRunning) return;
+            
+            // 增加压强因子（减小容器有效空间）
+            config.pressure *= 0.8;
+            
+            // 平衡被打破
+            config.isBalanced = false;
+            balanceIndicator.style.opacity = '0';
+            
+            // 更新显示
+            updateDataDisplay();
+        }
+        
+        // 升高系统温度
+        function increaseSystemTemperature() {
+            if (!config.isRunning) return;
+            
+            // 增加温度因子
+            config.temperature *= 1.5;
+            
+            // 增加所有粒子的速度
+            particles.forEach(p => {
+                p.vx *= Math.sqrt(config.temperature);
+                p.vy *= Math.sqrt(config.temperature);
+            });
+            
+            // 平衡被打破
+            config.isBalanced = false;
+            balanceIndicator.style.opacity = '0';
+            
+            updateDataDisplay();
+        }
+        
+        // 切换速度箭头显示
+        function toggleVelocityArrows() {
+            config.showArrows = !config.showArrows;
+        }
+        
+        // 切换图表显示
+        function toggleChartVisibility() {
+            config.showChart = !config.showChart;
+            chartContainer.style.display = config.showChart ? 'block' : 'none';
+        }
+        
+        // 动画循环
+        function animate() {
+            if (!config.isRunning) return;
+            
+            // 更新时间
+            config.time += config.timeStep;
+            
+            // 更新粒子位置
+            updateParticles();
+            
+            // 处理化学反应
+            processReactions();
+            
+            // 计算反应速率
+            calculateReactionRates();
+            
+            // 检查是否达到平衡
+            checkEquilibrium();
+            
+            // 记录历史数据
+            recordHistory();
+            
+            // 更新显示
+            updateDataDisplay();
+            drawReaction();
+            updateChart();
+            
+            // 继续动画循环
+            requestAnimationFrame(animate);
+        }
+        
+        // 更新粒子位置
+        function updateParticles() {
+            // 计算有效容器尺寸（考虑压强影响）
+            const effectiveWidth = config.canvasWidth * config.pressure;
+            const effectiveHeight = config.canvasHeight * config.pressure;
+            const offsetX = (config.canvasWidth - effectiveWidth) / 2;
+            const offsetY = (config.canvasHeight - effectiveHeight) / 2;
+            
+            particles.forEach(p => {
+                // 更新位置
+                p.x += p.vx;
+                p.y += p.vy;
+                
+                // 边界碰撞检测（考虑压强影响）
+                if (p.x - p.radius < offsetX + config.containerPadding || p.x + p.radius > offsetX + effectiveWidth - config.containerPadding) {
+                    p.vx = -p.vx;
+                    p.x = Math.max(offsetX + config.containerPadding + p.radius, 
+                                  Math.min(offsetX + effectiveWidth - config.containerPadding - p.radius, p.x));
+                }
+                
+                if (p.y - p.radius < offsetY + config.containerPadding || p.y + p.radius > offsetY + effectiveHeight - config.containerPadding) {
+                    p.vy = -p.vy;
+                    p.y = Math.max(offsetY + config.containerPadding + p.radius, 
+                                  Math.min(offsetY + effectiveHeight - config.containerPadding - p.radius, p.y));
+                }
+                
+                // 更新高亮时间
+                if (p.highlight && p.highlightTime > 0) {
+                    p.highlightTime--;
+                    if (p.highlightTime === 0) {
+                        p.highlight = false;
+                    }
+                }
+            });
+        }
+        
+        // 处理化学反应
+        function processReactions() {
+            // 正反应：A + B → C
+            // 基于碰撞概率模拟反应
+            const forwardProbability = reaction.kForward * config.temperature;
+            
+            // 查找A和B分子
+            const aParticles = particles.filter(p => p.type === 'A');
+            const bParticles = particles.filter(p => p.type === 'B');
+            
+            // 随机选择一些A和B分子尝试反应
+            const reactionAttempts = Math.floor(forwardProbability * Math.min(aParticles.length, bParticles.length));
+            
+            for (let i = 0; i < reactionAttempts; i++) {
+                if (aParticles.length === 0 || bParticles.length === 0) break;
+                
+                // 随机选择A和B分子
+                const aIndex = Math.floor(Math.random() * aParticles.length);
+                const bIndex = Math.floor(Math.random() * bParticles.length);
+                
+                const aParticle = aParticles[aIndex];
+                const bParticle = bParticles[bIndex];
+                
+                // 检查是否在反应半径内（模拟碰撞）
+                const dx = aParticle.x - bParticle.x;
+                const dy = aParticle.y - bParticle.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < config.reactionRadius) {
+                    // 发生反应：A + B → C
+                    // 移除A和B分子
+                    const aGlobalIndex = particles.indexOf(aParticle);
+                    const bGlobalIndex = particles.indexOf(bParticle);
+                    
+                    if (aGlobalIndex !== -1 && bGlobalIndex !== -1) {
+                        // 移除A和B
+                        particles.splice(Math.max(aGlobalIndex, bGlobalIndex), 1);
+                        particles.splice(Math.min(aGlobalIndex, bGlobalIndex), 1);
+                        
+                        // 添加C分子
+                        particles.push({
+                            type: 'C',
+                            x: (aParticle.x + bParticle.x) / 2,
+                            y: (aParticle.y + bParticle.y) / 2,
+                            vx: (aParticle.vx + bParticle.vx) / 2,
+                            vy: (aParticle.vy + bParticle.vy) / 2,
+                            color: '#FFD166',
+                            radius: config.particleRadius,
+                            highlight: false,
+                            highlightTime: 0
+                        });
+                        
+                        // 更新计数
+                        reaction.countA--;
+                        reaction.countB--;
+                        reaction.countC++;
+                    }
+                }
+            }
+            
+            // 逆反应：C → A + B
+            const reverseProbability = reaction.kReverse * config.temperature;
+            const cParticles = particles.filter(p => p.type === 'C');
+            const reverseAttempts = Math.floor(reverseProbability * cParticles.length);
+            
+            for (let i = 0; i < reverseAttempts; i++) {
+                if (cParticles.length === 0) break;
+                
+                // 随机选择C分子
+                const cIndex = Math.floor(Math.random() * cParticles.length);
+                const cParticle = cParticles[cIndex];
+                
+                // 发生逆反应：C → A + B
+                const globalIndex = particles.indexOf(cParticle);
+                
+                if (globalIndex !== -1) {
+                    // 移除C分子
+                    particles.splice(globalIndex, 1);
+                    
+                    // 添加A和B分子
+                    particles.push({
+                        type: 'A',
+                        x: cParticle.x + (Math.random() - 0.5) * 20,
+                        y: cParticle.y + (Math.random() - 0.5) * 20,
+                        vx: (Math.random() - 0.5) * config.baseSpeed * config.temperature,
+                        vy: (Math.random() - 0.5) * config.baseSpeed * config.temperature,
+                        color: '#FF6B6B',
+                        radius: config.particleRadius,
+                        highlight: false,
+                        highlightTime: 0
+                    });
+                    
+                    particles.push({
+                        type: 'B',
+                        x: cParticle.x + (Math.random() - 0.5) * 20,
+                        y: cParticle.y + (Math.random() - 0.5) * 20,
+                        vx: (Math.random() - 0.5) * config.baseSpeed * config.temperature,
+                        vy: (Math.random() - 0.5) * config.baseSpeed * config.temperature,
+                        color: '#4ECDC4',
+                        radius: config.particleRadius,
+                        highlight: false,
+                        highlightTime: 0
+                    });
+                    
+                    // 更新计数
+                    reaction.countA++;
+                    reaction.countB++;
+                    reaction.countC--;
+                }
+            }
+        }
+        
+        // 计算反应速率
+        function calculateReactionRates() {
+            // 正反应速率 = k_forward * [A] * [B]
+            // 这里使用分子数量近似浓度
+            const forwardRate = reaction.kForward * reaction.countA * reaction.countB * config.temperature;
+            
+            // 逆反应速率 = k_reverse * [C]
+            const reverseRate = reaction.kReverse * reaction.countC * config.temperature;
+            
+            reaction.forwardRate = forwardRate;
+            reaction.reverseRate = reverseRate;
+            
+            // 计算平衡常数 K = [C] / ([A] * [B])
+            if (reaction.countA > 0 && reaction.countB > 0) {
+                reaction.k = reaction.countC / (reaction.countA * reaction.countB);
+            } else {
+                reaction.k = 0;
+            }
+        }
+        
+        // 检查是否达到平衡
+        function checkEquilibrium() {
+            const rateDifference = Math.abs(reaction.forwardRate - reaction.reverseRate);
+            const rateSum = reaction.forwardRate + reaction.reverseRate;
+            
+            if (rateSum > 0 && rateDifference / rateSum < config.equilibriumThreshold) {
+                if (!config.isBalanced) {
+                    config.isBalanced = true;
+                    balanceIndicator.style.opacity = '1';
+                }
+            } else {
+                if (config.isBalanced) {
+                    config.isBalanced = false;
+                    balanceIndicator.style.opacity = '0';
+                }
+            }
+        }
+        
+        // 记录历史数据
+        function recordHistory() {
+            // 添加当前数据点
+            reaction.history.time.push(config.time);
+            reaction.history.countA.push(reaction.countA);
+            reaction.history.countB.push(reaction.countB);
+            reaction.history.countC.push(reaction.countC);
+            reaction.history.forwardRate.push(reaction.forwardRate);
+            reaction.history.reverseRate.push(reaction.reverseRate);
+            
+            // 限制历史数据长度
+            if (reaction.history.time.length > config.maxHistory) {
+                reaction.history.time.shift();
+                reaction.history.countA.shift();
+                reaction.history.countB.shift();
+                reaction.history.countC.shift();
+                reaction.history.forwardRate.shift();
+                reaction.history.reverseRate.shift();
+            }
+        }
+        
+        // 更新数据显示
+        function updateDataDisplay() {
+            countAElement.textContent = reaction.countA;
+            countBElement.textContent = reaction.countB;
+            countCElement.textContent = reaction.countC;
+            kValueElement.textContent = reaction.k.toFixed(4);
+            forwardRateElement.textContent = reaction.forwardRate.toFixed(2);
+            reverseRateElement.textContent = reaction.reverseRate.toFixed(2);
+        }
+        
+        // 绘制反应场景
+        function drawReaction() {
+            // 清除画布
+            reactionCtx.clearRect(0, 0, config.canvasWidth, config.canvasHeight);
+            
+            // 绘制容器背景
+            reactionCtx.fillStyle = '#F7F9FC';
+            reactionCtx.fillRect(0, 0, config.canvasWidth, config.canvasHeight);
+            
+            // 计算有效容器尺寸（考虑压强影响）
+            const effectiveWidth = config.canvasWidth * config.pressure;
+            const effectiveHeight = config.canvasHeight * config.pressure;
+            const offsetX = (config.canvasWidth - effectiveWidth) / 2;
+            const offsetY = (config.canvasHeight - effectiveHeight) / 2;
+            
+            // 绘制容器边框
+            reactionCtx.strokeStyle = '#2E86AB';
+            reactionCtx.lineWidth = 3;
+            reactionCtx.strokeRect(
+                offsetX + config.containerPadding, 
+                offsetY + config.containerPadding, 
+                effectiveWidth - 2 * config.containerPadding, 
+                effectiveHeight - 2 * config.containerPadding
+            );
+            
+            // 绘制所有粒子
+            particles.forEach(p => {
+                // 绘制粒子
+                reactionCtx.beginPath();
+                reactionCtx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                
+                // 设置颜色（高亮粒子用更亮的颜色）
+                if (p.highlight) {
+                    reactionCtx.fillStyle = p.type === 'A' ? '#FF9999' : 
+                                           p.type === 'B' ? '#7CECDF' : '#FFE299';
+                } else {
+                    reactionCtx.fillStyle = p.color;
+                }
+                
+                reactionCtx.fill();
+                
+                // 绘制粒子边框
+                reactionCtx.strokeStyle = '#2C3E50';
+                reactionCtx.lineWidth = 1;
+                reactionCtx.stroke();
+                
+                // 绘制速率箭头（如果启用）
+                if (config.showArrows) {
+                    const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+                    if (speed > 0.1) {
+                        const arrowLength = speed * 10;
+                        const angle = Math.atan2(p.vy, p.vx);
+                        
+                        reactionCtx.beginPath();
+                        reactionCtx.moveTo(p.x, p.y);
+                        reactionCtx.lineTo(
+                            p.x + Math.cos(angle) * arrowLength,
+                            p.y + Math.sin(angle) * arrowLength
+                        );
+                        reactionCtx.strokeStyle = '#2C3E50';
+                        reactionCtx.lineWidth = 1.5;
+                        reactionCtx.stroke();
+                        
+                        // 绘制箭头头部
+                        reactionCtx.beginPath();
+                        reactionCtx.moveTo(
+                           
+<!--检测到代码截断，自动续写中...-->
+p.x + Math.cos(angle) * arrowLength,
+                            p.y + Math.sin(angle) * arrowLength
+                        );
+                        reactionCtx.lineTo(
+                            p.x + Math.cos(angle - Math.PI/6) * arrowLength * 0.5,
+                            p.y + Math.sin(angle - Math.PI/6) * arrowLength * 0.5
+                        );
+                        reactionCtx.lineTo(
+                            p.x + Math.cos(angle + Math.PI/6) * arrowLength * 0.5,
+                            p.y + Math.sin(angle + Math.PI/6) * arrowLength * 0.5
+                        );
+                        reactionCtx.closePath();
+                        reactionCtx.fillStyle = '#2C3E50';
+                        reactionCtx.fill();
+                    }
+                }
+            });
+            
+            // 绘制反应速率文本
+            reactionCtx.fillStyle = '#2C3E50';
+            reactionCtx.font = '14px Arial';
+            reactionCtx.fillText(`温度因子: ${config.temperature.toFixed(2)}`, 10, 20);
+            reactionCtx.fillText(`压强因子: ${config.pressure.toFixed(2)}`, 10, 40);
+            reactionCtx.fillText(`总分子数: ${particles.length}`, 10, 60);
+        }
+        
+        // 更新图表
+        function updateChart() {
+            const chartWidth = chartCtx.canvas.width;
+            const chartHeight = chartCtx.canvas.height;
+            const padding = {top: 30, right: 30, bottom: 50, left: 60};
+            const graphWidth = chartWidth - padding.left - padding.right;
+            const graphHeight = chartHeight - padding.top - padding.bottom;
+            
+            // 清除图表
+            chartCtx.clearRect(0, 0, chartWidth, chartHeight);
+            
+            // 如果没有数据，不绘制
+            if (reaction.history.time.length < 2) return;
+            
+            // 获取数据范围
+            const times = reaction.history.time;
+            const countAs = reaction.history.countA;
+            const countBs = reaction.history.countB;
+            const countCs = reaction.history.countC;
+            const forwardRates = reaction.history.forwardRate;
+            const reverseRates = reaction.history.reverseRate;
+            
+            // 计算Y轴范围（分子数量）
+            const allCounts = [...countAs, ...countBs, ...countCs];
+            const maxCount = Math.max(...allCounts);
+            const minCount = 0;
+            
+            // 计算Y轴范围（反应速率）
+            const allRates = [...forwardRates, ...reverseRates];
+            const maxRate = Math.max(...allRates, 1);
+            
+            // 绘制网格和坐标轴
+            drawChartAxes(padding, graphWidth, graphHeight, times, maxCount, maxRate);
+            
+            // 绘制曲线
+            drawChartCurve(times, countAs, '#FF6B6B', padding, graphWidth, graphHeight, maxCount, false);
+            drawChartCurve(times, countBs, '#4ECDC4', padding, graphWidth, graphHeight, maxCount, false);
+            drawChartCurve(times, countCs, '#FFD166', padding, graphWidth, graphHeight, maxCount, false);
+            
+            // 绘制反应速率曲线（使用次Y轴）
+            drawChartCurve(times, forwardRates, '#A23B72', padding, graphWidth, graphHeight, maxRate, true);
+            drawChartCurve(times, reverseRates, '#2E86AB', padding, graphWidth, graphHeight, maxRate, true);
+        }
+        
+        // 绘制图表坐标轴和网格
+        function drawChartAxes(padding, graphWidth, graphHeight, times, maxCount, maxRate) {
+            // 绘制背景
+            chartCtx.fillStyle = '#FFFFFF';
+            chartCtx.fillRect(0, 0, chartCtx.canvas.width, chartCtx.canvas.height);
+            
+            // 绘制网格
+            chartCtx.strokeStyle = '#E0E0E0';
+            chartCtx.lineWidth = 0.5;
+            
+            // 水平网格线（分子数量）
+            const yGridLines = 5;
+            for (let i = 0; i <= yGridLines; i++) {
+                const y = padding.top + graphHeight - (i / yGridLines) * graphHeight;
+                chartCtx.beginPath();
+                chartCtx.moveTo(padding.left, y);
+                chartCtx.lineTo(padding.left + graphWidth, y);
+                chartCtx.stroke();
+                
+                // Y轴标签（分子数量）
+                chartCtx.fillStyle = '#5D6D7E';
+                chartCtx.font = '12px Arial';
+                chartCtx.textAlign = 'right';
+                chartCtx.fillText(Math.round((i / yGridLines) * maxCount).toString(), padding.left - 10, y + 4);
+            }
+            
+            // 水平网格线（反应速率，次Y轴）
+            const yRateGridLines = 5;
+            for (let i = 0; i <= yRateGridLines; i++) {
+                const y = padding.top + graphHeight - (i / yRateGridLines) * graphHeight;
+                // 只在右侧绘制速率标签
+                chartCtx.fillStyle = '#5D6D7E';
+                chartCtx.font = '12px Arial';
+                chartCtx.textAlign = 'left';
+                chartCtx.fillText((i / yRateGridLines * maxRate).toFixed(1), padding.left + graphWidth + 10, y + 4);
+            }
+            
+            // 垂直网格线
+            const xGridLines = 10;
+            for (let i = 0; i <= xGridLines; i++) {
+                const x = padding.left + (i / xGridLines) * graphWidth;
+                chartCtx.beginPath();
+                chartCtx.moveTo(x, padding.top);
+                chartCtx.lineTo(x, padding.top + graphHeight);
+                chartCtx.stroke();
+                
+                // X轴标签（时间）
+                if (times.length > 0) {
+                    const maxTime = times[times.length - 1];
+                    const timeValue = (i / xGridLines) * maxTime;
+                    chartCtx.fillStyle = '#5D6D7E';
+                    chartCtx.font = '12px Arial';
+                    chartCtx.textAlign = 'center';
+                    chartCtx.fillText(timeValue.toFixed(1), x, padding.top + graphHeight + 20);
+                }
+            }
+            
+            // 绘制坐标轴
+            chartCtx.strokeStyle = '#2C3E50';
+            chartCtx.lineWidth = 2;
+            
+            // Y轴（分子数量）
+            chartCtx.beginPath();
+            chartCtx.moveTo(padding.left, padding.top);
+            chartCtx.lineTo(padding.left, padding.top + graphHeight);
+            chartCtx.stroke();
+            
+            // Y轴（反应速率，右侧）
+            chartCtx.beginPath();
+            chartCtx.moveTo(padding.left + graphWidth, padding.top);
+            chartCtx.lineTo(padding.left + graphWidth, padding.top + graphHeight);
+            chartCtx.stroke();
+            
+            // X轴
+            chartCtx.beginPath();
+            chartCtx.moveTo(padding.left, padding.top + graphHeight);
+            chartCtx.lineTo(padding.left + graphWidth, padding.top + graphHeight);
+            chartCtx.stroke();
+            
+            // 坐标轴标签
+            chartCtx.fillStyle = '#2C3E50';
+            chartCtx.font = 'bold 14px Arial';
+            chartCtx.textAlign = 'center';
+            
+            // X轴标签
+            chartCtx.fillText('时间 (s)', padding.left + graphWidth / 2, padding.top + graphHeight + 40);
+            
+            // Y轴标签（左侧，分子数量）
+            chartCtx.save();
+            chartCtx.translate(20, padding.top + graphHeight / 2);
+            chartCtx.rotate(-Math.PI / 2);
+            chartCtx.textAlign = 'center';
+            chartCtx.fillText('分子数量', 0, 0);
+            chartCtx.restore();
+            
+            // Y轴标签（右侧，反应速率）
+            chartCtx.save();
+            chartCtx.translate(padding.left + graphWidth + 40, padding.top + graphHeight / 2);
+            chartCtx.rotate(-Math.PI / 2);
+            chartCtx.textAlign = 'center';
+            chartCtx.fillText('反应速率', 0, 0);
+            chartCtx.restore();
+        }
+        
+        // 绘制图表曲线
+        function drawChartCurve(times, values, color, padding, graphWidth, graphHeight, maxValue, isRate) {
+            if (times.length === 0 || values.length === 0) return;
+            
+            const maxTime = times[times.length - 1];
+            
+            // 开始绘制路径
+            chartCtx.beginPath();
+            
+            // 移动到第一个点
+            const firstX = padding.left + (times[0] / maxTime) * graphWidth;
+            const firstY = isRate ? 
+                padding.top + graphHeight - (values[0] / maxValue) * graphHeight :
+                padding.top + graphHeight - (values[0] / maxValue) * graphHeight;
+            
+            chartCtx.moveTo(firstX, firstY);
+            
+            // 绘制曲线
+            for (let i = 1; i < times.length; i++) {
+                const x = padding.left + (times[i] / maxTime) * graphWidth;
+                const y = isRate ? 
+                    padding.top + graphHeight - (values[i] / maxValue) * graphHeight :
+                    padding.top + graphHeight - (values[i] / maxValue) * graphHeight;
+                
+                // 使用二次贝塞尔曲线平滑连接点
+                const prevX = padding.left + (times[i-1] / maxTime) * graphWidth;
+                const prevY = isRate ? 
+                    padding.top + graphHeight - (values[i-1] / maxValue) * graphHeight :
+                    padding.top + graphHeight - (values[i-1] / maxValue) * graphHeight;
+                
+                const cpX = (prevX + x) / 2;
+                const cpY1 = prevY;
+                const cpY2 = y;
+                
+                chartCtx.quadraticCurveTo(cpX, cpY1, cpX, cpY1);
+                chartCtx.quadraticCurveTo(cpX, cpY2, x, y);
+            }
+            
+            // 设置线条样式
+            chartCtx.strokeStyle = color;
+            chartCtx.lineWidth = 2.5;
+            chartCtx.stroke();
+            
+            // 添加数据点（每隔一定间隔）
+            chartCtx.fillStyle = color;
+            for (let i = 0; i < times.length; i += Math.floor(times.length / 15)) {
+                const x = padding.left + (times[i] / maxTime) * graphWidth;
+                const y = isRate ? 
+                    padding.top + graphHeight - (values[i] / maxValue) * graphHeight :
+                    padding.top + graphHeight - (values[i] / maxValue) * graphHeight;
+                
+                chartCtx.beginPath();
+                chartCtx.arc(x, y, 3, 0, Math.PI * 2);
+                chartCtx.fill();
+            }
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('load', init);
+        // 窗口大小改变时重新调整Canvas
+        window.addEventListener('resize', function() {
+            if (config.isRunning) {
+                pauseReaction();
+            }
+            init();
+        });
+    </script>
+</body>
+</html>

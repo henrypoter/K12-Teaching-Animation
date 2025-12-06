@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>氧化还原反应电子转移动画</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h1 {
+            color: #60a5fa;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .animation-area {
+            background: rgba(15, 23, 42, 0.9);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #reactionCanvas {
+            width: 100%;
+            height: 500px;
+            display: block;
+            border-radius: 10px;
+            background: rgba(30, 41, 59, 0.6);
+        }
+
+        .info-panel {
+            background: rgba(15, 23, 42, 0.9);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .panel-section {
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .panel-section h3 {
+            color: #60a5fa;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .panel-section h3 i {
+            font-size: 1.4rem;
+        }
+
+        .reaction-equation {
+            font-size: 1.8rem;
+            text-align: center;
+            padding: 15px;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 8px;
+            font-family: 'Cambria Math', serif;
+            color: #f8fafc;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .oxidation-state-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .oxidation-state-table th,
+        .oxidation-state-table td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .oxidation-state-table th {
+            background: rgba(59, 130, 246, 0.2);
+            color: #93c5fd;
+        }
+
+        .oxidation-state-table td {
+            background: rgba(30, 41, 59, 0.4);
+        }
+
+        .electron-count {
+            font-size: 1.3rem;
+            color: #fbbf24;
+            font-weight: bold;
+            text-align: center;
+            padding: 10px;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 8px;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .control-group label {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        select, button {
+            padding: 12px 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(30, 41, 59, 0.8);
+            color: #e2e8f0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        select:hover, button:hover {
+            background: rgba(59, 130, 246, 0.2);
+            transform: translateY(-2px);
+        }
+
+        select:focus, button:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+        }
+
+        button {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        button.secondary {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+        }
+
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .speed-control input {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(30, 41, 59, 0.8);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .speed-control input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+        }
+
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .instructions {
+            background: rgba(30, 41, 59, 0.9);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .instructions h2 {
+            color: #60a5fa;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .instructions ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .instructions li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .instructions li:last-child {
+            border-bottom: none;
+        }
+
+        .instructions li i {
+            color: #fbbf24;
+            font-size: 1.2rem;
+        }
+
+        .highlight {
+            color: #fbbf24;
+            font-weight: bold;
+        }
+
+        .blue-text {
+            color: #60a5fa;
+        }
+
+        .orange-text {
+            color: #f97316;
+        }
+
+        .loading {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #60a5fa;
+            z-index: 100;
+            border-radius: 15px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .particle-info {
+            position: absolute;
+            background: rgba(15, 23, 42, 0.95);
+            border: 2px solid #3b82f6;
+            border-radius: 10px;
+            padding: 15px;
+            color: #e2e8f0;
+            font-size: 0.9rem;
+            pointer-events: none;
+            z-index: 50;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            max-width: 250px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .particle-info.show {
+            opacity: 1;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .info-label {
+            color: #94a3b8;
+        }
+
+        .info-value {
+            color: #f8fafc;
+            font-weight: bold;
+        }
+
+        .electron-transfer {
+            color: #fbbf24;
+            font-weight: bold;
+        }
+
+        .reducing-agent {
+            color: #f97316;
+        }
+
+        .oxidizing-agent {
+            color: #60a5fa;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-atom"></i> 氧化还原反应电子转移动画</h1>
+            <p class="subtitle">直观展示电子转移过程，理解氧化剂、还原剂、化合价变化与电子得失的关系</p>
+        </header>
+
+        <div class="main-content">
+            <div class="animation-area">
+                <div id="loading" class="loading">
+                    <i class="fas fa-spinner fa-spin"></i> 加载动画中...
+                </div>
+                <canvas id="reactionCanvas"></canvas>
+                <div id="particleInfo" class="particle-info"></div>
+            </div>
+
+            <div class="info-panel">
+                <div class="panel-section">
+                    <h3><i class="fas fa-flask"></i> 反应方程式</h3>
+                    <div id="equationDisplay" class="reaction-equation">
+                        Zn + Cu²⁺ → Zn²⁺ + Cu
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3><i class="fas fa-exchange-alt"></i> 化合价变化</h3>
+                    <table class="oxidation-state-table">
+                        <thead>
+                            <tr>
+                                <th>物质</th>
+                                <th>反应前</th>
+                                <th>反应后</th>
+                                <th>变化</th>
+                            </tr>
+                        </thead>
+                        <tbody id="oxidationTable">
+                            <tr>
+                                <td>Zn</td>
+                                <td>0</td>
+                                <td>+2</td>
+                                <td class="orange-text">↑ 氧化</td>
+                            </tr>
+                            <tr>
+                                <td>Cu²⁺</td>
+                                <td>+2</td>
+                                <td>0</td>
+                                <td class="blue-text">↓ 还原</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="panel-section">
+                    <h3><i class="fas fa-bolt"></i> 电子转移</h3>
+                    <div id="electronCount" class="electron-count">
+                        转移电子数: 2e⁻
+                    </div>
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #f97316;"></div>
+                            <span>还原剂 (失电子)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #60a5fa;"></div>
+                            <span>氧化剂 (得电子)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #fbbf24;"></div>
+                            <span>电子</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #10b981;"></div>
+                            <span>生成物</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3><i class="fas fa-sliders-h"></i> 动画控制</h3>
+                    <div class="controls">
+                        <div class="control-group">
+                            <label for="reactionSelect"><i class="fas fa-vial"></i> 选择反应</label>
+                            <select id="reactionSelect">
+                                <option value="zn_cu">锌与铜离子反应 (Zn + Cu²⁺)</option>
+                                <option value="na_cl">钠与氯气反应 (2Na + Cl₂)</option>
+                                <option value="h2_o2">氢气与氧气反应 (2H₂ + O₂)</option>
+                                <option value="fe_cuso4">铁与硫酸铜反应 (Fe + CuSO₄)</option>
+                            </select>
+                        </div>
+
+                        <div class="control-group">
+                            <label for="animationSpeed"><i class="fas fa-tachometer-alt"></i> 动画速度</label>
+                            <div class="speed-control">
+                                <input type="range" id="animationSpeed" min="0.1" max="2" step="0.1" value="1">
+                                <span id="speedValue">1.0x</span>
+                            </div>
+                        </div>
+
+                        <button id="playPauseBtn">
+                            <i class="fas fa-play"></i> 播放
+                        </button>
+                        <button id="resetBtn" class="secondary">
+                            <i class="fas fa-redo"></i> 重置
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h2><i class="fas fa-graduation-cap"></i> 学习指南</h2>
+            <ul>
+                <li><i class="fas fa-mouse-pointer"></i> <span class="highlight">鼠标悬停</span>在原子/离子上查看详细信息</li>
+                <li><i class="fas fa-eye"></i> 观察<span class="highlight">黄色电子</span>从还原剂转移到氧化剂的过程</li>
+                <li><i class="fas fa-arrow-up"></i> <span class="orange-text">橙色</span>物质为<span class="orange-text">还原剂</span>，失去电子，化合价升高</li>
+                <li><i class="fas fa-arrow-down"></i> <span class="blue-text">蓝色</span>物质为<span class="blue-text">氧化剂</span>，得到电子，化合价降低</li>
+                <li><i class="fas fa-sync-alt"></i> 电子转移是<span class="highlight">同时发生</span>的，得失电子总数相等</li>
+                <li><i class="fas fa-sliders-h"></i> 使用控制面板切换不同反应，调整动画速度</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // 反应数据定义
+        const reactions = {
+            zn_cu: {
+                name: "锌与铜离子反应",
+                equation: "Zn + Cu²⁺ → Zn²⁺ + Cu",
+                reactants: [
+                    { id: "zn", element: "Zn", x: 150, y: 250, radius: 30, color: "#b0bec5", oxidationState: 0, finalOxidationState: 2, electronsLost: 2, type: "reducing" },
+                    { id: "cu2", element: "Cu²⁺", x: 450, y: 250, radius: 35, color: "#b71c1c", oxidationState: 2, finalOxidationState: 0, electronsGained: 2, type: "oxidizing" }
+                ],
+                products: [
+                    { id: "zn2", element: "Zn²⁺", x: 150, y: 250, radius: 35, color: "#78909c", oxidationState: 2, type: "product" },
+                    { id: "cu", element: "Cu", x: 450, y: 250, radius: 30, color: "#d32f2f", oxidationState: 0, type: "product" }
+                ],
+                electronPaths: [
+                    { from: "zn", to: "cu2", count: 2, startX: 150, startY: 250, endX: 450, endY: 250 }
+                ],
+                oxidationTable: [
+                    { substance: "Zn", initial: "0", final: "+2", change: "↑ 氧化", changeClass: "orange-text" },
+                    { substance: "Cu²⁺", initial: "+2", final: "0", change: "↓ 还原", changeClass: "blue-text" }
+                ],
+                electronCount: "转移电子数: 2e⁻"
+            },
+            na_cl: {
+                name: "钠与氯气反应",
+                equation: "2Na + Cl₂ → 2NaCl",
+                reactants: [
+                    { id: "na1", element: "Na", x: 100, y: 200, radius: 25, color: "#fff59d", oxidationState: 0, finalOxidationState: 1, electronsLost: 1, type: "reducing" },
+                    { id: "na2", element: "Na", x: 100, y: 300, radius: 25, color: "#fff59d", oxidationState: 0, finalOxidationState: 1, electronsLost: 1, type: "reducing" },
+                    { id: "cl2", element: "Cl₂", x: 500, y: 250, radius: 40, color: "#66bb6a", oxidationState: 0, finalOxidationState: -1, electronsGained: 2, type: "oxidizing" }
+                ],
+                products: [
+                    { id: "na1+", element: "Na⁺", x: 100, y: 200, radius: 28, color: "#ffecb3", oxidationState: 1, type: "product" },
+                    { id: "na2+", element: "Na⁺", x: 100, y: 300, radius: 28, color: "#ffecb3", oxidationState: 1, type: "product" },
+                    { id: "cl1-", element: "Cl⁻", x: 500, y: 200, radius: 28, color: "#81c784", oxidationState: -1, type: "product" },
+                    { id: "cl2-", element: "Cl⁻", x: 500, y: 300, radius: 28, color: "#81c784", oxidationState: -1, type: "product" }
+                ],
+                electronPaths: [
+                    { from: "na1", to: "cl2", count: 1, startX: 100, startY: 200, endX: 500, endY: 250 },
+                    { from: "na2", to: "cl2", count: 1, startX: 100, startY: 300, endX: 500, endY: 250 }
+                ],
+                oxidationTable: [
+                    { substance: "Na", initial: "0", final: "+1", change: "↑ 氧化", changeClass: "orange-text" },
+                    { substance: "Cl", initial: "0", final: "-1", change: "↓ 还原", changeClass: "blue-text" }
+                ],
+                electronCount: "转移电子数: 2e⁻"
+            },
+            h2_o2: {
+                name: "氢气与氧气反应",
+                equation: "2H₂ + O₂ → 2H₂O",
+                reactants: [
+                    { id: "h1", element: "H₂", x: 150, y: 200, radius: 30, color: "#81d4fa", oxidationState: 0, finalOxidationState: 1, electronsLost: 2, type: "reducing" },
+                    { id: "h2", element: "H₂", x: 150, y: 300, radius: 30, color: "#81d4fa", oxidationState: 0, finalOxidationState: 1, electronsLost: 2, type: "reducing" },
+                    { id: "o2", element: "O₂", x: 450, y: 250, radius: 40, color: "#d32f2f", oxidationState: 0, finalOxidationState: -2, electronsGained: 4, type: "oxidizing" }
+                ],
+                products: [
+                    { id: "h2o1", element: "H₂O", x: 300, y: 200, radius: 35, color: "#4fc3f7", oxidationState: "H:+1, O:-2", type: "product" },
+                    { id: "h2o2", element: "H₂O", x: 300, y: 300, radius: 35, color: "#4fc3f7", oxidationState: "H:+1, O:-2", type: "product" }
+                ],
+                electronPaths: [
+                    { from: "h1", to: "o2", count: 2, startX: 150, startY: 200, endX: 450, endY: 250 },
+                    { from: "h2", to: "o2", count: 2, startX: 150, startY: 300, endX: 450, endY: 250 }
+                ],
+                oxidationTable: [
+                    { substance: "H", initial: "0", final: "+1", change: "↑ 氧化", changeClass: "orange-text" },
+                    { substance: "O", initial: "0", final: "-2", change: "↓ 还原", changeClass: "blue-text" }
+                ],
+                electronCount: "转移电子数: 4e⁻"
+            },
+            fe_cuso4: {
+                name: "铁与硫酸铜反应",
+                equation: "Fe + Cu²⁺ → Fe²⁺ + Cu",
+                reactants: [
+                    { id: "fe", element: "Fe", x: 150, y: 250, radius: 30, color: "#a1887f", oxidationState: 0, finalOxidationState: 2, electronsLost: 2, type: "reducing" },
+                    { id: "cu2", element: "Cu²⁺", x: 450, y: 250, radius: 35, color: "#b71c1c", oxidationState: 2, finalOxidationState: 0, electronsGained: 2, type: "oxidizing" }
+                ],
+                products: [
+                    { id: "fe2", element: "Fe²⁺", x: 150, y: 250, radius: 35, color: "#8d6e63", oxidationState: 2, type: "product" },
+                    { id: "cu", element: "Cu", x: 450, y: 250, radius: 30, color: "#d32f2f", oxidationState: 0, type: "product" }
+                ],
+                electronPaths: [
+                    { from: "fe", to: "cu2", count: 2, startX: 150, startY: 250, endX: 450, endY: 250 }
+                ],
+                oxidationTable: [
+                    { substance: "Fe", initial: "0", final: "+2", change: "↑ 氧化", changeClass: "orange-text" },
+                    { substance: "Cu²⁺", initial: "+2", final: "0", change: "↓ 还原", changeClass: "blue-text" }
+                ],
+                electronCount: "转移电子数: 2e⁻"
+            }
+        };
+
+        // 全局变量
+        let currentReaction = reactions.zn_cu;
+        let animationId = null;
+        let animationTime = 0;
+        let isPlaying = false;
+        let animationSpeed = 1.0;
+        let hoveredParticle = null;
+
+        // 获取DOM元素
+        const canvas = document.getElementById('reactionCanvas');
+        const ctx = canvas.getContext('2d');
+        const equationDisplay = document.getElementById('equationDisplay');
+        const oxidationTable = document.getElementById('oxidationTable');
+        const electronCount = document.getElementById('electronCount');
+        const reactionSelect = document.getElementById('reactionSelect');
+        const animationSpeedSlider = document.getElementById('animationSpeed');
+        const speedValue = document.getElementById('speedValue');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const loading = document.getElementById('loading');
+        const particleInfo = document.getElementById('particleInfo');
+
+        // 设置Canvas尺寸
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = 500;
+        }
+
+        // 初始化
+        window.addEventListener('load', () => {
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            initEventListeners();
+            updateInfoPanel();
+            draw();
+            setTimeout(() => {
+                loading.classList.add('hidden');
+            }, 500);
+        });
+
+        // 事件监听器
+        function initEventListeners() {
+            reactionSelect.addEventListener('change', (e) => {
+                currentReaction = reactions[e.target.value];
+                resetAnimation();
+                updateInfoPanel();
+            });
+
+            animationSpeedSlider.addEventListener('input', (e) => {
+                animationSpeed = parseFloat(e.target.value);
+                speedValue.textContent = `${animationSpeed.toFixed(1)}x`;
+            });
+
+            playPauseBtn.addEventListener('click', toggleAnimation);
+            resetBtn.addEventListener('click', resetAnimation);
+
+            // 鼠标悬停检测
+            canvas.addEventListener('mousemove', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                hoveredParticle = null;
+                
+                // 检查反应物
+                for (const reactant of currentReaction.reactants) {
+                    const dx = x - reactant.x;
+                    const dy = y - reactant.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance <= reactant.radius + 5) {
+                        hoveredParticle = reactant;
+                        break;
+                    }
+                }
+                
+                // 检查生成物
+                if (!hoveredParticle) {
+                    for (const product of currentReaction.products) {
+                        const dx = x - product.x;
+                        const dy = y - product.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance <= product.radius + 5) {
+                            hoveredParticle = product;
+                            break;
+                        }
+                    }
+                }
+                
+                // 显示粒子信息
+                if (hoveredParticle) {
+                    showParticleInfo(hoveredParticle, x, y);
+                } else {
+                    particleInfo.classList.remove('show');
+                }
+            });
+            
+            canvas.addEventListener('mouseleave', () => {
+                hoveredParticle = null;
+                particleInfo.classList.remove('show');
+            });
+        }
+
+        // 显示粒子信息
+        function showParticleInfo(particle, x, y) {
+            let infoHTML = '';
+            
+            if (particle.type === "reducing") {
+                infoHTML = `
+                    <div class="info-row">
+                        <span class="info-label">物质:</span>
+                        <span class="info-value reducing-agent">${particle.element}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">类型:</span>
+                        <span class="info-value reducing-agent">还原剂</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">反应前化合价:</span>
+                        <span class="info-value">${particle.oxidationState}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">反应后化合价:</span>
+                        <span class="info-value">${particle.finalOxidationState}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">电子转移:</span>
+                        <span class="info-value electron-transfer">失去 ${particle.electronsLost} e⁻</span>
+                    </div>
+                `;
+            } else if (particle.type === "oxidizing") {
+                infoHTML = `
+                    <div class="info-row">
+                        <span class="info-label">物质:</span>
+                        <span class="info-value oxidizing-agent">${particle.element}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">类型:</span>
+                        <span class="info-value oxidizing-agent">氧化剂</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">反应前化合价:</span>
+                        <span class="info-value">${particle.oxidationState}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">反应后化合价:</span>
+                        <span class="info-value">${particle.finalOxidationState}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">电子转移:</span>
+                        <span class="info-value electron-transfer">得到 ${particle.electronsGained} e⁻</span>
+                    </div>
+                `;
+            } else if (particle.type === "product") {
+                infoHTML = `
+                    <div class="info-row">
+                        <span class="info-label">物质:</span>
+                        <span class="info-value">${particle.element}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">类型:</span>
+                        <span class="info-value">生成物</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">化合价:</span>
+                        <span class="info-value">${particle.oxidationState}</span>
+                    </div>
+                `;
+            }
+            
+            particleInfo.innerHTML = infoHTML;
+            particleInfo.style.left = `${x + 20}px`;
+            particleInfo.style.top = `${y + 20}px`;
+            particleInfo.classList.add('show');
+        }
+
+        // 更新信息面板
+        function updateInfoPanel() {
+            equationDisplay.textContent = currentReaction.equation;
+            electronCount.textContent = currentReaction.electronCount;
+            
+            // 更新化合价表格
+            oxidationTable.innerHTML = '';
+            currentReaction.oxidationTable.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${row.substance}</td>
+                    <td>${row.initial}</td>
+                    <td>${row.final}</td>
+                    <td class="${row.changeClass}">${row.change}</td>
+                `;
+                oxidationTable.appendChild(tr);
+            });
+        }
+
+        // 动画控制
+        function toggleAnimation() {
+            if (isPlaying) {
+                pauseAnimation();
+            } else {
+                playAnimation();
+            }
+        }
+
+        function playAnimation() {
+            if (!isPlaying) {
+                isPlaying = true;
+                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i> 暂停';
+                animate();
+            }
+        }
+
+        function pauseAnimation() {
+            isPlaying = false;
+            playPauseBtn.innerHTML = '<i class="fas fa-play"></i> 播放';
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+        }
+
+        function resetAnimation() {
+            pauseAnimation();
+            animationTime = 0;
+            draw();
+        }
+
+        // 主绘制函数
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制反应物
+            currentReaction.reactants.forEach(particle => {
+                drawParticle(particle);
+            });
+            
+            // 绘制生成物（根据动画进度）
+            const progress = Math.min(animationTime / 200, 1);
+            
+            currentReaction.products.forEach(product => {
+                const particle = currentReaction.reactants.find(r => r.id.replace(/\d*$/, '') === product.id.replace(/\d*$/, ''));
+                if (particle) {
+                    const interpolatedParticle = {
+                        ...product,
+                        x: particle.x + (product.x - particle.x) * progress,
+                        y: particle.y + (product.y - particle.y) * progress,
+                        radius: particle.radius + (product.radius - particle.radius) * progress,
+                        color: interpolateColor(particle.color, product.color, progress)
+                    };
+                    
+                    // 如果是生成物且动画完成，显示完整
+                    if (progress >= 1) {
+                        drawParticle(product);
+                    } else {
+                        drawParticle(interpolatedParticle);
+                    }
+                }
+            });
+            
+            // 绘制电子转移箭头
+            currentReaction.electronPaths.forEach(path => {
+                drawElectronTransfer(path, progress);
+            });
+            
+            // 绘制悬停效果
+            if (hoveredParticle) {
+                drawHoverEffect(hoveredParticle);
+            }
+        }
+
+        // 绘制粒子
+        function drawParticle(particle) {
+            // 粒子主体
+            ctx.beginPath();
+            ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+            
+            // 根据粒子类型设置样式
+            if (particle.type === "reducing") {
+                // 还原剂 - 橙色边框
+                ctx.fillStyle = particle.color;
+                ctx.fill();
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = "#f97316";
+                ctx.stroke();
+            } else if (particle.type === "oxidizing") {
+                // 氧化剂 - 蓝色边框
+                ctx.fillStyle = particle.color;
+                ctx.fill();
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = "#60a5fa";
+                ctx.stroke();
+            } else if (particle.type === "product") {
+
+<!--检测到代码截断，自动续写中...-->
+// 生成物 - 绿色边框
+                ctx.fillStyle = particle.color;
+                ctx.fill();
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = "#10b981";
+                ctx.stroke();
+            } else {
+                ctx.fillStyle = particle.color;
+                ctx.fill();
+            }
+            
+            // 粒子标签
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "bold 16px Arial";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(particle.element, particle.x, particle.y);
+            
+            // 如果是反应物，显示化合价
+            if (particle.type === "reducing" || particle.type === "oxidizing") {
+                ctx.fillStyle = particle.type === "reducing" ? "#f97316" : "#60a5fa";
+                ctx.font = "14px Arial";
+                ctx.fillText(
+                    particle.type === "reducing" ? 
+                    `化合价: ${particle.oxidationState} → ${particle.finalOxidationState}` : 
+                    `化合价: ${particle.oxidationState} → ${particle.finalOxidationState}`, 
+                    particle.x, 
+                    particle.y + particle.radius + 20
+                );
+            }
+        }
+
+        // 绘制电子转移箭头
+        function drawElectronTransfer(path, progress) {
+            const arrowProgress = Math.min(progress * 1.5, 1); // 箭头比粒子变化稍快
+            
+            // 计算箭头当前位置
+            const currentX = path.startX + (path.endX - path.startX) * arrowProgress;
+            const currentY = path.startY + (path.endY - path.startY) * arrowProgress;
+            
+            // 绘制箭头线
+            ctx.beginPath();
+            ctx.moveTo(path.startX, path.startY);
+            ctx.lineTo(currentX, currentY);
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = "#fbbf24";
+            ctx.setLineDash([5, 5]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // 绘制箭头头部
+            if (arrowProgress > 0.1) {
+                const angle = Math.atan2(currentY - path.startY, currentX - path.startX);
+                
+                ctx.save();
+                ctx.translate(currentX, currentY);
+                ctx.rotate(angle);
+                
+                // 箭头头部
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.lineTo(-15, -8);
+                ctx.lineTo(-15, 8);
+                ctx.closePath();
+                ctx.fillStyle = "#fbbf24";
+                ctx.fill();
+                
+                ctx.restore();
+            }
+            
+            // 绘制电子（沿着箭头移动的小球）
+            if (arrowProgress > 0 && arrowProgress < 1) {
+                const electronX = path.startX + (path.endX - path.startX) * arrowProgress;
+                const electronY = path.startY + (path.endY - path.startY) * arrowProgress;
+                
+                // 电子小球
+                ctx.beginPath();
+                ctx.arc(electronX, electronY, 8, 0, Math.PI * 2);
+                ctx.fillStyle = "#fbbf24";
+                ctx.fill();
+                
+                // 电子光晕效果
+                ctx.beginPath();
+                ctx.arc(electronX, electronY, 12, 0, Math.PI * 2);
+                const gradient = ctx.createRadialGradient(
+                    electronX, electronY, 8,
+                    electronX, electronY, 12
+                );
+                gradient.addColorStop(0, "rgba(251, 191, 36, 0.8)");
+                gradient.addColorStop(1, "rgba(251, 191, 36, 0)");
+                ctx.fillStyle = gradient;
+                ctx.fill();
+                
+                // 电子标签
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "bold 12px Arial";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText("e⁻", electronX, electronY);
+            }
+            
+            // 在箭头中间显示电子数量
+            const midX = (path.startX + path.endX) / 2;
+            const midY = (path.startY + path.endY) / 2;
+            
+            ctx.fillStyle = "#fbbf24";
+            ctx.font = "bold 14px Arial";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(`${path.count}e⁻`, midX, midY - 20);
+        }
+
+        // 绘制悬停效果
+        function drawHoverEffect(particle) {
+            // 绘制发光效果
+            ctx.beginPath();
+            ctx.arc(particle.x, particle.y, particle.radius + 10, 0, Math.PI * 2);
+            const gradient = ctx.createRadialGradient(
+                particle.x, particle.y, particle.radius,
+                particle.x, particle.y, particle.radius + 10
+            );
+            
+            if (particle.type === "reducing") {
+                gradient.addColorStop(0, "rgba(249, 115, 22, 0.8)");
+                gradient.addColorStop(1, "rgba(249, 115, 22, 0)");
+            } else if (particle.type === "oxidizing") {
+                gradient.addColorStop(0, "rgba(96, 165, 250, 0.8)");
+                gradient.addColorStop(1, "rgba(96, 165, 250, 0)");
+            } else {
+                gradient.addColorStop(0, "rgba(16, 185, 129, 0.8)");
+                gradient.addColorStop(1, "rgba(16, 185, 129, 0)");
+            }
+            
+            ctx.fillStyle = gradient;
+            ctx.fill();
+            
+            // 绘制高亮边框
+            ctx.beginPath();
+            ctx.arc(particle.x, particle.y, particle.radius + 5, 0, Math.PI * 2);
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = "#ffffff";
+            ctx.stroke();
+        }
+
+        // 颜色插值函数
+        function interpolateColor(color1, color2, factor) {
+            const hex = color => {
+                const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(color);
+                return result ? {
+                    r: parseInt(result[1], 16),
+                    g: parseInt(result[2], 16),
+                    b: parseInt(result[3], 16)
+                } : null;
+            };
+            
+            const rgb1 = hex(color1);
+            const rgb2 = hex(color2);
+            
+            if (!rgb1 || !rgb2) return color1;
+            
+            const r = Math.round(rgb1.r + (rgb2.r - rgb1.r) * factor);
+            const g = Math.round(rgb1.g + (rgb2.g - rgb1.g) * factor);
+            const b = Math.round(rgb1.b + (rgb2.b - rgb1.b) * factor);
+            
+            return `rgb(${r}, ${g}, ${b})`;
+        }
+
+        // 动画循环
+        function animate() {
+            if (isPlaying) {
+                animationTime += 2 * animationSpeed;
+                
+                // 如果动画完成，暂停
+                if (animationTime >= 200) {
+                    animationTime = 200;
+                    pauseAnimation();
+                }
+                
+                draw();
+                animationId = requestAnimationFrame(animate);
+            }
+        }
+
+        // 初始绘制
+        draw();
+    </script>
+</body>
+</html>

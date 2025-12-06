@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>浓硫酸稀释安全实验 - 微观与宏观演示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ed 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            width: 100%;
+            max-width: 900px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 900px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        .mode-selector {
+            display: flex;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        .mode-btn {
+            flex: 1;
+            padding: 12px;
+            margin: 0 5px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .mode-btn.active {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .tutorial-btn {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .interactive-btn {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .animation-area {
+            position: relative;
+            height: 450px;
+            background-color: #f0f2f5;
+            overflow: hidden;
+        }
+        
+        #animationCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .controls {
+            display: flex;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-top: 1px solid #eaeaea;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .operation-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .control-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .correct-btn {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .danger-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .neutral-btn {
+            background-color: #95a5a6;
+            color: white;
+        }
+        
+        .view-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .view-btn {
+            padding: 8px 15px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .info-panel {
+            padding: 20px;
+            background-color: white;
+            border-top: 1px solid #eaeaea;
+        }
+        
+        .step-indicator {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .explanation {
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #555;
+        }
+        
+        .warning {
+            background-color: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 12px;
+            margin-top: 15px;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .warning strong {
+            color: #e74c3c;
+        }
+        
+        .conclusion {
+            background-color: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 0 4px 4px 0;
+            display: none;
+        }
+        
+        .conclusion.show {
+            display: block;
+        }
+        
+        .conclusion h3 {
+            color: #2e7d32;
+            margin-bottom: 8px;
+        }
+        
+        .conclusion p {
+            color: #388e3c;
+        }
+        
+        .footer {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            max-width: 900px;
+        }
+        
+        .highlight {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        .safe-highlight {
+            color: #2ecc71;
+            font-weight: bold;
+        }
+        
+        .microscopic-hint {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(52, 152, 219, 0.9);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: none;
+            z-index: 10;
+        }
+        
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .operation-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .animation-area {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>浓硫酸稀释安全实验</h1>
+        <p class="subtitle">微观与宏观视角演示 - 理解"酸入水"原理与"水入酸"危险</p>
+    </div>
+    
+    <div class="container">
+        <div class="mode-selector">
+            <button id="tutorialMode" class="mode-btn tutorial-btn active">观看教程模式</button>
+            <button id="interactiveMode" class="mode-btn interactive-btn">自主操作模式</button>
+        </div>
+        
+        <div class="animation-area">
+            <canvas id="animationCanvas"></canvas>
+            <div id="microscopicHint" class="microscopic-hint">
+                微观视角已激活！悬停分子查看详情
+            </div>
+        </div>
+        
+        <div class="controls">
+            <div class="operation-buttons">
+                <button id="correctOperation" class="control-btn correct-btn">正确操作：酸入水</button>
+                <button id="dangerOperation" class="control-btn danger-btn">危险操作：水入酸</button>
+                <button id="resetBtn" class="control-btn neutral-btn">重置实验</button>
+            </div>
+            
+            <div class="view-toggle">
+                <span>视角:</span>
+                <button id="macroView" class="view-btn active">宏观视角</button>
+                <button id="microView" class="view-btn">微观视角</button>
+            </div>
+        </div>
+        
+        <div class="info-panel">
+            <div class="step-indicator" id="stepIndicator">步骤 1/5: 准备实验器材</div>
+            <div class="explanation" id="explanation">
+                本实验将演示浓硫酸稀释的正确与错误操作方法。浓硫酸密度约为1.84 g/cm³，远大于水，且稀释过程会释放大量热量。
+            </div>
+            <div class="warning" id="warning" style="display: none;">
+                <strong>危险警告：</strong>浓硫酸具有强腐蚀性，实际实验必须在教师指导下进行，严格遵守"酸入水，沿器壁，慢慢倒，不断搅"的原则！
+            </div>
+            <div class="conclusion" id="conclusion">
+                <h3>实验结论</h3>
+                <p>浓硫酸稀释必须遵循"<span class="safe-highlight">酸入水</span>"原则：将浓硫酸沿容器壁缓慢倒入水中，并不断搅拌散热。</p>
+                <p>绝对禁止"<span class="highlight">水入酸</span>"：水密度小浮于浓硫酸表面，局部剧烈放热使水瞬间沸腾，导致酸液喷溅，造成严重危险！</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>化学安全实验模拟 | 教育技术演示 | 注意：此为模拟动画，实际实验需严格遵守安全规程</p>
+    </div>
+
+    <script>
+        // 获取DOM元素
+        const canvas = document.getElementById('animationCanvas');
+        const ctx = canvas.getContext('2d');
+        const tutorialModeBtn = document.getElementById('tutorialMode');
+        const interactiveModeBtn = document.getElementById('interactiveMode');
+        const correctOperationBtn = document.getElementById('correctOperation');
+        const dangerOperationBtn = document.getElementById('dangerOperation');
+        const resetBtn = document.getElementById('resetBtn');
+        const macroViewBtn = document.getElementById('macroView');
+        const microViewBtn = document.getElementById('microView');
+        const stepIndicator = document.getElementById('stepIndicator');
+        const explanation = document.getElementById('explanation');
+        const warning = document.getElementById('warning');
+        const conclusion = document.getElementById('conclusion');
+        const microscopicHint = document.getElementById('microscopicHint');
+        
+        // 设置Canvas尺寸
+        function resizeCanvas() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        }
+        
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        
+        // 实验状态变量
+        let currentMode = 'tutorial'; // 'tutorial' 或 'interactive'
+        let currentView = 'macro'; // 'macro' 或 'micro'
+        let experimentState = 'idle'; // 'idle', 'correct', 'danger', 'showingMicro'
+        let tutorialStep = 0;
+        let tutorialSteps = 5;
+        let animationFrameId = null;
+        let isPaused = false;
+        
+        // 颜色定义
+        const colors = {
+            labTable: '#a1887f',
+            beaker: 'rgba(255, 255, 255, 0.8)',
+            water: 'rgba(173, 216, 230, 0.7)',
+            concentratedAcid: 'rgba(46, 125, 50, 0.9)',
+            dilutedAcid: 'rgba(102, 187, 106, 0.7)',
+            heat: 'rgba(255, 87, 34, 0.8)',
+            danger: '#e74c3c',
+            safe: '#2ecc71',
+            text: '#2c3e50',
+            moleculeO: '#3498db', // 氧原子 - 蓝色
+            moleculeH: '#ecf0f1', // 氢原子 - 白色
+            moleculeSO4: '#f1c40f', // 硫酸根 - 黄色
+            moleculeHplus: '#bdc3c7' // 氢离子 - 灰色
+        };
+        
+        // 实验对象
+        const lab = {
+            tableHeight: canvas.height * 0.7,
+            beaker: {
+                x: canvas.width / 2,
+                y: canvas.height * 0.6,
+                width: 180,
+                height: 220,
+                neckWidth: 120,
+                neckHeight: 40
+            },
+            water: {
+                level: 0.6, // 初始水位比例
+                color: colors.water
+            },
+            acid: {
+                level: 0, // 初始酸位比例
+                color: colors.concentratedAcid,
+                droplets: [],
+                temperature: 20 // 摄氏度
+            },
+            heatWaves: [],
+            splashParticles: [],
+            molecules: []
+        };
+        
+        // 初始化分子
+        function initMolecules() {
+            lab.molecules = [];
+            const moleculeCount = 40;
+            const beaker = lab.beaker;
+            
+            // 水分子
+            for (let i = 0; i < moleculeCount * 0.7; i++) {
+                lab.molecules.push({
+                    type: 'H2O',
+                    x: beaker.x - beaker.width/2 + 20 + Math.random() * (beaker.width - 40),
+                    y: beaker.y - beaker.height/2 + 20 + Math.random() * (beaker.height * lab.water.level - 40),
+                    vx: (Math.random() - 0.5) * 0.5,
+                    vy: (Math.random() - 0.5) * 0.5,
+                    size: 8,
+                    atoms: [
+                        {type: 'O', x: 0, y: 0, color: colors.moleculeO},
+                        {type: 'H', x: -6, y: -6, color: colors.moleculeH},
+                        {type: 'H', x: 6, y: -6, color: colors.moleculeH}
+                    ],
+                    hover: false
+                });
+            }
+            
+            // 硫酸分子 (在正确操作时从顶部加入)
+            for (let i = 0; i < moleculeCount * 0.3; i++) {
+                lab.molecules.push({
+                    type: 'H2SO4',
+                    x: beaker.x - beaker.width/2 + 20 + Math.random() * (beaker.width - 40),
+                    y: beaker.y - beaker.height/2 - 30, // 起始在烧杯上方
+                    vx: 0,
+                    vy: 0,
+                    size: 12,
+                    atoms: [
+                        {type: 'S', x: 0, y: 0, color: colors.moleculeSO4},
+                        {type: 'O', x: -10, y: -5, color: colors.moleculeO},
+                        {type: 'O', x: 10, y: -5, color: colors.moleculeO},
+                        {type: 'O', x: -5, y: 10, color: colors.moleculeO},
+                        {type: 'O', x: 5, y: 10, color: colors.moleculeO},
+                        {type: 'H', x: -12, y: 8, color: colors.moleculeHplus},
+                        {type: 'H', x: 12, y: 8, color: colors.moleculeHplus}
+                    ],
+                    hover: false,
+                    dissolving: false,
+                    dissolveProgress: 0
+                });
+            }
+        }
+        
+        // 绘制实验室场景
+        function drawLab() {
+            // 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制实验台
+            ctx.fillStyle = colors.labTable;
+            ctx.fillRect(0, lab.tableHeight, canvas.width, canvas.height - lab.tableHeight);
+            
+            // 绘制烧杯
+            const beaker = lab.beaker;
+            ctx.fillStyle = colors.beaker;
+            ctx.strokeStyle = '#ccc';
+            ctx.lineWidth = 2;
+            
+            // 烧杯底部
+            ctx.beginPath();
+            ctx.ellipse(beaker.x, beaker.y + beaker.height/2 - beaker.neckHeight/2, 
+                       beaker.width/2, beaker.height/20, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            
+            // 烧杯主体
+            ctx.beginPath();
+            ctx.moveTo(beaker.x - beaker.width/2, beaker.y - beaker.height/2 + beaker.neckHeight);
+            ctx.lineTo(beaker.x - beaker.neckWidth/2, beaker.y - beaker.height/2);
+            ctx.lineTo(beaker.x + beaker.neckWidth/2, beaker.y - beaker.height/2);
+            ctx.lineTo(beaker.x + beaker.width/2, beaker.y - beaker.height/2 + beaker.neckHeight);
+            ctx.lineTo(beaker.x + beaker.width/2, beaker.y + beaker.height/2 - beaker.neckHeight/2);
+            ctx.lineTo(beaker.x - beaker.width/2, beaker.y + beaker.height/2 - beaker.neckHeight/2);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            
+            // 绘制液体
+            const liquidTop = beaker.y + beaker.height/2 - beaker.neckHeight/2 - (lab.water.level + lab.acid.level) * (beaker.height - beaker.neckHeight);
+            
+            // 绘制水
+            if (lab.water.level > 0) {
+                ctx.fillStyle = lab.water.color;
+                ctx.beginPath();
+                ctx.moveTo(beaker.x - beaker.width/2, beaker.y + beaker.height/2 - beaker.neckHeight/2);
+                ctx.lineTo(beaker.x - beaker.width/2, liquidTop + lab.acid.level * (beaker.height - beaker.neckHeight));
+                
+                // 计算侧边位置
+                const leftX = beaker.x - beaker.width/2 + (beaker.width - beaker.neckWidth) * 
+                             (1 - (liquidTop + lab.acid.level * (beaker.height - beaker.neckHeight) - (beaker.y - beaker.height/2)) / (beaker.height - beaker.neckHeight)) / 2;
+                const rightX = beaker.x + beaker.width/2 - (beaker.width - beaker.neckWidth) * 
+                              (1 - (liquidTop + lab.acid.level * (beaker.height - beaker.neckHeight) - (beaker.y - beaker.height/2)) / (beaker.height - beaker.neckHeight)) / 2;
+                
+                ctx.lineTo(leftX, liquidTop + lab.acid.level * (beaker.height - beaker.neckHeight));
+                ctx.lineTo(beaker.x, liquidTop + lab.acid.level * (beaker.height - beaker.neckHeight) - 5);
+                ctx.lineTo(rightX, liquidTop + lab.acid.level * (beaker.height - beaker.neckHeight));
+                ctx.lineTo(beaker.x + beaker.width/2, liquidTop + lab.acid.level * (beaker.height - beaker.neckHeight));
+                ctx.lineTo(beaker.x + beaker.width/2, beaker.y + beaker.height/2 - beaker.neckHeight/2);
+                ctx.closePath();
+                ctx.fill();
+            }
+            
+            // 绘制浓硫酸 (在水的下层)
+            if (lab.acid.level > 0) {
+                const acidTop = liquidTop + lab.acid.level * (beaker.height - beaker.neckHeight);
+                ctx.fillStyle = lab.acid.color;
+                ctx.beginPath();
+                ctx.moveTo(beaker.x - beaker.width/2, beaker.y + beaker.height/2 - beaker.neckHeight/2);
+                ctx.lineTo(beaker.x - beaker.width/2, acidTop);
+                
+                // 计算侧边位置
+                const leftX = beaker.x - beaker.width/2 + (beaker.width - beaker.neckWidth) * 
+                             (1 - (acidTop - (beaker.y - beaker.height/2)) / (beaker.height - beaker.neckHeight)) / 2;
+                const rightX = beaker.x + beaker.width/2 - (beaker.width - beaker.neckWidth) * 
+                              (1 - (acidTop - (beaker.y - beaker.height/2)) / (beaker.height - beaker.neckHeight)) / 2;
+                
+                ctx.lineTo(leftX, acidTop);
+                ctx.lineTo(beaker.x, acidTop - 5);
+                ctx.lineTo(rightX, acidTop);
+                ctx.lineTo(beaker.x + beaker.width/2, acidTop);
+                ctx.lineTo(beaker.x + beaker.width/2, beaker.y + beaker.height/2 - beaker.neckHeight/2);
+                ctx.closePath();
+                ctx.fill();
+            }
+            
+            // 绘制热浪效果
+            if (lab.heatWaves.length > 0) {
+                lab.heatWaves.forEach((wave, index) => {
+                    ctx.beginPath();
+                    ctx.arc(beaker.x, beaker.y + beaker.height/2 - beaker.neckHeight/2 - 50, 
+                           wave.radius, 0, Math.PI * 2);
+                    ctx.strokeStyle = `rgba(255, ${87 + wave.age * 5}, ${34 + wave.age * 10}, ${0.8 - wave.age * 0.1})`;
+                    ctx.lineWidth = 3;
+                    ctx.stroke();
+                    
+                    // 更新热浪
+                    wave.radius += 2;
+                    wave.age += 0.05;
+                    
+                    // 移除旧的热浪
+                    if (wave.age > 8) {
+                        lab.heatWaves.splice(index, 1);
+                    }
+                });
+            }
+            
+            // 绘制喷溅粒子
+            if (lab.splashParticles.length > 0) {
+                lab.splashParticles.forEach((particle, index) => {
+                    ctx.fillStyle = particle.color;
+                    ctx.beginPath();
+                    ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // 更新粒子
+                    particle.x += particle.vx;
+                    particle.y += particle.vy;
+                    particle.vy += 0.1; // 重力
+                    particle.size *= 0.98; // 逐渐缩小
+                    
+                    // 移除太小的粒子
+                    if (particle.size < 0.5 || particle.y > canvas.height + 10) {
+                        lab.splashParticles.splice(index, 1);
+                    }
+                });
+            }
+            
+            // 绘制酸滴 (在错误操作时)
+            if (lab.acid.droplets.length > 0) {
+                lab.acid.droplets.forEach((droplet, index) => {
+                    ctx.fillStyle = lab.acid.color;
+                    ctx.beginPath();
+                    ctx.arc(droplet.x, droplet.y, droplet.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // 更新酸滴
+                    droplet.y += droplet.vy;
+                    
+                    // 如果酸滴到达水面
+                    if (droplet.y >= liquidTop + lab.acid.level * (beaker.height - beaker.neckHeight)) {
+                        // 创建热浪
+                        lab.heatWaves.push({
+                            x: droplet.x,
+                            y: droplet.y,
+                            radius: 5,
+                            age: 0
+                        });
+                        
+                        // 创建喷溅粒子
+                        if (experimentState === 'danger') {
+                            for (let i = 0; i < 15; i++) {
+                                lab.splashParticles.push({
+                                    x: droplet.x,
+                                    y: droplet.y,
+                                    vx: (Math.random() - 0.5) * 8,
+                                    vy: -Math.random() * 10 - 5,
+                                    size: Math.random() * 5 + 2,
+                                    color: i < 5 ? lab.acid.color : lab.water.color
+                                });
+                            }
+                        }
+                        
+                        // 移除酸滴
+                        lab.acid.droplets.splice(index, 1);
+                        
+                        // 增加酸液位
+                        lab.acid.level += 0.005;
+                    }
+                });
+            }
+            
+            // 绘制分子 (微观视角)
+            if (currentView === 'micro' && lab.molecules.length > 0) {
+                drawMolecules();
+            }
+            
+            // 绘制温度指示
+            if (lab.acid.temperature > 30) {
+                ctx.fillStyle = colors.heat;
+                ctx.font = 'bold 16px Arial';
+                ctx.fillText(`温度: ${Math.min(150, Math.round(lab.acid.temperature))}°C`, beaker.x - 40, beaker.y - beaker.height/2 - 20);
+                
+                // 绘制温度计
+                ctx.fillStyle = '#e74c3c';
+                ctx.fillRect(beaker.x + beaker.width/2 + 10, beaker.y - beaker.height/2, 10, beaker.height);
+                ctx.fillStyle = colors.heat;
+                const tempHeight = Math.min(beaker.height, (lab.acid.temperature - 20) / 130 * beaker.height);
+                ctx.fillRect(beaker.x + beaker.width/2 + 10, beaker.y - beaker.height/2 + beaker.height - tempHeight, 10, tempHeight);
+            }
+            
+            // 绘制操作提示
+            if (experimentState === 'idle') {
+                ctx.fillStyle = colors.text;
+                ctx.font = '18px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('选择一种操作模式开始实验', canvas.width/2, 50);
+            }
+        }
+        
+        // 绘制分子
+        function drawMolecules() {
+            lab.molecules.forEach(molecule => {
+                // 绘制分子中的原子
+                molecule.atoms.forEach(atom => {
+                    ctx.fillStyle = atom.color;
+                    ctx.beginPath();
+                    ctx.arc(molecule.x + atom.x, molecule.y + atom.y, molecule.type === 'H2SO4' ? 4 : 3, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // 绘制原子标签 (悬停时)
+                    if (molecule.hover) {
+                        ctx.fillStyle = '#2c3e50';
+                        ctx.font = '10px Arial';
+                        ctx.fillText(atom.type, molecule.x + atom.x - 5, molecule.y + atom.y - 8);
+                    }
+                });
+                
+                // 绘制分子键
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+                ctx.lineWidth = 1;
+                
+                if (molecule.type === 'H2O') {
+                    // H-O-H 键
+                    ctx.beginPath();
+                    ctx.moveTo(molecule.x + molecule.atoms[1].x, molecule.y + molecule.atoms[1].y);
+                    ctx.lineTo(molecule.x, molecule.y);
+                    ctx.lineTo(molecule.x + molecule.atoms[2].x, molecule.y + molecule.atoms[2].y);
+                    ctx.stroke();
+                } else if (molecule.type === 'H2SO4') {
+                    // S-O 键
+                    for (let i = 1; i <= 4; i++) {
+                        ctx.beginPath();
+                        ctx.moveTo(molecule.x, molecule.y);
+                        ctx.lineTo(molecule.x + molecule.atoms[i].x, molecule.y + molecule.atoms[i].y);
+                        ctx.stroke();
+                    }
+                    
+                    // O-H 键 (如果正在溶解)
+                    if (molecule.dissolving) {
+                        ctx.beginPath();
+                        ctx.moveTo(molecule.x + molecule.atoms[1].x, molecule.y + molecule.atoms[1].y);
+                        ctx.lineTo(molecule.x + molecule.atoms[5].x, molecule.y + molecule.atoms[5].y);
+                        ctx.stroke();
+                        
+                        ctx.beginPath();
+                        ctx.moveTo(molecule.x + molecule.atoms[2].x, molecule.y + molecule.atoms[2].y);
+                        ctx.lineTo(molecule.x + molecule.atoms[6].x, molecule.y + molecule.atoms[6].y);
+                        ctx.stroke();
+                        
+                        // 绘制溶解效果
+                        if (molecule.dissolveProgress > 0) {
+                            // 绘制分离的H+离子
+                            ctx.fillStyle = colors.moleculeHplus;
+                            ctx.beginPath();
+                            ctx.arc(
+                                molecule.x + molecule.atoms[5].x + molecule.dissolveProgress * 20, 
+                                molecule.y + molecule.atoms[5].y - molecule.dissolveProgress * 10, 
+                                3, 0, Math.PI * 2
+                            );
+                            ctx.fill();
+                            
+                            ctx.beginPath();
+                            ctx.arc(
+                                molecule.x + molecule.atoms[6].x - molecule.dissolveProgress * 20, 
+                                molecule.y + molecule.atoms[6].y - molecule.dissolveProgress * 10, 
+                                3, 0, Math.PI * 2
+                            );
+                            ctx.fill();
+                            
+                            // 绘制热量释放效果
+                            ctx.fillStyle = `rgba(255, 87, 34, ${0.7 * molecule.dissolveProgress})`;
+                            ctx.beginPath();
+                            ctx.arc(molecule.x, molecule.y, 5 + molecule.dissolveProgress * 10, 0, Math.PI * 2);
+                            ctx.fill();
+                        }
+                    }
+                }
+                
+                // 绘制分子标签 (悬停时)
+                if (molecule.hover) {
+                    ctx.fillStyle = '#2c3e50';
+                    ctx.font = 'bold 12px Arial';
+                    ctx.fillText(molecule.type, molecule.x - 15, molecule.y - 15);
+                    
+                    // 显示分子描述
+                    let description = '';
+                    if (molecule.type === 'H2O') {
+                        description = '水分子';
+                    } else if (molecule.type === 'H2SO4') {
+                        description = '硫酸分子，溶解时电离出H⁺和SO₄²⁻，释放大量热';
+                    }
+                    
+                    ctx.font = '10px Arial';
+                    ctx.fillText(description, molecule.x - 40, molecule.y - 25);
+                }
+            });
+        }
+        
+        // 更新分子运动
+        function updateMolecules() {
+            const beaker = lab.beaker;
+            const liquidTop = beaker.y + beaker.height/2 - beaker.neckHeight/2 - (lab.water.level + lab.acid.level) * (beaker.height - beaker.neckHeight);
+            
+            lab.molecules.forEach(molecule => {
+                // 更新位置
+                molecule.x += molecule.vx;
+                molecule.y += molecule.vy;
+                
+                // 限制分子在烧杯内
+                const leftBound = beaker.x - beaker.width/2 + 15;
+                const rightBound = beaker.x + beaker.width/2 - 15;
+                const topBound = liquidTop + 10;
+                const bottomBound = beaker.y + beaker.height/2 - beaker.neckHeight/2 - 10;
+                
+                if (molecule.x < leftBound || molecule.x > rightBound) {
+                    molecule.vx *= -0.8;
+                    molecule.x = Math.max(leftBound, Math.min(rightBound, molecule.x));
+                }
+                
+                if (molecule.y < topBound || molecule.y > bottomBound) {
+                    molecule.vy *= -0.8;
+                    molecule.y = Math.max(topBound, Math.min(bottomBound, molecule.y));
+                }
+                
+                // 硫酸分子溶解过程
+                if (molecule.type === 'H2SO4' && molecule.dissolving) {
+                    molecule.dissolveProgress += 0.02;
+                    
+                    // 溶解完成后转化为离子
+                    if (molecule.dissolveProgress > 1) {
+                        molecule.type = 'ions';
+                        // 增加温度
+                        lab.acid.temperature += 2;
+                        
+                        // 创建热浪
+                        if (Math.random() < 0.3) {
+                            lab.heatWaves.push({
+                                x: molecule.x,
+                                y: molecule.y,
+                                radius: 5,
+                                age: 0
+                            });
+                        }
+                    }
+                }
+                
+                // 随机运动
+                molecule.vx += (Math.random() - 0.5) * 0.1;
+                molecule.vy += (Math.random() - 0.5) * 0.1;
+                
+                // 限制速度
+                const maxSpeed = molecule.type === 'H2SO4' ? 0.8 : 1.2;
+                const speed = Math.sqrt(molecule.vx * molecule.vx + molecule.vy * molecule.vy);
+                if (speed > maxSpeed) {
+                    molecule.vx = (molecule.vx / speed) * maxSpeed;
+                    molecule.vy = (molecule.vy / speed) * maxSpeed;
+                }
+                
+                // 温度影响运动速度
+                if (lab.acid.temperature > 50) {
+                    molecule.vx *= 1.05;
+                    molecule.vy *= 1.05;
+                }
+            });
+        }
+        
+        // 检查分子悬停
+        function checkMoleculeHover(mouseX, mouseY) {
+            let hovered = false;
+            
+            lab.molecules.forEach(molecule => {
+                const distance = Math.sqrt(
+                    Math.pow(mouseX - molecule.x, 2) + 
+                    Math.pow(mouseY - molecule.y, 2)
+                );
+                
+                molecule.hover = distance < (molecule.type === 'H2SO4' ? 20 : 15);
+                if (molecule.hover) hovered = true;
+            });
+            
+            // 显示微观视角提示
+            if (currentView === 'micro' && hovered) {
+                microscopicHint.style.display = 'block';
+            } else {
+                microscopicHint.style.display = 'none';
+            }
+        }
+        
+        // 正确操作：酸入水
+        function performCorrectOperation() {
+            if (experimentState !== 'idle' && currentMode === 'interactive') return;
+            
+            experimentState = 'correct';
+            tutorialStep = 1;
+            updateStepIndicator();
+            
+            // 重置状态
+            lab.water.level = 0.6;
+            lab.acid.level = 0;
+            lab.acid.temperature = 20;
+            lab.acid.droplets = [];
+            lab.heatWaves = [];
+            lab.splashParticles = [];
+            initMolecules();
+            
+            // 开始添加酸滴
+            const beaker = lab.beaker;
+            const addAcidDroplet = () => {
+                if (lab.acid.level < 0.2 && experimentState === 'correct') {
+                    lab.acid.droplets.push({
+                        x: beaker.x + (Math.random() - 0.5) * 30,
+                        y: beaker.y - beaker.height/2 - 20,
+                        size: 8,
+                        vy: 2
+                    });
+                    
+                    // 继续添加酸滴，直到达到一定量
+                    setTimeout(addAcidDroplet, 300);
+                } else if (lab.acid.level >= 0.2) {
+                    // 完成正确操作
+                    setTimeout(() => {
+                        explanation.innerHTML = `
+                            <span class="safe-highlight">正确操作完成！</span> 浓硫酸沿烧杯壁缓慢流入水中，
+                            由于浓硫酸密度大，沉入水底，热量随着搅拌和扩散被水吸收，温度缓慢上升，安全完成稀释。
+                        `;
+                        conclusion.classList.add('show');
+                    }, 1000);
+                }
+            };
+            
+            explanation.innerHTML = `
+                正在执行<span class="safe-highlight">正确操作：酸入水</span>...
+                浓硫酸密度(1.84 g/cm³)大于水，滴入后会沉入底部，热量逐渐释放并被大量水吸收。
+            `;
+            warning.style.display = 'none';
+            conclusion.classList.remove('show');
+            
+            // 开始添加酸滴
+            setTimeout(addAcidDroplet, 500);
+        }
+        
+        // 危险操作：水入酸
+        function performDangerOperation() {
+            if (experimentState !== 'idle
+<!--检测到代码截断，自动续写中...-->
+&& currentMode === 'interactive') return;
+            
+            experimentState = 'danger';
+            tutorialStep = 1;
+            updateStepIndicator();
+            
+            // 重置状态
+            lab.water.level = 0;
+            lab.acid.level = 0.6;
+            lab.acid.temperature = 20;
+            lab.acid.droplets = [];
+            lab.heatWaves = [];
+            lab.splashParticles = [];
+            initMolecules();
+            
+            // 设置硫酸分子在烧杯底部
+            lab.molecules.forEach(molecule => {
+                if (molecule.type === 'H2SO4') {
+                    molecule.y = lab.beaker.y + lab.beaker.height/2 - lab.beaker.neckHeight/2 - 30;
+                    molecule.dissolving = false;
+                    molecule.dissolveProgress = 0;
+                }
+            });
+            
+            explanation.innerHTML = `
+                正在执行<span class="highlight">危险操作：水入酸</span>...
+                水密度小于浓硫酸，将浮在浓硫酸表面，导致局部剧烈放热。
+            `;
+            warning.style.display = 'block';
+            conclusion.classList.remove('show');
+            
+            // 开始添加水滴
+            const beaker = lab.beaker;
+            let waterDropletsAdded = 0;
+            const maxDroplets = 15;
+            
+            const addWaterDroplet = () => {
+                if (waterDropletsAdded < maxDroplets && experimentState === 'danger') {
+                    // 创建水滴
+                    lab.acid.droplets.push({
+                        x: beaker.x + (Math.random() - 0.5) * 30,
+                        y: beaker.y - beaker.height/2 - 20,
+                        size: 6,
+                        vy: 2,
+                        isWater: true
+                    });
+                    
+                    waterDropletsAdded++;
+                    
+                    // 继续添加水滴
+                    setTimeout(addWaterDroplet, 200);
+                } else if (waterDropletsAdded >= maxDroplets) {
+                    // 触发剧烈反应
+                    setTimeout(triggerViolentReaction, 500);
+                }
+            };
+            
+            // 触发剧烈反应
+            const triggerViolentReaction = () => {
+                explanation.innerHTML = `
+                    <span class="highlight">危险！</span> 水浮在浓硫酸表面，局部剧烈放热使水瞬间沸腾汽化，
+                    产生大量水蒸气，体积急剧膨胀，导致酸液喷溅！
+                `;
+                
+                // 大幅增加温度
+                lab.acid.temperature = 120;
+                
+                // 创建大量热浪
+                for (let i = 0; i < 10; i++) {
+                    setTimeout(() => {
+                        lab.heatWaves.push({
+                            x: beaker.x + (Math.random() - 0.5) * 50,
+                            y: beaker.y - beaker.height/4,
+                            radius: 5,
+                            age: 0
+                        });
+                    }, i * 100);
+                }
+                
+                // 创建喷溅效果
+                setTimeout(() => {
+                    for (let i = 0; i < 80; i++) {
+                        lab.splashParticles.push({
+                            x: beaker.x + (Math.random() - 0.5) * beaker.width/2,
+                            y: beaker.y - beaker.height/4,
+                            vx: (Math.random() - 0.5) * 15,
+                            vy: -Math.random() * 20 - 10,
+                            size: Math.random() * 8 + 3,
+                            color: i < 30 ? lab.acid.color : lab.water.color
+                        });
+                    }
+                    
+                    // 触发分子剧烈运动
+                    lab.molecules.forEach(molecule => {
+                        molecule.vx = (Math.random() - 0.5) * 8;
+                        molecule.vy = -Math.random() * 6 - 2;
+                        
+                        // 硫酸分子开始溶解
+                        if (molecule.type === 'H2SO4') {
+                            molecule.dissolving = true;
+                        }
+                    });
+                    
+                    // 显示结论
+                    setTimeout(() => {
+                        conclusion.classList.add('show');
+                    }, 2000);
+                }, 500);
+            };
+            
+            // 开始添加水滴
+            setTimeout(addWaterDroplet, 500);
+        }
+        
+        // 重置实验
+        function resetExperiment() {
+            experimentState = 'idle';
+            tutorialStep = 0;
+            
+            // 重置实验室状态
+            lab.water.level = 0.6;
+            lab.acid.level = 0;
+            lab.acid.temperature = 20;
+            lab.acid.droplets = [];
+            lab.heatWaves = [];
+            lab.splashParticles = [];
+            initMolecules();
+            
+            // 更新UI
+            updateStepIndicator();
+            explanation.innerHTML = '实验已重置。请选择一种操作模式开始实验。';
+            warning.style.display = 'none';
+            conclusion.classList.remove('show');
+            microscopicHint.style.display = 'none';
+        }
+        
+        // 更新步骤指示器
+        function updateStepIndicator() {
+            if (currentMode === 'tutorial') {
+                const steps = [
+                    '步骤 1/5: 准备实验器材',
+                    '步骤 2/5: 取用浓硫酸',
+                    '步骤 3/5: 执行操作',
+                    '步骤 4/5: 观察反应现象',
+                    '步骤 5/5: 实验结论'
+                ];
+                stepIndicator.textContent = steps[tutorialStep];
+            } else {
+                stepIndicator.textContent = '自主操作模式';
+            }
+        }
+        
+        // 切换视角
+        function switchView(view) {
+            currentView = view;
+            
+            if (view === 'macro') {
+                macroViewBtn.classList.add('active');
+                microViewBtn.classList.remove('active');
+                microscopicHint.style.display = 'none';
+            } else {
+                macroViewBtn.classList.remove('active');
+                microViewBtn.classList.add('active');
+                
+                // 如果是危险操作状态，显示分子溶解过程
+                if (experimentState === 'danger') {
+                    lab.molecules.forEach(molecule => {
+                        if (molecule.type === 'H2SO4') {
+                            molecule.dissolving = true;
+                        }
+                    });
+                }
+            }
+        }
+        
+        // 教程模式自动演示
+        function runTutorial() {
+            resetExperiment();
+            experimentState = 'tutorial';
+            tutorialStep = 0;
+            
+            const tutorialSequence = [
+                {
+                    delay: 1000,
+                    action: () => {
+                        tutorialStep = 1;
+                        updateStepIndicator();
+                        explanation.innerHTML = '准备烧杯和浓硫酸。注意浓硫酸为粘稠油状液体，具有强腐蚀性。';
+                    }
+                },
+                {
+                    delay: 2000,
+                    action: () => {
+                        tutorialStep = 2;
+                        updateStepIndicator();
+                        explanation.innerHTML = '取用浓硫酸，准备进行稀释操作。';
+                    }
+                },
+                {
+                    delay: 2000,
+                    action: () => {
+                        tutorialStep = 3;
+                        updateStepIndicator();
+                        explanation.innerHTML = '首先演示<span class="highlight">危险操作：水入酸</span>，请观察现象。';
+                        warning.style.display = 'block';
+                    }
+                },
+                {
+                    delay: 1000,
+                    action: () => {
+                        performDangerOperation();
+                    }
+                },
+                {
+                    delay: 6000,
+                    action: () => {
+                        tutorialStep = 4;
+                        updateStepIndicator();
+                        explanation.innerHTML = '现在切换到微观视角，观察硫酸分子溶解过程和水分子被拉开（电离）释放热量的现象。';
+                        switchView('micro');
+                    }
+                },
+                {
+                    delay: 5000,
+                    action: () => {
+                        tutorialStep = 5;
+                        updateStepIndicator();
+                        explanation.innerHTML = '现在演示<span class="safe-highlight">正确操作：酸入水</span>，注意观察安全平稳的混合过程。';
+                        switchView('macro');
+                        resetExperiment();
+                        
+                        // 短暂延迟后执行正确操作
+                        setTimeout(() => {
+                            performCorrectOperation();
+                        }, 1000);
+                    }
+                },
+                {
+                    delay: 7000,
+                    action: () => {
+                        explanation.innerHTML = '实验完成。正确操作下，浓硫酸安全稀释，温度缓慢上升，无喷溅危险。';
+                        conclusion.classList.add('show');
+                    }
+                }
+            ];
+            
+            let totalDelay = 0;
+            tutorialSequence.forEach(step => {
+                totalDelay += step.delay;
+                setTimeout(step.action, totalDelay);
+            });
+        }
+        
+        // 动画循环
+        function animate() {
+            drawLab();
+            
+            // 更新分子运动（微观视角）
+            if (currentView === 'micro') {
+                updateMolecules();
+            }
+            
+            // 更新温度（缓慢下降）
+            if (lab.acid.temperature > 20) {
+                lab.acid.temperature *= 0.995;
+            }
+            
+            // 继续动画循环
+            animationFrameId = requestAnimationFrame(animate);
+        }
+        
+        // 事件监听器
+        tutorialModeBtn.addEventListener('click', () => {
+            currentMode = 'tutorial';
+            tutorialModeBtn.classList.add('active');
+            interactiveModeBtn.classList.remove('active');
+            runTutorial();
+        });
+        
+        interactiveModeBtn.addEventListener('click', () => {
+            currentMode = 'interactive';
+            interactiveModeBtn.classList.add('active');
+            tutorialModeBtn.classList.remove('active');
+            resetExperiment();
+            explanation.innerHTML = '自主操作模式已激活。请选择一种操作方式开始实验。';
+        });
+        
+        correctOperationBtn.addEventListener('click', performCorrectOperation);
+        dangerOperationBtn.addEventListener('click', performDangerOperation);
+        resetBtn.addEventListener('click', resetExperiment);
+        
+        macroViewBtn.addEventListener('click', () => switchView('macro'));
+        microViewBtn.addEventListener('click', () => switchView('micro'));
+        
+        // 鼠标移动事件（用于分子悬停检测）
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            
+            if (currentView === 'micro') {
+                checkMoleculeHover(mouseX, mouseY);
+            }
+        });
+        
+        // 点击事件（用于暂停/继续）
+        canvas.addEventListener('click', () => {
+            if (currentMode === 'tutorial' && experimentState === 'tutorial') {
+                isPaused = !isPaused;
+                if (isPaused) {
+                    cancelAnimationFrame(animationFrameId);
+                    explanation.innerHTML += ' <strong>(动画已暂停，点击继续)</strong>';
+                } else {
+                    animate();
+                }
+            }
+        });
+        
+        // 初始化
+        initMolecules();
+        animate();
+        runTutorial();
+    </script>
+</body>
+</html>

@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BFS层序遍历（水波纹扩散）教学动画</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #212529;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #339af0, #4dabf7);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .graph-section {
+            flex: 3;
+            min-width: 300px;
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .graph-title {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: #339af0;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .graph-container {
+            flex: 1;
+            position: relative;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #f8f9fa;
+        }
+        
+        #graphCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .control-section {
+            flex: 2;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .control-panel {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .panel-title {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: #40c057;
+            font-weight: 600;
+        }
+        
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background-color: #4dabf7;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #339af0;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background-color: #ffa94d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #ff922b;
+            transform: translateY(-2px);
+        }
+        
+        .btn-reset {
+            background-color: #fa5252;
+            color: white;
+        }
+        
+        .btn-reset:hover {
+            background-color: #ff6b6b;
+            transform: translateY(-2px);
+        }
+        
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .speed-control label {
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        #speedSlider {
+            flex: 1;
+            height: 8px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #dee2e6;
+            border-radius: 4px;
+            outline: none;
+        }
+        
+        #speedSlider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4dabf7;
+            cursor: pointer;
+        }
+        
+        .queue-panel {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .queue-title {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: #ff6b6b;
+            font-weight: 600;
+        }
+        
+        .queue-container {
+            min-height: 80px;
+            border: 2px solid #adb5bd;
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            background-color: #f8f9fa;
+            overflow-x: auto;
+        }
+        
+        .queue-item {
+            min-width: 60px;
+            height: 60px;
+            background-color: #4dabf7;
+            color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-right: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .queue-item:last-child {
+            margin-right: 0;
+        }
+        
+        .queue-front {
+            position: relative;
+            border: 3px solid #40c057;
+        }
+        
+        .queue-front::after {
+            content: "队首";
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            color: #40c057;
+            font-weight: bold;
+        }
+        
+        .queue-rear {
+            position: relative;
+            border: 3px solid #ffa94d;
+        }
+        
+        .queue-rear::after {
+            content: "队尾";
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            color: #ffa94d;
+            font-weight: bold;
+        }
+        
+        .info-panel {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .info-title {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: #7950f2;
+            font-weight: 600;
+        }
+        
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .color-box {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            border: 1px solid #adb5bd;
+        }
+        
+        .log-container {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            font-size: 0.95rem;
+        }
+        
+        .log-entry {
+            padding: 8px 0;
+            border-bottom: 1px dashed #dee2e6;
+        }
+        
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+        
+        .log-entry.current {
+            background-color: #e7f5ff;
+            padding: 8px;
+            border-radius: 4px;
+            margin: 0 -8px;
+            font-weight: 600;
+        }
+        
+        .result-section {
+            margin-top: 10px;
+            padding-top: 15px;
+            border-top: 2px solid #dee2e6;
+        }
+        
+        .result-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #495057;
+        }
+        
+        #resultSequence {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #339af0;
+            min-height: 30px;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 15px;
+            color: #868e96;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+        
+        @media (max-width: 1100px) {
+            .main-content {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>队列实现BFS层序遍历</h1>
+            <div class="subtitle">水波纹扩散算法可视化教学动画</div>
+        </header>
+        
+        <div class="main-content">
+            <section class="graph-section">
+                <div class="graph-title">
+                    <span>图结构可视化</span>
+                    <span id="currentStep">就绪</span>
+                </div>
+                <div class="graph-container">
+                    <canvas id="graphCanvas"></canvas>
+                </div>
+            </section>
+            
+            <div class="control-section">
+                <section class="control-panel">
+                    <h2 class="panel-title">动画控制</h2>
+                    <div class="controls">
+                        <button id="playPauseBtn" class="btn btn-primary">
+                            <span id="playIcon">▶</span> <span id="playText">播放</span>
+                        </button>
+                        <button id="nextStepBtn" class="btn btn-primary">下一步</button>
+                        <button id="prevStepBtn" class="btn btn-secondary">上一步</button>
+                        <button id="resetBtn" class="btn btn-reset">重置</button>
+                    </div>
+                    
+                    <div class="speed-control">
+                        <label for="speedSlider">动画速度:</label>
+                        <input type="range" id="speedSlider" min="1" max="10" value="5">
+                        <span id="speedValue">中速</span>
+                    </div>
+                </section>
+                
+                <section class="queue-panel">
+                    <h2 class="queue-title">队列状态</h2>
+                    <div class="queue-container" id="queueContainer">
+                        <!-- 队列元素将通过JS动态添加 -->
+                        <div class="queue-empty">队列为空</div>
+                    </div>
+                </section>
+                
+                <section class="info-panel">
+                    <h2 class="info-title">算法信息</h2>
+                    
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="color-box" style="background-color: #f0f0f0;"></div>
+                            <span>未访问</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-box" style="background-color: #4dabf7;"></div>
+                            <span>已入队</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-box" style="background-color: #40c057;"></div>
+                            <span>正在访问</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-box" style="background-color: #ffa94d;"></div>
+                            <span>已访问完成</span>
+                        </div>
+                    </div>
+                    
+                    <h3>步骤日志</h3>
+                    <div class="log-container" id="logContainer">
+                        <div class="log-entry">点击"播放"或"下一步"开始BFS遍历</div>
+                    </div>
+                    
+                    <div class="result-section">
+                        <div class="result-title">遍历结果序列:</div>
+                        <div id="resultSequence"></div>
+                    </div>
+                </section>
+            </div>
+        </div>
+        
+        <footer class="footer">
+            <p>BFS层序遍历教学动画 | 使用队列实现广度优先搜索 | 水波纹扩散可视化</p>
+        </footer>
+    </div>
+
+    <script>
+        // 图结构定义 - 使用邻接表表示
+        const graph = {
+            'A': ['B', 'C', 'D'],
+            'B': ['A', 'E', 'F'],
+            'C': ['A', 'G'],
+            'D': ['A', 'H'],
+            'E': ['B', 'I'],
+            'F': ['B', 'J', 'K'],
+            'G': ['C', 'L'],
+            'H': ['D', 'M'],
+            'I': ['E'],
+            'J': ['F'],
+            'K': ['F'],
+            'L': ['G'],
+            'M': ['H']
+        };
+        
+        // 节点状态常量
+        const NODE_STATE = {
+            UNVISITED: 0,   // 未访问
+            ENQUEUED: 1,    // 已入队
+            VISITING: 2,    // 正在访问
+            VISITED: 3      // 已访问完成
+        };
+        
+        // 节点颜色映射
+        const NODE_COLORS = {
+            [NODE_STATE.UNVISITED]: '#f0f0f0',
+            [NODE_STATE.ENQUEUED]: '#4dabf7',
+            [NODE_STATE.VISITING]: '#40c057',
+            [NODE_STATE.VISITED]: '#ffa94d'
+        };
+        
+        // 算法状态
+        let algorithmState = {
+            nodes: {},           // 节点状态
+            queue: [],           // 队列
+            visitedOrder: [],    // 访问顺序
+            currentStep: 0,      // 当前步骤索引
+            isPlaying: false,    // 是否正在播放
+            animationSpeed: 5,   // 动画速度 (1-10)
+            stepHistory: [],     // 步骤历史，用于回退
+            currentRipple: null, // 当前水波纹
+            ripples: []          // 所有水波纹
+        };
+        
+        // 节点位置信息（用于绘制）
+        let nodePositions = {};
+        
+        // Canvas相关
+        let canvas, ctx;
+        let canvasWidth, canvasHeight;
+        
+        // DOM元素
+        let playPauseBtn, nextStepBtn, prevStepBtn, resetBtn;
+        let speedSlider, speedValue, queueContainer;
+        let logContainer, resultSequence, currentStepDisplay;
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取DOM元素
+            playPauseBtn = document.getElementById('playPauseBtn');
+            nextStepBtn = document.getElementById('nextStepBtn');
+            prevStepBtn = document.getElementById('prevStepBtn');
+            resetBtn = document.getElementById('resetBtn');
+            speedSlider = document.getElementById('speedSlider');
+            speedValue = document.getElementById('speedValue');
+            queueContainer = document.getElementById('queueContainer');
+            logContainer = document.getElementById('logContainer');
+            resultSequence = document.getElementById('resultSequence');
+            currentStepDisplay = document.getElementById('currentStep');
+            
+            // 初始化Canvas
+            canvas = document.getElementById('graphCanvas');
+            ctx = canvas.getContext('2d');
+            
+            // 设置Canvas尺寸
+            function resizeCanvas() {
+                const container = canvas.parentElement;
+                canvasWidth = canvas.width = container.clientWidth;
+                canvasHeight = canvas.height = container.clientHeight;
+                
+                // 计算节点位置（树状布局）
+                calculateNodePositions();
+                
+                // 绘制初始状态
+                drawGraph();
+            }
+            
+            // 计算节点位置（树状布局）
+            function calculateNodePositions() {
+                // 定义树的层级结构
+                const levels = {
+                    0: ['A'],
+                    1: ['B', 'C', 'D'],
+                    2: ['E', 'F', 'G', 'H'],
+                    3: ['I', 'J', 'K', 'L', 'M']
+                };
+                
+                const levelCount = Object.keys(levels).length;
+                const levelHeight = canvasHeight / (levelCount + 1);
+                
+                for (let level = 0; level < levelCount; level++) {
+                    const nodesInLevel = levels[level];
+                    const nodeCount = nodesInLevel.length;
+                    const levelWidth = canvasWidth * 0.8;
+                    const startX = (canvasWidth - levelWidth) / 2;
+                    const nodeSpacing = levelWidth / (nodeCount + 1);
+                    
+                    nodesInLevel.forEach((node, index) => {
+                        const x = startX + (index + 1) * nodeSpacing;
+                        const y = 80 + level * levelHeight;
+                        nodePositions[node] = { x, y, radius: 28 };
+                    });
+                }
+            }
+            
+            // 绘制图
+            function drawGraph() {
+                // 清除画布
+                ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+                
+                // 绘制边
+                ctx.strokeStyle = '#adb5bd';
+                ctx.lineWidth = 2;
+                
+                for (const node in graph) {
+                    const startPos = nodePositions[node];
+                    if (!startPos) continue;
+                    
+                    graph[node].forEach(neighbor => {
+                        const endPos = nodePositions[neighbor];
+                        if (!endPos) return;
+                        
+                        ctx.beginPath();
+                        ctx.moveTo(startPos.x, startPos.y);
+                        ctx.lineTo(endPos.x, endPos.y);
+                        ctx.stroke();
+                    });
+                }
+                
+                // 绘制节点
+                for (const node in nodePositions) {
+                    const pos = nodePositions[node];
+                    const state = algorithmState.nodes[node] || NODE_STATE.UNVISITED;
+                    const color = NODE_COLORS[state];
+                    
+                    // 绘制节点外圈
+                    ctx.beginPath();
+                    ctx.arc(pos.x, pos.y, pos.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = color;
+                    ctx.fill();
+                    
+                    // 绘制节点边框
+                    ctx.strokeStyle = '#495057';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    
+                    // 绘制节点标签
+                    ctx.fillStyle = '#212529';
+                    ctx.font = 'bold 20px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(node, pos.x, pos.y);
+                    
+                    // 如果节点正在访问，添加脉冲效果
+                    if (state === NODE_STATE.VISITING) {
+                        ctx.beginPath();
+                        ctx.arc(pos.x, pos.y, pos.radius + 5, 0, Math.PI * 2);
+                        ctx.strokeStyle = '#40c057';
+                        ctx.lineWidth = 3;
+                        ctx.stroke();
+                    }
+                }
+                
+                // 绘制水波纹
+                drawRipples();
+                
+                // 绘制当前步骤文本
+                ctx.fillStyle = '#339af0';
+                ctx.font = 'bold 16px Arial';
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'top';
+                ctx.fillText(`步骤: ${algorithmState.currentStep}`, 20, 20);
+            }
+            
+            // 绘制水波纹
+            function drawRipples() {
+                const now = Date.now();
+                
+                // 过滤掉已经结束的波纹
+                algorithmState.ripples = algorithmState.ripples.filter(ripple => {
+                    const elapsed = now - ripple.startTime;
+                    const duration = 1000; // 波纹持续时间1秒
+                    
+                    if (elapsed > duration) return false;
+                    
+                    const progress = elapsed / duration;
+                    const radius = ripple.startRadius + progress * 150;
+                    const alpha = 1 - progress;
+                    
+                    ctx.beginPath();
+                    ctx.arc(ripple.x, ripple.y, radius, 0, Math.PI * 2);
+                    ctx.strokeStyle = `rgba(51, 154, 240, ${alpha * 0.7})`;
+                    ctx.lineWidth = 3;
+                    ctx.stroke();
+                    
+                    return true;
+                });
+            }
+            
+            // 添加水波纹效果
+            function addRipple(x, y) {
+                algorithmState.ripples.push({
+                    x,
+                    y,
+                    startTime: Date.now(),
+                    startRadius: 10
+                });
+            }
+            
+            // 初始化算法状态
+            function initAlgorithm() {
+                // 初始化所有节点为未访问状态
+                for (const node in graph) {
+                    algorithmState.nodes[node] = NODE_STATE.UNVISITED;
+                }
+                
+                // 清空队列和访问顺序
+                algorithmState.queue = [];
+                algorithmState.visitedOrder = [];
+                algorithmState.currentStep = 0;
+                algorithmState.stepHistory = [];
+                algorithmState.ripples = [];
+                
+                // 添加初始状态到历史记录
+                saveStepToHistory();
+                
+                // 更新UI
+                updateQueueDisplay();
+                updateLog('算法已初始化，点击"播放"开始BFS遍历', true);
+                updateResultSequence();
+                currentStepDisplay.textContent = '就绪';
+                
+                // 绘制初始状态
+                drawGraph();
+            }
+            
+            // 保存当前步骤到历史记录
+            function saveStepToHistory() {
+                // 深拷贝当前状态
+                const stateCopy = {
+                    nodes: {...algorithmState.nodes},
+                    queue: [...algorithmState.queue],
+                    visitedOrder: [...algorithmState.visitedOrder],
+                    currentStep: algorithmState.currentStep
+                };
+                
+                algorithmState.stepHistory.push(stateCopy);
+            }
+            
+            // 执行BFS的下一步
+            function bfsNextStep() {
+                // 保存当前状态到历史记录（用于回退）
+                saveStepToHistory();
+                
+                algorithmState.currentStep++;
+                
+                // 情况1: 队列为空，且尚未开始遍历
+                if (algorithmState.queue.length === 0 && algorithmState.visitedOrder.length === 0) {
+                    // 选择起始节点（这里固定为'A'，但可以扩展为让用户选择）
+                    const startNode = 'A';
+                    
+                    // 将起始节点入队
+                    algorithmState.queue.push(startNode);
+                    algorithmState.nodes[startNode] = NODE_STATE.ENQUEUED;
+                    
+                    updateLog(`步骤 ${algorithmState.currentStep}: 将起始节点 ${startNode} 入队`, true);
+                    currentStepDisplay.textContent = `入队起始节点 ${startNode}`;
+                    
+                    // 在起始节点添加水波纹
+                    const startPos = nodePositions[startNode];
+                    if (startPos) addRipple(startPos.x, startPos.y);
+                    
+                    updateQueueDisplay();
+                    drawGraph();
+                    return;
+                }
+                
+                // 情况2: 队列为空，遍历完成
+                if (algorithmState.queue.length === 0) {
+                    updateLog(`步骤 ${algorithmState.currentStep}: BFS遍历完成！总共访问了 ${algorithmState.visitedOrder.length} 个节点`, true);
+                    currentStepDisplay.textContent = '遍历完成';
+                    
+                    // 停止动画
+                    algorithmState.isPlaying = false;
+                    updatePlayButton();
+                    
+                    drawGraph();
+                    return;
+                }
+                
+                // 情况3: 正常步骤 - 出队并处理节点
+                // 出队队首节点
+                const currentNode = algorithmState.queue.shift();
+                algorithmState.nodes[currentNode] = NODE_STATE.VISITING;
+                
+                updateLog(`步骤 ${algorithmState.currentStep}: 出队节点 ${currentNode}`, false);
+                currentStepDisplay.textContent = `处理节点 ${currentNode}`;
+                
+                // 短暂显示当前节点正在访问的状态
+                setTimeout(() => {
+                    // 将当前节点标记为已访问
+                    algorithmState.nodes[currentNode] = NODE_STATE.VISITED;
+                    algorithmState.visitedOrder.push(currentNode);
+                    
+                    // 查找当前节点的未访问邻居
+                    const neighbors = graph[currentNode];
+                    const unvisitedNeighbors = neighbors.filter(neighbor => 
+                        algorithmState.nodes[neighbor] === NODE_STATE.UNVISITED
+                    );
+                    
+                    // 将未访问邻居入队
+                    if (unvisitedNeighbors.length > 0) {
+                        unvisitedNeighbors.forEach(neighbor => {
+                            algorithmState.queue.push(neighbor);
+                            algorithmState.nodes[neighbor] = NODE_STATE.ENQUEUED;
+                        });
+                        
+                        updateLog(`步骤 ${algorithmState.currentStep}: 访问节点 ${currentNode}，将其未访问邻居 ${unvisitedNeighbors.join(', ')} 入队`, true);
+                        
+                        // 在新入队的第一个节点添加水波纹（表示扩散）
+                        if (unvisitedNeighbors.length > 0) {
+                            const firstNeighborPos = nodePositions[unvisitedNeighbors[0]];
+                            if (firstNeighborPos) addRipple(firstNeighborPos.x, firstNeighborPos.y);
+                        }
+                    } else {
+                        updateLog(`步骤 ${algorithmState.currentStep}: 访问节点 ${currentNode}，没有未访问的邻居`, true);
+                    }
+                    
+                    updateQueueDisplay();
+                    updateResultSequence();
+                    drawGraph();
+                    
+                    // 如果正在播放，继续下一步
+                    if (algorithmState.isPlaying) {
+                        const delay = 1100 - (algorithmState.animationSpeed * 100);
+                        setTimeout(bfsNextStep, delay);
+                    }
+                }, 300);
+                
+                // 立即更新队列显示和绘图
+                updateQueueDisplay();
+                drawGraph();
+            }
+            
+            // 回退到上一步
+            function bfsPrevStep() {
+                if (algorithmState.stepHistory.length <= 1) {
+                    updateLog('已在第一步，无法回退', true);
+                    return;
+                }
+                
+                // 移除当前状态
+                algorithmState.stepHistory.pop();
+                
+                // 获取上一个状态
+                const prevState = algorithmState.stepHistory[algorithmState.stepHistory.length - 1];
+                
+                // 恢复状态
+                algorithmState.nodes = {...prevState.nodes};
+                algorithmState.queue = [...prevState.queue];
+                algorithmState.visitedOrder = [...prevState.visitedOrder];
+                algorithmState.currentStep = prevState.currentStep;
+                
+                // 停止播放
+                algorithmState.isPlaying = false;
+                updatePlayButton();
+                
+                // 更新UI
+                updateQueueDisplay();
+                updateResultSequence();
+                updateLog(`回退到步骤 ${algorithmState.currentStep}`, true);
+                currentStepDisplay.textContent = `步骤 ${algorithmState.currentStep}`;
+                
+                drawGraph();
+            }
+            
+            // 更新队列显示
+            function updateQueueDisplay() {
+                queueContainer.innerHTML = '';
+                
+                if (algorithmState.queue.length === 0) {
+                    const emptyMsg = document.createElement('div');
+                    emptyMsg.className = 'queue-empty';
+                    emptyMsg.textContent = '队列为空';
+                    queueContainer.appendChild(emptyMsg);
+                    return;
+                }
+                
+                algorithmState.queue.forEach((node, index) => {
+                    const queueItem = document.createElement('div');
+                    queueItem.className = 'queue-item';
+                    queueItem.textContent = node;
+                    
+                    // 标记队首和队尾
+                    if (index === 0) {
+                        queueItem.classList.add('queue-front');
+                    }
+                    
+                    if (index === algorithmState.queue.length - 1) {
+                        queueItem.classList.add('queue-rear');
+                    }
+                    
+                    // 添加悬停效果
+                    queueItem.addEventListener('mouseenter', () => {
+                        // 可以在这里添加高亮对应节点的功能
+                    });
+                    
+                    queueContainer.appendChild(queueItem);
+                });
+            }
+            
+            // 更新日志
+            function updateLog(message, isNewStep) {
+                const logEntry = document.createElement('div');
+                logEntry.className = 'log-entry';
+                if (isNewStep) logEntry.classList.add('current');
+                logEntry.textContent = message;
+                
+                logContainer.appendChild(logEntry);
+                
+                // 滚动到底部
+                logContainer.scrollTop = logContainer.scrollHeight;
+                
+                // 如果不是新步骤，移除之前的"current"类
+                if (!isNewStep) {
+                    const previousCurrent = logContainer.querySelector('.log-entry.current');
+                    if (previousCurrent) {
+                        previousCurrent.classList.remove('current');
+                    }
+                    logEntry.classList.add('current');
+                }
+            }
+            
+            // 更新结果序列
+            function updateResultSequence() {
+                if (algorithmState.visitedOrder.length === 0) {
+                    resultSequence.textContent = '';
+                    return;
+                }
+                
+                resultSequence.textContent = algorithmState.visitedOrder.join(' → ');
+            }
+            
+            // 更新播放按钮状态
+            function updatePlayButton() {
+                const playIcon = document.getElementById('playIcon');
+                const playText = document.getElementById('playText');
+                
+                if (algorithmState.isPlaying) {
+                    playIcon.textContent = '⏸';
+                    playText.textContent = '暂停';
+                    playPauseBtn.classList.add('btn-secondary');
+                    playPauseBtn.classList.remove('btn-primary');
+                } else {
+                    playIcon.textContent = '▶';
+                    playText.textContent = '播放';
+                    playPauseBtn.classList.remove('btn-secondary');
+                    playPauseBtn.classList.add('btn-primary');
+                }
+            }
+            
+            // 事件监听器
+            playPauseBtn.addEventListener('click', function() {
+                algorithmState.isPlaying = !algorithmState.isPlaying;
+                updatePlayButton();
+                
+                if (algorithmState.isPlaying) {
+                    // 如果队列为空且遍历未开始，先执行一步
+                    if (algorithmState.queue.length === 0 && algorithmState.visitedOrder.length === 0) {
+                        bfsNextStep();
+                    } else {
+                        // 继续执行
+                        bfsNextStep();
+                    }
+                }
+            });
+            
+            nextStepBtn.addEventListener('click', function() {
+                algorithmState.isPlaying = false;
+                updatePlayButton();
+                bfsNextStep();
+            });
+            
+            prevStepBtn.addEventListener('click', function() {
+                algorithmState.isPlaying = false;
+                updatePlayButton();
+                bfsPrevStep();
+            });
+            
+            resetBtn.addEventListener('click', function() {
+                algorithmState.isPlaying = false;
+                updatePlayButton();
+                initAlgorithm();
+            });
+            
+            speedSlider.addEventListener('input', function() {
+                algorithmState.animationSpeed = parseInt(this.value);
+                
+                // 更新速度显示文本
+                if (algorithmState.animationSpeed <= 3) {
+                    speedValue.textContent = '慢速';
+                } else if (algorithmState.animationSpeed <= 7) {
+                    speedValue.textContent = '中速';
+                } else {
+                    speedValue.textContent = '快速';
+                }
+            });
+            
+            // 初始调整Canvas大小
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            // 初始化算法
+            initAlgorithm();
+            
+            // 动画循环
+            function animate() {
+                drawGraph();
+                requestAnimationFrame(animate);
+            }
+            
+            // 启动动画循环
+            animate();
+        });
+    </script>
+</body>
+</html>

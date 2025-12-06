@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>拓扑排序算法动画演示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e1e5eb;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+        }
+
+        .graph-section {
+            flex: 3;
+            min-width: 300px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .data-structures {
+            flex: 2;
+            min-width: 250px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .queue-container, .result-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-title {
+            font-size: 1.3em;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e1e5eb;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title i {
+            font-size: 1.2em;
+        }
+
+        #graph-canvas {
+            border: 1px solid #e1e5eb;
+            border-radius: 8px;
+            background-color: #f9fafc;
+            flex-grow: 1;
+            width: 100%;
+            height: 400px;
+        }
+
+        .queue-display, .result-display {
+            min-height: 120px;
+            border: 2px dashed #e1e5eb;
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+            background-color: #f9fafc;
+            flex-grow: 1;
+        }
+
+        .node {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .node-label {
+            font-size: 1.2em;
+        }
+
+        .node-indegree {
+            font-size: 0.9em;
+            position: absolute;
+            bottom: -5px;
+            right: -5px;
+            background: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #ddd;
+        }
+
+        .queue-node {
+            background-color: #fff8e1;
+            border: 2px solid #ffb74d;
+            color: #e65100;
+        }
+
+        .result-node {
+            background-color: #e8f5e9;
+            border: 2px solid #66bb6a;
+            color: #2e7d32;
+        }
+
+        .normal-node {
+            background-color: #e3f2fd;
+            border: 2px solid #42a5f5;
+            color: #1565c0;
+        }
+
+        .active-node {
+            background-color: #fff9c4;
+            border: 3px solid #ffd600;
+            color: #f57f17;
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(255, 214, 0, 0.4);
+            z-index: 10;
+        }
+
+        .control-panel {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            padding: 20px;
+            margin-top: 10px;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .primary-btn {
+            background-color: #42a5f5;
+            color: white;
+        }
+
+        .primary-btn:hover {
+            background-color: #1e88e5;
+            transform: translateY(-2px);
+        }
+
+        .secondary-btn {
+            background-color: #e0e0e0;
+            color: #424242;
+        }
+
+        .secondary-btn:hover {
+            background-color: #bdbdbd;
+        }
+
+        .example-selector {
+            margin-bottom: 20px;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1em;
+            background-color: white;
+        }
+
+        .log-panel {
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            padding: 15px;
+            height: 150px;
+            overflow-y: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.95em;
+            border: 1px solid #e0e0e0;
+        }
+
+        .log-entry {
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed #ddd;
+        }
+
+        .log-time {
+            color: #7f8c8d;
+            font-size: 0.85em;
+            margin-right: 10px;
+        }
+
+        .log-message {
+            color: #2c3e50;
+        }
+
+        .highlight {
+            font-weight: bold;
+            color: #e65100;
+        }
+
+        .algorithm-steps {
+            margin-top: 25px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            padding: 20px;
+        }
+
+        .step-list {
+            list-style-type: none;
+            counter-reset: step-counter;
+        }
+
+        .step-list li {
+            counter-increment: step-counter;
+            margin-bottom: 15px;
+            padding-left: 40px;
+            position: relative;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .step-list li:before {
+            content: counter(step-counter);
+            background-color: #42a5f5;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-weight: bold;
+        }
+
+        .current-step {
+            background-color: #f0f7ff;
+            border-radius: 6px;
+            padding: 10px;
+            margin-left: -10px;
+            border-left: 4px solid #42a5f5;
+        }
+
+        .current-step:before {
+            background-color: #ff9800 !important;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e1e5eb;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .controls {
+                justify-content: center;
+            }
+            
+            button {
+                flex-grow: 1;
+                justify-content: center;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <h1><i class="fas fa-sort-amount-down"></i> 拓扑排序算法动画演示</h1>
+        <p class="subtitle">基于入度的Kahn算法：入度减0 → 队列弹出 → 输出结果</p>
+    </header>
+
+    <div class="container">
+        <div class="main-content">
+            <section class="graph-section">
+                <h2 class="section-title"><i class="fas fa-project-diagram"></i> 有向图</h2>
+                <canvas id="graph-canvas" width="800" height="400"></canvas>
+                <div class="example-selector">
+                    <label for="example-select">选择示例图：</label>
+                    <select id="example-select">
+                        <option value="course">示例1：课程安排依赖</option>
+                        <option value="simple">示例2：简单依赖图</option>
+                        <option value="complex">示例3：复杂依赖图</option>
+                    </select>
+                </div>
+            </section>
+
+            <div class="data-structures">
+                <section class="queue-container">
+                    <h2 class="section-title"><i class="fas fa-stream"></i> 队列 (Queue)</h2>
+                    <div class="queue-display" id="queue-display">
+                        <div class="empty-queue-msg">队列为空</div>
+                    </div>
+                    <div class="queue-info">
+                        <p>入度为0的节点会加入队列，按先进先出(FIFO)顺序处理。</p>
+                    </div>
+                </section>
+
+                <section class="result-container">
+                    <h2 class="section-title"><i class="fas fa-list-ol"></i> 拓扑排序结果</h2>
+                    <div class="result-display" id="result-display">
+                        <div class="empty-result-msg">结果将在此显示</div>
+                    </div>
+                    <div class="result-info">
+                        <p>从队列弹出的节点会按顺序加入结果序列。</p>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <section class="control-panel">
+            <h2 class="section-title"><i class="fas fa-sliders-h"></i> 控制面板</h2>
+            <div class="controls">
+                <button id="prev-btn" class="secondary-btn"><i class="fas fa-step-backward"></i> 上一步</button>
+                <button id="next-btn" class="primary-btn"><i class="fas fa-step-forward"></i> 下一步</button>
+                <button id="play-btn" class="primary-btn"><i class="fas fa-play"></i> 播放</button>
+                <button id="reset-btn" class="secondary-btn"><i class="fas fa-redo"></i> 重置</button>
+                <button id="speed-slow" class="secondary-btn"><i class="fas fa-tachometer-alt"></i> 慢速</button>
+                <button id="speed-normal" class="primary-btn"><i class="fas fa-tachometer-alt"></i> 中速</button>
+                <button id="speed-fast" class="secondary-btn"><i class="fas fa-tachometer-alt"></i> 快速</button>
+            </div>
+            
+            <div class="log-panel" id="log-panel">
+                <div class="log-entry">
+                    <span class="log-time">[就绪]</span>
+                    <span class="log-message">请选择一个示例图，然后点击"下一步"开始拓扑排序。</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="algorithm-steps">
+            <h2 class="section-title"><i class="fas fa-list-ol"></i> 算法步骤</h2>
+            <ol class="step-list" id="step-list">
+                <li>初始化：计算所有节点的入度</li>
+                <li>将所有入度为0的节点加入队列</li>
+                <li>当队列不为空时，执行以下操作：</li>
+                <li>从队列中取出一个节点（队首）</li>
+                <li>将该节点加入拓扑排序结果</li>
+                <li>遍历该节点的所有邻居节点</li>
+                <li>将每个邻居节点的入度减1</li>
+                <li>如果邻居节点的入度变为0，将其加入队列</li>
+                <li>重复步骤3-8，直到队列为空</li>
+                <li>如果结果中的节点数等于总节点数，排序成功；否则图中存在环</li>
+            </ol>
+        </section>
+    </div>
+
+    <footer>
+        <p>拓扑排序算法动画演示 | 基于入度的Kahn算法 | 使用HTML5 Canvas实现</p>
+        <p>交互式教学动画 - 理解"入度减0→队列弹出"的核心过程</p>
+    </footer>
+
+    <script>
+        // 拓扑排序算法状态机
+        class TopologicalSortAnimation {
+            constructor() {
+                this.canvas = document.getElementById('graph-canvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.queueDisplay = document.getElementById('queue-display');
+                this.resultDisplay = document.getElementById('result-display');
+                this.logPanel = document.getElementById('log-panel');
+                this.stepList = document.getElementById('step-list').children;
+                this.exampleSelect = document.getElementById('example-select');
+                
+                // 控制按钮
+                this.prevBtn = document.getElementById('prev-btn');
+                this.nextBtn = document.getElementById('next-btn');
+                this.playBtn = document.getElementById('play-btn');
+                this.resetBtn = document.getElementById('reset-btn');
+                this.speedSlowBtn = document.getElementById('speed-slow');
+                this.speedNormalBtn = document.getElementById('speed-normal');
+                this.speedFastBtn = document.getElementById('speed-fast');
+                
+                // 状态变量
+                this.currentStep = 0;
+                this.isPlaying = false;
+                this.playSpeed = 1000; // 毫秒
+                this.playInterval = null;
+                this.history = [];
+                this.currentHistoryIndex = -1;
+                
+                // 图数据
+                this.graph = {
+                    nodes: [],
+                    edges: [],
+                    adjacencyList: {}
+                };
+                
+                // 算法状态
+                this.indegree = {};
+                this.queue = [];
+                this.result = [];
+                this.currentNode = null;
+                this.currentNeighbors = [];
+                this.visitedEdges = new Set();
+                
+                // 示例图定义
+                this.examples = {
+                    course: {
+                        name: "课程安排依赖",
+                        nodes: [
+                            {id: 'A', x: 150, y: 200, label: '数学基础'},
+                            {id: 'B', x: 300, y: 100, label: '数据结构'},
+                            {id: 'C', x: 300, y: 300, label: '算法设计'},
+                            {id: 'D', x: 450, y: 200, label: '数据库'},
+                            {id: 'E', x: 600, y: 200, label: '毕业设计'}
+                        ],
+                        edges: [
+                            {from: 'A', to: 'B'},
+                            {from: 'A', to: 'C'},
+                            {from: 'B', to: 'D'},
+                            {from: 'C', to: 'D'},
+                            {from: 'D', to: 'E'}
+                        ]
+                    },
+                    simple: {
+                        name: "简单依赖图",
+                        nodes: [
+                            {id: 'A', x: 200, y: 150},
+                            {id: 'B', x: 200, y: 250},
+                            {id: 'C', x: 350, y: 150},
+                            {id: 'D', x: 350, y: 250},
+                            {id: 'E', x: 500, y: 200}
+                        ],
+                        edges: [
+                            {from: 'A', to: 'C'},
+                            {from: 'B', to: 'D'},
+                            {from: 'C', to: 'E'},
+                            {from: 'D', to: 'E'}
+                        ]
+                    },
+                    complex: {
+                        name: "复杂依赖图",
+                        nodes: [
+                            {id: 'A', x: 150, y: 100},
+                            {id: 'B', x: 150, y: 200},
+                            {id: 'C', x: 150, y: 300},
+                            {id: 'D', x: 300, y: 150},
+                            {id: 'E', x: 300, y: 250},
+                            {id: 'F', x: 450, y: 200},
+                            {id: 'G', x: 600, y: 200}
+                        ],
+                        edges: [
+                            {from: 'A', to: 'D'},
+                            {from: 'B', to: 'D'},
+                            {from: 'B', to: 'E'},
+                            {from: 'C', to: 'E'},
+                            {from: 'D', to: 'F'},
+                            {from: 'E', to: 'F'},
+                            {from: 'F', to: 'G'}
+                        ]
+                    }
+                };
+                
+                // 初始化
+                this.init();
+            }
+            
+            init() {
+                // 加载默认示例
+                this.loadExample('course');
+                
+                // 绑定事件
+                this.bindEvents();
+                
+                // 初始渲染
+                this.render();
+                this.updateStepHighlight();
+                this.addLog("系统初始化完成，请选择一个示例图开始。");
+            }
+            
+            bindEvents() {
+                // 示例选择
+                this.exampleSelect.addEventListener('change', (e) => {
+                    this.loadExample(e.target.value);
+                    this.resetAnimation();
+                });
+                
+                // 控制按钮
+                this.prevBtn.addEventListener('click', () => this.prevStep());
+                this.nextBtn.addEventListener('click', () => this.nextStep());
+                this.playBtn.addEventListener('click', () => this.togglePlay());
+                this.resetBtn.addEventListener('click', () => this.resetAnimation());
+                
+                // 速度控制
+                this.speedSlowBtn.addEventListener('click', () => this.setSpeed(1500));
+                this.speedNormalBtn.addEventListener('click', () => this.setSpeed(1000));
+                this.speedFastBtn.addEventListener('click', () => this.setSpeed(500));
+            }
+            
+            loadExample(exampleKey) {
+                const example = this.examples[exampleKey];
+                if (!example) return;
+                
+                this.graph.nodes = JSON.parse(JSON.stringify(example.nodes));
+                this.graph.edges = JSON.parse(JSON.stringify(example.edges));
+                
+                // 构建邻接表
+                this.graph.adjacencyList = {};
+                this.graph.nodes.forEach(node => {
+                    this.graph.adjacencyList[node.id] = [];
+                });
+                
+                this.graph.edges.forEach(edge => {
+                    if (this.graph.adjacencyList[edge.from]) {
+                        this.graph.adjacencyList[edge.from].push(edge.to);
+                    }
+                });
+                
+                // 重置算法状态
+                this.resetAlgorithmState();
+                
+                this.addLog(`已加载示例: ${example.name}`);
+            }
+            
+            resetAlgorithmState() {
+                // 计算初始入度
+                this.indegree = {};
+                this.graph.nodes.forEach(node => {
+                    this.indegree[node.id] = 0;
+                });
+                
+                this.graph.edges.forEach(edge => {
+                    this.indegree[edge.to]++;
+                });
+                
+                // 清空队列和结果
+                this.queue = [];
+                this.result = [];
+                this.currentNode = null;
+                this.currentNeighbors = [];
+                this.visitedEdges = new Set();
+                
+                // 清空历史
+                this.history = [];
+                this.currentHistoryIndex = -1;
+                this.saveStateToHistory();
+                
+                // 重置步骤
+                this.currentStep = 0;
+                
+                // 初始：将所有入度为0的节点加入队列
+                this.graph.nodes.forEach(node => {
+                    if (this.indegree[node.id] === 0) {
+                        this.queue.push(node.id);
+                    }
+                });
+                
+                // 更新显示
+                this.updateQueueDisplay();
+                this.updateResultDisplay();
+                this.updateStepHighlight();
+            }
+            
+            resetAnimation() {
+                this.stopPlay();
+                this.resetAlgorithmState();
+                this.render();
+                this.addLog("动画已重置。");
+            }
+            
+            saveStateToHistory() {
+                const state = {
+                    indegree: {...this.indegree},
+                    queue: [...this.queue],
+                    result: [...this.result],
+                    currentNode: this.currentNode,
+                    currentNeighbors: [...this.currentNeighbors],
+                    visitedEdges: new Set(this.visitedEdges),
+                    step: this.currentStep
+                };
+                
+                this.history = this.history.slice(0, this.currentHistoryIndex + 1);
+                this.history.push(state);
+                this.currentHistoryIndex = this.history.length - 1;
+            }
+            
+            restoreStateFromHistory(index) {
+                if (index < 0 || index >= this.history.length) return;
+                
+                const state = this.history[index];
+                this.indegree = {...state.indegree};
+                this.queue = [...state.queue];
+                this.result = [...state.result];
+                this.currentNode = state.currentNode;
+                this.currentNeighbors = [...state.currentNeighbors];
+                this.visitedEdges = new Set(state.visitedEdges);
+                this.currentStep = state.step;
+                
+                this.currentHistoryIndex = index;
+                
+                this.updateQueueDisplay();
+                this.updateResultDisplay();
+                this.updateStepHighlight();
+                this.render();
+            }
+            
+            prevStep() {
+                if (this.currentHistoryIndex > 0) {
+                    this.restoreStateFromHistory(this.currentHistoryIndex - 1);
+                    this.addLog("回退到上一步。");
+                }
+            }
+            
+            nextStep() {
+                this.stopPlay();
+                
+                // 保存当前状态到历史
+                this.saveStateToHistory();
+                
+                // 执行下一步
+                this.executeNextStep();
+                
+                // 更新显示
+                this.updateQueueDisplay();
+                this.updateResultDisplay();
+                this.updateStepHighlight();
+                this.render();
+            }
+            
+            executeNextStep() {
+                // 根据当前步骤执行相应操作
+                switch (this.currentStep) {
+                    case 0: // 初始化：计算所有节点的入度
+                        this.addLog("步骤1: 初始化完成，已计算所有节点的入度。");
+                        this.currentStep = 1;
+                        break;
+                        
+                    case 1: // 将所有入度为0的节点加入队列
+                        if (this.queue.length === 0) {
+                            this.addLog("没有入度为0的节点，图中可能存在环。");
+                            this.currentStep = 9; // 跳到最后一步
+                        } else {
+                            this.addLog(`步骤2: 将入度为0的节点 ${this.queue.join(', ')} 加入队列。`);
+                            this.currentStep = 2;
+                        }
+                        break;
+                        
+                    case 2: // 检查队列是否为空
+                        if (this.queue.length === 0) {
+                            this.addLog("队列已空，算法结束。");
+                            this.currentStep = 9; // 跳到最后一步
+                        } else {
+                            this.addLog("步骤3: 队列不为空，继续处理。");
+                            this.currentStep = 3;
+                        }
+                        break;
+                        
+                    case 3: // 从队列中取出一个节点
+                        this.currentNode = this.queue.shift();
+                        this.addLog(`步骤4: 从队列中取出节点 ${this.currentNode}。`);
+                        this.currentNeighbors = this.graph.adjacencyList[this.currentNode] || [];
+                        this.currentStep = 4;
+                        break;
+                        
+                    case 4: // 将该节点加入拓扑排序结果
+                        this.result.push(this.currentNode);
+                        this.addLog(`步骤5: 将节点 ${this.currentNode} 加入拓扑排序结果。`);
+                        this.currentStep = 5;
+                        break;
+                        
+                    case 5: // 遍历该节点的所有邻居节点
+                        if (this.currentNeighbors.length === 0) {
+                            this.addLog(`节点 ${this.currentNode} 没有邻居节点。`);
+                            this.currentStep = 2; // 回到检查队列
+                        } else {
+                            const neighbor = this.currentNeighbors[0];
+                            this.addLog(`步骤6: 处理邻居节点 ${neighbor}。`);
+                            this.currentStep = 6;
+                        }
+                        break;
+                        
+                    case 6: // 将邻居节点的入度减1
+                        const currentNeighbor = this.currentNeighbors[0];
+                        this.indegree[currentNeighbor]--;
+                        
+                        // 标记边为已访问
+                        const edgeKey = `${this.currentNode}->${currentNeighbor}`;
+                        this.visitedEdges.add(edgeKey);
+                        
+                        this.addLog(`步骤7: 将节点 ${currentNeighbor} 的入度减1，新入度为 ${this.indegree[currentNeighbor]}。`);
+                        this.currentStep = 7;
+                        break;
+                        
+                    case 7: // 检查邻居节点入度是否变为0
+                        const neighbor = this.currentNeighbors.shift();
+                        if (this.indegree[neighbor] === 0) {
+                            this.queue.push(neighbor);
+                            this.addLog(`步骤8: 节点 ${neighbor} 的入度变为0，将其加入队列。`);
+                        } else {
+                            this.addLog(`节点 ${neighbor} 的入度不为0，不入队。`);
+                        }
+                        
+                        // 如果还有邻居需要处理，回到步骤6
+                        if (this.currentNeighbors.length > 0) {
+                            this.currentStep = 6;
+                        } else {
+                            this.currentStep = 2; // 回到检查队列
+                        }
+                        break;
+                        
+                    case 9: // 算法结束，检查结果
+                        if (this.result.length === this.graph.nodes.length) {
+                            this.addLog(`步骤10: 拓扑排序成功！结果: ${this.result.join(' → ')}`);
+                        } else {
+                            this.addLog(`步骤10: 拓扑排序失败！图中存在环。只排序了部分节点: ${this.result.join(' → ')}`);
+                        }
+                        this.currentStep = 10;
+                        break;
+                        
+                    case 10: // 最终状态
+                        this.addLog("算法已结束。点击重置重新开始。");
+                        break;
+                }
+            }
+            
+            togglePlay() {
+                if (this.isPlaying) {
+                    this.stopPlay();
+                } else {
+                    this.startPlay();
+                }
+            }
+            
+            startPlay() {
+                this.isPlaying = true;
+                this.playBtn.innerHTML = '<i class="fas fa-pause"></i> 暂停';
+                this.playBtn.classList.remove('primary-btn');
+                this.playBtn.classList.add('secondary-btn');
+                
+                this.playInterval = setInterval(() => {
+                    // 如果算法已结束，停止播放
+                    if (this.currentStep >= 10) {
+                        this.stopPlay();
+                        return;
+                    }
+                    
+                    this.nextStep();
+                }, this.playSpeed);
+            }
+            
+            stopPlay() {
+                this.isPlaying = false;
+                this.playBtn.innerHTML = '<i class="fas fa-play"></i> 播放';
+                this.playBtn.classList.remove('secondary-btn');
+                this.playBtn.classList.add('primary-btn');
+                
+                if (this.playInterval) {
+                    clearInterval(this.playInterval);
+                    this.playInterval = null;
+                }
+            }
+            
+            setSpeed(speed) {
+                this.playSpeed = speed;
+                
+                // 更新按钮状态
+                [this.speedSlowBtn, this.speedNormalBtn, this.speedFastBtn].forEach(btn => {
+                    btn.classList.remove('primary-btn');
+                    btn.classList.add('secondary-btn');
+                });
+                
+                if (speed === 1500) {
+                    this.speedSlowBtn.classList.remove('secondary-btn');
+                    this.speedSlowBtn.classList.add('primary-btn');
+                } else if (speed === 1000) {
+                    this.speedNormalBtn.classList.remove('secondary-btn');
+                    this.speedNormalBtn.classList.add('primary-btn');
+                } else if (speed === 500) {
+                    this.speedFastBtn.classList.remove('secondary-btn');
+                    this.speedFastBtn.classList.add('primary-btn');
+                }
+                
+                // 如果正在播放，重新设置间隔
+                if (this.isPlaying) {
+                    this.stopPlay();
+                    this.startPlay();
+                }
+                
+                this.addLog(`播放速度设置为: ${speed === 1500 ? '慢速' : speed === 1000 ? '中速' : '快速'}`);
+            }
+            
+            updateQueueDisplay() {
+                this.queueDisplay.innerHTML = '';
+                
+                if (this.queue.length === 0) {
+                    this.queueDisplay.innerHTML = '<div class="empty-queue-msg">队列为空</div>';
+                    return;
+                }
+                
+                this.queue.forEach(nodeId => {
+                    const nodeElement = document.createElement('div');
+                    nodeElement.className = 'node queue-node';
+                    nodeElement.innerHTML = `
+                        <div class="node-label">${nodeId}</div>
+                        <div class="node-indegree">${this.indegree[nodeId]}</div>
+                    `;
+                    this.queueDisplay.appendChild(nodeElement);
+                });
+            }
+            
+            updateResultDisplay() {
+                this.resultDisplay.innerHTML = '';
+                
+                if (this.result.length === 0) {
+                    this.resultDisplay.innerHTML = '<div class="empty-result-msg">结果将在此显示</div>';
+                    return;
+                }
+                
+                this.result.forEach(nodeId => {
+                    const nodeElement = document.createElement('div');
+                    nodeElement.className = 'node result-node';
+                    nodeElement.innerHTML = `
+                        <div class="node-label">${nodeId}</div>
+                        <div class="node-indegree">${this.indegree[nodeId]}</div>
+                    `;
+                    this.resultDisplay.appendChild(nodeElement);
+                });
+            }
+            
+            updateStepHighlight() {
+                // 移除所有当前步骤高亮
+                Array.from(this.stepList).forEach(li => {
+                    li.classList.remove('current-step');
+                });
+                
+                // 高亮当前步骤
+                if (this.currentStep < this.stepList.length) {
+                    this.stepList[this.currentStep].classList.add('current-step');
+                }
+            }
+            
+            addLog(message) {
+                const now = new Date();
+                const timeString = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+                
+                const logEntry = document.createElement('div');
+                logEntry.className = 'log-entry';
+                logEntry.innerHTML = `
+                    <span class="log-time">[${timeString}]</span>
+                    <span class="log-message">${message}</span>
+                `;
+                
+                this.logPanel.appendChild(logEntry);
+                this.logPanel.scrollTop = this.logPanel.scrollHeight;
+            }
+            
+            render() {
+                // 清空画布
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // 绘制边
+                this.graph.edges.forEach(edge => {
+                    const fromNode = this.graph.nodes.find(n => n.id === edge.from);
+                    const toNode = this.graph.nodes.find(n => n.id === edge.to);
+                    
+                    if (!fromNode || !toNode) return;
+                    
+                    // 检查边是否已被访问
+                    const edgeKey = `${edge.from}->${edge.to}`;
+                    const isVisited = this.visitedEdges.has(edgeKey);
+                    
+                    // 绘制箭头线
+                    this.drawArrow(
+                        fromNode.x, fromNode.y,
+                        toNode.x, toNode.y,
+                        isVisited ? '#81c784' : '#90a4ae',
+                        isVisited ? 3 : 2,
+                        isVisited
+                    );
+                });
+                
+                // 绘制节点
+                this.graph.nodes.forEach(node => {
+                    // 确定节点状态
+                    let nodeClass = 'normal-node';
+                    if (this.result.includes(node.id)) {
+                        nodeClass = 'result-node';
+                    } else if (this.queue.includes(node.id)) {
+                        nodeClass = 'queue-node';
+                    }
+                    
+                    if (node.id === this.currentNode) {
+                        nodeClass = 'active-node';
+                    }
+                    
+                    // 绘制节点
+                    this.drawNode(node, nodeClass);
+                });
+            }
+            
+            drawNode(node, nodeClass) {
+                // 根据节点类确定颜色
+                let fillColor, borderColor, textColor;
+                
+                switch(nodeClass) {
+                    case 'normal-node':
+                        fillColor = '#e3f2fd';
+                        borderColor = '#42a5f5';
+                        textColor = '#1565c0';
+                        break;
+                    case 'queue-node':
+                        fillColor = '#fff8e1';
+                        borderColor = '#ffb74d';
+                        textColor = '#e65100';
+                        break;
+                    case 'result-node':
+                        fillColor = '#e8f5e9';
+                        borderColor = '#66bb6a';
+                        textColor = '#2e7d32';
+                        break;
+                    case 'active-node':
+                        fillColor = '#fff9c4';
+                        borderColor = '#ffd600';
+                        textColor = '#f57f17';
+                        break;
+                }
+                
+                // 绘制节点圆
+                this.ctx.beginPath();
+                this.ctx.arc(node.x, node.y, 25, 0, Math.PI * 2);
+                this.ctx.fillStyle = fillColor;
+                this.ctx.fill();
+                this.ctx.lineWidth = nodeClass === 'active-node' ? 3 : 2;
+                this.ctx.strokeStyle = borderColor;
+                this.ctx.stroke();
+                
+                // 绘制节点标签
+                this.ctx.font = 'bold 16px Arial';
+                this.ctx.fillStyle = textColor;
+                this.ctx.textAlign = 'center';
+                this.ctx.textBaseline = 'middle';
+                this.ctx.fillText(node.id, node.x, node.y);
+                
+                // 绘制入度值
+                this.ctx.beginPath();
+                this.ctx.arc(node.x + 20, node.y - 20, 12, 0, Math.PI * 2);
+                this.ctx.fillStyle = 'white';
+                this.ctx.fill();
+                this.ctx.lineWidth = 1;
+                this.ctx.strokeStyle = '#ddd';
+                this.ctx.stroke();
+                
+                this.ctx.font = '12px Arial';
+                this.ctx.fillStyle = '#333';
+                this.ctx.textAlign = 'center';
+                this.ctx.textBaseline = 'middle';
+                this.ctx.fillText(this.indegree[node.id] || 0, node.x + 20, node.y - 20);
+                
+                // 如果有额外标签（如课程名），显示在节点下方
+                if (node.label) {
+                    this.ctx.font = '12px Arial';
+                    this.ctx.fillStyle = '#666';
+                    this.ctx.fillText(node.label, node.x, node.y + 40);
+                }
+            }
+            
+            drawArrow(fromX, fromY, toX, toY, color, width, isVisited) {
+                // 计算箭头方向
+                const dx = toX - fromX;
+                const dy = toY - fromY;
+                const angle = Math.atan2(dy, dx);
+                const length = Math.sqrt(dx * dx + dy * dy);
+                
+                // 考虑节点半径，调整起点和终点
+                const startRadius = 25;
+                const endRadius = 25;
+                const adjustedFromX = fromX + Math.cos(angle) * startRadius;
+                const adjustedFromY = fromY + Math.sin(angle) * startRadius;
+                const adjustedTo
+<!--检测到代码截断，自动续写中...-->
+X = toX - Math.cos(angle) * endRadius;
+                const adjustedToY = toY - Math.sin(angle) * endRadius;
+                
+                // 绘制线
+                this.ctx.beginPath();
+                this.ctx.moveTo(adjustedFromX, adjustedFromY);
+                this.ctx.lineTo(adjustedToX, adjustedToY);
+                this.ctx.strokeStyle = color;
+                this.ctx.lineWidth = width;
+                this.ctx.stroke();
+                
+                // 绘制箭头
+                const arrowLength = 10;
+                const arrowWidth = 8;
+                
+                this.ctx.beginPath();
+                this.ctx.moveTo(adjustedToX, adjustedToY);
+                this.ctx.lineTo(
+                    adjustedToX - arrowLength * Math.cos(angle - Math.PI / 6),
+                    adjustedToY - arrowLength * Math.sin(angle - Math.PI / 6)
+                );
+                this.ctx.lineTo(
+                    adjustedToX - arrowLength * Math.cos(angle + Math.PI / 6),
+                    adjustedToY - arrowLength * Math.sin(angle + Math.PI / 6)
+                );
+                this.ctx.closePath();
+                this.ctx.fillStyle = color;
+                this.ctx.fill();
+                
+                // 如果边已被访问，添加动画效果
+                if (isVisited) {
+                    this.ctx.beginPath();
+                    this.ctx.arc(adjustedToX, adjustedToY, 5, 0, Math.PI * 2);
+                    this.ctx.fillStyle = '#4caf50';
+                    this.ctx.fill();
+                }
+            }
+        }
+        
+        // 页面加载完成后初始化动画
+        document.addEventListener('DOMContentLoaded', () => {
+            const animation = new TopologicalSortAnimation();
+            
+            // 将动画实例暴露给全局，方便调试
+            window.topologicalSortAnimation = animation;
+        });
+    </script>
+</body>
+</html>

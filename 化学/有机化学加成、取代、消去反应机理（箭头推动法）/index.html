@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>有机化学反应机理动画教学</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #3498db, #2c3e50);
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #f9e300;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #bdc3c7;
+        }
+
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .left-panel {
+            flex: 1;
+            min-width: 300px;
+            background-color: #34495e;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .right-panel {
+            flex: 2;
+            min-width: 500px;
+            background-color: #34495e;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .reaction-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .reaction-btn {
+            padding: 12px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .reaction-btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .reaction-btn.active {
+            background-color: #2ecc71;
+            box-shadow: 0 0 10px rgba(46, 204, 113, 0.5);
+        }
+
+        .example-selector {
+            margin-bottom: 20px;
+        }
+
+        .example-btn {
+            padding: 10px 15px;
+            background-color: #7f8c8d;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .example-btn:hover {
+            background-color: #95a5a6;
+        }
+
+        .example-btn.active {
+            background-color: #e74c3c;
+        }
+
+        .control-panel {
+            background-color: #2c3e50;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .control-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            padding: 8px 15px;
+            background-color: #9b59b6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background-color: #8e44ad;
+        }
+
+        .control-btn:disabled {
+            background-color: #7d3c98;
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .speed-slider {
+            width: 150px;
+        }
+
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .step-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid #3498db;
+            background-color: transparent;
+            color: #3498db;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .step-btn:hover {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .step-btn.active {
+            background-color: #2ecc71;
+            border-color: #2ecc71;
+            color: white;
+        }
+
+        .step-btn.completed {
+            background-color: #3498db;
+            border-color: #3498db;
+            color: white;
+        }
+
+        .canvas-container {
+            flex: 1;
+            background-color: #1a252f;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            min-height: 400px;
+        }
+
+        #reactionCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .info-panel {
+            background-color: #2c3e50;
+            padding: 15px;
+            border-radius: 8px;
+            min-height: 150px;
+        }
+
+        .info-title {
+            color: #f9e300;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+            border-bottom: 2px solid #f9e300;
+            padding-bottom: 5px;
+        }
+
+        .info-content {
+            line-height: 1.8;
+        }
+
+        .highlight {
+            color: #f9e300;
+            font-weight: bold;
+        }
+
+        .key-concept {
+            background-color: rgba(52, 152, 219, 0.2);
+            border-left: 4px solid #3498db;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 0 5px 5px 0;
+        }
+
+        .practice-panel {
+            background-color: #2c3e50;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .practice-title {
+            color: #2ecc71;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .practice-area {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .molecule-builder {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .molecule-part {
+            padding: 8px 12px;
+            background-color: #34495e;
+            border: 2px dashed #7f8c8d;
+            border-radius: 5px;
+            cursor: move;
+            user-select: none;
+        }
+
+        .molecule-part:hover {
+            border-color: #3498db;
+            background-color: #3d566e;
+        }
+
+        .feedback {
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+        }
+
+        .feedback.correct {
+            background-color: rgba(46, 204, 113, 0.2);
+            border: 2px solid #2ecc71;
+            color: #2ecc71;
+            display: block;
+        }
+
+        .feedback.incorrect {
+            background-color: rgba(231, 76, 60, 0.2);
+            border: 2px solid #e74c3c;
+            color: #e74c3c;
+            display: block;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #bdc3c7;
+            font-size: 0.9rem;
+            margin-top: 20px;
+            border-top: 1px solid #34495e;
+        }
+
+        @media (max-width: 1100px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .left-panel, .right-panel {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>有机化学反应机理教学动画</h1>
+            <p class="subtitle">加成 · 取代 · 消去反应 | 箭头推动法可视化</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="left-panel">
+                <h2>反应类型</h2>
+                <div class="reaction-selector">
+                    <button class="reaction-btn active" data-type="addition">加成反应</button>
+                    <button class="reaction-btn" data-type="substitution">取代反应</button>
+                    <button class="reaction-btn" data-type="elimination">消去反应</button>
+                </div>
+                
+                <h3>反应示例</h3>
+                <div class="example-selector">
+                    <div id="addition-examples" class="example-list">
+                        <button class="example-btn active" data-example="alkene-hbr">烯烃 + HBr</button>
+                        <button class="example-btn" data-example="alkyne-h2">炔烃 + H₂</button>
+                        <button class="example-btn" data-example="carbonyl-nabh4">羰基 + NaBH₄</button>
+                    </div>
+                    <div id="substitution-examples" class="example-list" style="display:none;">
+                        <button class="example-btn active" data-example="haloalkane-oh">卤代烷 + OH⁻</button>
+                        <button class="example-btn" data-example="ester-hydrolysis">酯的水解</button>
+                        <button class="example-btn" data-example="aromatic-nitration">芳香族硝化</button>
+                    </div>
+                    <div id="elimination-examples" class="example-list" style="display:none;">
+                        <button class="example-btn active" data-example="haloalkane-oh-elim">卤代烷 + OH⁻ (E2)</button>
+                        <button class="example-btn" data-example="alcohol-h2so4">醇 + H₂SO₄</button>
+                        <button class="example-btn" data-example="hofmann">Hofmann消除</button>
+                    </div>
+                </div>
+                
+                <div class="control-panel">
+                    <h3>动画控制</h3>
+                    <div class="control-row">
+                        <button class="control-btn" id="playBtn">▶ 播放</button>
+                        <button class="control-btn" id="pauseBtn">⏸ 暂停</button>
+                        <button class="control-btn" id="resetBtn">↺ 重置</button>
+                        <button class="control-btn" id="prevStepBtn">◀ 上一步</button>
+                        <button class="control-btn" id="nextStepBtn">▶ 下一步</button>
+                    </div>
+                    
+                    <div class="control-row">
+                        <div class="speed-control">
+                            <span>速度:</span>
+                            <input type="range" min="1" max="10" value="5" class="speed-slider" id="speedSlider">
+                            <span id="speedValue">中速</span>
+                        </div>
+                    </div>
+                    
+                    <div class="step-indicator">
+                        <span>步骤:</span>
+                        <button class="step-btn active" data-step="0">1</button>
+                        <button class="step-btn" data-step="1">2</button>
+                        <button class="step-btn" data-step="2">3</button>
+                        <button class="step-btn" data-step="3">4</button>
+                    </div>
+                </div>
+                
+                <div class="info-panel">
+                    <div class="info-title">当前步骤说明</div>
+                    <div class="info-content" id="stepInfo">
+                        <p><span class="highlight">步骤1: 亲核进攻</span></p>
+                        <p>亲核试剂（富电子物种）进攻亲电中心（缺电子碳原子）。</p>
+                        <div class="key-concept">
+                            <strong>关键概念:</strong> 弯箭头从亲核试剂的孤对电子或π键指向亲电中心，表示电子对的转移。
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="practice-panel">
+                    <div class="practice-title">互动练习</div>
+                    <div class="practice-area">
+                        <p>尝试绘制电子流动箭头：</p>
+                        <div class="molecule-builder">
+                            <div class="molecule-part" draggable="true">H₃C-CH=CH₂</div>
+                            <div class="molecule-part" draggable="true">H⁺</div>
+                            <div class="molecule-part" draggable="true">Br⁻</div>
+                            <div class="molecule-part" draggable="true">:OH⁻</div>
+                        </div>
+                        <button class="control-btn" id="checkArrowBtn">检查箭头</button>
+                        <div class="feedback" id="feedback"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="right-panel">
+                <div class="canvas-container">
+                    <canvas id="reactionCanvas" width="800" height="500"></canvas>
+                </div>
+                
+                <div class="info-panel">
+                    <div class="info-title">反应机理详解</div>
+                    <div class="info-content" id="mechanismInfo">
+                        <p><span class="highlight">加成反应机理:</span> 不饱和键（π键）打开，两个部分分别加到两端。</p>
+                        <p>1. 亲电试剂（如H⁺）进攻π键，形成碳正离子中间体。</p>
+                        <p>2. 亲核试剂（如Br⁻）进攻碳正离子，形成最终产物。</p>
+                        <p><span class="highlight">马氏规则:</span> 氢原子加到含氢较多的碳原子上。</p>
+                    </div>
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #909090;"></div>
+                        <span>碳原子 (C)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #ffffff; border: 1px solid #ccc;"></div>
+                        <span>氢原子 (H)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #ff0d0d;"></div>
+                        <span>氧原子 (O)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #3050f8;"></div>
+                        <span>氮原子 (N)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #1ff01f;"></div>
+                        <span>卤素 (Br/Cl)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #f9e300;"></div>
+                        <span>电子/箭头</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #00bfff;"></div>
+                        <span>亲核区域</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #ff6b6b;"></div>
+                        <span>亲电区域</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>有机化学反应机理教学动画 | 设计：教育技术专家 | 本动画使用HTML5 Canvas实现</p>
+            <p>提示：点击步骤按钮可跳转到特定步骤，使用速度滑块调整动画播放速度</p>
+        </footer>
+    </div>
+
+    <script>
+        // 全局变量
+        let canvas, ctx;
+        let currentReactionType = 'addition';
+        let currentExample = 'alkene-hbr';
+        let animationSpeed = 5;
+        let currentStep = 0;
+        let totalSteps = 4;
+        let isPlaying = false;
+        let animationFrameId = null;
+        let animationTime = 0;
+        
+        // 原子颜色映射
+        const atomColors = {
+            'C': '#909090',
+            'H': '#ffffff',
+            'O': '#ff0d0d',
+            'N': '#3050f8',
+            'Br': '#1ff01f',
+            'Cl': '#1ff01f'
+        };
+        
+        // 反应数据
+        const reactionData = {
+            'addition': {
+                'alkene-hbr': {
+                    name: '烯烃与HBr的加成',
+                    reactants: ['H₂C=CH₂', 'HBr'],
+                    products: ['CH₃-CH₂-Br'],
+                    steps: [
+                        {
+                            title: '步骤1: 亲电进攻',
+                            description: 'H⁺作为亲电试剂进攻π键，形成碳正离子中间体',
+                            mechanism: 'H⁺进攻烯烃的π键，π电子对转移到H⁺上，形成C-H键'
+                        },
+                        {
+                            title: '步骤2: 碳正离子形成',
+                            description: '生成仲碳正离子中间体（遵循马氏规则）',
+                            mechanism: 'π键断裂，正电荷转移到含氢较少的碳原子上'
+                        },
+                        {
+                            title: '步骤3: 亲核进攻',
+                            description: 'Br⁻作为亲核试剂进攻碳正离子',
+                            mechanism: 'Br⁻的孤对电子转移到带正电的碳原子上'
+                        },
+                        {
+                            title: '步骤4: 产物形成',
+                            description: '形成最终加成产物',
+                            mechanism: '形成新的C-Br键，得到溴乙烷'
+                        }
+                    ],
+                    mechanismInfo: '加成反应机理: 不饱和键（π键）打开，两个部分分别加到两端。\n1. 亲电试剂（如H⁺）进攻π键，形成碳正离子中间体。\n2. 亲核试剂（如Br⁻）进攻碳正离子，形成最终产物。\n马氏规则: 氢原子加到含氢较多的碳原子上。'
+                },
+                'alkyne-h2': {
+                    name: '炔烃与H₂的加成',
+                    reactants: ['HC≡CH', 'H₂'],
+                    products: ['H₂C=CH₂', 'CH₃-CH₃'],
+                    steps: [
+                        {
+                            title: '步骤1: 催化剂吸附',
+                            description: 'H₂在金属催化剂表面解离',
+                            mechanism: 'H-H键在催化剂表面断裂，形成两个吸附的H原子'
+                        },
+                        {
+                            title: '步骤2: 顺式加成',
+                            description: '两个H原子顺式加到炔烃三键上',
+                            mechanism: 'H原子从催化剂表面转移到炔烃上，形成烯烃'
+                        },
+                        {
+                            title: '步骤3: 进一步加成',
+                            description: '烯烃进一步加氢生成烷烃',
+                            mechanism: '剩余的π键与H原子反应'
+                        },
+                        {
+                            title: '步骤4: 产物解吸',
+                            description: '烷烃产物从催化剂表面解吸',
+                            mechanism: '形成最终烷烃产物'
+                        }
+                    ],
+                    mechanismInfo: '炔烃催化加氢机理: 在金属催化剂表面，H₂发生均裂，H原子顺式加到不饱和键上。\n1. H₂在催化剂表面解离为两个H原子。\n2. H原子顺式加到三键上，首先生成烯烃。\n3. 烯烃可进一步加氢生成烷烃。'
+                }
+            },
+            'substitution': {
+                'haloalkane-oh': {
+                    name: '卤代烷的SN2取代',
+                    reactants: ['CH₃-Br', 'OH⁻'],
+                    products: ['CH₃-OH', 'Br⁻'],
+                    steps: [
+                        {
+                            title: '步骤1: 亲核进攻',
+                            description: 'OH⁻从背面进攻碳原子',
+                            mechanism: '亲核试剂从离去基团背面接近碳原子'
+                        },
+                        {
+                            title: '步骤2: 过渡态形成',
+                            description: '形成五配位过渡态',
+                            mechanism: 'C-Br键部分断裂，C-OH键部分形成'
+                        },
+                        {
+                            title: '步骤3: 键的断裂与形成',
+                            description: 'C-Br键完全断裂，C-OH键完全形成',
+                            mechanism: 'Br⁻作为离去基团离开，OH⁻与碳原子成键'
+                        },
+                        {
+                            title: '步骤4: 产物形成',
+                            description: '生成醇和溴离子',
+                            mechanism: '构型发生瓦尔登翻转'
+                        }
+                    ],
+                    mechanismInfo: 'SN2取代反应机理: 一步协同反应，亲核试剂从背面进攻。\n1. 亲核试剂从离去基团背面进攻碳原子。\n2. 形成五配位过渡态。\n3. 旧键断裂与新键形成同时发生。\n4. 产物构型发生翻转（瓦尔登翻转）。'
+                }
+            },
+            'elimination': {
+                'haloalkane-oh-elim': {
+                    name: '卤代烷的E2消除',
+                    reactants: ['CH₃-CH₂-Br', 'OH⁻'],
+                    products: ['H₂C=CH₂', 'H₂O', 'Br⁻'],
+                    steps: [
+                        {
+                            title: '步骤1: 碱进攻β-氢',
+                            description: 'OH⁻进攻β-碳上的氢原子',
+                            mechanism: '碱夺取β-氢原子，形成部分负电荷'
+                        },
+                        {
+                            title: '步骤2: 键的同步变化',
+                            description: 'C-H键和C-Br键同步断裂',
+                            mechanism: 'β-氢被夺取，C-Br键开始断裂'
+                        },
+                        {
+                            title: '步骤3: π键形成',
+                            description: '在α和β碳之间形成π键',
+                            mechanism: '电子对转移到α和β碳之间形成双键'
+                        },
+                        {
+                            title: '步骤4: 产物形成',
+                            description: '生成烯烃、水和溴离子',
+                            mechanism: '离去基团Br⁻离开，形成最终产物'
+                        }
+                    ],
+                    mechanismInfo: 'E2消除反应机理: 一步协同反应，碱夺取β-氢。\n1. 强碱进攻β-氢原子。\n2. C-H键和C-X键同步断裂。\n3. 在α和β碳之间形成π键。\n4. 生成烯烃和离去基团。\n遵循查依采夫规则: 生成更稳定的烯烃（更多取代基）。'
+                }
+            }
+        };
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            canvas = document.getElementById('reactionCanvas');
+            ctx = canvas.getContext('2d');
+            
+            // 设置Canvas尺寸
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            // 初始化事件监听器
+            initEventListeners();
+            
+            // 绘制初始反应
+            drawReaction();
+        });
+        
+        // 调整Canvas尺寸
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            drawReaction();
+        }
+        
+        // 初始化事件监听器
+        function initEventListeners() {
+            // 反应类型按钮
+            document.querySelectorAll('.reaction-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.reaction-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentReactionType = this.dataset.type;
+                    
+                    // 显示对应的示例
+                    document.querySelectorAll('.example-list').forEach(list => {
+                        list.style.display = 'none';
+                    });
+                    document.getElementById(`${currentReactionType}-examples`).style.display = 'block';
+                    
+                    // 重置示例选择
+                    const firstExample = document.querySelector(`#${currentReactionType}-examples .example-btn`);
+                    if (firstExample) {
+                        document.querySelectorAll('.example-btn').forEach(b => b.classList.remove('active'));
+                        firstExample.classList.add('active');
+                        currentExample = firstExample.dataset.example;
+                    }
+                    
+                    resetAnimation();
+                    updateStepInfo();
+                    updateMechanismInfo();
+                });
+            });
+            
+            // 示例按钮
+            document.querySelectorAll('.example-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const parent = this.parentElement;
+                    parent.querySelectorAll('.example-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentExample = this.dataset.example;
+                    
+                    resetAnimation();
+                    updateStepInfo();
+                    updateMechanismInfo();
+                });
+            });
+            
+            // 控制按钮
+            document.getElementById('playBtn').addEventListener('click', playAnimation);
+            document.getElementById('pauseBtn').addEventListener('click', pauseAnimation);
+            document.getElementById('resetBtn').addEventListener('click', resetAnimation);
+            document.getElementById('prevStepBtn').addEventListener('click', prevStep);
+            document.getElementById('nextStepBtn').addEventListener('click', nextStep);
+            
+            // 速度滑块
+            const speedSlider = document.getElementById('speedSlider');
+            const speedValue = document.getElementById('speedValue');
+            speedSlider.addEventListener('input', function() {
+                animationSpeed = parseInt(this.value);
+                const speedText = ['极慢', '很慢', '慢', '较慢', '中速', '较快', '快', '很快', '极快', '最快'];
+                speedValue.textContent = speedText[animationSpeed - 1];
+            });
+            
+            // 步骤按钮
+            document.querySelectorAll('.step-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const step = parseInt(this.dataset.step);
+                    goToStep(step);
+                });
+            });
+            
+            // 检查箭头按钮
+            document.getElementById('checkArrowBtn').addEventListener('click', function() {
+                const feedback = document.getElementById('feedback');
+                const isCorrect = Math.random() > 0.5; // 模拟检查结果
+                
+                if (isCorrect) {
+                    feedback.textContent = '✓ 正确！电子流向绘制准确。';
+                    feedback.className = 'feedback correct';
+                } else {
+                    feedback.textContent = '✗ 电子流向错误，请检查亲电中心。';
+                    feedback.className = 'feedback incorrect';
+                }
+                
+                // 3秒后隐藏反馈
+                setTimeout(() => {
+                    feedback.style.display = 'none';
+                }, 3000);
+            });
+            
+            // 拖拽分子部件
+            document.querySelectorAll('.molecule-part').forEach(part => {
+                part.addEventListener('dragstart', function(e) {
+                    e.dataTransfer.setData('text/plain', this.textContent);
+                });
+            });
+        }
+        
+        // 播放动画
+        function playAnimation() {
+            if (isPlaying) return;
+            isPlaying = true;
+            document.getElementById('playBtn').disabled = true;
+            document.getElementById('pauseBtn').disabled = false;
+            animate();
+        }
+        
+        // 暂停动画
+        function pauseAnimation() {
+            isPlaying = false;
+            document.getElementById('playBtn').disabled = false;
+            document.getElementById('pauseBtn').disabled = true;
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+        }
+        
+        // 重置动画
+        function resetAnimation() {
+            pauseAnimation();
+            currentStep = 0;
+            animationTime = 0;
+            updateStepButtons();
+            drawReaction();
+            updateStepInfo();
+        }
+        
+        // 上一步
+        function prevStep() {
+            if (currentStep > 0) {
+                currentStep--;
+                updateStepButtons();
+                drawReaction();
+                updateStepInfo();
+            }
+        }
+        
+        // 下一步
+        function nextStep() {
+            if (currentStep < totalSteps - 1) {
+                currentStep++;
+                updateStepButtons();
+                drawReaction();
+                updateStepInfo();
+            }
+        }
+        
+        // 跳转到指定步骤
+        function goToStep(step) {
+            if (step >= 0 && step < totalSteps) {
+                currentStep = step;
+                updateStepButtons();
+                drawReaction();
+                updateStepInfo();
+            }
+        }
+        
+        // 更新步骤按钮状态
+        function updateStepButtons() {
+            document.querySelectorAll('.step-btn').forEach((btn, index) => {
+                btn.classList.remove('active', 'completed');
+                if (index === currentStep) {
+                    btn.classList.add('active');
+                } else if (index < currentStep) {
+                    btn.classList.add('completed');
+                }
+            });
+        }
+        
+        // 更新步骤信息
+        function updateStepInfo() {
+            const stepInfo = document.getElementById('stepInfo');
+            const data = reactionData[currentReactionType]?.[currentExample];
+            
+            if (data && data.steps && data.steps[currentStep]) {
+                const step = data.steps[currentStep];
+                stepInfo.innerHTML = `
+                    <p><span class="highlight">${step.title}</span></p>
+                    <p>${step.description}</p>
+                    <div class="key-concept">
+                        <strong>机理描述:</strong> ${step.mechanism}
+                    </div>
+                `;
+            }
+        }
+        
+        // 更新机理信息
+        function updateMechanismInfo() {
+            const mechanismInfo = document.getElementById('mechanismInfo');
+            const data = reactionData[currentReactionType]?.[currentExample];
+            
+            if (data && data.mechanismInfo) {
+                mechanismInfo.innerHTML = data.mechanismInfo.split('\n').map(line => {
+                    if (line.includes(':')) {
+                        const parts = line.split(':');
+                        return `<p><span class="highlight">${parts[0]}:</span>${parts.slice(1).join(':')}</p>`;
+                    }
+                    return `<p>${line}</p>`;
+                }).join('');
+            }
+        }
+        
+        // 动画循环
+        function animate() {
+            if (!isPlaying) return;
+            
+            animationTime += 0.02 * animationSpeed;
+            
+            // 如果动画时间超过当前步骤的持续时间，进入下一步
+            if (animationTime > 1) {
+                animationTime = 0;
+                if (currentStep < totalSteps - 1) {
+                    currentStep++;
+                    updateStepButtons();
+                    updateStepInfo();
+                } else {
+                    pauseAnimation();
+                    return;
+                }
+            }
+            
+            drawReaction();
+            animationFrameId = requestAnimationFrame(animate);
+        }
+        
+        // 绘制反应
+        function drawReaction() {
+            // 清除画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制背景
+            ctx.fillStyle = '#1a252f';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 获取当前反应数据
+            const data = reactionData[currentReactionType]?.[currentExample];
+            if (!data) return;
+            
+            // 绘制标题
+            ctx.fillStyle = '#f9e300';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(data.name, canvas.width / 2, 40);
+            
+            // 绘制反应物和产物
+            ctx.font = 'bold 20px Arial';
+            ctx.fillStyle = '#ecf0f1';
+            
+            // 反应物
+            ctx.fillText('反应物:', canvas.width * 0.2, 100);
+            data.reactants.forEach((reactant, i) => {
+                ctx.fillText(reactant, canvas.width * 0.2, 130 + i * 30);
+            });
+            
+            // 反应箭头
+            ctx.fillStyle = '#3498db';
+            ctx.font = 'bold 30px Arial';
+            ctx.fillText('→', canvas.width * 0.45, 120);
+            
+            // 产物
+            ctx.fillStyle = '#ecf0f1';
+            ctx.font = 'bold 20px Arial';
+            ctx.fillText('产物:', canvas.width * 0.7, 100);
+            data.products.forEach((product, i) => {
+                ctx.fillText(product, canvas.width * 0.7, 130 + i * 30);
+            });
+            
+            // 根据反应类型和步骤绘制机理
+            drawMechanism();
+            
+            // 绘制当前步骤指示器
+            ctx.fillStyle = '#2ecc71';
+            ctx.font = '16px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText(`当前步骤: ${currentStep + 1}/${totalSteps}`, 20, canvas.height - 30);
+            
+            // 绘制电子流动箭头（动画效果）
+            drawElectronArrows();
+        }
+        
+        // 绘制机理示意图
+        function drawMechanism() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2 + 50;
+            
+            // 根据反应类型绘制不同的机理
+            switch(currentReactionType) {
+                case 'addition':
+                    drawAdditionMechanism(centerX, centerY);
+                    break;
+                case 'substitution':
+                    drawSubstitutionMechanism(centerX, centerY);
+                    break;
+                case 'elimination':
+                    drawEliminationMechanism(centerX, centerY);
+                    break;
+            }
+        }
+        
+        // 绘制加成反应机理
+        function drawAdditionMechanism(centerX, centerY) {
+            // 绘制烯烃分子
+            drawAtom(centerX - 100, centerY, 'C', 'C1');
+            drawAtom(centerX - 60, centerY, 'C', 'C2');
+            drawBond(centerX - 100, centerY, centerX - 60, centerY, 2); // 双键
+            
+            // 绘制氢原子
+            drawAtom(centerX - 120, centerY - 30, 'H', 'H1');
+            drawAtom(centerX - 120, centerY + 30, 'H', 'H2');
+            drawAtom(centerX - 40, centerY - 30, 'H', 'H3');
+            drawAtom(centerX - 40, centerY + 30, 'H', 'H4');
+            
+            drawBond(centerX - 100, centerY, centerX - 120, centerY - 30, 1);
+            drawBond(centerX - 100, centerY, centerX - 120, centerY + 30, 1);
+            drawBond(centerX - 60, centerY, centerX - 40, centerY - 30, 1);
+            drawBond(centerX - 60, centerY, centerX - 40, centerY + 30, 1);
+            
+            // 绘制HBr分子
+            drawAtom(centerX + 
+<!--检测到代码截断，自动续写中...-->
+100, centerY - 50, 'H', 'H5');
+            drawAtom(centerX + 140, centerY - 50, 'Br', 'Br1');
+            drawBond(centerX + 100, centerY - 50, centerX + 140, centerY - 50, 1);
+            
+            // 根据步骤绘制动画
+            if (currentStep >= 0) {
+                // 步骤1: 亲电进攻 - H⁺进攻π键
+                const progress = Math.min(1, animationTime * 2);
+                const arrowStartX = centerX + 100;
+                const arrowStartY = centerY - 50;
+                const arrowEndX = centerX - 80 + (centerX - 80 - arrowStartX) * progress;
+                const arrowEndY = centerY + (centerY - arrowStartY) * progress;
+                
+                // 绘制电子箭头
+                drawCurvedArrow(arrowStartX, arrowStartY, arrowEndX, arrowEndY, progress);
+                
+                // 高亮亲电区域
+                if (progress < 0.5) {
+                    drawHighlight(centerX - 80, centerY, 40, '#ff6b6b', 0.3);
+                }
+            }
+            
+            if (currentStep >= 1) {
+                // 步骤2: 碳正离子形成
+                drawAtom(centerX - 80, centerY, 'C', 'C1', true); // 带正电荷
+                drawAtom(centerX - 40, centerY, 'C', 'C2');
+                
+                // 绘制单键
+                drawBond(centerX - 80, centerY, centerX - 40, centerY, 1);
+                
+                // 绘制H⁺已加到碳上
+                drawAtom(centerX - 80, centerY - 20, 'H', 'H5');
+                drawBond(centerX - 80, centerY, centerX - 80, centerY - 20, 1);
+                
+                // 高亮碳正离子
+                drawHighlight(centerX - 80, centerY, 30, '#ff6b6b', 0.5);
+            }
+            
+            if (currentStep >= 2) {
+                // 步骤3: 亲核进攻 - Br⁻进攻碳正离子
+                const progress = Math.max(0, Math.min(1, (animationTime - 0.5) * 2));
+                const arrowStartX = centerX + 140;
+                const arrowStartY = centerY - 50;
+                const arrowEndX = centerX - 80 + (centerX - 80 - arrowStartX) * progress;
+                const arrowEndY = centerY + 20 + (centerY + 20 - arrowStartY) * progress;
+                
+                // 绘制电子箭头
+                drawCurvedArrow(arrowStartX, arrowStartY, arrowEndX, arrowEndY, progress, true);
+                
+                // 高亮亲核试剂
+                drawHighlight(centerX + 140, centerY - 50, 25, '#00bfff', 0.3);
+            }
+            
+            if (currentStep >= 3) {
+                // 步骤4: 产物形成
+                drawAtom(centerX - 80, centerY, 'C', 'C1');
+                drawAtom(centerX - 40, centerY, 'C', 'C2');
+                drawBond(centerX - 80, centerY, centerX - 40, centerY, 1);
+                
+                // 绘制Br加到碳上
+                drawAtom(centerX - 80, centerY + 20, 'Br', 'Br1');
+                drawBond(centerX - 80, centerY, centerX - 80, centerY + 20, 1);
+                
+                // 绘制最终产物
+                ctx.fillStyle = '#2ecc71';
+                ctx.font = 'bold 18px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('CH₃-CH₂-Br', centerX, centerY + 100);
+            }
+        }
+        
+        // 绘制取代反应机理
+        function drawSubstitutionMechanism(centerX, centerY) {
+            // 绘制CH₃-Br分子
+            drawAtom(centerX - 80, centerY, 'C', 'C1');
+            drawAtom(centerX - 120, centerY - 30, 'H', 'H1');
+            drawAtom(centerX - 120, centerY + 30, 'H', 'H2');
+            drawAtom(centerX - 40, centerY, 'H', 'H3');
+            drawAtom(centerX - 80, centerY - 60, 'Br', 'Br1');
+            
+            drawBond(centerX - 80, centerY, centerX - 120, centerY - 30, 1);
+            drawBond(centerX - 80, centerY, centerX - 120, centerY + 30, 1);
+            drawBond(centerX - 80, centerY, centerX - 40, centerY, 1);
+            drawBond(centerX - 80, centerY, centerX - 80, centerY - 60, 1);
+            
+            // 绘制OH⁻离子
+            drawAtom(centerX + 80, centerY, 'O', 'O1');
+            drawAtom(centerX + 80, centerY - 30, 'H', 'H4');
+            drawBond(centerX + 80, centerY, centerX + 80, centerY - 30, 1);
+            
+            // 绘制负电荷
+            ctx.fillStyle = '#f9e300';
+            ctx.font = 'bold 20px Arial';
+            ctx.fillText('⁻', centerX + 95, centerY - 5);
+            
+            if (currentStep >= 0) {
+                // 步骤1: 亲核试剂从背面进攻
+                const progress = Math.min(1, animationTime * 2);
+                const angle = Math.PI * 0.7; // 从背面进攻的角度
+                const radius = 60;
+                const arrowStartX = centerX + 80;
+                const arrowStartY = centerY;
+                const arrowEndX = centerX - 80 + radius * Math.cos(angle) * progress;
+                const arrowEndY = centerY + radius * Math.sin(angle) * progress;
+                
+                drawCurvedArrow(arrowStartX, arrowStartY, arrowEndX, arrowEndY, progress);
+                
+                // 高亮亲核试剂
+                drawHighlight(centerX + 80, centerY, 25, '#00bfff', 0.3);
+            }
+            
+            if (currentStep >= 1) {
+                // 步骤2: 过渡态形成
+                const progress = Math.max(0, Math.min(1, (animationTime - 0.5) * 2));
+                
+                // 绘制五配位过渡态
+                drawAtom(centerX - 80, centerY, 'C', 'C1');
+                
+                // 部分形成的C-O键
+                ctx.strokeStyle = '#f9e300';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 3]);
+                ctx.beginPath();
+                ctx.moveTo(centerX - 80, centerY);
+                ctx.lineTo(centerX - 40, centerY);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                // 部分断裂的C-Br键
+                ctx.beginPath();
+                ctx.moveTo(centerX - 80, centerY);
+                ctx.lineTo(centerX - 80, centerY - 60 + 20 * progress);
+                ctx.stroke();
+                
+                // 绘制过渡态指示
+                ctx.fillStyle = '#ffa500';
+                ctx.font = 'italic 16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('过渡态', centerX - 20, centerY - 80);
+            }
+            
+            if (currentStep >= 2) {
+                // 步骤3: 键的断裂与形成
+                drawAtom(centerX - 80, centerY, 'C', 'C1');
+                drawAtom(centerX - 40, centerY, 'O', 'O1');
+                drawBond(centerX - 80, centerY, centerX - 40, centerY, 1);
+                
+                // 绘制Br⁻离开
+                const progress = Math.max(0, Math.min(1, (animationTime - 1) * 2));
+                const brY = centerY - 60 + 40 * progress;
+                drawAtom(centerX - 80, brY, 'Br', 'Br1');
+                
+                // 绘制负电荷
+                ctx.fillStyle = '#f9e300';
+                ctx.font = 'bold 20px Arial';
+                ctx.fillText('⁻', centerX - 65, brY - 5);
+            }
+            
+            if (currentStep >= 3) {
+                // 步骤4: 产物形成
+                drawAtom(centerX - 80, centerY, 'C', 'C1');
+                drawAtom(centerX - 40, centerY, 'O', 'O1');
+                drawAtom(centerX - 40, centerY - 30, 'H', 'H4');
+                drawBond(centerX - 80, centerY, centerX - 40, centerY, 1);
+                drawBond(centerX - 40, centerY, centerX - 40, centerY - 30, 1);
+                
+                // 绘制最终产物
+                ctx.fillStyle = '#2ecc71';
+                ctx.font = 'bold 18px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('CH₃-OH + Br⁻', centerX, centerY + 100);
+            }
+        }
+        
+        // 绘制消去反应机理
+        function drawEliminationMechanism(centerX, centerY) {
+            // 绘制CH₃-CH₂-Br分子
+            drawAtom(centerX - 100, centerY, 'C', 'C1'); // α-碳
+            drawAtom(centerX - 40, centerY, 'C', 'C2'); // β-碳
+            
+            // α-碳上的基团
+            drawAtom(centerX - 120, centerY - 30, 'H', 'H1');
+            drawAtom(centerX - 120, centerY + 30, 'H', 'H2');
+            drawAtom(centerX - 100, centerY - 60, 'Br', 'Br1');
+            
+            // β-碳上的基团
+            drawAtom(centerX - 20, centerY - 30, 'H', 'H3');
+            drawAtom(centerX - 20, centerY + 30, 'H', 'H4');
+            drawAtom(centerX - 40, centerY + 60, 'H', 'H5'); // 被夺取的β-氢
+            
+            drawBond(centerX - 100, centerY, centerX - 120, centerY - 30, 1);
+            drawBond(centerX - 100, centerY, centerX - 120, centerY + 30, 1);
+            drawBond(centerX - 100, centerY, centerX - 100, centerY - 60, 1);
+            drawBond(centerX - 100, centerY, centerX - 40, centerY, 1);
+            drawBond(centerX - 40, centerY, centerX - 20, centerY - 30, 1);
+            drawBond(centerX - 40, centerY, centerX - 20, centerY + 30, 1);
+            drawBond(centerX - 40, centerY, centerX - 40, centerY + 60, 1);
+            
+            // 绘制OH⁻离子
+            drawAtom(centerX + 80, centerY + 30, 'O', 'O1');
+            drawAtom(centerX + 80, centerY, 'H', 'H6');
+            drawBond(centerX + 80, centerY + 30, centerX + 80, centerY, 1);
+            
+            // 绘制负电荷
+            ctx.fillStyle = '#f9e300';
+            ctx.font = 'bold 20px Arial';
+            ctx.fillText('⁻', centerX + 95, centerY + 25);
+            
+            if (currentStep >= 0) {
+                // 步骤1: 碱进攻β-氢
+                const progress = Math.min(1, animationTime * 2);
+                const arrowStartX = centerX + 80;
+                const arrowStartY = centerY + 30;
+                const arrowEndX = centerX - 40 + (centerX - 40 - arrowStartX) * progress;
+                const arrowEndY = centerY + 60 + (centerY + 60 - arrowStartY) * progress;
+                
+                drawCurvedArrow(arrowStartX, arrowStartY, arrowEndX, arrowEndY, progress);
+                
+                // 高亮β-氢
+                drawHighlight(centerX - 40, centerY + 60, 20, '#ff6b6b', 0.3);
+            }
+            
+            if (currentStep >= 1) {
+                // 步骤2: 键的同步变化
+                const progress = Math.max(0, Math.min(1, (animationTime - 0.5) * 2));
+                
+                // C-H键部分断裂
+                ctx.strokeStyle = '#ffa500';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 3]);
+                ctx.beginPath();
+                ctx.moveTo(centerX - 40, centerY);
+                ctx.lineTo(centerX - 40, centerY + 60 - 20 * progress);
+                ctx.stroke();
+                
+                // C-Br键部分断裂
+                ctx.beginPath();
+                ctx.moveTo(centerX - 100, centerY);
+                ctx.lineTo(centerX - 100, centerY - 60 + 20 * progress);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                // 绘制电子流向
+                drawElectronFlowArrow(centerX - 40, centerY + 30, centerX - 70, centerY, progress);
+            }
+            
+            if (currentStep >= 2) {
+                // 步骤3: π键形成
+                const progress = Math.max(0, Math.min(1, (animationTime - 1) * 2));
+                
+                // 绘制π键
+                drawBond(centerX - 100, centerY, centerX - 40, centerY, 2, progress);
+                
+                // 绘制H₂O形成
+                drawAtom(centerX + 40, centerY + 80, 'O', 'O1');
+                drawAtom(centerX + 40, centerY + 50, 'H', 'H6');
+                drawAtom(centerX + 40, centerY + 110, 'H', 'H5');
+                drawBond(centerX + 40, centerY + 80, centerX + 40, centerY + 50, 1);
+                drawBond(centerX + 40, centerY + 80, centerX + 40, centerY + 110, 1);
+            }
+            
+            if (currentStep >= 3) {
+                // 步骤4: 产物形成
+                // 绘制烯烃双键
+                drawBond(centerX - 100, centerY, centerX - 40, centerY, 2);
+                
+                // 绘制Br⁻
+                drawAtom(centerX - 100, centerY - 40, 'Br', 'Br1');
+                ctx.fillStyle = '#f9e300';
+                ctx.font = 'bold 20px Arial';
+                ctx.fillText('⁻', centerX - 85, centerY - 45);
+                
+                // 绘制最终产物
+                ctx.fillStyle = '#2ecc71';
+                ctx.font = 'bold 18px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('H₂C=CH₂ + H₂O + Br⁻', centerX, centerY + 120);
+            }
+        }
+        
+        // 绘制电子箭头
+        function drawElectronArrows() {
+            // 根据当前步骤绘制动态电子箭头
+            if (!isPlaying) return;
+            
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2 + 50;
+            
+            // 创建脉动效果
+            const pulse = 0.5 + 0.5 * Math.sin(animationTime * Math.PI * 4);
+            
+            if (currentStep === 0 && animationTime < 0.5) {
+                // 加成反应步骤1的电子箭头
+                ctx.strokeStyle = '#f9e300';
+                ctx.lineWidth = 3;
+                ctx.setLineDash([10, 5]);
+                ctx.beginPath();
+                ctx.moveTo(centerX + 100, centerY - 50);
+                ctx.lineTo(centerX - 80, centerY);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                // 绘制箭头头部
+                drawArrowHead(centerX - 80, centerY, Math.PI, pulse);
+            }
+        }
+        
+        // 绘制原子
+        function drawAtom(x, y, element, label, positiveCharge = false) {
+            // 绘制原子球
+            ctx.beginPath();
+            ctx.arc(x, y, 20, 0, Math.PI * 2);
+            ctx.fillStyle = atomColors[element] || '#909090';
+            ctx.fill();
+            ctx.strokeStyle = '#ecf0f1';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 绘制元素符号
+            ctx.fillStyle = element === 'H' ? '#2c3e50' : '#ffffff';
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(element, x, y);
+            
+            // 绘制电荷
+            if (positiveCharge) {
+                ctx.fillStyle = '#ff6b6b';
+                ctx.font = 'bold 20px Arial';
+                ctx.fillText('+', x + 15, y - 15);
+            }
+        }
+        
+        // 绘制化学键
+        function drawBond(x1, y1, x2, y2, bondType = 1, progress = 1) {
+            ctx.strokeStyle = '#ecf0f1';
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+            
+            if (bondType === 1) {
+                // 单键
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+            } else if (bondType === 2) {
+                // 双键
+                const dx = x2 - x1;
+                const dy = y2 - y1;
+                const length = Math.sqrt(dx * dx + dy * dy);
+                const angle = Math.atan2(dy, dx);
+                
+                // 计算垂直方向
+                const perpX = -dy / length * 5;
+                const perpY = dx / length * 5;
+                
+                // 第一条线
+                ctx.beginPath();
+                ctx.moveTo(x1 + perpX, y1 + perpY);
+                ctx.lineTo(x2 + perpX, y2 + perpY);
+                ctx.stroke();
+                
+                // 第二条线（根据进度绘制）
+                if (progress >= 1) {
+                    ctx.beginPath();
+                    ctx.moveTo(x1 - perpX, y1 - perpY);
+                    ctx.lineTo(x2 - perpX, y2 - perpY);
+                    ctx.stroke();
+                } else if (progress > 0) {
+                    // 部分绘制的双键
+                    const midX = x1 + dx * progress;
+                    const midY = y1 + dy * progress;
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(x1 - perpX, y1 - perpY);
+                    ctx.lineTo(midX - perpX, midY - perpY);
+                    ctx.stroke();
+                }
+            }
+        }
+        
+        // 绘制弯曲箭头（表示电子流动）
+        function drawCurvedArrow(startX, startY, endX, endY, progress, reverse = false) {
+            if (progress <= 0) return;
+            
+            // 计算控制点以创建曲线
+            const midX = (startX + endX) / 2;
+            const midY = (startY + endY) / 2;
+            
+            // 垂直偏移量
+            const dx = endX - startX;
+            const dy = endY - startY;
+            const length = Math.sqrt(dx * dx + dy * dy);
+            const perpX = -dy / length * 30;
+            const perpY = dx / length * 30;
+            
+            const controlX = midX + perpX;
+            const controlY = midY + perpY;
+            
+            // 绘制曲线
+            ctx.strokeStyle = '#f9e300';
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+            
+            // 计算当前进度对应的点
+            const t = progress;
+            const currentX = (1-t)*(1-t)*startX + 2*(1-t)*t*controlX + t*t*endX;
+            const currentY = (1-t)*(1-t)*startY + 2*(1-t)*t*controlY + t*t*endY;
+            
+            // 绘制已完成的曲线部分
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            
+            // 使用二次贝塞尔曲线绘制
+            for (let i = 0; i <= 20; i++) {
+                const t2 = i / 20 * t;
+                const x = (1-t2)*(1-t2)*startX + 2*(1-t2)*t2*controlX + t2*t2*endX;
+                const y = (1-t2)*(1-t2)*startY + 2*(1-t2)*t2*controlY + t2*t2*endY;
+                ctx.lineTo(x, y);
+            }
+            
+            ctx.stroke();
+            
+            // 绘制箭头头部
+            if (progress > 0.1) {
+                // 计算曲线在箭头位置的方向
+                const tArrow = Math.max(0.1, progress - 0.1);
+                const arrowX = (1-tArrow)*(1-tArrow)*startX + 2*(1-tArrow)*tArrow*controlX + tArrow*tArrow*endX;
+                const arrowY = (1-tArrow)*(1-tArrow)*startY + 2*(1-tArrow)*tArrow*controlY + tArrow*tArrow*endY;
+                
+                // 计算导数得到切线方向
+                const dxdt = 2*(1-tArrow)*(controlX-startX) + 2*tArrow*(endX-controlX);
+                const dydt = 2*(1-tArrow)*(controlY-startY) + 2*tArrow*(endY-controlY);
+                const angle = Math.atan2(dydt, dxdt);
+                
+                drawArrowHead(arrowX, arrowY, angle, 1);
+            }
+        }
+        
+        // 绘制箭头头部
+        function drawArrowHead(x, y, angle, size = 1) {
+            const headLength = 15 * size;
+            const headAngle = Math.PI / 6;
+            
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle);
+            
+            ctx.fillStyle = '#f9e300';
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(-headLength, headLength * Math.tan(headAngle));
+            ctx.lineTo(-headLength, -headLength * Math.tan(headAngle));
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.restore();
+        }
+        
+        // 绘制高亮区域
+        function drawHighlight(x, y, radius, color, alpha) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.globalAlpha = alpha;
+            ctx.fill();
+            ctx.restore();
+        }
+        
+        // 绘制电子流动箭头（直线）
+        function drawElectronFlowArrow(startX, startY, endX, endY, progress) {
+            if (progress <= 0) return;
+            
+            const currentX = startX + (endX - startX) * progress;
+            const currentY = startY + (endY - startY) * progress;
+            
+            ctx.strokeStyle = '#f9e300';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 3]);
+            
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(currentX, currentY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // 绘制箭头头部
+            if (progress > 0.2) {
+                const angle = Math.atan2(endY - startY, endX - startX);
+                drawArrowHead(currentX, currentY, angle, 0.8);
+            }
+        }
+    </script>
+</body>
+</html>

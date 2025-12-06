@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>氢气在氯气中燃烧 - 教学动画</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+            color: #e8eaf6;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .equation {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin: 15px auto;
+            display: inline-block;
+            border: 2px solid #5c6bc0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .scene-selector {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .scene-btn {
+            background: #3949ab;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        .scene-btn:hover {
+            background: #5c6bc0;
+            transform: translateY(-2px);
+        }
+
+        .scene-btn.active {
+            background: #ff9800;
+            box-shadow: 0 0 15px rgba(255, 152, 0, 0.5);
+        }
+
+        .animation-container {
+            width: 100%;
+            max-width: 900px;
+            height: 500px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 25px;
+            border: 2px solid #5c6bc0;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+
+        #canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            background: #303f9f;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        .control-btn:hover {
+            background: #3f51b5;
+            transform: translateY(-2px);
+        }
+
+        .control-btn:active {
+            transform: translateY(0);
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 50px;
+        }
+
+        #progressSlider {
+            width: 200px;
+            height: 8px;
+            -webkit-appearance: none;
+            background: #5c6bc0;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        #progressSlider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #ff9800;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .info-panel {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            max-width: 900px;
+            width: 100%;
+            margin-top: 10px;
+            border-left: 5px solid #ff9800;
+        }
+
+        .info-title {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: #ffcc80;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-content {
+            line-height: 1.6;
+            font-size: 1.05rem;
+        }
+
+        .hint {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: #ffcc80;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            pointer-events: none;
+            opacity: 0.9;
+        }
+
+        .atom-label {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            pointer-events: none;
+            z-index: 100;
+            white-space: nowrap;
+            transform: translateY(-100%);
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .animation-container {
+                height: 400px;
+            }
+            
+            .scene-btn, .control-btn {
+                padding: 10px 20px;
+                font-size: 1rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>氢气在氯气中燃烧</h1>
+        <div class="subtitle">宏观现象 · 微观过程 · 化学方程式</div>
+        <div class="equation">H₂ + Cl₂ → 2HCl</div>
+    </div>
+
+    <div class="scene-selector">
+        <button class="scene-btn active" data-scene="macro">🔥 宏观火焰</button>
+        <button class="scene-btn" data-scene="micro">🔬 微观反应</button>
+        <button class="scene-btn" data-scene="equation">📝 方程式总结</button>
+    </div>
+
+    <div class="animation-container">
+        <canvas id="canvas"></canvas>
+        <div class="hint" id="hintText">鼠标悬停在分子上查看详细信息</div>
+        <div class="atom-label" id="atomLabel"></div>
+    </div>
+
+    <div class="controls">
+        <button class="control-btn" id="playBtn">▶️ 播放</button>
+        <button class="control-btn" id="pauseBtn">⏸️ 暂停</button>
+        <button class="control-btn" id="resetBtn">🔄 重置</button>
+        
+        <div class="slider-container">
+            <span>进度控制:</span>
+            <input type="range" id="progressSlider" min="0" max="100" value="0">
+        </div>
+    </div>
+
+    <div class="info-panel">
+        <div class="info-title">📚 当前学习要点</div>
+        <div class="info-content" id="infoContent">
+            观察氢气在氯气中燃烧产生的淡绿黄色火焰。这是一个剧烈的化合反应，需要在专业指导下进行。
+        </div>
+    </div>
+
+    <script>
+        // 获取DOM元素
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const sceneBtns = document.querySelectorAll('.scene-btn');
+        const playBtn = document.getElementById('playBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const progressSlider = document.getElementById('progressSlider');
+        const hintText = document.getElementById('hintText');
+        const atomLabel = document.getElementById('atomLabel');
+        const infoContent = document.getElementById('infoContent');
+
+        // 设置Canvas尺寸
+        function resizeCanvas() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // 动画状态
+        let currentScene = 'macro';
+        let animationTime = 0;
+        let isPlaying = true;
+        let animationSpeed = 0.01;
+        let hoveredObject = null;
+
+        // 颜色定义
+        const colors = {
+            background: { macro: '#0a0e1a', micro: '#f5f7fa', equation: '#1a237e' },
+            hydrogen: '#ffffff',
+            chlorine: '#9acd32',
+            flameCore: '#ffff00',
+            flameEdge: '#adff2f',
+            bond: '#666666',
+            highlight: '#ff5722',
+            text: '#333333'
+        };
+
+        // 分子和原子数据
+        const molecules = {
+            h2: { x: 0, y: 0, atoms: [{type: 'H', x: 0, y: 0}, {type: 'H', x: 0, y: 0}], bondLength: 40 },
+            cl2: { x: 0, y: 0, atoms: [{type: 'Cl', x: 0, y: 0}, {type: 'Cl', x: 0, y: 0}], bondLength: 60 },
+            hcl1: { x: 0, y: 0, atoms: [{type: 'H', x: 0, y: 0}, {type: 'Cl', x: 0, y: 0}], bondLength: 50 },
+            hcl2: { x: 0, y: 0, atoms: [{type: 'H', x: 0, y: 0}, {type: 'Cl', x: 0, y: 0}], bondLength: 50 }
+        };
+
+        // 火焰粒子系统
+        const flameParticles = [];
+        for (let i = 0; i < 80; i++) {
+            flameParticles.push({
+                x: 0, y: 0,
+                vx: (Math.random() - 0.5) * 2,
+                vy: -Math.random() * 3 - 1,
+                life: Math.random(),
+                size: Math.random() * 8 + 4
+            });
+        }
+
+        // 场景切换
+        sceneBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                sceneBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentScene = btn.dataset.scene;
+                animationTime = 0;
+                updateInfoContent();
+                hintText.style.display = currentScene === 'micro' ? 'block' : 'none';
+            });
+        });
+
+        // 控制按钮事件
+        playBtn.addEventListener('click', () => isPlaying = true);
+        pauseBtn.addEventListener('click', () => isPlaying = false);
+        resetBtn.addEventListener('click', () => {
+            animationTime = 0;
+            progressSlider.value = 0;
+        });
+
+        // 进度条控制
+        progressSlider.addEventListener('input', (e) => {
+            animationTime = parseInt(e.target.value) / 100;
+            isPlaying = false;
+        });
+
+        // Canvas鼠标交互
+        canvas.addEventListener('mousemove', (e) => {
+            if (currentScene !== 'micro') return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            hoveredObject = null;
+            
+            // 检查是否悬停在分子上
+            Object.keys(molecules).forEach(key => {
+                const mol = molecules[key];
+                const dx = x - mol.x;
+                const dy = y - mol.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < 50) {
+                    hoveredObject = {
+                        type: key,
+                        x: mol.x,
+                        y: mol.y
+                    };
+                }
+            });
+            
+            if (hoveredObject) {
+                atomLabel.style.display = 'block';
+                atomLabel.style.left = hoveredObject.x + 'px';
+                atomLabel.style.top = hoveredObject.y + 'px';
+                
+                let label = '';
+                switch(hoveredObject.type) {
+                    case 'h2': label = '氢分子 (H₂)'; break;
+                    case 'cl2': label = '氯分子 (Cl₂)'; break;
+                    case 'hcl1': 
+                    case 'hcl2': label = '氯化氢分子 (HCl)'; break;
+                }
+                atomLabel.textContent = label;
+            } else {
+                atomLabel.style.display = 'none';
+            }
+        });
+
+        // 更新信息面板内容
+        function updateInfoContent() {
+            switch(currentScene) {
+                case 'macro':
+                    infoContent.innerHTML = `
+                        <strong>宏观现象观察：</strong><br>
+                        • 氢气在氯气中安静地燃烧<br>
+                        • 产生<strong style="color: #adff2f">淡绿黄色火焰</strong><br>
+                        • 反应生成氯化氢气体<br>
+                        • 实验需在通风橱中进行
+                    `;
+                    break;
+                case 'micro':
+                    infoContent.innerHTML = `
+                        <strong>微观过程解析：</strong><br>
+                        • 氢分子(H₂)和氯分子(Cl₂)在点燃条件下化学键断裂<br>
+                        • 氢原子和氯原子重新组合<br>
+                        • 形成新的化学键，生成氯化氢分子(HCl)<br>
+                        • 这是一个<strong>化合反应</strong>
+                    `;
+                    break;
+                case 'equation':
+                    infoContent.innerHTML = `
+                        <strong>化学方程式总结：</strong><br>
+                        • <strong>H₂ + Cl₂ → 2HCl</strong><br>
+                        • 反应类型：化合反应<br>
+                        • 反应条件：点燃<br>
+                        • 各物质状态：H₂(气态)、Cl₂(气态)、HCl(气态)<br>
+                        • 原子守恒：反应前后氢原子和氯原子数目不变
+                    `;
+                    break;
+            }
+        }
+
+        // 绘制宏观火焰场景
+        function drawMacroScene() {
+            const centerX = canvas.width / 2;
+            const burnerY = canvas.height * 0.7;
+            
+            // 绘制背景
+            ctx.fillStyle = colors.background.macro;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制燃烧器
+            ctx.fillStyle = '#888888';
+            ctx.fillRect(centerX - 30, burnerY, 60, 40);
+            ctx.fillRect(centerX - 10, burnerY - 20, 20, 20);
+            
+            // 更新和绘制火焰粒子
+            const flameBaseX = centerX;
+            const flameBaseY = burnerY - 20;
+            
+            for (let particle of flameParticles) {
+                if (particle.life <= 0) {
+                    particle.x = flameBaseX + (Math.random() - 0.5) * 20;
+                    particle.y = flameBaseY;
+                    particle.life = 1;
+                    particle.vx = (Math.random() - 0.5) * 2;
+                    particle.vy = -Math.random() * 3 - 1;
+                }
+                
+                particle.x += particle.vx;
+                particle.y += particle.vy;
+                particle.life -= 0.02;
+                
+                // 计算粒子颜色（从黄色到黄绿色）
+                const gradient = ctx.createRadialGradient(
+                    particle.x, particle.y, 0,
+                    particle.x, particle.y, particle.size
+                );
+                
+                if (particle.life > 0.5) {
+                    gradient.addColorStop(0, colors.flameCore);
+                    gradient.addColorStop(1, `rgba(173, 255, 47, ${particle.life * 0.7})`);
+                } else {
+                    gradient.addColorStop(0, colors.flameEdge);
+                    gradient.addColorStop(1, `rgba(173, 255, 47, ${particle.life * 0.5})`);
+                }
+                
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(particle.x, particle.y, particle.size * particle.life, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // 绘制火焰标签
+            ctx.fillStyle = colors.flameEdge;
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('淡绿黄色火焰', centerX, burnerY - 100);
+        }
+
+        // 绘制微观反应场景
+        function drawMicroScene() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            // 绘制背景
+            ctx.fillStyle = colors.background.micro;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制网格背景
+            ctx.strokeStyle = 'rgba(200, 200, 200, 0.2)';
+            ctx.lineWidth = 1;
+            const gridSize = 40;
+            
+            for (let x = 0; x < canvas.width; x += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+            
+            for (let y = 0; y < canvas.height; y += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+            
+            // 计算动画进度
+            const t = Math.min(animationTime * 2, 1); // 加快动画速度
+            const reactionStage = Math.min(animationTime * 3, 1);
+            
+            // 更新分子位置
+            if (t < 0.5) {
+                // 第一阶段：分子相互靠近
+                const approachProgress = t * 2;
+                molecules.h2.x = centerX - 200 + approachProgress * 150;
+                molecules.h2.y = centerY;
+                molecules.cl2.x = centerX + 200 - approachProgress * 150;
+                molecules.cl2.y = centerY;
+            } else if (t < 0.8) {
+                // 第二阶段：化学键断裂
+                const breakProgress = (t - 0.5) * 3.33;
+                molecules.h2.x = centerX - 50;
+                molecules.h2.y = centerY;
+                molecules.cl2.x = centerX + 50;
+                molecules.cl2.y = centerY;
+                
+                // 高亮显示键断裂
+                ctx.fillStyle = colors.highlight;
+                ctx.globalAlpha = 0.5;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, 30, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+            } else {
+                // 第三阶段：重新组合成HCl
+                const formProgress = (t - 0.8) * 5;
+                molecules.hcl1.x = centerX - 100;
+                molecules.hcl1.y = centerY - 50;
+                molecules.hcl2.x = centerX + 100;
+                molecules.hcl2.y = centerY + 50;
+            }
+            
+            // 绘制分子
+            function drawMolecule(mol, label) {
+                // 更新原子位置
+                const angle = Math.PI / 4;
+                mol.atoms[0].x = mol.x - Math.cos(angle) * mol.bondLength / 2;
+                mol.atoms[0].y = mol.y - Math.sin(angle) * mol.bondLength / 2;
+                mol.atoms[1].x = mol.x + Math.cos(angle) * mol.bondLength / 2;
+                mol.atoms[1].y = mol.y + Math.sin(angle) * mol.bondLength / 2;
+                
+                // 绘制化学键
+                ctx.strokeStyle = colors.bond;
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(mol.atoms[0].x, mol.atoms[0].y);
+                ctx.lineTo(mol.atoms[1].x, mol.atoms[1].y);
+                ctx.stroke();
+                
+                // 绘制原子
+                mol.atoms.forEach(atom => {
+                    ctx.fillStyle = atom.type === 'H' ? colors.hydrogen : colors.chlorine;
+                    ctx.beginPath();
+                    ctx.arc(atom.x, atom.y, atom.type === 'H' ? 15 : 20, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // 原子标签
+                    ctx.fillStyle = colors.text;
+                    ctx.font = 'bold 16px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(atom.type, atom.x, atom.y);
+                });
+                
+                // 分子标签
+                if (label && t < 0.8) {
+                    ctx.fillStyle = colors.text;
+                    ctx.font = 'bold 18px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(label, mol.x, mol.y + 50);
+                }
+            }
+            
+            // 根据动画阶段绘制不同的分子
+            if (t < 0.8) {
+                drawMolecule(molecules.h2, 'H₂');
+                drawMolecule(molecules.cl2, 'Cl₂');
+            } else {
+                drawMolecule(molecules.hcl1, 'HCl');
+                drawMolecule(molecules.hcl2, 'HCl');
+            }
+            
+            // 绘制反应箭头和说明
+            ctx.fillStyle = colors.text;
+            ctx.font = 'bold 20px Arial';
+            ctx.textAlign = 'center';
+            
+            if (t < 0.5) {
+                ctx.fillText('分子相互靠近...', centerX, centerY + 150);
+            } else if (t < 0.8) {
+                ctx.fillText('化学键断裂，原子分离！', centerX, centerY + 150);
+                ctx.fillStyle = colors.highlight;
+                ctx.fillText('需要能量！', centerX, centerY + 180);
+            } else {
+                ctx.fillText('原子重新组合，形成HCl分子', centerX, centerY + 150);
+            }
+            
+            // 高亮悬停的分子
+            if (hoveredObject) {
+                ctx.strokeStyle = colors.highlight;
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(hoveredObject.x, hoveredObject.y, 55, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+        }
+
+        // 绘制方程式总结场景
+        function drawEquationScene() {
+            // 绘制背景
+            ctx.fillStyle = colors.background.equation;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            // 绘制大标题
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 48px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('氢气在氯气中燃烧', centerX, 80);
+            
+            // 绘制化学方程式
+            ctx.font = 'bold 72px "Courier New", monospace';
+            ctx.fillStyle = colors.hydrogen;
+            ctx.fillText('H₂', centerX - 180, centerY);
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText('+', centerX - 90, centerY);
+            
+            ctx.fillStyle = colors.chlorine;
+            ctx.fillText('Cl₂', centerX, centerY);
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText('→', centerX + 90, centerY);
+            
+            ctx.fillStyle = '#ff9800';
+            ctx.fillText('2HCl', centerX + 180, centerY);
+            
+            // 绘制反应条件
+            ctx.font = '24px Arial';
+            ctx.fillStyle = '#ffcc80';
+            ctx.fillText('点燃', centerX, centerY + 40);
+            
+            // 绘制分子模型图示
+            const scale = 0.8 + Math.sin(animationTime * 5) * 0.1;
+            
+            // 绘制H₂分子
+            drawSimpleMolecule(centerX - 250, centerY + 150, 30, colors.hydrogen, 'H', 'H₂', scale);
+            
+            // 绘制+号
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 36px Arial';
+            ctx.fillText('+', centerX - 150, centerY + 150);
+            
+            // 绘制Cl₂分子
+            drawSimpleMolecule(centerX - 50, centerY + 150, 35, colors.chlorine, 'Cl', 'Cl₂', scale);
+            
+            // 绘制箭头
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 36px Arial';
+            ctx.fillText('→', centerX + 50, centerY + 150);
+            
+            // 绘制2个HCl分子
+            drawSimpleMolecule(centerX + 120, centerY + 120, 30, colors.hydrogen, 'H', 'HCl', scale, colors.chlorine);
+            drawSimpleMolecule(centerX + 220, centerY + 180, 30, colors.hydrogen, 'H', 'HCl', scale, colors.chlorine);
+            
+            // 绘制"2×"
+            ctx.fillStyle = '#ff9800';
+            ctx.font = 'bold 24px Arial';
+            ctx.fillText('2 ×', centerX + 70, centerY + 150);
+            
+            // 绘制说明文字
+            ctx.fillStyle = '#c5cae9';
+            ctx.font = '20px Arial';
+            ctx.textAlign = 'center';
+            const lines = [
+                '这是一个化合反应',
+                '反应前：1个氢分子 + 1个氯分子',
+                '反应后：2个氯化氢分子',
+                '原子守恒：反应前后原子种类和数目不变'
+            ];
+            
+            lines.forEach((line, i) => {
+                ctx.fillText(line, centerX, centerY + 250 + i * 30);
+            });
+        }
+        
+        function drawSimpleMolecule(x, y, radius, color1, label1, name, scale, color2 = null) {
+            const angle = Math.PI / 4;
+            const bondLength = 50 * scale;
+            
+            const atom1X = x - Math.cos(angle) * bondLength / 2;
+            const atom1Y = y - Math.sin(angle) * bondLength / 2;
+            const atom2X = x + Math.cos(angle) * bondLength / 2;
+            const atom2Y = y + Math.sin(angle) * bondLength / 2;
+            
+            // 绘制化学键
+            ctx.strokeStyle = colors.bond;
+            ctx.lineWidth = 3 * scale;
+            ctx.beginPath();
+            ctx.moveTo(atom1X, atom1Y);
+            ctx.lineTo(atom2X, atom2Y);
+            ctx.stroke();
+            
+            // 绘制第一个原子
+            ctx.fillStyle = color1;
+            ctx.beginPath();
+            ctx.arc(atom1X, atom1Y, radius * scale, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.fillStyle = colors.text;
+            ctx.font = `bold ${16 * scale}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(label1, atom1X, atom1Y);
+            
+            // 绘制第二个原子
+            ctx.fillStyle = color2 || color1;
+            ctx.beginPath();
+            ctx.arc(atom2X, atom2Y, radius * scale, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.fillStyle = colors.text;
+            ctx.fillText(color2 ? 'Cl' : label1, atom2X, atom2Y);
+            
+            // 绘制分子名称
+            ctx.fillStyle = '#ffffff';
+            ctx.font = `bold ${18 * scale}px Arial`;
+            ctx.fillText(name, x, y + 60 * scale);
+        }
+
+        // 主动画循环
+        function animate() {
+            // 更新动画时间
+            if (isPlaying && animationTime < 1) {
+                animationTime += animationSpeed;
+                progressSlider.value = animationTime * 100;
+            }
+            
+            // 清除画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 根据当前场景绘制
+            switch(currentScene) {
+                case 'macro':
+                    drawMacroScene();
+                    break;
+                case 'micro':
+                    drawMicroScene();
+                    break;
+                case 'equation':
+                    drawEquationScene();
+                    break;
+            }
+            
+            requestAnimationFrame(animate);
+        }
+
+        // 初始化
+        updateInfoContent();
+        animate();
+    </script>
+</body>
+</html>

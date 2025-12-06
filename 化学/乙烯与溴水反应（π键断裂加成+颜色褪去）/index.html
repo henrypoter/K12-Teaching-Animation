@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>乙烯与溴水反应教学动画</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #f1f5f9;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        h1 {
+            color: #38bdf8;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 8px rgba(56, 189, 248, 0.3);
+        }
+
+        .subtitle {
+            color: #cbd5e1;
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            width: 100%;
+            max-width: 1200px;
+            justify-content: center;
+        }
+
+        .scene {
+            flex: 1;
+            min-width: 500px;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(56, 189, 248, 0.1);
+        }
+
+        .scene-title {
+            font-size: 1.5rem;
+            color: #38bdf8;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(56, 189, 248, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .scene-title i {
+            font-size: 1.3rem;
+        }
+
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background: rgba(15, 23, 42, 0.7);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .test-tube {
+            position: relative;
+            width: 120px;
+            height: 300px;
+            margin: 40px auto;
+        }
+
+        .tube-body {
+            position: absolute;
+            width: 100%;
+            height: 250px;
+            bottom: 0;
+            background: linear-gradient(to right, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            border-radius: 60px 60px 0 0;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            border-bottom: none;
+            overflow: hidden;
+        }
+
+        .liquid {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 80%;
+            background-color: #8B4513;
+            border-radius: 60px 60px 0 0;
+            transition: background-color 2s ease;
+        }
+
+        .tube-neck {
+            position: absolute;
+            width: 40px;
+            height: 50px;
+            top: -50px;
+            left: 40px;
+            background: linear-gradient(to right, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            border-bottom: none;
+        }
+
+        .tube-rim {
+            position: absolute;
+            width: 50px;
+            height: 10px;
+            top: -60px;
+            left: 35px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 5px;
+        }
+
+        .macro-label {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: #fbbf24;
+            padding: 8px 16px;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        .controls {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 16px;
+            padding: 25px;
+            margin-top: 30px;
+            width: 100%;
+            max-width: 1200px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(56, 189, 248, 0.1);
+        }
+
+        .step-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #38bdf8 0%, #0ea5e9 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(56, 189, 248, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: #cbd5e1;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-bottom: 25px;
+        }
+
+        .step-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .step-dot.active {
+            background: #38bdf8;
+            transform: scale(1.2);
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.7);
+        }
+
+        .step-info {
+            text-align: center;
+            background: rgba(15, 23, 42, 0.7);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            border-left: 4px solid #38bdf8;
+        }
+
+        .step-title {
+            font-size: 1.4rem;
+            color: #fbbf24;
+            margin-bottom: 10px;
+        }
+
+        .step-desc {
+            color: #cbd5e1;
+            line-height: 1.6;
+            font-size: 1.1rem;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .legend-text {
+            color: #cbd5e1;
+            font-size: 0.9rem;
+        }
+
+        .reaction-equation {
+            text-align: center;
+            font-size: 1.8rem;
+            margin: 30px 0;
+            color: #fbbf24;
+            font-weight: bold;
+            padding: 15px;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        @media (max-width: 1100px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .scene {
+                min-width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .scene {
+                padding: 15px;
+            }
+            
+            .btn {
+                padding: 10px 20px;
+                font-size: 1rem;
+            }
+            
+            .reaction-equation {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>乙烯与溴水反应教学动画</h1>
+        <p class="subtitle">可视化展示π键断裂的亲电加成机理与溴水颜色褪去的宏微联系</p>
+    </div>
+
+    <div class="container">
+        <div class="scene">
+            <h2 class="scene-title">
+                <span>🔬 微观分子反应过程</span>
+            </h2>
+            <div class="canvas-container">
+                <canvas id="molecularCanvas"></canvas>
+            </div>
+        </div>
+
+        <div class="scene">
+            <h2 class="scene-title">
+                <span>🧪 宏观实验现象</span>
+            </h2>
+            <div class="test-tube">
+                <div class="tube-body">
+                    <div class="liquid" id="bromineLiquid"></div>
+                </div>
+                <div class="tube-neck"></div>
+                <div class="tube-rim"></div>
+            </div>
+            <div class="macro-label" id="macroLabel">红棕色溴水</div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <div class="step-indicator" id="stepIndicator">
+            <!-- 步骤指示点将通过JS动态生成 -->
+        </div>
+
+        <div class="step-controls">
+            <button class="btn btn-secondary" id="resetBtn">
+                <span>🔄</span> 重置
+            </button>
+            <button class="btn btn-secondary" id="prevBtn">
+                <span>◀</span> 上一步
+            </button>
+            <button class="btn btn-primary" id="nextBtn">
+                下一步 <span>▶</span>
+            </button>
+        </div>
+
+        <div class="step-info">
+            <div class="step-title" id="stepTitle">初始状态：乙烯与溴分子</div>
+            <div class="step-desc" id="stepDesc">左侧：乙烯分子（黑色球为碳原子，白色球为氢原子）具有碳碳双键，其中π键电子云（浅蓝色）分布在分子平面上方和下方。右侧：溴分子（红棕色球）正在接近。</div>
+        </div>
+
+        <div class="reaction-equation">
+            CH₂=CH₂ + Br₂ → CH₂BrCH₂Br
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #333333;"></div>
+                <div class="legend-text">碳原子 (C)</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #FFFFFF;"></div>
+                <div class="legend-text">氢原子 (H)</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #8B4513;"></div>
+                <div class="legend-text">溴原子 (Br)</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #87CEEB;"></div>
+                <div class="legend-text">π键电子云</div>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background-color: #FFD700;"></div>
+                <div class="legend-text">反应高亮</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 动画步骤定义
+        const steps = [
+            {
+                title: "初始状态：乙烯与溴分子",
+                description: "左侧：乙烯分子（黑色球为碳原子，白色球为氢原子）具有碳碳双键，其中π键电子云（浅蓝色）分布在分子平面上方和下方。右侧：溴分子（红棕色球）正在接近。",
+                liquidColor: "#8B4513",
+                macroLabel: "红棕色溴水"
+            },
+            {
+                title: "接近与极化",
+                description: "溴分子在乙烯π键电子云的影响下发生极化。靠近π键的溴原子带部分正电荷（δ⁺），另一个溴原子带部分负电荷（δ⁻）。溴分子开始向π键电子云靠近。",
+                liquidColor: "#8B4513",
+                macroLabel: "红棕色溴水"
+            },
+            {
+                title: "π键断裂与溴鎓离子形成",
+                description: "带部分正电荷的溴原子（Br⁺）进攻π键电子云，π键断裂。同时Br-Br键异裂，形成环状溴鎓离子中间体。另一个溴原子以Br⁻形式离开。",
+                liquidColor: "#A0522D",
+                macroLabel: "溴水颜色开始变浅"
+            },
+            {
+                title: "Br⁻背面进攻",
+                description: "Br⁻从溴鎓离子的背面进攻碳原子，发生亲核加成。这是反应的第二步，也是决定产物立体构型的关键步骤。",
+                liquidColor: "#CD853F",
+                macroLabel: "溴水颜色明显变浅"
+            },
+            {
+                title: "产物生成：1,2-二溴乙烷",
+                description: "Br⁻与碳原子形成新的C-Br键，生成最终产物1,2-二溴乙烷。分子中不再有双键，所有原子均达到稳定结构。",
+                liquidColor: "transparent",
+                macroLabel: "溴水完全褪色，生成无色产物"
+            }
+        ];
+
+        // 获取DOM元素
+        const canvas = document.getElementById('molecularCanvas');
+        const ctx = canvas.getContext('2d');
+        const bromineLiquid = document.getElementById('bromineLiquid');
+        const macroLabel = document.getElementById('macroLabel');
+        const stepTitle = document.getElementById('stepTitle');
+        const stepDesc = document.getElementById('stepDesc');
+        const stepIndicator = document.getElementById('stepIndicator');
+        const resetBtn = document.getElementById('resetBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        // 设置Canvas尺寸
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // 动画状态
+        let currentStep = 0;
+        let animationProgress = 0;
+        let animationId = null;
+
+        // 分子数据
+        const molecules = {
+            ethylene: {
+                atoms: [
+                    { type: 'C', x: 0, y: 0, color: '#333333' },
+                    { type: 'C', x: 80, y: 0, color: '#333333' },
+                    { type: 'H', x: -40, y: -40, color: '#FFFFFF' },
+                    { type: 'H', x: -40, y: 40, color: '#FFFFFF' },
+                    { type: 'H', x: 120, y: -40, color: '#FFFFFF' },
+                    { type: 'H', x: 120, y: 40, color: '#FFFFFF' }
+                ],
+                bonds: [
+                    { from: 0, to: 1, type: 'double', color: '#FFFFFF' },
+                    { from: 0, to: 2, type: 'single', color: '#AAAAAA' },
+                    { from: 0, to: 3, type: 'single', color: '#AAAAAA' },
+                    { from: 1, to: 4, type: 'single', color: '#AAAAAA' },
+                    { from: 1, to: 5, type: 'single', color: '#AAAAAA' }
+                ],
+                piBond: {
+                    visible: true,
+                    opacity: 1,
+                    color: '#87CEEB'
+                }
+            },
+            bromine: {
+                atoms: [
+                    { type: 'Br', x: 200, y: 0, color: '#8B4513', charge: 'δ⁺' },
+                    { type: 'Br', x: 250, y: 0, color: '#8B4513', charge: 'δ⁻' }
+                ],
+                bonds: [
+                    { from: 0, to: 1, type: 'single', color: '#8B4513' }
+                ]
+            },
+            bromonium: {
+                atoms: [],
+                bonds: []
+            },
+            product: {
+                atoms: [],
+                bonds: []
+            }
+        };
+
+        // 动画参数
+        const animationParams = {
+            bromineX: 200,
+            bromineTargetX: [200, 140, 100, 60, 60],
+            bromineY: 0,
+            piBondOpacity: [1, 1, 0, 0, 0],
+            highlightAtoms: [[], [], [0, 1], [6], []],
+            highlightColor: '#FFD700',
+            showCharges: [false, true, true, true, false],
+            showPiCloud: [true, true, false, false, false],
+            showBromonium: [false, false, true, false, false],
+            showProduct: [false, false, false, false, true]
+        };
+
+        // 初始化步骤指示器
+        function initStepIndicator() {
+            stepIndicator.innerHTML = '';
+            steps.forEach((step, index) => {
+                const dot = document.createElement('div');
+                dot.className = `step-dot ${index === currentStep ? 'active' : ''}`;
+                dot.dataset.step = index;
+                dot.addEventListener('click', () => goToStep(index));
+                stepIndicator.appendChild(dot);
+            });
+        }
+
+        // 更新UI
+        function updateUI() {
+            // 更新步骤信息
+            stepTitle.textContent = steps[currentStep].title;
+            stepDesc.textContent = steps[currentStep].description;
+            
+            // 更新试管颜色
+            bromineLiquid.style.backgroundColor = steps[currentStep].liquidColor;
+            macroLabel.textContent = steps[currentStep].macroLabel;
+            
+            // 更新步骤指示器
+            document.querySelectorAll('.step-dot').forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentStep);
+            });
+            
+            // 更新按钮状态
+            prevBtn.disabled = currentStep === 0;
+            nextBtn.disabled = currentStep === steps.length - 1;
+            
+            // 开始动画
+            startAnimation();
+        }
+
+        // 开始动画
+        function startAnimation() {
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+            
+            animationProgress = 0;
+            animate();
+        }
+
+        // 动画循环
+        function animate() {
+            animationProgress += 0.02;
+            if (animationProgress > 1) {
+                animationProgress = 1;
+            }
+            
+            drawScene();
+            
+            if (animationProgress < 1) {
+                animationId = requestAnimationFrame(animate);
+            }
+        }
+
+        // 绘制场景
+        function drawScene() {
+            // 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 计算动画值
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            // 计算溴分子位置
+            const startX = animationParams.bromineTargetX[currentStep];
+            const endX = animationParams.bromineTargetX[Math.min(currentStep + 1, steps.length - 1)];
+            const bromineX = startX + (endX - startX) * animationProgress;
+            
+            // 计算π键透明度
+            const piOpacity = animationParams.piBondOpacity[currentStep] + 
+                            (animationParams.piBondOpacity[Math.min(currentStep + 1, steps.length - 1)] - 
+                             animationParams.piBondOpacity[currentStep]) * animationProgress;
+            
+            // 绘制乙烯分子
+            drawEthylene(centerX - 150, centerY, piOpacity);
+            
+            // 根据步骤绘制不同状态
+            if (currentStep < 2) {
+                drawBromine(centerX + bromineX, centerY, animationParams.showCharges[currentStep]);
+            } else if (currentStep === 2) {
+                drawBromonium(centerX - 50, centerY);
+                drawBrMinus(centerX + 100, centerY);
+            } else if (currentStep === 3) {
+                drawBromonium(centerX - 50, centerY);
+                drawBrMinus(centerX + 50 - 100 * animationProgress, centerY - 50 * animationProgress);
+            } else if (currentStep === 4) {
+                drawProduct(centerX - 50, centerY);
+            }
+            
+            // 绘制高亮
+            drawHighlights(centerX - 150, centerY);
+        }
+
+        // 绘制乙烯分子
+        function drawEthylene(x, y, piOpacity) {
+            // 绘制π键电子云
+            if (piOpacity > 0) {
+                ctx.save();
+                ctx.globalAlpha = piOpacity;
+                
+                // 上方电子云
+                drawPiCloud(x + 40, y - 30, 80, 40);
+                
+                // 下方电子云
+                drawPiCloud(x + 40, y + 30, 80, 40);
+                
+                ctx.restore();
+            }
+            
+            // 绘制键
+            molecules.ethylene.bonds.forEach(bond => {
+                const from = molecules.ethylene.atoms[bond.from];
+                const to = molecules.ethylene.atoms[bond.to];
+                
+                ctx.beginPath();
+                ctx.strokeStyle = bond.color;
+                ctx.lineWidth = bond.type === 'double' ? 3 : 2;
+                
+                if (bond.type === 'double') {
+                    // 绘制双键
+                    ctx.moveTo(x + from.x, y + from.y - 2);
+                    ctx.lineTo(x + to.x, y + to.y - 2);
+                    ctx.stroke();
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(x + from.x, y + from.y + 2);
+                    ctx.lineTo(x + to.x, y + to.y + 2);
+                } else {
+                    ctx.moveTo(x + from.x, y + from.y);
+                    ctx.lineTo(x + to.x, y + to.y);
+                }
+                
+                ctx.stroke();
+            });
+            
+            // 绘制原子
+            molecules.ethylene.atoms.forEach(atom => {
+                drawAtom(x + atom.x, y + atom.y, atom.type, atom.color);
+            });
+        }
+
+        // 绘制π键电子云
+        function drawPiCloud(x, y, width, height) {
+            ctx.fillStyle = molecules.ethylene.piBond.color;
+            
+            // 创建椭圆路径
+            ctx.beginPath();
+            ctx.ellipse(x, y, width / 2, height / 2, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 添加光晕效果
+            ctx.shadowColor = molecules.ethylene.piBond.color;
+            ctx.shadowBlur = 20;
+            ctx.beginPath();
+            ctx.ellipse(x, y, width / 2 - 5, height / 2 - 5, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+        }
+
+        // 绘制溴分子
+        function drawBromine(x, y, showCharges) {
+            // 绘制键
+            ctx.beginPath();
+            ctx.strokeStyle = '#8B4513';
+            ctx.lineWidth = 2;
+            ctx.moveTo(x, y);
+            ctx.lineTo(x + 50, y);
+            ctx.stroke();
+            
+            // 绘制原子
+            molecules.bromine.atoms.forEach((atom, index) => {
+                drawAtom(x + atom.x - 200, y + atom.y, atom.type, atom.color);
+                
+                // 绘制电荷
+                if (showCharges && atom.charge) {
+                    ctx.fillStyle = '#FFD700';
+                    ctx.font = 'bold 16px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(atom.charge, x + atom.x - 200, y + atom.y - 25);
+                }
+            });
+        }
+
+        // 绘制溴鎓离子
+        function drawBromonium(x, y) {
+            // 绘制环状结构
+            ctx.beginPath();
+            ctx.strokeStyle = '#FFD700';
+            ctx.lineWidth = 3;
+            ctx.moveTo(x, y);
+            ctx.lineTo(x + 40, y - 30);
+            ctx.lineTo(x + 80, y);
+            ctx.closePath();
+            ctx.stroke();
+            
+            // 绘制原子
+            drawAtom(x, y, 'C', '#333333');
+            drawAtom(x + 80, y, 'C', '#333333');
+            drawAtom(x + 40, y - 30, 'Br', '#8B4513');
+            
+            // 绘制正电荷
+            ctx.fillStyle = '#FF6B6B';
+            ctx.font = 'bold 18px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('⁺', x + 40, y - 50);
+        }
+
+        // 绘制Br⁻
+        function drawBrMinus(x, y) {
+            drawAtom(x, y, 'Br', '#8B4513');
+            
+            // 绘制负电荷
+            ctx.fillStyle = '#4ECDC4';
+            ctx.font = 'bold 18px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('⁻', x, y - 25);
+        }
+
+        // 绘制产物：1,2-二溴乙烷
+        function drawProduct(x, y) {
+            // 原子位置
+            const atoms = [
+                { type: 'C', x: 0, y: 0, color: '#333333' },
+                { type: 'C', x: 60, y: 0, color: '#333333' },
+                { type: 'H', x: -20, y: -35, color: '#FFFFFF' },
+                { type: 'H', x: -20, y: 35, color: '#FFFFFF' },
+                { type: 'H', x: 80, y: -35, color: '#FFFFFF' },
+                { type: 'H', x: 80, y: 35, color: '#FFFFFF' },
+                { type: 'Br', x: -40, y: 0, color: '#8B4513' },
+                { type: 'Br', x: 100, y: 0, color: '#8B4513' }
+            ];
+            
+            // 键
+            const bonds = [
+                { from: 0, to: 1, type: 'single', color: '#FFFFFF' },
+                { from: 0, to: 2, type: 'single', color: '#AAAAAA' },
+                { from: 0, to: 3, type: 'single', color: '#AAAAAA' },
+                { from: 0, to: 6, type: 'single', color: '#8B4513' },
+                { from: 1, to: 4, type: 'single', color: '#AAAAAA' },
+                { from: 1, to: 5, type: 'single', color: '#AAAAAA' },
+                { from: 1, to: 7, type: 'single', color: '#8B4513' }
+            ];
+            
+            // 绘制键
+            bonds.forEach(bond => {
+                const from = atoms[bond.from];
+                const to = atoms[bond.to];
+                
+                ctx.beginPath();
+                ctx.strokeStyle = bond.color;
+                ctx.lineWidth = 2;
+                ctx.moveTo(x + from.x, y + from.y);
+                ctx.lineTo(x + to.x, y + to.y);
+                ctx.stroke();
+            });
+            
+            // 绘制原子
+            atoms.forEach(atom => {
+                drawAtom(x + atom.x, y + atom.y, atom.type, atom.color);
+            });
+        }
+
+        // 绘制高亮效果
+        function drawHighlights(x, y) {
+            const highlights = animationParams.highlightAtoms[currentStep];
+            if (highlights.length === 0) return;
+            
+            ctx.save();
+            ctx.strokeStyle = animationParams.highlightColor;
+            ctx.lineWidth = 4;
+            ctx.setLineDash([5, 5]);
+            
+            highlights.forEach(atomIndex => {
+                const atom = molecules.ethylene.atoms[atomIndex];
+                ctx.beginPath();
+                ctx.arc(x + atom.x, y + atom.y, 25, 0, Math.PI * 2);
+                ctx.stroke();
+            });
+            
+            ctx.restore();
+        }
+
+        // 绘制原子
+        function drawAtom(x, y, type, color) {
+            // 绘制原子球
+            const gradient = ctx.createRadialGradient(x, y, 0, x, y, 15);
+            gradient.addColorStop(0, color);
+            gradient.addColorStop(1, darkenColor(color, 40));
+            
+            ctx.beginPath();
+            ctx.fillStyle = gradient;
+            ctx.arc(x, y, 15, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 绘制边框
+            ctx.beginPath();
+            ctx.strokeStyle = lightenColor(color, 20);
+            ctx.lineWidth = 1;
+            ctx.arc(x, y, 15, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            // 绘制原子符号
+            ctx.fillStyle = type === 'C' || type === 'Br' ? '#FFFFFF' : '#333333';
+            ctx.font = 'bold 14px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(type, x, y);
+        }
+
+        // 工具函数：加深颜色
+        function darkenColor(color, percent) {
+            const num = parseInt(color.slice(1), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = (num >> 16) - amt;
+            const G = (num >> 8 & 0x00FF) - amt;
+            const B = (num & 0x0000FF) - amt;
+            
+            return '#' + (
+                0x1000000 +
+                (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 +
+                (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 +
+                (B < 255 ? B < 1 ? 0 : B : 255)
+            ).toString(16).slice(1);
+        }
+
+        // 工具函数：变亮颜色
+        function lightenColor(color, percent) {
+            const num = parseInt(color.slice(1), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = (num >> 16) + amt;
+            const G = (num >> 8 & 0x00FF) + amt;
+            const B = (num & 0x0000FF) + amt;
+            
+            return '#' + (
+                0x1000000 +
+                (R > 255 ? 255 : R) * 0x10000 +
+                (G > 255 ? 255 : G) * 0x100 +
+                (B > 255 ? 255 : B)
+            ).toString(16).slice(1);
+        }
+
+        // 跳转到指定步骤
+        function goToStep(step) {
+            currentStep = Math.max(0, Math.min(step, steps.length - 1));
+            updateUI();
+        }
+
+        // 下一步
+        function nextStep() {
+            if (currentStep < steps.length - 1) {
+                currentStep++;
+                updateUI();
+            }
+        }
+
+        // 上一步
+        function prevStep() {
+            if (currentStep > 0) {
+                currentStep--;
+                updateUI();
+            }
+        }
+
+        // 重置
+        function reset() {
+            currentStep = 0;
+            updateUI();
+        }
+
+        // 事件监听
+        nextBtn.addEventListener('click', nextStep);
+        prevBtn.addEventListener('click', prevStep);
+        resetBtn.addEventListener('click', reset);
+
+        // 键盘控制
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight') nextStep();
+            if (e.key === 'ArrowLeft') prevStep();
+            if (e.key === 'Home') reset();
+        });
+
+        // 初始化
+        initStepIndicator();
+        updateUI();
+    </script>
+</body>
+</html>

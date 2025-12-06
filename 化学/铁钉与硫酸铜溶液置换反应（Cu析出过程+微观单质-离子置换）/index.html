@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>铁与硫酸铜置换反应微观动画</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 1000px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 1000px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .animation-area {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            background-color: #1a1a2e;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        #mainCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        
+        .view-label {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            z-index: 10;
+        }
+        
+        .controls {
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        
+        .control-section {
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 8px;
+            font-size: 1.2rem;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+        
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background-color: #95a5a6;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #27ae60;
+            transform: translateY(-2px);
+        }
+        
+        .btn-warning {
+            background-color: #f39c12;
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background-color: #d68910;
+            transform: translateY(-2px);
+        }
+        
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .checkbox-item input {
+            margin-right: 8px;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-right: 15px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 8px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .info-panel {
+            padding: 20px;
+            background-color: white;
+            border-top: 1px solid #eee;
+        }
+        
+        .equation {
+            text-align: center;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        .description {
+            line-height: 1.6;
+            color: #555;
+            font-size: 1rem;
+        }
+        
+        .highlight {
+            background-color: #fffacd;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+        
+        .status-bar {
+            padding: 10px 20px;
+            background-color: #2c3e50;
+            color: white;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 10px;
+            }
+            
+            .animation-area {
+                height: 400px;
+            }
+            
+            .button-group {
+                justify-content: center;
+            }
+            
+            .checkbox-group {
+                justify-content: center;
+            }
+            
+            .legend {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>铁与硫酸铜置换反应微观过程</h1>
+        <p class="subtitle">宏观现象 · 微观本质 · 交互探索</p>
+    </div>
+    
+    <div class="container">
+        <div class="animation-area">
+            <div class="view-label" id="viewLabel">宏观实验视图</div>
+            <canvas id="mainCanvas"></canvas>
+        </div>
+        
+        <div class="status-bar">
+            <div>状态: <span id="statusText">就绪</span></div>
+            <div>反应计数: <span id="reactionCount">0</span></div>
+        </div>
+        
+        <div class="controls">
+            <div class="control-section">
+                <div class="section-title">动画控制</div>
+                <div class="button-group">
+                    <button id="playBtn" class="btn-primary">▶ 播放</button>
+                    <button id="pauseBtn" class="btn-secondary">⏸ 暂停</button>
+                    <button id="resetBtn" class="btn-warning">↺ 重置</button>
+                    <button id="stepBtn" class="btn-success">⏭ 单步反应</button>
+                </div>
+            </div>
+            
+            <div class="control-section">
+                <div class="section-title">视图切换</div>
+                <div class="button-group">
+                    <button id="macroViewBtn" class="btn-primary">宏观实验</button>
+                    <button id="microViewBtn" class="btn-secondary">微观反应</button>
+                    <button id="zoomInBtn" class="btn-success">🔍 聚焦反应界面</button>
+                </div>
+            </div>
+            
+            <div class="control-section">
+                <div class="section-title">信息显示</div>
+                <div class="checkbox-group">
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="showLabels" checked>
+                        <span>显示粒子标签</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="showElectrons" checked>
+                        <span>显示电子流动</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="showColorChange" checked>
+                        <span>显示溶液颜色变化</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="showEquation">
+                        <span>显示化学方程式</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="control-section">
+                <div class="section-title">图例说明</div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #bdc3c7;"></div>
+                        <span>铁原子 (Fe)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #e74c3c;"></div>
+                        <span>铜原子 (Cu)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #3498db;"></div>
+                        <span>铜离子 (Cu²⁺)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #2ecc71;"></div>
+                        <span>亚铁离子 (Fe²⁺)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #f1c40f;"></div>
+                        <span>电子 (e⁻)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-panel">
+            <div class="equation">
+                Fe + CuSO₄ → FeSO₄ + Cu &nbsp;&nbsp; (离子方程式: Fe + Cu²⁺ → Fe²⁺ + Cu)
+            </div>
+            <div class="description">
+                <p>本动画展示了铁钉放入硫酸铜溶液中的置换反应过程。在<span class="highlight">宏观视图</span>中，您可以看到铁钉表面逐渐析出红色铜，溶液蓝色变浅。在<span class="highlight">微观视图</span>中，您将观察到铁原子(Fe)失去电子转化为亚铁离子(Fe²⁺)进入溶液，同时铜离子(Cu²⁺)获得电子转化为铜原子(Cu)沉积在铁钉表面。这是一个基于金属活动性顺序的氧化还原反应。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 获取Canvas元素和上下文
+        const canvas = document.getElementById('mainCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 设置Canvas尺寸
+        function resizeCanvas() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        }
+        
+        // 初始调整Canvas尺寸
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // 动画状态
+        let animationState = {
+            isPlaying: false,
+            currentView: 'macro', // 'macro' 或 'micro'
+            zoomLevel: 1, // 缩放级别
+            reactionCount: 0,
+            time: 0,
+            showLabels: true,
+            showElectrons: true,
+            showColorChange: true,
+            showEquation: false
+        };
+        
+        // 粒子系统
+        const particles = {
+            // 铁钉（铁原子）
+            ironAtoms: [],
+            // 沉积的铜原子
+            copperAtoms: [],
+            // 溶液中的铜离子
+            copperIons: [],
+            // 溶液中的亚铁离子
+            ironIons: [],
+            // 电子
+            electrons: []
+        };
+        
+        // 颜色定义
+        const colors = {
+            ironAtom: '#bdc3c7',      // 铁原子 - 浅灰色
+            copperAtom: '#e74c3c',    // 铜原子 - 红棕色
+            copperIon: '#3498db',     // 铜离子 - 蓝色
+            ironIon: '#2ecc71',       // 亚铁离子 - 绿色
+            electron: '#f1c40f',      // 电子 - 黄色
+            solution: 'rgba(52, 152, 219, 0.3)', // 溶液背景 - 半透明蓝色
+            beaker: '#95a5a6',        // 烧杯颜色
+            background: '#1a1a2e'     // 背景颜色
+        };
+        
+        // 初始化粒子系统
+        function initParticles() {
+            // 清空所有粒子
+            particles.ironAtoms = [];
+            particles.copperAtoms = [];
+            particles.copperIons = [];
+            particles.ironIons = [];
+            particles.electrons = [];
+            
+            // 重置反应计数
+            animationState.reactionCount = 0;
+            document.getElementById('reactionCount').textContent = '0';
+            
+            // 创建铁钉（铁原子晶格）
+            const nailWidth = canvas.width * 0.15;
+            const nailHeight = canvas.height * 0.6;
+            const nailX = canvas.width * 0.2;
+            const nailY = canvas.height * 0.2;
+            
+            // 铁原子排列（晶格）
+            const atomSpacing = 15;
+            const rows = Math.floor(nailHeight / atomSpacing);
+            const cols = Math.floor(nailWidth / atomSpacing);
+            
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    // 创建一些随机偏移，使晶格看起来更自然
+                    const offsetX = (Math.random() - 0.5) * 3;
+                    const offsetY = (Math.random() - 0.5) * 3;
+                    
+                    particles.ironAtoms.push({
+                        x: nailX + col * atomSpacing + offsetX,
+                        y: nailY + row * atomSpacing + offsetY,
+                        radius: 6,
+                        originalX: nailX + col * atomSpacing,
+                        originalY: nailY + row * atomSpacing,
+                        isActive: true // 是否可参与反应（表面原子）
+                    });
+                }
+            }
+            
+            // 标记表面原子（最右侧的列）
+            const surfaceCol = cols - 1;
+            for (let row = 0; row < rows; row++) {
+                const atomIndex = row * cols + surfaceCol;
+                if (particles.ironAtoms[atomIndex]) {
+                    particles.ironAtoms[atomIndex].isActive = true;
+                }
+            }
+            
+            // 创建铜离子（溶液中）
+            const solutionLeft = nailX + nailWidth + 20;
+            const solutionWidth = canvas.width * 0.6;
+            const solutionTop = canvas.height * 0.15;
+            const solutionHeight = canvas.height * 0.7;
+            
+            const ionCount = 80;
+            for (let i = 0; i < ionCount; i++) {
+                particles.copperIons.push({
+                    x: solutionLeft + Math.random() * solutionWidth,
+                    y: solutionTop + Math.random() * solutionHeight,
+                    radius: 7,
+                    vx: (Math.random() - 0.5) * 0.5,
+                    vy: (Math.random() - 0.5) * 0.5,
+                    isActive: true // 是否可参与反应
+                });
+            }
+        }
+        
+        // 执行一次置换反应
+        function performReaction() {
+            // 找到可反应的铁原子（表面原子）
+            const activeIronAtoms = particles.ironAtoms.filter(atom => atom.isActive);
+            if (activeIronAtoms.length === 0) return;
+            
+            // 找到可反应的铜离子（靠近铁钉的）
+            const activeCopperIons = particles.copperIons.filter(ion => ion.isActive && ion.x < canvas.width * 0.5);
+            if (activeCopperIons.length === 0) return;
+            
+            // 随机选择一个铁原子和一个铜离子
+            const ironIndex = Math.floor(Math.random() * activeIronAtoms.length);
+            const copperIndex = Math.floor(Math.random() * activeCopperIons.length);
+            
+            const ironAtom = activeIronAtoms[ironIndex];
+            const copperIon = activeCopperIons[copperIndex];
+            
+            // 标记为已反应
+            ironAtom.isActive = false;
+            copperIon.isActive = false;
+            
+            // 创建电子从铁原子流向铜离子
+            particles.electrons.push({
+                x: ironAtom.x,
+                y: ironAtom.y,
+                targetX: copperIon.x,
+                targetY: copperIon.y,
+                progress: 0, // 0 到 1
+                radius: 3,
+                isActive: true
+            });
+            
+            // 增加反应计数
+            animationState.reactionCount++;
+            document.getElementById('reactionCount').textContent = animationState.reactionCount;
+            
+            // 延迟后创建亚铁离子和铜原子
+            setTimeout(() => {
+                // 创建亚铁离子（从铁原子位置出发）
+                particles.ironIons.push({
+                    x: ironAtom.x,
+                    y: ironAtom.y,
+                    radius: 6,
+                    vx: 1 + Math.random() * 0.5,
+                    vy: (Math.random() - 0.5) * 0.5,
+                    opacity: 1
+                });
+                
+                // 创建铜原子（在铜离子位置）
+                particles.copperAtoms.push({
+                    x: copperIon.x,
+                    y: copperIon.y,
+                    radius: 6,
+                    originalX: copperIon.x,
+                    originalY: copperIon.y,
+                    isPlaced: false
+                });
+                
+                // 从数组中移除铜离子
+                const ionIndex = particles.copperIons.indexOf(copperIon);
+                if (ionIndex > -1) {
+                    particles.copperIons.splice(ionIndex, 1);
+                }
+            }, 300);
+        }
+        
+        // 更新粒子系统
+        function updateParticles() {
+            // 更新电子位置
+            for (let i = particles.electrons.length - 1; i >= 0; i--) {
+                const electron = particles.electrons[i];
+                if (electron.progress < 1) {
+                    electron.progress += 0.05;
+                } else {
+                    // 电子到达目的地，移除
+                    particles.electrons.splice(i, 1);
+                }
+            }
+            
+            // 更新铜离子位置（布朗运动）
+            particles.copperIons.forEach(ion => {
+                ion.x += ion.vx;
+                ion.y += ion.vy;
+                
+                // 边界检查
+                const solutionLeft = canvas.width * 0.35;
+                const solutionRight = canvas.width * 0.95;
+                const solutionTop = canvas.height * 0.15;
+                const solutionBottom = canvas.height * 0.85;
+                
+                if (ion.x < solutionLeft || ion.x > solutionRight) ion.vx *= -1;
+                if (ion.y < solutionTop || ion.y > solutionBottom) ion.vy *= -1;
+                
+                // 添加一些随机性
+                ion.vx += (Math.random() - 0.5) * 0.05;
+                ion.vy += (Math.random() - 0.5) * 0.05;
+                
+                // 限制速度
+                const maxSpeed = 1;
+                const speed = Math.sqrt(ion.vx * ion.vx + ion.vy * ion.vy);
+                if (speed > maxSpeed) {
+                    ion.vx = (ion.vx / speed) * maxSpeed;
+                    ion.vy = (ion.vy / speed) * maxSpeed;
+                }
+            });
+            
+            // 更新亚铁离子位置
+            for (let i = particles.ironIons.length - 1; i >= 0; i--) {
+                const ion = particles.ironIons[i];
+                ion.x += ion.vx;
+                ion.y += ion.vy;
+                ion.opacity -= 0.005;
+                
+                // 如果离子离开视野或透明度为0，移除
+                if (ion.x > canvas.width + 50 || ion.opacity <= 0) {
+                    particles.ironIons.splice(i, 1);
+                }
+            }
+            
+            // 更新铜原子位置（向铁钉表面移动）
+            particles.copperAtoms.forEach(atom => {
+                if (!atom.isPlaced) {
+                    // 计算铁钉表面的目标位置
+                    const nailX = canvas.width * 0.2;
+                    const nailWidth = canvas.width * 0.15;
+                    const targetX = nailX + nailWidth + 5;
+                    
+                    // 向目标位置移动
+                    const dx = targetX - atom.x;
+                    const dy = (canvas.height * 0.5) - atom.y;
+                    
+                    atom.x += dx * 0.05;
+                    atom.y += dy * 0.05;
+                    
+                    // 如果接近目标位置，标记为已放置
+                    if (Math.abs(dx) < 2 && Math.abs(dy) < 2) {
+                        atom.isPlaced = true;
+                        atom.x = targetX;
+                        atom.y = canvas.height * 0.5 + (Math.random() - 0.5) * 100;
+                    }
+                }
+            });
+            
+            // 如果动画正在播放，随机触发反应
+            if (animationState.isPlaying && animationState.currentView === 'micro') {
+                if (Math.random() < 0.03 && particles.copperIons.length > 10) {
+                    performReaction();
+                }
+            }
+        }
+        
+        // 绘制宏观视图
+        function drawMacroView() {
+            const ctx = canvas.getContext('2d');
+            
+            // 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制背景
+            ctx.fillStyle = colors.background;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制烧杯
+            const beakerWidth = canvas.width * 0.6;
+            const beakerHeight = canvas.height * 0.7;
+            const beakerX = canvas.width * 0.2;
+            const beakerY = canvas.height * 0.15;
+            
+            // 烧杯底部
+            ctx.fillStyle = colors.beaker;
+            ctx.beginPath();
+            ctx.moveTo(beakerX, beakerY + beakerHeight);
+            ctx.lineTo(beakerX + beakerWidth, beakerY + beakerHeight);
+            ctx.lineTo(beakerX + beakerWidth * 0.9, beakerY + beakerHeight * 1.1);
+            ctx.lineTo(beakerX + beakerWidth * 0.1, beakerY + beakerHeight * 1.1);
+            ctx.closePath();
+            ctx.fill();
+            
+            // 烧杯壁
+            ctx.strokeStyle = colors.beaker;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(beakerX, beakerY + beakerHeight);
+            ctx.lineTo(beakerX, beakerY);
+            ctx.lineTo(beakerX + beakerWidth * 0.1, beakerY - 10);
+            ctx.lineTo(beakerX + beakerWidth * 0.9, beakerY - 10);
+            ctx.lineTo(beakerX + beakerWidth, beakerY);
+            ctx.lineTo(beakerX + beakerWidth, beakerY + beakerHeight);
+            ctx.stroke();
+            
+            // 绘制溶液（颜色根据反应进度变化）
+            const reactionProgress = Math.min(animationState.reactionCount / 50, 1);
+            const blueIntensity = 0.7 - reactionProgress * 0.4;
+            const greenIntensity = 0.3 + reactionProgress * 0.4;
+            
+            ctx.fillStyle = `rgba(${Math.floor(52 * blueIntensity)}, ${Math.floor(152 * greenIntensity)}, 219, 0.6)`;
+            ctx.beginPath();
+            ctx.moveTo(beakerX, beakerY + beakerHeight);
+            ctx.lineTo(beakerX + beakerWidth, beakerY + beakerHeight);
+            ctx.lineTo(beakerX + beakerWidth, beakerY + beakerHeight * 0.3);
+            ctx.lineTo(beakerX, beakerY + beakerHeight * 0.3);
+            ctx.closePath();
+            ctx.fill();
+            
+            // 绘制铁钉
+            const nailWidth = canvas.width * 0.1;
+            const nailHeight = canvas.height * 0.5;
+            const nailX = beakerX + beakerWidth * 0.3;
+            const nailY = beakerY + beakerHeight * 0.2;
+            
+            // 铁钉杆
+            ctx.fillStyle = '#7f8c8d';
+            ctx.fillRect(nailX, nailY, nailWidth, nailHeight);
+            
+            // 铁钉头（简化）
+            ctx.fillStyle = '#95a5a6';
+            ctx.beginPath();
+            ctx.ellipse(nailX + nailWidth/2, nailY, nailWidth/2, nailWidth/4, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 绘制析出的铜（根据反应进度）
+            if (reactionProgress > 0) {
+                const copperHeight = nailHeight * 0.7;
+                const copperWidth = nailWidth * 1.5;
+                const copperX = nailX - (copperWidth - nailWidth) / 2;
+                const copperY = nailY + nailHeight * 0.15;
+                
+                // 铜层厚度随反应进度增加
+                const copperThickness = 5 + reactionProgress * 15;
+                
+                ctx.fillStyle = colors.copperAtom;
+                ctx.beginPath();
+                ctx.roundRect(copperX, copperY, copperWidth, copperHeight, copperThickness);
+                ctx.fill();
+                
+                // 铜层纹理
+                ctx.strokeStyle = 'rgba(192, 57, 43, 0.7)';
+                ctx.lineWidth = 1;
+                for (let i = 0; i < 10; i++) {
+                    const y = copperY + i * (copperHeight / 10);
+                    ctx.beginPath();
+                    ctx.moveTo(copperX, y);
+                    ctx.lineTo(copperX + copperWidth, y);
+                    ctx.stroke();
+                }
+            }
+            
+            // 绘制标签
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 18px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('铁钉 (Fe)', nailX + nailWidth/2, nailY - 20);
+            ctx.fillText('硫酸铜溶液 (CuSO₄)', beakerX + beakerWidth/2, beakerY - 30);
+            
+            if (reactionProgress > 0) {
+                ctx.fillStyle = colors.copperAtom;
+                ctx.fillText('析出的铜 (Cu)', nailX + nailWidth/2, nailY + nailHeight + 40);
+            }
+            
+            // 绘制反应进度条
+            const progressBarWidth = canvas.width * 0.6;
+            const progressBarHeight = 10;
+            const progressBarX = canvas.width * 0.2;
+            const progressBarY = canvas.height * 0.9;
+            
+            // 背景
+            ctx.fillStyle = '#34495e';
+            ctx.fillRect(progressBarX, progressBarY, progressBarWidth, progressBarHeight);
+            
+            // 进度
+            ctx.fillStyle = '#2ecc71';
+            ctx.fillRect(progressBarX, progressBarY, progressBarWidth * reactionProgress, progressBarHeight);
+            
+            // 标签
+            ctx.fillStyle = 'white';
+            ctx.font = '14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(`反应进度: ${Math.round(reactionProgress * 100)}%`, canvas.width/2, progressBarY - 10);
+        }
+        
+        // 绘制微观视图
+        function drawMicroView() {
+            const ctx = canvas.getContext('2d');
+            
+            // 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制背景
+            ctx.fillStyle = colors.background;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制溶液背景色（根据反应进度变化）
+            if (animationState.showColorChange) {
+                const reactionProgress = Math.min(animationState.reactionCount / 50, 1);
+                const blueIntensity = 0.7 - reactionProgress * 0.4;
+                const greenIntensity = 0.3 + reactionProgress * 0.4;
+                
+                ctx.fillStyle = `rgba(${Math.floor(52 * blueIntensity)}, ${Math.floor(152 * greenIntensity)}, 219, 0.1)`;
+                ctx.fillRect(canvas.width * 0.35, canvas.height * 0.1, canvas.width * 0.6, canvas.height * 0.8);
+            }
+            
+            // 绘制铁钉（铁原子晶格）
+            const nailWidth = canvas.width * 0.15;
+            const nailHeight = canvas.height * 0.6;
+            const nailX = canvas.width * 0.2;
+            const nailY = canvas.height * 0.2;
+            
+            // 铁钉背景
+            ctx.fillStyle = 'rgba(189, 195, 199, 0.2)';
+            ctx.fillRect(nailX - 10, nailY - 10, nailWidth + 20, nailHeight + 20);
+            
+            // 绘制铁原子
+            particles.ironAtoms.forEach(atom => {
+                ctx.fillStyle = atom.isActive ? colors.ironAtom : 'rgba(189, 195, 199, 0.5)';
+                ctx.beginPath();
+                ctx.arc(atom.x, atom.y, atom.radius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 绘制原子标签
+                if (animationState.showLabels) {
+                    ctx.fillStyle = 'white';
+                    ctx.font = '10px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('Fe', atom.x, atom.y);
+                }
+            });
+            
+            // 绘制铜离子
+            particles.copperIons.forEach(ion => {
+                ctx.fillStyle = ion.isActive ? colors.copperIon : 'rgba(52, 152, 219, 0.5)';
+                ctx.beginPath();
+                ctx.arc(ion.x, ion.y, ion.radius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 绘制离子标签
+                if (animationState.showLabels) {
+                    ctx.fillStyle = 'white';
+                    ctx.font = '10px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('Cu²⁺', ion.x, ion.y);
+                }
+            });
+            
+            // 绘制亚铁离子
+            particles.ironIons.forEach(ion => {
+                ctx.globalAlpha = ion.opacity;
+                ctx.fillStyle = colors.ironIon;
+                ctx.beginPath();
+                ctx.arc(ion.x, ion.y, ion.radius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 绘制离子标签
+                if (animationState.showLabels) {
+                    ctx.fillStyle = 'white';
+                    ctx.font = '10px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('Fe²⁺', ion.x, ion.y);
+                }
+                ctx.globalAlpha = 1;
+            });
+            
+            // 绘制铜原子
+            particles.copperAtoms.forEach(atom => {
+                ctx.fillStyle = colors.copperAtom;
+                ctx.beginPath();
+                ctx.arc(atom.x, atom.y, atom.radius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 绘制原子标签
+                if (animationState.showLabels) {
+                    ctx.fillStyle = 'white';
+                    ctx.font = '10px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText('Cu', atom.x, atom.y);
+                }
+            });
+            
+            // 绘制电子
+            if (animationState.showElectrons) {
+                particles.electrons.forEach(electron => {
+                    // 计算电子当前位置
+                    const currentX = electron.x + (electron.targetX - electron.x) * electron.progress;
+                    const currentY = electron.y + (electron.targetY - electron.y) * electron.progress;
+                    
+                    // 绘制电子
+                    ctx.fillStyle = colors.electron;
+                    ctx.beginPath();
+                    ctx.arc(currentX, currentY, electron.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // 绘制电子轨迹
+                    ctx.strokeStyle = 'rgba(241, 196, 15, 0.5)';
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(electron.x, electron.y);
+                    ctx.lineTo(currentX, currentY);
+                    ctx.stroke();
+                    
+                    // 绘制电子标签
+                    if (animationState.showLabels) {
+                        ctx.fillStyle = 'white';
+                        ctx.font = '9px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText('e⁻', currentX, currentY - 10);
+                    }
+                });
+            }
+            
+            // 绘制反应界面指示器
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(nailX + nailWidth + 5, nailY);
+            ctx.lineTo(nailX + nailWidth + 5, nailY + nailHeight);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // 绘制标签
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText('铁钉 (Fe原子晶格)', nailX, nailY - 20);
+            ctx.textAlign = 'right';
+            ctx.fillText('硫酸铜溶液 (Cu²⁺离子)', canvas.width - 20, canvas.height * 0.1);
+            
+            // 绘制反应箭头和说明
+            const arrowX = nailX + nailWidth + 30;
+            const arrowY = canvas.height * 0.5;
+            
+            ctx.fillStyle = '#f1c40f';
+            ctx.font = 'bold 14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('电子转移', arrowX, arrowY - 30);
+            
+            // 绘制箭头
+            ctx.strokeStyle = '#f1c40f';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(arrowX - 40, arrowY);
+            ctx.lineTo(arrowX + 40, arrowY);
+            ctx.stroke();
+            
+            // 箭头头部
+            ctx.beginPath();
+            ctx.moveTo(arrowX + 40, arrowY);
+            ctx.lineTo(arrowX + 30, arrowY - 5);
+            ctx.lineTo(arrowX + 30, arrowY + 5);
+            ctx.closePath();
+            ctx.fill();
+            
+            // 绘制化学方程式（如果开启）
+            if (animationState.showEquation) {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                ctx.font = 'bold 18px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('Fe + Cu²⁺ → Fe²⁺ + Cu', canvas.width / 2, canvas.height - 30);
+                
+                // 高亮对应粒子
+                ctx.fillStyle = 'rgba(241, 196, 15, 0.3)';
+                ctx.beginPath();
+                ctx.arc(nailX + nailWidth /
+<!--检测到代码截断，自动续写中...-->
+2, nailY + nailHeight / 2, 50, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        
+        // 主绘制函数
+        function draw() {
+            if (animationState.currentView === 'macro') {
+                drawMacroView();
+            } else {
+                drawMicroView();
+            }
+        }
+        
+        // 动画循环
+        function animate() {
+            updateParticles();
+            draw();
+            requestAnimationFrame(animate);
+        }
+        
+        // 初始化
+        function init() {
+            initParticles();
+            animate();
+            
+            // 设置初始视图
+            switchToMacroView();
+            
+            // 更新状态文本
+            document.getElementById('statusText').textContent = '已就绪';
+        }
+        
+        // 切换到宏观视图
+        function switchToMacroView() {
+            animationState.currentView = 'macro';
+            document.getElementById('viewLabel').textContent = '宏观实验视图';
+            document.getElementById('macroViewBtn').classList.add('btn-primary');
+            document.getElementById('macroViewBtn').classList.remove('btn-secondary');
+            document.getElementById('microViewBtn').classList.add('btn-secondary');
+            document.getElementById('microViewBtn').classList.remove('btn-primary');
+        }
+        
+        // 切换到微观视图
+        function switchToMicroView() {
+            animationState.currentView = 'micro';
+            document.getElementById('viewLabel').textContent = '微观反应视图';
+            document.getElementById('microViewBtn').classList.add('btn-primary');
+            document.getElementById('microViewBtn').classList.remove('btn-secondary');
+            document.getElementById('macroViewBtn').classList.add('btn-secondary');
+            document.getElementById('macroViewBtn').classList.remove('btn-primary');
+        }
+        
+        // 事件监听器设置
+        function setupEventListeners() {
+            // 播放按钮
+            document.getElementById('playBtn').addEventListener('click', function() {
+                animationState.isPlaying = true;
+                document.getElementById('statusText').textContent = '播放中...';
+            });
+            
+            // 暂停按钮
+            document.getElementById('pauseBtn').addEventListener('click', function() {
+                animationState.isPlaying = false;
+                document.getElementById('statusText').textContent = '已暂停';
+            });
+            
+            // 重置按钮
+            document.getElementById('resetBtn').addEventListener('click', function() {
+                animationState.isPlaying = false;
+                initParticles();
+                document.getElementById('statusText').textContent = '已重置';
+            });
+            
+            // 单步反应按钮
+            document.getElementById('stepBtn').addEventListener('click', function() {
+                if (animationState.currentView === 'micro') {
+                    performReaction();
+                    document.getElementById('statusText').textContent = '单步反应执行';
+                }
+            });
+            
+            // 宏观视图按钮
+            document.getElementById('macroViewBtn').addEventListener('click', switchToMacroView);
+            
+            // 微观视图按钮
+            document.getElementById('microViewBtn').addEventListener('click', switchToMicroView);
+            
+            // 聚焦按钮
+            document.getElementById('zoomInBtn').addEventListener('click', function() {
+                if (animationState.currentView === 'micro') {
+                    // 这里可以添加缩放逻辑，简化版本只切换到微观视图
+                    switchToMicroView();
+                    document.getElementById('statusText').textContent = '已聚焦反应界面';
+                }
+            });
+            
+            // 复选框事件
+            document.getElementById('showLabels').addEventListener('change', function() {
+                animationState.showLabels = this.checked;
+            });
+            
+            document.getElementById('showElectrons').addEventListener('change', function() {
+                animationState.showElectrons = this.checked;
+            });
+            
+            document.getElementById('showColorChange').addEventListener('change', function() {
+                animationState.showColorChange = this.checked;
+            });
+            
+            document.getElementById('showEquation').addEventListener('change', function() {
+                animationState.showEquation = this.checked;
+            });
+            
+            // 添加Canvas圆角矩形方法（如果浏览器不支持）
+            if (!CanvasRenderingContext2D.prototype.roundRect) {
+                CanvasRenderingContext2D.prototype.roundRect = function(x, y, width, height, radius) {
+                    if (typeof radius === 'undefined') radius = 5;
+                    this.beginPath();
+                    this.moveTo(x + radius, y);
+                    this.lineTo(x + width - radius, y);
+                    this.quadraticCurveTo(x + width, y, x + width, y + radius);
+                    this.lineTo(x + width, y + height - radius);
+                    this.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+                    this.lineTo(x + radius, y + height);
+                    this.quadraticCurveTo(x, y + height, x, y + height - radius);
+                    this.lineTo(x, y + radius);
+                    this.quadraticCurveTo(x, y, x + radius, y);
+                    this.closePath();
+                    return this;
+                };
+            }
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('load', function() {
+            init();
+            setupEventListeners();
+        });
+    </script>
+</body>
+</html>

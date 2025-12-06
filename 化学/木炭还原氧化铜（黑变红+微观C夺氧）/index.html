@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>木炭还原氧化铜 - 交互式教学动画</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(4px);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #ffcc00;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .animation-area {
+            flex: 3;
+            min-width: 300px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(4px);
+        }
+
+        .control-panel {
+            flex: 1;
+            min-width: 250px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(4px);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .canvas-container {
+            width: 100%;
+            height: 500px;
+            background: rgba(0, 10, 30, 0.7);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        #mainCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .view-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .view-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .view-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .view-btn.active {
+            background: #2196f3;
+            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4);
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .control-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .play-btn {
+            background: #4caf50;
+            color: white;
+        }
+
+        .play-btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .pause-btn {
+            background: #ff9800;
+            color: white;
+        }
+
+        .pause-btn:hover {
+            background: #e68900;
+            transform: translateY(-2px);
+        }
+
+        .reset-btn {
+            background: #f44336;
+            color: white;
+        }
+
+        .reset-btn:hover {
+            background: #d32f2f;
+            transform: translateY(-2px);
+        }
+
+        .step-control {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .step-control h3 {
+            margin-bottom: 10px;
+            color: #ffcc00;
+        }
+
+        .step-btn {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: none;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .step-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        .step-btn.active {
+            background: #9c27b0;
+            box-shadow: 0 4px 15px rgba(156, 39, 176, 0.4);
+        }
+
+        .info-panel {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            flex-grow: 1;
+        }
+
+        .info-panel h3 {
+            margin-bottom: 10px;
+            color: #ffcc00;
+        }
+
+        #infoText {
+            line-height: 1.6;
+            font-size: 1.1rem;
+            min-height: 150px;
+        }
+
+        .equation {
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.3rem;
+            color: #ffcc00;
+            font-family: 'Cambria', 'Times New Roman', serif;
+        }
+
+        .highlight {
+            background: rgba(255, 204, 0, 0.2);
+            padding: 2px 5px;
+            border-radius: 3px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { background-color: rgba(255, 204, 0, 0.2); }
+            50% { background-color: rgba(255, 204, 0, 0.4); }
+            100% { background-color: rgba(255, 204, 0, 0.2); }
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+
+        .legend-text {
+            font-size: 0.9rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px;
+            margin-top: 20px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .canvas-container {
+                height: 400px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>木炭还原氧化铜</h1>
+            <p class="subtitle">交互式教学动画 - 探索黑变红现象与微观夺氧过程</p>
+        </header>
+
+        <div class="main-content">
+            <div class="animation-area">
+                <div class="view-buttons">
+                    <button class="view-btn active" id="macroView">宏观实验</button>
+                    <button class="view-btn" id="microView">微观反应</button>
+                </div>
+                
+                <div class="canvas-container">
+                    <canvas id="mainCanvas"></canvas>
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #ff4444;"></div>
+                        <span class="legend-text">铜原子 (Cu)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #4444ff;"></div>
+                        <span class="legend-text">氧原子 (O)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #333333;"></div>
+                        <span class="legend-text">碳原子 (C)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #ff9900;"></div>
+                        <span class="legend-text">火焰</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="control-panel">
+                <div class="control-buttons">
+                    <button class="control-btn play-btn" id="playBtn">▶ 播放</button>
+                    <button class="control-btn pause-btn" id="pauseBtn">⏸ 暂停</button>
+                    <button class="control-btn reset-btn" id="resetBtn">↺ 重置</button>
+                </div>
+                
+                <div class="step-control">
+                    <h3>分步演示</h3>
+                    <button class="step-btn" data-step="0">1. 实验准备</button>
+                    <button class="step-btn" data-step="1">2. 加热反应</button>
+                    <button class="step-btn" data-step="2">3. 宏观现象</button>
+                    <button class="step-btn" data-step="3">4. 微观夺氧</button>
+                    <button class="step-btn" data-step="4">5. 反应完成</button>
+                </div>
+                
+                <div class="info-panel">
+                    <h3>实验说明</h3>
+                    <div id="infoText">
+                        点击"播放"按钮开始动画，或选择"分步演示"中的步骤查看详细过程。
+                    </div>
+                    <div class="equation">
+                        C + 2CuO <span style="color:#ff9900;">→高温→</span> 2Cu + CO<sub>2</sub>↑
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>教学动画设计 | 化学还原反应可视化 | 交互式学习工具</p>
+        </footer>
+    </div>
+
+    <script>
+        // 获取Canvas和上下文
+        const canvas = document.getElementById('mainCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 设置Canvas尺寸
+        function resizeCanvas() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        }
+        
+        // 初始调整尺寸
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // 动画状态
+        let animationState = {
+            currentView: 'macro', // 'macro' 或 'micro'
+            isPlaying: false,
+            currentStep: 0,
+            progress: 0,
+            time: 0
+        };
+        
+        // 颜色定义
+        const colors = {
+            background: '#0a1a2a',
+            copper: '#ff4444',
+            oxygen: '#4444ff',
+            carbon: '#333333',
+            flame: '#ff9900',
+            blackPowder: '#222222',
+            redPowder: '#cc3333',
+            glass: 'rgba(200, 220, 240, 0.3)',
+            stand: '#888888',
+            limeWater: 'rgba(240, 240, 255, 0.8)',
+            limeWaterCloudy: 'rgba(255, 255, 255, 0.9)',
+            text: '#ffffff'
+        };
+        
+        // 原子/分子数据
+        const atoms = {
+            // 初始状态：碳原子和氧化铜分子
+            carbonAtoms: [],
+            cuoMolecules: [],
+            // 反应过程中
+            movingOxygens: [],
+            formingCO2: [],
+            // 最终产物
+            copperAtoms: [],
+            co2Molecules: []
+        };
+        
+        // 初始化原子数据
+        function initAtoms() {
+            atoms.carbonAtoms = [];
+            atoms.cuoMolecules = [];
+            atoms.movingOxygens = [];
+            atoms.formingCO2 = [];
+            atoms.copperAtoms = [];
+            atoms.co2Molecules = [];
+            
+            // 创建碳原子（木炭）
+            for (let i = 0; i < 8; i++) {
+                atoms.carbonAtoms.push({
+                    x: canvas.width * 0.3 + Math.random() * 40,
+                    y: canvas.height * 0.6 + Math.random() * 40,
+                    radius: 8,
+                    color: colors.carbon
+                });
+            }
+            
+            // 创建氧化铜分子 (CuO)
+            for (let i = 0; i < 12; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 20 + Math.random() * 30;
+                const centerX = canvas.width * 0.6 + Math.cos(angle) * distance;
+                const centerY = canvas.height * 0.6 + Math.sin(angle) * distance;
+                
+                atoms.cuoMolecules.push({
+                    cu: { x: centerX - 6, y: centerY, radius: 10, color: colors.copper },
+                    o: { x: centerX + 6, y: centerY, radius: 8, color: colors.oxygen },
+                    bonded: true
+                });
+            }
+        }
+        
+        // 视图切换
+        document.getElementById('macroView').addEventListener('click', function() {
+            animationState.currentView = 'macro';
+            document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            updateInfoText();
+        });
+        
+        document.getElementById('microView').addEventListener('click', function() {
+            animationState.currentView = 'micro';
+            document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            updateInfoText();
+        });
+        
+        // 控制按钮
+        document.getElementById('playBtn').addEventListener('click', function() {
+            animationState.isPlaying = true;
+        });
+        
+        document.getElementById('pauseBtn').addEventListener('click', function() {
+            animationState.isPlaying = false;
+        });
+        
+        document.getElementById('resetBtn').addEventListener('click', function() {
+            animationState.isPlaying = false;
+            animationState.currentStep = 0;
+            animationState.progress = 0;
+            animationState.time = 0;
+            initAtoms();
+            updateStepButtons();
+            updateInfoText();
+        });
+        
+        // 分步按钮
+        document.querySelectorAll('.step-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                animationState.currentStep = parseInt(this.dataset.step);
+                animationState.progress = 0;
+                updateStepButtons();
+                updateInfoText();
+            });
+        });
+        
+        // 更新步骤按钮状态
+        function updateStepButtons() {
+            document.querySelectorAll('.step-btn').forEach((btn, index) => {
+                if (index === animationState.currentStep) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+        
+        // 更新信息文本
+        function updateInfoText() {
+            const infoText = document.getElementById('infoText');
+            const steps = [
+                "实验准备：将黑色木炭粉（C）和黑色氧化铜粉末（CuO）混合均匀，放入试管中。连接装有澄清石灰水的试管。",
+                "加热反应：用酒精灯加热混合物。温度升高，反应开始进行。",
+                "宏观现象：试管中的黑色粉末逐渐变成红色，这是生成的铜（Cu）。澄清石灰水变浑浊，证明有二氧化碳（CO₂）气体生成。",
+                "微观夺氧：在原子层面，碳原子（C）从氧化铜（CuO）中夺取氧原子（O），形成二氧化碳（CO₂）。失去氧的氧化铜变成铜单质（Cu）。",
+                "反应完成：木炭（还原剂）被氧化成二氧化碳，氧化铜（氧化剂）被还原成铜。体现了还原反应的夺氧本质。"
+            ];
+            
+            let viewInfo = "";
+            if (animationState.currentView === 'macro') {
+                viewInfo = "<br><span class='highlight'>当前视图：宏观实验现象</span>";
+            } else {
+                viewInfo = "<br><span class='highlight'>当前视图：微观反应过程</span>";
+            }
+            
+            infoText.innerHTML = steps[animationState.currentStep] + viewInfo;
+        }
+        
+        // 绘制宏观实验场景
+        function drawMacroScene() {
+            // 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制背景
+            ctx.fillStyle = colors.background;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制铁架台
+            ctx.fillStyle = colors.stand;
+            ctx.fillRect(canvas.width * 0.3, canvas.height * 0.2, 10, canvas.height * 0.6);
+            ctx.fillRect(canvas.width * 0.2, canvas.height * 0.8, canvas.width * 0.2, 15);
+            
+            // 绘制试管（反应试管）
+            ctx.fillStyle = colors.glass;
+            ctx.beginPath();
+            ctx.roundRect(canvas.width * 0.4, canvas.height * 0.3, 80, 150, 5);
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 绘制试管中的粉末（颜色根据进度变化）
+            const powderHeight = 40;
+            const powderY = canvas.height * 0.3 + 150 - powderHeight;
+            
+            // 计算颜色混合（从黑色到红色）
+            let powderColor;
+            if (animationState.currentStep < 2) {
+                powderColor = colors.blackPowder;
+            } else if (animationState.currentStep === 2) {
+                const mix = animationState.progress;
+                const r = Math.floor(0x22 + (0xcc - 0x22) * mix);
+                const g = Math.floor(0x22 * (1 - mix));
+                const b = Math.floor(0x22 * (1 - mix));
+                powderColor = `rgb(${r}, ${g}, ${b})`;
+            } else {
+                powderColor = colors.redPowder;
+            }
+            
+            ctx.fillStyle = powderColor;
+            ctx.beginPath();
+            ctx.roundRect(canvas.width * 0.4 + 5, powderY, 70, powderHeight, 3);
+            ctx.fill();
+            
+            // 绘制气泡（从步骤1开始）
+            if (animationState.currentStep >= 1) {
+                const bubbleCount = Math.min(10, Math.floor(animationState.progress * 15));
+                
+                for (let i = 0; i < bubbleCount; i++) {
+                    const bubbleX = canvas.width * 0.4 + 40 + Math.sin(animationState.time * 2 + i) * 20;
+                    const bubbleY = powderY - 20 - i * 15 - (animationState.progress * 100);
+                    const radius = 3 + Math.sin(animationState.time + i) * 1;
+                    
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                    ctx.beginPath();
+                    ctx.arc(bubbleX, bubbleY, radius, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+            
+            // 绘制导管
+            ctx.strokeStyle = colors.stand;
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(canvas.width * 0.4 + 80, canvas.height * 0.3 + 100);
+            ctx.lineTo(canvas.width * 0.7, canvas.height * 0.3 + 80);
+            ctx.lineTo(canvas.width * 0.7, canvas.height * 0.6);
+            ctx.stroke();
+            
+            // 绘制石灰水试管
+            ctx.fillStyle = colors.glass;
+            ctx.beginPath();
+            ctx.roundRect(canvas.width * 0.65, canvas.height * 0.6, 60, 120, 5);
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 绘制石灰水（根据步骤变化）
+            let limewaterColor;
+            if (animationState.currentStep < 2) {
+                limewaterColor = colors.limeWater;
+            } else if (animationState.currentStep === 2) {
+                const cloudiness = Math.min(1, animationState.progress * 2);
+                limewaterColor = `rgba(255, 255, 255, ${0.8 + cloudiness * 0.1})`;
+            } else {
+                limewaterColor = colors.limeWaterCloudy;
+            }
+            
+            ctx.fillStyle = limewaterColor;
+            ctx.beginPath();
+            ctx.roundRect(canvas.width * 0.65 + 5, canvas.height * 0.6 + 60, 50, 60, 3);
+            ctx.fill();
+            
+            // 绘制酒精灯
+            ctx.fillStyle = '#666666';
+            ctx.beginPath();
+            ctx.roundRect(canvas.width * 0.35, canvas.height * 0.75, 40, 60, 5);
+            ctx.fill();
+            
+            ctx.fillStyle = '#888888';
+            ctx.beginPath();
+            ctx.roundRect(canvas.width * 0.35 + 15, canvas.height * 0.7, 10, 20, 3);
+            ctx.fill();
+            
+            // 绘制火焰（根据步骤）
+            if (animationState.currentStep >= 1 && animationState.currentStep < 4) {
+                const flameHeight = 30 + Math.sin(animationState.time * 5) * 5;
+                
+                // 火焰外层
+                const gradient = ctx.createRadialGradient(
+                    canvas.width * 0.35 + 20, canvas.height * 0.7,
+                    0,
+                    canvas.width * 0.35 + 20, canvas.height * 0.7,
+                    flameHeight
+                );
+                gradient.addColorStop(0, '#ffff00');
+                gradient.addColorStop(0.5, colors.flame);
+                gradient.addColorStop(1, 'rgba(255, 153, 0, 0)');
+                
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.moveTo(canvas.width * 0.35 + 20 - 10, canvas.height * 0.7);
+                ctx.quadraticCurveTo(
+                    canvas.width * 0.35 + 20, 
+                    canvas.height * 0.7 - flameHeight,
+                    canvas.width * 0.35 + 20 + 10, 
+                    canvas.height * 0.7
+                );
+                ctx.fill();
+            }
+            
+            // 绘制标签
+            ctx.fillStyle = colors.text;
+            ctx.font = '16px Arial';
+            ctx.fillText('木炭 + 氧化铜', canvas.width * 0.4, canvas.height * 0.28);
+            ctx.fillText('澄清石灰水', canvas.width * 0.65, canvas.height * 0.58);
+            ctx.fillText('酒精灯', canvas.width * 0.34, canvas.height * 0.85);
+            
+            // 绘制步骤指示
+            ctx.font = 'bold 18px Arial';
+            ctx.fillStyle = '#ffcc00';
+            ctx.fillText(`步骤 ${animationState.currentStep + 1}/5`, canvas.width * 0.1, canvas.height * 0.1);
+        }
+        
+        // 绘制微观场景
+        function drawMicroScene() {
+            // 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制背景
+            ctx.fillStyle = colors.background;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制网格背景（表示微观尺度）
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.lineWidth = 1;
+            const gridSize = 40;
+            
+            for (let x = 0; x < canvas.width; x += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+            
+            for (let y = 0; y < canvas.height; y += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+            
+            // 根据当前步骤更新原子状态
+            updateAtomicState();
+            
+            // 绘制原子和分子
+            drawAtomsAndMolecules();
+            
+            // 绘制步骤指示和说明
+            ctx.font = 'bold 18px Arial';
+            ctx.fillStyle = '#ffcc00';
+            ctx.fillText(`微观视图 - 步骤 ${animationState.currentStep + 1}/5`, canvas.width * 0.05, canvas.height * 0.08);
+            
+            // 绘制当前步骤的说明
+            ctx.font = '16px Arial';
+            ctx.fillStyle = colors.text;
+            
+            const stepInstructions = [
+                "初始状态：碳原子（黑色）和氧化铜分子（红+蓝）",
+                "加热开始：原子获得能量，运动加剧",
+                "接触反应：碳原子接近氧化铜分子",
+                "夺氧过程：碳夺取氧原子，形成CO₂，铜原子被释放",
+                "反应完成：生成铜单质（红色）和二氧化碳分子"
+            ];
+            
+            ctx.fillText(stepInstructions[animationState.currentStep], canvas.width * 0.05, canvas.height * 0.95);
+        }
+        
+        // 更新原子状态（根据当前步骤和进度）
+        function updateAtomicState() {
+            // 重置所有移动的原子
+            atoms.movingOxygens = [];
+            atoms.formingCO2 = [];
+            
+            // 根据步骤更新
+            switch(animationState.currentStep) {
+                case 0: // 初始状态
+                    // 原子轻微振动
+                    atoms.carbonAtoms.forEach(atom => {
+                        atom.x += Math.sin(animationState.time * 3) * 0.5;
+                        atom.y += Math.cos(animationState.time * 2) * 0.5;
+                    });
+                    break;
+                    
+                case 1: // 加热开始
+                    // 原子振动加剧
+                    atoms.carbonAtoms.forEach(atom => {
+                        atom.x += Math.sin(animationState.time * 5) * 1;
+                        atom.y += Math.cos(animationState.time * 4) * 1;
+                    });
+                    
+                    atoms.cuoMolecules.forEach(mol => {
+                        mol.cu.x += Math.sin(animationState.time * 4 + mol.cu.x) * 0.8;
+                        mol.cu.y += Math.cos(animationState.time * 3 + mol.cu.y) * 0.8;
+                        mol.o.x = mol.cu.x + 12;
+                        mol.o.y = mol.cu.y;
+                    });
+                    break;
+                    
+                case 2: // 接触反应
+                    // 碳原子向氧化铜移动
+                    atoms.carbonAtoms.forEach((atom, index) => {
+                        const targetX = canvas.width * 0.6 + Math.cos(index) * 30;
+                        const targetY = canvas.height * 0.6 + Math.sin(index) * 30;
+                        
+                        atom.x += (targetX - atom.x) * 0.02 * animationState.progress;
+                        atom.y += (targetY - atom.y) * 0.02 * animationState.progress;
+                    });
+                    break;
+                    
+                case 3: // 夺氧过程
+                    // 开始夺氧反应
+                    const reactionCount = Math.min(6, Math.floor(animationState.progress * 8));
+                    
+                    for (let i = 0; i < reactionCount; i++) {
+                        if (i < atoms.cuoMolecules.length && i < atoms.carbonAtoms.length) {
+                            const cuo = atoms.cuoMolecules[i];
+                            const carbon = atoms.carbonAtoms[i];
+                            
+                            // 标记氧原子正在移动
+                            atoms.movingOxygens.push({
+                                x: cuo.o.x,
+                                y: cuo.o.y,
+                                radius: cuo.o.radius,
+                                color: cuo.o.color,
+                                targetX: carbon.x,
+                                targetY: carbon.y,
+                                progress: animationState.progress * 2 - i * 0.1
+                            });
+                            
+                            // 氧化铜分子断开
+                            cuo.bonded = false;
+                            
+                            // 铜原子开始聚集
+                            if (!atoms.copperAtoms.some(cu => 
+                                Math.abs(cu.x - cuo.cu.x) < 5 && Math.abs(cu.y - cuo.cu.y) < 5)) {
+                                atoms.copperAtoms.push({
+                                    x: cuo.cu.x,
+                                    y: cuo.cu.y,
+                                    radius: cuo.cu.radius,
+                                    color: cuo.cu.color,
+                                    clusterX: canvas.width * 0.8,
+                                    clusterY: canvas.height * 0.4 + i * 15
+                                });
+                            }
+                        }
+                    }
+                    
+                    // 更新移动的氧原子位置
+                    atoms.movingOxygens.forEach(oxy => {
+                        if (oxy.progress < 1) {
+                            oxy.x += (oxy.targetX - oxy.x) * 0.05;
+                            oxy.y += (oxy.targetY - oxy.y) * 0.05;
+                        } else {
+                            // 形成CO2分子
+                            const carbonIndex = Math.floor(i / 2);
+                            if (carbonIndex < atoms.carbonAtoms.length) {
+                                const carbon = atoms.carbonAtoms[carbonIndex];
+                                atoms.formingCO2.push({
+                                    c: { x: carbon.x, y: carbon.y, radius: 8, color: colors.carbon },
+                                    o1: { x: carbon.x - 15, y: carbon.y, radius: 8, color: colors.oxygen },
+                                    o2: { x: carbon.x + 15, y: carbon.y, radius: 8, color: colors.oxygen }
+                                });
+                            }
+                        }
+                    });
+                    break;
+                    
+                case 4: // 反应完成
+                    // 铜原子聚集
+                    atoms.copperAtoms.forEach(cu => {
+                        cu.x += (cu.clusterX - cu.x) * 0.02;
+                        cu.y += (cu.clusterY - cu.y) * 0.02;
+                    });
+                    
+                    // CO2分子向上移动（逸出）
+                    atoms.formingCO2.forEach(co2 => {
+                        co2.c.y -= 1;
+                        co2.o1.y -= 1;
+                        co2.o2.y -= 1;
+                    });
+                    break;
+            }
+        }
+        
+        // 绘制原子和分子
+        function drawAtomsAndMolecules() {
+            // 绘制碳原子
+            atoms.carbonAtoms.forEach(atom => {
+                drawAtom(atom);
+            });
+            
+            // 绘制氧化铜分子
+            atoms.cuoMolecules.forEach(mol => {
+                drawAtom(mol.cu);
+                drawAtom(mol.o);
+                
+                // 绘制化学键（如果还连接着）
+                if (mol.bonded) {
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(mol.cu.x, mol.cu.y);
+                    ctx.lineTo(mol.o.x, mol.o.y);
+                    ctx.stroke();
+                }
+            });
+            
+            // 绘制移动的氧原子（夺氧过程）
+            atoms.movingOxygens.forEach(oxy => {
+                drawAtom(oxy);
+                
+                // 绘制移动轨迹
+                ctx.strokeStyle = 'rgba(68, 68, 255, 0.3)';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                ctx.moveTo(canvas.width * 0.6, canvas.height * 0.6);
+                ctx.lineTo(oxy.x, oxy.y);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            });
+            
+            // 绘制形成的CO2分子
+            atoms.formingCO2.forEach(co2 => {
+                drawAtom(co2.c);
+                drawAtom(co2.o1);
+                drawAtom(co2.o2);
+                
+                // 绘制化学键
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(co2.c.x, co2.c.y);
+                ctx.lineTo(co2.o1.x, co2.o1.y);
+                ctx.moveTo(co2.c.x, co2.c.y);
+                ctx.lineTo(co2.o2.x, co2.o2.y);
+                ctx.stroke();
+                
+                // 标记CO2
+                if (animationState.currentStep >= 4) {
+                    ctx.fillStyle = colors.text;
+                    ctx.font = '14px Arial';
+                    ctx.fillText('CO₂', co2.c.x - 10, co2.c.y - 15);
+                }
+            });
+            
+            // 绘制铜原子
+            atoms.copperAtoms.forEach(cu => {
+                drawAtom(cu);
+                
+                // 在步骤4中标记Cu
+                if (animationState.currentStep >= 4) {
+                    ctx.fillStyle = colors.text;
+                    ctx.font = '14px Arial';
+                    ctx.fillText('Cu', cu.x - 8, cu.y - 15);
+                }
+            });
+        }
+        
+        // 绘制单个原子
+        function drawAtom(atom) {
+            // 原子外发光效果
+            const gradient = ctx.createRadialGradient(
+                atom.x, atom.y, 0,
+                atom.x, atom.y, atom.radius * 1.5
+            );
+            gradient.addColorStop(0, atom.color);
+            gradient.addColorStop(0.7, atom.color);
+            gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(atom.x, atom.y, atom.radius * 1.5, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 原子主体
+            ctx.fillStyle = atom.color;
+            ctx.beginPath();
+            ctx.arc(atom.x, atom.y, atom.radius, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 原子高光
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.beginPath();
+            ctx.arc(atom.x - atom.radius * 0.3, atom.y - atom.radius * 0.3, atom.radius * 0.4, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        // 动画循环
+        function animate() {
+            // 更新时间
+            if (animationState.isPlaying) {
+                animationState.time
+<!--检测到代码截断，自动续写中...-->
++= 0.016; // 约60fps
+                
+                // 更新进度
+                if (animationState.currentStep < 4) {
+                    animationState.progress += 0.01;
+                    if (animationState.progress >= 1) {
+                        animationState.progress = 0;
+                        animationState.currentStep++;
+                        updateStepButtons();
+                        updateInfoText();
+                    }
+                }
+            }
+            
+            // 根据当前视图绘制
+            if (animationState.currentView === 'macro') {
+                drawMacroScene();
+            } else {
+                drawMicroScene();
+            }
+            
+            // 继续动画循环
+            requestAnimationFrame(animate);
+        }
+        
+        // 添加圆角矩形绘制方法
+        CanvasRenderingContext2D.prototype.roundRect = function(x, y, width, height, radius) {
+            if (width < 2 * radius) radius = width / 2;
+            if (height < 2 * radius) radius = height / 2;
+            
+            this.beginPath();
+            this.moveTo(x + radius, y);
+            this.arcTo(x + width, y, x + width, y + height, radius);
+            this.arcTo(x + width, y + height, x, y + height, radius);
+            this.arcTo(x, y + height, x, y, radius);
+            this.arcTo(x, y, x + width, y, radius);
+            this.closePath();
+            return this;
+        };
+        
+        // 初始化并开始动画
+        initAtoms();
+        updateStepButtons();
+        updateInfoText();
+        animate();
+        
+        // 添加鼠标悬停交互
+        canvas.addEventListener('mousemove', function(event) {
+            if (animationState.currentView !== 'micro') return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = event.clientX - rect.left;
+            const mouseY = event.clientY - rect.top;
+            
+            // 检查是否悬停在原子上
+            let hoverText = '';
+            
+            // 检查碳原子
+            atoms.carbonAtoms.forEach(atom => {
+                const dist = Math.sqrt((mouseX - atom.x) ** 2 + (mouseY - atom.y) ** 2);
+                if (dist < atom.radius + 5) {
+                    hoverText = '碳原子 (C) - 还原剂，夺取氧';
+                }
+            });
+            
+            // 检查氧化铜分子
+            atoms.cuoMolecules.forEach(mol => {
+                const distCu = Math.sqrt((mouseX - mol.cu.x) ** 2 + (mouseY - mol.cu.y) ** 2);
+                const distO = Math.sqrt((mouseX - mol.o.x) ** 2 + (mouseY - mol.o.y) ** 2);
+                
+                if (distCu < mol.cu.radius + 5) {
+                    hoverText = '铜原子 (Cu) - 在氧化铜中';
+                } else if (distO < mol.o.radius + 5) {
+                    hoverText = '氧原子 (O) - 将被碳原子夺取';
+                }
+            });
+            
+            // 检查铜原子
+            atoms.copperAtoms.forEach(cu => {
+                const dist = Math.sqrt((mouseX - cu.x) ** 2 + (mouseY - cu.y) ** 2);
+                if (dist < cu.radius + 5) {
+                    hoverText = '铜单质 (Cu) - 反应产物，红色固体';
+                }
+            });
+            
+            // 检查CO2分子
+            atoms.formingCO2.forEach(co2 => {
+                const distC = Math.sqrt((mouseX - co2.c.x) ** 2 + (mouseY - co2.c.y) ** 2);
+                const distO1 = Math.sqrt((mouseX - co2.o1.x) ** 2 + (mouseY - co2.o1.y) ** 2);
+                const distO2 = Math.sqrt((mouseX - co2.o2.x) ** 2 + (mouseY - co2.o2.y) ** 2);
+                
+                if (distC < co2.c.radius + 5 || distO1 < co2.o1.radius + 5 || distO2 < co2.o2.radius + 5) {
+                    hoverText = '二氧化碳 (CO₂) - 气体产物，使石灰水变浑浊';
+                }
+            });
+            
+            // 显示悬停提示
+            if (hoverText) {
+                canvas.style.cursor = 'pointer';
+                
+                // 在画布上绘制提示框
+                ctx.save();
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+                ctx.fillRect(mouseX + 10, mouseY - 25, 200, 30);
+                
+                ctx.fillStyle = '#ffcc00';
+                ctx.font = '14px Arial';
+                ctx.fillText(hoverText, mouseX + 15, mouseY - 5);
+                ctx.restore();
+            } else {
+                canvas.style.cursor = 'default';
+            }
+        });
+    </script>
+</body>
+</html>

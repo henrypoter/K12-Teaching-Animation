@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>01背包动态规划 - 二维表格填充过程可视化</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #2c3e50;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #3498db;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .left-panel {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .right-panel {
+            flex: 2;
+            min-width: 500px;
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .panel-title {
+            color: #3498db;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ecf0f1;
+            font-size: 1.4rem;
+        }
+
+        .problem-config {
+            margin-bottom: 25px;
+        }
+
+        .config-item {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .items-table th,
+        .items-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .items-table th {
+            background-color: #f2f6fa;
+            font-weight: 600;
+        }
+
+        .items-table input {
+            width: 80px;
+            text-align: center;
+            padding: 5px;
+        }
+
+        .control-panel {
+            margin-top: 30px;
+        }
+
+        .control-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-secondary {
+            background-color: #2ecc71;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #27ae60;
+        }
+
+        .btn-warning {
+            background-color: #e67e22;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background-color: #d35400;
+        }
+
+        .btn-danger {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .speed-slider {
+            flex: 1;
+        }
+
+        .visualization-container {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            border: 1px solid #ecf0f1;
+            border-radius: 5px;
+            overflow: auto;
+            background-color: white;
+        }
+
+        #animationCanvas {
+            display: block;
+        }
+
+        .status-panel {
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+
+        .status-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        #statusText {
+            min-height: 80px;
+            padding: 10px;
+            background-color: white;
+            border-radius: 5px;
+            border: 1px solid #ecf0f1;
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #2c3e50;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #ecf0f1;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ecf0f1;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 1100px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .left-panel,
+            .right-panel {
+                min-width: 100%;
+            }
+
+            .visualization-container {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>01背包动态规划 - 二维表格填充过程可视化</h1>
+        <p class="subtitle">通过交互式动画理解状态转移方程与表格填充过程</p>
+    </div>
+
+    <div class="container">
+        <div class="left-panel">
+            <h2 class="panel-title">问题配置</h2>
+
+            <div class="problem-config">
+                <div class="config-item">
+                    <label for="capacity">背包容量 (C):</label>
+                    <input type="number" id="capacity" min="1" max="20" value="8">
+                </div>
+
+                <div class="config-item">
+                    <label for="itemCount">物品数量 (n):</label>
+                    <input type="number" id="itemCount" min="1" max="8" value="4">
+                </div>
+
+                <div class="config-item">
+                    <label>物品列表 (重量 w, 价值 v):</label>
+                    <table class="items-table" id="itemsTable">
+                        <thead>
+                            <tr>
+                                <th>物品 i</th>
+                                <th>重量 w</th>
+                                <th>价值 v</th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemsBody">
+                            <!-- 动态生成 -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <button id="applyConfig" class="btn-secondary">应用配置</button>
+            </div>
+
+            <div class="control-panel">
+                <h2 class="panel-title">动画控制</h2>
+
+                <div class="control-buttons">
+                    <button id="startBtn" class="btn-primary">▶ 开始</button>
+                    <button id="pauseBtn" class="btn-warning">⏸ 暂停</button>
+                    <button id="nextStepBtn" class="btn-secondary">⏭ 下一步</button>
+                    <button id="prevStepBtn" class="btn-secondary">⏮ 上一步</button>
+                    <button id="resetBtn" class="btn-danger">↺ 重置</button>
+                </div>
+
+                <div class="speed-control">
+                    <span>动画速度:</span>
+                    <input type="range" id="speedSlider" class="speed-slider" min="1" max="10" value="5">
+                    <span id="speedValue">中速</span>
+                </div>
+
+                <div class="control-buttons" style="margin-top: 20px;">
+                    <button id="showPathBtn" class="btn-secondary">🔍 显示最优解路径</button>
+                    <button id="toggleArrowsBtn" class="btn-secondary">↕️ 切换箭头显示</button>
+                </div>
+            </div>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #3498db;"></div>
+                    <span>当前单元格</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #ecf0f1;"></div>
+                    <span>依赖单元格</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #e67e22;"></div>
+                    <span>不放入决策</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #2ecc71;"></div>
+                    <span>放入决策</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #f1c40f;"></div>
+                    <span>最优解路径</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <h2 class="panel-title">动态规划表格可视化</h2>
+
+            <div class="visualization-container">
+                <canvas id="animationCanvas"></canvas>
+            </div>
+
+            <div class="status-panel">
+                <div class="status-title">当前状态说明</div>
+                <div id="statusText">
+                    点击"开始"按钮启动动画，或点击"下一步"手动前进。动画将展示二维DP表格的填充过程。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>01背包动态规划可视化教学工具 | 状态转移方程: dp[i][j] = max(dp[i-1][j], dp[i-1][j-w[i]] + v[i])</p>
+        <p>点击表格中的单元格可以查看其计算过程</p>
+    </div>
+
+    <script>
+        // 全局变量
+        let canvas, ctx;
+        let capacity = 8;
+        let itemCount = 4;
+        let items = [
+            { weight: 2, value: 3 },
+            { weight: 3, value: 4 },
+            { weight: 4, value: 5 },
+            { weight: 5, value: 8 }
+        ];
+
+        // DP表格数据
+        let dp = [];
+        let decisions = []; // 记录每个单元格的决策: 0=不放入, 1=放入
+
+        // 动画状态
+        let animationState = {
+            isPlaying: false,
+            currentStep: 0,
+            totalSteps: 0,
+            speed: 300, // 毫秒
+            showArrows: true,
+            showOptimalPath: false
+        };
+
+        // 当前高亮的单元格
+        let highlightedCell = { i: -1, j: -1 };
+        let dependentCells = [];
+
+        // 动画步骤队列
+        let animationSteps = [];
+
+        // 画布尺寸
+        const cellSize = 60;
+        const headerSize = 40;
+        const arrowLength = 25;
+
+        // 初始化函数
+        function init() {
+            canvas = document.getElementById('animationCanvas');
+            ctx = canvas.getContext('2d');
+
+            // 初始化物品表格
+            initItemsTable();
+
+            // 初始化DP表格
+            initDPTable();
+
+            // 生成动画步骤
+            generateAnimationSteps();
+
+            // 设置事件监听器
+            setupEventListeners();
+
+            // 初始绘制
+            resizeCanvas();
+            drawTable();
+
+            // 更新状态文本
+            updateStatusText("初始化完成。点击'开始'按钮启动动画。");
+        }
+
+        // 初始化物品表格
+        function initItemsTable() {
+            const itemsBody = document.getElementById('itemsBody');
+            itemsBody.innerHTML = '';
+
+            for (let i = 0; i < itemCount; i++) {
+                const row = document.createElement('tr');
+
+                // 物品编号
+                const idCell = document.createElement('td');
+                idCell.textContent = i + 1;
+                row.appendChild(idCell);
+
+                // 重量输入
+                const weightCell = document.createElement('td');
+                const weightInput = document.createElement('input');
+                weightInput.type = 'number';
+                weightInput.min = '1';
+                weightInput.max = '10';
+                weightInput.value = items[i] ? items[i].weight : Math.floor(Math.random() * 5) + 1;
+                weightCell.appendChild(weightInput);
+                row.appendChild(weightCell);
+
+                // 价值输入
+                const valueCell = document.createElement('td');
+                const valueInput = document.createElement('input');
+                valueInput.type = 'number';
+                valueInput.min = '1';
+                valueInput.max = '20';
+                valueInput.value = items[i] ? items[i].value : Math.floor(Math.random() * 10) + 1;
+                valueCell.appendChild(valueInput);
+                row.appendChild(valueCell);
+
+                itemsBody.appendChild(row);
+            }
+        }
+
+        // 初始化DP表格
+        function initDPTable() {
+            // 重置DP表格
+            dp = [];
+            decisions = [];
+
+            // 初始化第一行（没有物品）和第一列（容量为0）
+            for (let i = 0; i <= itemCount; i++) {
+                dp[i] = [];
+                decisions[i] = [];
+                for (let j = 0; j <= capacity; j++) {
+                    if (i === 0 || j === 0) {
+                        dp[i][j] = 0;
+                        decisions[i][j] = -1; // -1表示基础情况
+                    } else {
+                        dp[i][j] = -1; // -1表示未计算
+                        decisions[i][j] = -1;
+                    }
+                }
+            }
+
+            // 重置动画状态
+            animationState.currentStep = 0;
+            highlightedCell = { i: -1, j: -1 };
+            dependentCells = [];
+        }
+
+        // 生成动画步骤
+        function generateAnimationSteps() {
+            animationSteps = [];
+
+            // 为每个需要计算的单元格生成步骤
+            for (let i = 1; i <= itemCount; i++) {
+                for (let j = 1; j <= capacity; j++) {
+                    // 步骤1: 高亮当前单元格
+                    animationSteps.push({
+                        type: 'highlight',
+                        i: i,
+                        j: j,
+                        description: `准备计算 dp[${i}][${j}]：考虑前${i}个物品，背包容量为${j}`
+                    });
+
+                    // 步骤2: 计算不放入的情况（查看上方单元格）
+                    animationSteps.push({
+                        type: 'calc_no_take',
+                        i: i,
+                        j: j,
+                        description: `选项1：不放入物品${i}，价值为 dp[${i - 1}][${j}] = ${dp[i - 1][j]}`
+                    });
+
+                    // 步骤3: 计算放入的情况（查看左上方单元格）
+                    if (j >= items[i - 1].weight) {
+                        animationSteps.push({
+                            type: 'calc_take',
+                            i: i,
+                            j: j,
+                            description: `选项2：放入物品${i}，价值为 dp[${i - 1}][${j - items[i - 1].weight}] + v[${i}] = ${dp[i - 1][j - items[i - 1].weight]} + ${items[i - 1].value} = ${dp[i - 1][j - items[i - 1].weight] + items[i - 1].value}`
+                        });
+                    } else {
+                        animationSteps.push({
+                            type: 'calc_take_invalid',
+                            i: i,
+                            j: j,
+                            description: `选项2：无法放入物品${i}，因为物品重量${items[i - 1].weight} > 当前容量${j}`
+                        });
+                    }
+
+                    // 步骤4: 比较并填入结果
+                    animationSteps.push({
+                        type: 'fill',
+                        i: i,
+                        j: j,
+                        description: `比较两个选项，选择最大值填入 dp[${i}][${j}]`
+                    });
+                }
+            }
+
+            animationState.totalSteps = animationSteps.length;
+        }
+
+        // 执行下一步动画
+        function nextStep() {
+            if (animationState.currentStep >= animationSteps.length) {
+                animationState.isPlaying = false;
+                updateStatusText("表格填充完成！点击'显示最优解路径'查看最终结果。");
+                document.getElementById('startBtn').textContent = "▶ 开始";
+                return;
+            }
+
+            const step = animationSteps[animationState.currentStep];
+
+            // 根据步骤类型执行相应操作
+            switch (step.type) {
+                case 'highlight':
+                    highlightedCell = { i: step.i, j: step.j };
+                    dependentCells = [];
+                    break;
+
+                case 'calc_no_take':
+                    dependentCells = [{ i: step.i - 1, j: step.j, type: 'no_take' }];
+                    break;
+
+                case 'calc_take':
+                    dependentCells = [
+                        { i: step.i - 1, j: step.j, type: 'no_take' },
+                        { i: step.i - 1, j: step.j - items[step.i - 1].weight, type: 'take' }
+                    ];
+                    break;
+
+                case 'calc_take_invalid':
+                    dependentCells = [{ i: step.i - 1, j: step.j, type: 'no_take' }];
+                    break;
+
+                case 'fill':
+                    // 实际计算DP值
+                    calculateDPCell(step.i, step.j);
+                    highlightedCell = { i: -1, j: -1 };
+                    dependentCells = [];
+                    break;
+            }
+
+            // 更新状态文本
+            updateStatusText(step.description);
+
+            // 重绘表格
+            drawTable();
+
+            // 前进到下一步
+            animationState.currentStep++;
+
+            // 如果动画正在播放，安排下一步
+            if (animationState.isPlaying) {
+                setTimeout(nextStep, animationState.speed);
+            }
+        }
+
+        // 执行上一步动画
+        function prevStep() {
+            if (animationState.currentStep <= 0) return;
+
+            // 后退一步
+            animationState.currentStep--;
+
+            // 如果当前步骤是fill类型，需要清除DP值
+            const step = animationSteps[animationState.currentStep];
+            if (step.type === 'fill') {
+                dp[step.i][step.j] = -1;
+                decisions[step.i][step.j] = -1;
+            }
+
+            // 计算前一步的状态
+            if (animationState.currentStep > 0) {
+                const prevStep = animationSteps[animationState.currentStep - 1];
+
+                switch (prevStep.type) {
+                    case 'highlight':
+                        highlightedCell = { i: prevStep.i, j: prevStep.j };
+                        dependentCells = [];
+                        break;
+
+                    case 'calc_no_take':
+                        highlightedCell = { i: prevStep.i, j: prevStep.j };
+                        dependentCells = [{ i: prevStep.i - 1, j: prevStep.j, type: 'no_take' }];
+                        break;
+
+                    case 'calc_take':
+                        highlightedCell = { i: prevStep.i, j: prevStep.j };
+                        dependentCells = [
+                            { i: prevStep.i - 1, j: prevStep.j, type: 'no_take' },
+                            { i: prevStep.i - 1, j: prevStep.j - items[prevStep.i - 1].weight, type: 'take' }
+                        ];
+                        break;
+
+                    case 'calc_take_invalid':
+                        highlightedCell = { i: prevStep.i, j: prevStep.j };
+                        dependentCells = [{ i: prevStep.i - 1, j: prevStep.j, type: 'no_take' }];
+                        break;
+
+                    default:
+                        highlightedCell = { i: -1, j: -1 };
+                        dependentCells = [];
+                }
+
+                updateStatusText(prevStep.description);
+            } else {
+                highlightedCell = { i: -1, j: -1 };
+                dependentCells = [];
+                updateStatusText("已回到第一步。");
+            }
+
+            // 重绘表格
+            drawTable();
+        }
+
+        // 计算DP单元格的值
+        function calculateDPCell(i, j) {
+            // 不放入当前物品
+            const noTakeValue = dp[i - 1][j];
+
+            // 放入当前物品（如果可能）
+            let takeValue = -1;
+            if (j >= items[i - 1].weight) {
+                takeValue = dp[i - 1][j - items[i - 1].weight] + items[i - 1].value;
+            }
+
+            // 选择较大值
+            if (takeValue > noTakeValue) {
+                dp[i][j] = takeValue;
+                decisions[i][j] = 1; // 放入
+            } else {
+                dp[i][j] = noTakeValue;
+                decisions[i][j] = 0; // 不放入
+            }
+        }
+
+        // 绘制表格
+        function drawTable() {
+            // 清除画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // 计算表格尺寸
+            const tableWidth = (capacity + 1) * cellSize;
+            const tableHeight = (itemCount + 1) * cellSize;
+
+            // 绘制列标题（背包容量）
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            for (let j = 0; j <= capacity; j++) {
+                const x = headerSize + j * cellSize + cellSize / 2;
+                const y = headerSize / 2;
+                ctx.fillText(`容量=${j}`, x, y);
+            }
+
+            // 绘制行标题（物品）
+            for (let i = 0; i <= itemCount; i++) {
+                const x = headerSize / 2;
+                const y = headerSize + i * cellSize + cellSize / 2;
+
+                if (i === 0) {
+                    ctx.fillText('物品/容量', x, y);
+                } else {
+                    ctx.fillText(`前${i}个物品`, x, y);
+                }
+            }
+
+            // 绘制表格单元格
+            for (let i = 0; i <= itemCount; i++) {
+                for (let j = 0; j <= capacity; j++) {
+                    const x = headerSize + j * cellSize;
+                    const y = headerSize + i * cellSize;
+
+                    // 检查是否为高亮单元格
+                    let isHighlighted = (i === highlightedCell.i && j === highlightedCell.j);
+                    let isDependent = dependentCells.some(cell => cell.i === i && cell.j === j);
+
+                    // 设置单元格背景色
+                    if (isHighlighted) {
+                        ctx.fillStyle = 'rgba(52, 152, 219, 0.2)';
+                        ctx.fillRect(x, y, cellSize, cellSize);
+
+                        // 绘制高亮边框
+                        ctx.strokeStyle = '#3498db';
+                        ctx.lineWidth = 3;
+                        ctx.strokeRect(x, y, cellSize, cellSize);
+                    } else if (isDependent) {
+                        ctx.fillStyle = '#ecf0f1';
+                        ctx.fillRect(x, y, cellSize, cellSize);
+                    }
+
+                    // 绘制单元格边框
+                    ctx.strokeStyle = '#bdc3c7';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(x, y, cellSize, cellSize);
+
+                    // 绘制单元格内容
+                    ctx.fillStyle = '#2c3e50';
+                    ctx.font = '16px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+
+                    const centerX = x + cellSize / 2;
+                    const centerY = y + cellSize / 2;
+
+                    if (dp[i][j] >= 0) {
+                        // 已计算的单元格
+                        ctx.fillText(dp[i][j], centerX, centerY);
+
+                        // 绘制决策指示器
+                        if (decisions[i][j] === 0) {
+                            // 不放入
+                            ctx.fillStyle = '#e67e22';
+                            ctx.fillText('↑', centerX + 20, centerY - 20);
+                        } else if (decisions[i][j] === 1) {
+                            // 放入
+                            ctx.fillStyle = '#2ecc71';
+                            ctx.fillText('↖', centerX + 20, centerY - 20);
+                        }
+                    } else if (i === 0 || j === 0) {
+                        // 基础情况
+                        ctx.fillText('0', centerX, centerY);
+                    } else {
+                        // 未计算的单元格
+                        ctx.fillStyle = '#95a5a6';
+                        ctx.fillText('?', centerX, centerY);
+                    }
+                }
+            }
+
+            // 绘制箭头（如果启用）
+            if (animationState.showArrows && dependentCells.length > 0) {
+                drawArrows();
+            }
+
+            // 绘制最优解路径（如果启用）
+            if (animationState.showOptimalPath) {
+                drawOptimalPath();
+            }
+        }
+
+        // 绘制箭头
+        function drawArrows() {
+            const currentX = headerSize + highlightedCell.j * cellSize + cellSize / 2;
+            const currentY = headerSize + highlightedCell.i * cellSize + cellSize / 2;
+
+            dependentCells.forEach(depCell => {
+                const depX = headerSize + depCell.j * cellSize + cellSize / 2;
+                const depY = headerSize + depCell.i * cellSize + cellSize / 2;
+
+                // 设置箭头颜色
+                if (depCell.type === 'no_take') {
+                    ctx.strokeStyle = '#e67e22';
+                    ctx.fillStyle = '#e67e22';
+                } else {
+                    ctx.strokeStyle = '#2ecc71';
+                    ctx.fillStyle = '#2ecc71';
+                }
+
+                ctx.lineWidth = 2;
+
+                // 计算箭头方向
+                const dx = currentX - depX;
+                const dy = currentY - depY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                // 如果距离太短，不绘制箭头
+                if (distance < cellSize / 2) return;
+
+                // 计算起点和终点（从依赖单元格边缘开始）
+                const startX = depX + (dx / distance) * (cellSize / 2);
+                const startY = depY + (dy / distance) * (cellSize / 2);
+                const endX = currentX - (dx / distance) * (cellSize / 2);
+                const endY = currentY - (dy / distance) * (cellSize / 2);
+
+                // 绘制箭头线
+                ctx.beginPath();
+                ctx.moveTo(startX, startY);
+                ctx.lineTo(endX, endY);
+                ctx.stroke();
+
+                // 绘制箭头头部
+                const angle = Math.atan2(dy, dx);
+                ctx.beginPath();
+                ctx.moveTo(endX, endY);
+                ctx.lineTo(
+                    endX - arrowLength * Math.cos(angle - Math.PI / 6),
+                    endY - arrowLength * Math.sin(angle - Math.PI / 6)
+                );
+                ctx.lineTo(
+                    endX - arrowLength * Math.cos(angle + Math.PI / 6),
+                    endY - arrowLength * Math.sin(angle + Math.PI / 6)
+                );
+                ctx.closePath();
+                ctx.fill();
+            });
+        }
+
+        // 绘制最优解路径
+        function drawOptimalPath() {
+            // 从右下角开始回溯
+            let i = itemCount;
+            let j = capacity;
+            let path = [];
+
+            while (i > 0 && j > 0) {
+                path.push({ i: i, j: j });
+
+                if (decisions[i][j] === 0) {
+                    // 不放入，向上移动
+                    i--;
+                } else if (decisions[i][j] === 1) {
+                    // 放入，向左上方移动
+                    j -= items[i - 1].weight;
+                    i--;
+                } else {
+                    break;
+                }
+            }
+
+            // 绘制路径
+            ctx.strokeStyle = '#f1c40f';
+            ctx.lineWidth = 3;
+            ctx.setLineDash([5, 5]);
+
+            ctx.beginPath();
+
+            // 按顺序连接路径点
+            for (let k = 0; k < path.length; k++) {
+                const cell = path[k];
+                const x = headerSize + cell.j * cellSize + cellSize / 2;
+                const y = headerSize + cell.i * cellSize + cellSize / 2;
+
+                if (k === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // 高亮路径上的单元格
+            path.forEach(cell => {
+                const x = headerSize + cell.j * cellSize;
+                const y = headerSize + cell.i * cellSize;
+
+                ctx.fillStyle = 'rgba(241, 196, 15, 0.3)';
+                ctx.fillRect(x, y, cellSize, cellSize);
+
+                ctx.strokeStyle = '#f1c40f';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(x, y, cellSize, cellSize);
+            });
+        }
+
+        // 更新状态文本
+        function updateStatusText(text) {
+            document.getElementById('statusText').textContent = text;
+        }
+
+        // 调整画布大小
+        function resizeCanvas() {
+            const container = document.querySelector('.visualization-container');
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+
+            canvas.width = width;
+            canvas.height = height;
+        }
+
+        // 处理画布点击事件（探查单元格）
+        function handleCanvasClick(event) {
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+
+            // 计算点击的单元格
+            const j = Math.floor((x - headerSize) / cellSize);
+            const i = Math.floor((y - headerSize) / cellSize);
+
+            // 检查点击是否在有效范围内
+            if (i >= 1 && i <= itemCount && j >= 1 && j <= capacity && dp[i][j] >= 0) {
+                // 显示该单元格的计算过程
+                showCellCalculation(i, j);
+            }
+        }
+
+        // 显示单元格的计算过程
+        function showCellCalculation(i, j) {
+            // 高亮当前单元格
+            highlightedCell = { i: i, j: j };
+
+            // 设置依赖单元格
+            dependentCells = [{ i: i - 1, j: j, type: 'no_take' }];
+
+            if (j >= items[i - 1].weight) {
+                dependentCells.push({ i: i - 1, j: j - items[i - 1].weight, type: 'take' });
+            }
+
+            // 更新状态文本
+            let description = `单元格 dp[${i}][${j}] = ${dp[i][j]} 的计算过程：\n`;
+            description += `• 不放入物品${i}: dp[${i - 1}][${j}] = ${dp[i - 1][j]}\n`;
+
+            if (j >= items[i - 1].weight) {
+                description += `• 放入物品${i}: dp[${i - 1}][${j - items[i - 1].weight}] + v[${i}] = ${dp[i - 1][j - items[i - 1].weight]} + ${items[i - 1].value} = ${dp[i - 1][j - items[i - 1].weight] + items[i - 1].value}\n`;
+            } else {
+                description += `• 无法放入物品${i} (重量${items[i - 1].weight} > 容量${j})\n`;
+            }
+
+            description += `• 最大值为 ${dp[i][j]}`;
+
+            if (decisions[i][j] === 0) {
+                description += `，决策为不放入物品${i}`;
+            } else {
+                description += `，决策为放入物品${i}`;
+            }
+
+            updateStatusText(description);
+
+            // 重绘表格
+            drawTable();
+        }
+
+        // 应用新配置
+        function applyNewConfig() {
+            // 获取新配置
+            capacity = parseInt(document.getElementById('capacity').value);
+            itemCount = parseInt(document.getElementById('itemCount').value);
+
+            // 获取物品数据
+            items = [];
+            const inputs = document.querySelectorAll('#itemsBody input');
+
+            for (let i = 0; i < itemCount; i++) {
+                const weight = parseInt(inputs[i * 2].value);
+                const value = parseInt(inputs[i * 2 + 1].value);
+                items.push({ weight, value });
+            }
+
+            // 重新初始化
+            initDPTable();
+            generateAnimationSteps();
+            resizeCanvas();
+            drawTable();
+
+            // 更新状态
+            animationState.isPlaying = false;
+            document.getElementById('startBtn').textContent = "▶ 开始";
+            animationState.showOptimalPath = false;
+
+            updateStatusText(`已应用新配置：${itemCount}个物品，背包容量${capacity}。点击"开始"按钮启动动画。`);
+        }
+
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 控制按钮
+            document.getElementById('startBtn').addEventListener('click', function () {
+                if (!animationState.isPlaying) {
+                    animationState.isPlaying = true;
+                    this.textContent = "⏸ 暂停";
+                    nextStep();
+                }
+            });
+
+            document.getElementById('pauseBtn').addEventListener('click', function () {
+                animationState.isPlaying = false;
+                document.getElementById('startBtn').textContent = "▶ 开始";
+            });
+
+            document.getElementById('nextStepBtn').addEventListener('click', function () {
+                animationState.isPlaying = false;
+                document.getElementById('startBtn').textContent = "▶ 开始";
+                nextStep();
+            });
+
+            document.getElementById('prevStepBtn').addEventListener('click', function () {
+                animationState.isPlaying = false;
+                document.getElementById('startBtn').textContent = "▶ 开始";
+                prevStep();
+            });
+
+            document.getElementById('resetBtn').addEventListener('click', function () {
+                animationState.isPlaying = false;
+                document.getElementById('startBtn').textContent = "▶ 开始";
+                animationState.currentStep = 0;
+                animationState.showOptimalPath = false;
+                initDPTable();
+                drawTable();
+                updateStatusText("已重置。点击'开始'按钮重新启动动画。");
+            });
+
+            // 速度控制
+            document.getElementById
+                <!--检测到代码截断，自动续写中...-->
+                ('speedSlider').addEventListener('input', function () {
+                    const speed = parseInt(this.value);
+                    animationState.speed = 550 - (speed * 50); // 速度值从500ms到50ms
+
+                    const speedText = ['极慢', '很慢', '慢', '较慢', '中速', '较快', '快', '很快', '极快', '最快'];
+                    document.getElementById('speedValue').textContent = speedText[speed - 1];
+                });
+
+            // 应用配置按钮
+            document.getElementById('applyConfig').addEventListener('click', applyNewConfig);
+
+            // 物品数量变化时更新物品表格
+            document.getElementById('itemCount').addEventListener('change', function () {
+                itemCount = parseInt(this.value);
+                initItemsTable();
+            });
+
+            // 显示最优解路径按钮
+            document.getElementById('showPathBtn').addEventListener('click', function () {
+                // 检查表格是否已完全填充
+                let isComplete = true;
+                for (let i = 1; i <= itemCount; i++) {
+                    for (let j = 1; j <= capacity; j++) {
+                        if (dp[i][j] < 0) {
+                            isComplete = false;
+                            break;
+                        }
+                    }
+                    if (!isComplete) break;
+                }
+
+                if (!isComplete) {
+                    updateStatusText("表格尚未完全填充，无法显示最优解路径。请先完成表格填充。");
+                    return;
+                }
+
+                animationState.showOptimalPath = !animationState.showOptimalPath;
+                this.textContent = animationState.showOptimalPath ? "🔍 隐藏最优解路径" : "🔍 显示最优解路径";
+
+                if (animationState.showOptimalPath) {
+                    // 计算并显示最优解
+                    let i = itemCount;
+                    let j = capacity;
+                    let selectedItems = [];
+                    let totalValue = dp[itemCount][capacity];
+                    let totalWeight = 0;
+
+                    while (i > 0 && j > 0) {
+                        if (decisions[i][j] === 1) {
+                            selectedItems.push(i);
+                            totalWeight += items[i - 1].weight;
+                            j -= items[i - 1].weight;
+                        }
+                        i--;
+                    }
+
+                    selectedItems.reverse();
+
+                    let pathDescription = `最优解：最大价值 = ${totalValue}\n`;
+                    pathDescription += `选中物品：${selectedItems.length > 0 ? selectedItems.join(', ') : '无'}\n`;
+                    pathDescription += `总重量：${totalWeight} (容量：${capacity})`;
+
+                    updateStatusText(pathDescription);
+                }
+
+                drawTable();
+            });
+
+            // 切换箭头显示按钮
+            document.getElementById('toggleArrowsBtn').addEventListener('click', function () {
+                animationState.showArrows = !animationState.showArrows;
+                this.textContent = animationState.showArrows ? "↕️ 隐藏箭头" : "↕️ 显示箭头";
+                drawTable();
+            });
+
+            // 画布点击事件
+            canvas.addEventListener('click', handleCanvasClick);
+
+            // 窗口大小变化时调整画布
+            window.addEventListener('resize', function () {
+                resizeCanvas();
+                drawTable();
+            });
+        }
+
+        // 页面加载完成后初始化
+        window.addEventListener('load', init);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>快速排序分治递归过程可视化</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #2c3e50;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #3498db;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .control-panel {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .input-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .input-section label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        #arrayInput {
+            flex: 1;
+            padding: 10px 15px;
+            border: 2px solid #bdc3c7;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        #arrayInput:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+        }
+        
+        .button-primary {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .button-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .button-secondary {
+            background-color: #95a5a6;
+            color: white;
+        }
+        
+        .button-secondary:hover {
+            background-color: #7f8c8d;
+        }
+        
+        .button-success {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .button-success:hover {
+            background-color: #27ae60;
+        }
+        
+        .button-warning {
+            background-color: #e67e22;
+            color: white;
+        }
+        
+        .button-warning:hover {
+            background-color: #d35400;
+        }
+        
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: auto;
+        }
+        
+        .speed-control label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        #speedSlider {
+            width: 150px;
+        }
+        
+        .visualization-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .main-view {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .view-title {
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .view-title::before {
+            content: "";
+            display: inline-block;
+            width: 8px;
+            height: 25px;
+            background-color: #3498db;
+            border-radius: 4px;
+        }
+        
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            border: 1px solid #ecf0f1;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        #arrayCanvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #ecf0f1;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        
+        .recursive-tree-view {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        #treeCanvas {
+            width: 100%;
+            height: 300px;
+            border: 1px solid #ecf0f1;
+            border-radius: 8px;
+        }
+        
+        .status-panel {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .status-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        
+        #statusText {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            min-height: 60px;
+            border-left: 4px solid #3498db;
+            font-size: 1.05rem;
+            line-height: 1.5;
+        }
+        
+        .code-panel {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .code-container {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .code-line {
+            margin-bottom: 5px;
+            padding: 2px 5px;
+            border-radius: 3px;
+            transition: background-color 0.3s;
+        }
+        
+        .code-line.highlighted {
+            background-color: #34495e;
+            color: #fcf3cf;
+            font-weight: 600;
+        }
+        
+        .code-keyword {
+            color: #3498db;
+        }
+        
+        .code-function {
+            color: #2ecc71;
+        }
+        
+        .code-comment {
+            color: #7f8c8d;
+        }
+        
+        .code-variable {
+            color: #e74c3c;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            border-top: 1px solid #ecf0f1;
+        }
+        
+        @media (max-width: 768px) {
+            .control-panel {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .speed-control {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>快速排序分治递归过程可视化</h1>
+        <p class="subtitle">左右指针交换法 + 递归树动态生成</p>
+    </div>
+    
+    <div class="container">
+        <div class="control-panel">
+            <div class="input-section">
+                <label for="arrayInput">数组数据:</label>
+                <input type="text" id="arrayInput" value="6, 3, 8, 5, 2, 7, 4, 1">
+                <button id="randomBtn" class="button button-secondary">随机生成</button>
+            </div>
+            
+            <div class="button-group">
+                <button id="resetBtn" class="button button-secondary">重置</button>
+                <button id="prevBtn" class="button button-secondary">上一步</button>
+                <button id="nextBtn" class="button button-primary">下一步</button>
+                <button id="playBtn" class="button button-success">播放</button>
+                <button id="fastBtn" class="button button-warning">快速排序</button>
+            </div>
+            
+            <div class="speed-control">
+                <label for="speedSlider">速度:</label>
+                <input type="range" id="speedSlider" min="1" max="10" value="5">
+            </div>
+        </div>
+        
+        <div class="visualization-container">
+            <div class="main-view">
+                <h2 class="view-title">数组排序过程</h2>
+                <div class="canvas-container">
+                    <canvas id="arrayCanvas"></canvas>
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #e67e22;"></div>
+                        <span>基准值 (Pivot)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #2ecc71;"></div>
+                        <span>左指针 (i)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #e74c3c;"></div>
+                        <span>右指针 (j)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #3498db;"></div>
+                        <span>已确定位置</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #ecf0f1; border: 1px solid #7f8c8d;"></div>
+                        <span>未处理</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="recursive-tree-view">
+                <h2 class="view-title">递归树生长过程</h2>
+                <canvas id="treeCanvas"></canvas>
+            </div>
+        </div>
+        
+        <div class="status-panel">
+            <h3 class="status-title">当前状态</h3>
+            <div id="statusText">点击"下一步"开始快速排序可视化演示。首先将选取基准值(pivot)，然后使用左右指针法进行分区。</div>
+        </div>
+        
+        <div class="code-panel">
+            <h2 class="view-title">算法代码</h2>
+            <div class="code-container">
+                <div id="codeLine1" class="code-line"><span class="code-keyword">function</span> <span class="code-function">quickSort</span>(arr, left, right) {</div>
+                <div id="codeLine2" class="code-line">  <span class="code-keyword">if</span> (left &lt; right) {</div>
+                <div id="codeLine3" class="code-line">    <span class="code-keyword">let</span> <span class="code-variable">pivotIndex</span> = <span class="code-function">partition</span>(arr, left, right); <span class="code-comment">// 分区操作</span></div>
+                <div id="codeLine4" class="code-line">    <span class="code-function">quickSort</span>(arr, left, <span class="code-variable">pivotIndex</span> - 1); <span class="code-comment">// 递归排序左子数组</span></div>
+                <div id="codeLine5" class="code-line">    <span class="code-function">quickSort</span>(arr, <span class="code-variable">pivotIndex</span> + 1, right); <span class="code-comment">// 递归排序右子数组</span></div>
+                <div id="codeLine6" class="code-line">  }</div>
+                <div id="codeLine7" class="code-line">}</div>
+                <div id="codeLine8" class="code-line"></div>
+                <div id="codeLine9" class="code-line"><span class="code-keyword">function</span> <span class="code-function">partition</span>(arr, left, right) {</div>
+                <div id="codeLine10" class="code-line">  <span class="code-keyword">let</span> <span class="code-variable">pivot</span> = arr[right]; <span class="code-comment">// 选择最右元素作为基准值</span></div>
+                <div id="codeLine11" class="code-line">  <span class="code-keyword">let</span> <span class="code-variable">i</span> = left - 1; <span class="code-comment">// 左指针初始化</span></div>
+                <div id="codeLine12" class="code-line">  </div>
+                <div id="codeLine13" class="code-line">  <span class="code-keyword">for</span> (<span class="code-keyword">let</span> <span class="code-variable">j</span> = left; <span class="code-variable">j</span> &lt; right; <span class="code-variable">j</span>++) {</div>
+                <div id="codeLine14" class="code-line">    <span class="code-keyword">if</span> (arr[<span class="code-variable">j</span>] &lt; <span class="code-variable">pivot</span>) { <span class="code-comment">// 当前元素小于基准值</span></div>
+                <div id="codeLine15" class="code-line">      <span class="code-variable">i</span>++; <span class="code-comment">// 左指针右移</span></div>
+                <div id="codeLine16" class="code-line">      <span class="code-function">swap</span>(arr, <span class="code-variable">i</span>, <span class="code-variable">j</span>); <span class="code-comment">// 交换元素</span></div>
+                <div id="codeLine17" class="code-line">    }</div>
+                <div id="codeLine18" class="code-line">  }</div>
+                <div id="codeLine19" class="code-line">  </div>
+                <div id="codeLine20" class="code-line">  <span class="code-function">swap</span>(arr, <span class="code-variable">i</span> + 1, right); <span class="code-comment">// 将基准值放到正确位置</span></div>
+                <div id="codeLine21" class="code-line">  <span class="code-keyword">return</span> <span class="code-variable">i</span> + 1; <span class="code-comment">// 返回基准值索引</span></div>
+                <div id="codeLine22" class="code-line">}</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>快速排序可视化教学动画 | 设计：熊猫老师 | 使用HTML5 Canvas实现</p>
+    </div>
+
+    <script>
+        // 全局变量
+        let originalArray = [];
+        let currentArray = [];
+        let animationSteps = [];
+        let currentStep = 0;
+        let isPlaying = false;
+        let playInterval;
+        let speed = 500;
+        
+        // 状态历史记录，用于实现"上一步"功能
+        let stateHistory = [];
+        
+        // 递归树节点
+        class TreeNode {
+            constructor(left, right, pivotIndex, depth, parent = null) {
+                this.left = left;
+                this.right = right;
+                this.pivotIndex = pivotIndex;
+                this.depth = depth;
+                this.parent = parent;
+                this.children = [];
+                this.isActive = false;
+                this.isCompleted = false;
+                this.isCurrentPartition = false;
+            }
+        }
+        
+        let treeRoot = null;
+        let currentNode = null;
+        
+        // 动画步骤类型
+        const StepType = {
+            INIT: 'init',
+            SELECT_PIVOT: 'select_pivot',
+            COMPARE: 'compare',
+            SWAP: 'swap',
+            MOVE_POINTER: 'move_pointer',
+            PARTITION_COMPLETE: 'partition_complete',
+            RECURSIVE_CALL_LEFT: 'recursive_call_left',
+            RECURSIVE_CALL_RIGHT: 'recursive_call_right',
+            RETURN_FROM_RECURSION: 'return_from_recursion',
+            SORT_COMPLETE: 'sort_complete'
+        };
+        
+        // DOM元素
+        const arrayCanvas = document.getElementById('arrayCanvas');
+        const treeCanvas = document.getElementById('treeCanvas');
+        const arrayCtx = arrayCanvas.getContext('2d');
+        const treeCtx = treeCanvas.getContext('2d');
+        const arrayInput = document.getElementById('arrayInput');
+        const randomBtn = document.getElementById('randomBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const playBtn = document.getElementById('playBtn');
+        const fastBtn = document.getElementById('fastBtn');
+        const speedSlider = document.getElementById('speedSlider');
+        const statusText = document.getElementById('statusText');
+        
+        // 初始化Canvas尺寸
+        function initCanvasSize() {
+            const arrayContainer = arrayCanvas.parentElement;
+            arrayCanvas.width = arrayContainer.clientWidth;
+            arrayCanvas.height = arrayContainer.clientHeight;
+            
+            treeCanvas.width = treeCanvas.parentElement.clientWidth;
+            treeCanvas.height = 300;
+        }
+        
+        // 初始化数组
+        function initArray() {
+            const input = arrayInput.value.trim();
+            if (input === '') {
+                originalArray = [6, 3, 8, 5, 2, 7, 4, 1];
+            } else {
+                originalArray = input.split(',').map(num => parseInt(num.trim())).filter(num => !isNaN(num));
+                if (originalArray.length === 0) {
+                    originalArray = [6, 3, 8, 5, 2, 7, 4, 1];
+                }
+            }
+            
+            currentArray = [...originalArray];
+            animationSteps = [];
+            currentStep = 0;
+            stateHistory = [];
+            treeRoot = null;
+            currentNode = null;
+            
+            // 生成动画步骤
+            generateAnimationSteps(0, originalArray.length - 1, null);
+            
+            // 保存初始状态
+            saveState();
+            
+            // 更新UI
+            updateStatus("已初始化数组。点击'下一步'开始快速排序演示。");
+            updateCodeHighlight(-1);
+            drawArray();
+            drawTree();
+        }
+        
+        // 生成随机数组
+        function generateRandomArray() {
+            const length = Math.floor(Math.random() * 8) + 5; // 5到12个元素
+            const arr = [];
+            for (let i = 0; i < length; i++) {
+                arr.push(Math.floor(Math.random() * 20) + 1);
+            }
+            arrayInput.value = arr.join(', ');
+            initArray();
+        }
+        
+        // 生成动画步骤
+        function generateAnimationSteps(left, right, parentNode) {
+            if (left >= right) return;
+            
+            // 创建树节点
+            const node = new TreeNode(left, right, -1, parentNode ? parentNode.depth + 1 : 0, parentNode);
+            if (!treeRoot) {
+                treeRoot = node;
+            }
+            if (parentNode) {
+                parentNode.children.push(node);
+            }
+            currentNode = node;
+            
+            // 记录递归调用开始
+            animationSteps.push({
+                type: StepType.RECURSIVE_CALL_LEFT,
+                left: left,
+                right: right,
+                node: node
+            });
+            
+            // 选择基准值
+            animationSteps.push({
+                type: StepType.SELECT_PIVOT,
+                left: left,
+                right: right,
+                pivotIndex: right,
+                pivotValue: currentArray[right],
+                node: node
+            });
+            
+            // 初始化指针
+            let i = left - 1;
+            animationSteps.push({
+                type: StepType.MOVE_POINTER,
+                pointer: 'i',
+                index: i,
+                left: left,
+                right: right,
+                node: node
+            });
+            
+            // 分区过程
+            for (let j = left; j < right; j++) {
+                animationSteps.push({
+                    type: StepType.COMPARE,
+                    left: left,
+                    right: right,
+                    i: i,
+                    j: j,
+                    pivotValue: currentArray[right],
+                    node: node
+                });
+                
+                if (currentArray[j] < currentArray[right]) {
+                    i++;
+                    animationSteps.push({
+                        type: StepType.MOVE_POINTER,
+                        pointer: 'i',
+                        index: i,
+                        left: left,
+                        right: right,
+                        node: node
+                    });
+                    
+                    if (i !== j) {
+                        // 交换元素
+                        [currentArray[i], currentArray[j]] = [currentArray[j], currentArray[i]];
+                        animationSteps.push({
+                            type: StepType.SWAP,
+                            left: left,
+                            right: right,
+                            i: i,
+                            j: j,
+                            node: node
+                        });
+                    }
+                }
+            }
+            
+            // 将基准值放到正确位置
+            const pivotIndex = i + 1;
+            [currentArray[pivotIndex], currentArray[right]] = [currentArray[right], currentArray[pivotIndex]];
+            animationSteps.push({
+                type: StepType.SWAP,
+                left: left,
+                right: right,
+                i: pivotIndex,
+                j: right,
+                node: node
+            });
+            
+            // 更新节点的pivotIndex
+            node.pivotIndex = pivotIndex;
+            
+            // 分区完成
+            animationSteps.push({
+                type: StepType.PARTITION_COMPLETE,
+                left: left,
+                right: right,
+                pivotIndex: pivotIndex,
+                node: node
+            });
+            
+            // 递归调用左子数组
+            if (left < pivotIndex - 1) {
+                generateAnimationSteps(left, pivotIndex - 1, node);
+            }
+            
+            // 记录从左子数组返回
+            animationSteps.push({
+                type: StepType.RETURN_FROM_RECURSION,
+                node: node
+            });
+            
+            // 递归调用右子数组
+            if (pivotIndex + 1 < right) {
+                animationSteps.push({
+                    type: StepType.RECURSIVE_CALL_RIGHT,
+                    left: left,
+                    right: right,
+                    node: node
+                });
+                
+                generateAnimationSteps(pivotIndex + 1, right, node);
+                
+                // 记录从右子数组返回
+                animationSteps.push({
+                    type: StepType.RETURN_FROM_RECURSION,
+                    node: node
+                });
+            }
+            
+            // 当前节点排序完成
+            animationSteps.push({
+                type: StepType.SORT_COMPLETE,
+                left: left,
+                right: right,
+                node: node
+            });
+        }
+        
+        // 保存当前状态到历史记录
+        function saveState() {
+            stateHistory.push({
+                array: [...currentArray],
+                step: currentStep,
+                currentNode: currentNode
+            });
+        }
+        
+        // 执行下一步
+        function nextStep() {
+            if (currentStep >= animationSteps.length) {
+                updateStatus("排序已完成！");
+                if (isPlaying) {
+                    togglePlay();
+                }
+                return;
+            }
+            
+            saveState();
+            
+            const step = animationSteps[currentStep];
+            executeStep(step);
+            currentStep++;
+            
+            // 更新UI
+            drawArray();
+            drawTree();
+            updateCodeHighlightForStep(step);
+            
+            if (currentStep >= animationSteps.length) {
+                updateStatus("排序已完成！数组已完全排序。");
+                if (isPlaying) {
+                    togglePlay();
+                }
+            }
+        }
+        
+        // 执行上一步
+        function prevStep() {
+            if (stateHistory.length <= 1) return;
+            
+            // 移除当前状态
+            stateHistory.pop();
+            
+            // 恢复到上一个状态
+            const prevState = stateHistory[stateHistory.length - 1];
+            currentArray = [...prevState.array];
+            currentStep = prevState.step;
+            currentNode = prevState.currentNode;
+            
+            // 更新UI
+            drawArray();
+            drawTree();
+            
+            if (currentStep > 0) {
+                const step = animationSteps[currentStep - 1];
+                updateStatusForStep(step);
+                updateCodeHighlightForStep(step);
+            } else {
+                updateStatus("已回到初始状态。");
+                updateCodeHighlight(-1);
+            }
+        }
+        
+        // 执行步骤
+        function executeStep(step) {
+            // 更新当前节点状态
+            if (step.node) {
+                // 重置所有节点的活动状态
+                resetNodeActivity(treeRoot);
+                
+                step.node.isActive = true;
+                currentNode = step.node;
+                
+                if (step.type === StepType.SORT_COMPLETE) {
+                    step.node.isCompleted = true;
+                }
+                
+                if (step.type === StepType.PARTITION_COMPLETE) {
+                    step.node.isCurrentPartition = true;
+                } else if (step.type === StepType.RECURSIVE_CALL_LEFT || step.type === StepType.RECURSIVE_CALL_RIGHT) {
+                    step.node.isCurrentPartition = false;
+                }
+            }
+            
+            // 更新状态文本
+            updateStatusForStep(step);
+        }
+        
+        // 重置节点活动状态
+        function resetNodeActivity(node) {
+            if (!node) return;
+            
+            node.isActive = false;
+            for (const child of node.children) {
+                resetNodeActivity(child);
+            }
+        }
+        
+        // 更新状态文本
+        function updateStatusForStep(step) {
+            let status = "";
+            
+            switch (step.type) {
+                case StepType.INIT:
+                    status = "初始化数组，准备开始快速排序。";
+                    break;
+                case StepType.SELECT_PIVOT:
+                    status = `选择基准值(pivot): 选取区间[${step.left}, ${step.right}]的最右元素 ${step.pivotValue} 作为基准值。`;
+                    break;
+                case StepType.COMPARE:
+                    status = `比较: 当前元素 arr[${step.j}] = ${currentArray[step.j]} 与基准值 ${step.pivotValue} 比较。`;
+                    if (currentArray[step.j] < step.pivotValue) {
+                        status += ` ${currentArray[step.j]} < ${step.pivotValue}，需要交换。`;
+                    } else {
+                        status += ` ${currentArray[step.j]} >= ${step.pivotValue}，继续移动右指针。`;
+                    }
+                    break;
+                case StepType.SWAP:
+                    if (step.j === step.right) {
+                        status = `交换: 将基准值放到正确位置 arr[${step.i}]。现在基准值 ${currentArray[step.i]} 已位于最终排序位置。`;
+                    } else {
+                        status = `交换: 交换 arr[${step.i}] = ${currentArray[step.i]} 和 arr[${step.j}] = ${currentArray[step.j]}。`;
+                    }
+                    break;
+                case StepType.MOVE_POINTER:
+                    if (step.pointer === 'i') {
+                        status = `移动左指针: i = ${step.index}`;
+                    } else {
+                        status = `移动右指针: j = ${step.index}`;
+                    }
+                    break;
+                case StepType.PARTITION_COMPLETE:
+                    status = `分区完成: 区间[${step.left}, ${step.right}]已分区。基准值位于索引 ${step.pivotIndex}。左子数组: [${step.left}, ${step.pivotIndex-1}]，右子数组: [${step.pivotIndex+1}, ${step.right}]。`;
+                    break;
+                case StepType.RECURSIVE_CALL_LEFT:
+                    status = `递归调用: 对左子数组 [${step.left}, ${step.node.pivotIndex-1}] 进行快速排序。`;
+                    break;
+                case StepType.RECURSIVE_CALL_RIGHT:
+                    status = `递归调用: 对右子数组 [${step.node.pivotIndex+1}, ${step.right}] 进行快速排序。`;
+                    break;
+                case StepType.RETURN_FROM_RECURSION:
+                    status = `递归返回: 子数组排序完成，返回到上一层递归。`;
+                    break;
+                case StepType.SORT_COMPLETE:
+                    status = `排序完成: 区间[${step.left}, ${step.right}]已完全排序。`;
+                    break;
+                default:
+                    status = "执行快速排序步骤...";
+            }
+            
+            updateStatus(status);
+        }
+        
+        // 更新状态文本
+        function updateStatus(text) {
+            statusText.textContent = text;
+        }
+        
+        // 更新代码高亮
+        function updateCodeHighlightForStep(step) {
+            // 先清除所有高亮
+            for (let i = 1; i <= 22; i++) {
+                document.getElementById(`codeLine${i}`).classList.remove('highlighted');
+            }
+            
+            // 根据步骤类型高亮对应代码行
+            switch (step.type) {
+                case StepType.SELECT_PIVOT:
+                    document.getElementById('codeLine10').classList.add('highlighted');
+                    break;
+                case StepType.MOVE_POINTER:
+                    if (step.pointer === 'i' && step.index === step.left - 1) {
+                        document.getElementById('codeLine11').classList.add('highlighted');
+                    }
+                    break;
+                case StepType.COMPARE:
+                    document.getElementById('codeLine13').classList.add('highlighted');
+                    document.getElementById('codeLine14').classList.add('highlighted');
+                    break;
+                case StepType.SWAP:
+                    if (step.j === step.right) {
+                        document.getElementById('codeLine20').classList.add('highlighted');
+                    } else {
+                        document.getElementById('codeLine16').classList.add('highlighted');
+                    }
+                    break;
+                case StepType.PARTITION_COMPLETE:
+                    document.getElementById('codeLine21').classList.add('highlighted');
+                    break;
+                case StepType.RECURSIVE_CALL_LEFT:
+                    document.getElementById('codeLine3').classList.add('highlighted');
+                    document.getElementById('codeLine4').classList.add('highlighted');
+                    break;
+                case StepType.RECURSIVE_CALL_RIGHT:
+                    document.getElementById('codeLine3').classList.add('highlighted');
+                    document.getElementById('codeLine5').classList.add('highlighted');
+                    break;
+                case StepType.SORT_COMPLETE:
+                    document.getElementById('codeLine2').classList.add('highlighted');
+                    break;
+            }
+        }
+        
+        // 更新代码高亮（通用）
+        function updateCodeHighlight(lineNumber) {
+            // 先清除所有高亮
+            for (let i = 1; i <= 22; i++) {
+                document.getElementById(`codeLine${i}`).classList.remove('highlighted');
+            }
+            
+            // 高亮指定行
+            if (lineNumber > 0) {
+                document.getElementById(`codeLine${lineNumber}`).classList.add('highlighted');
+            }
+        }
+        
+        // 绘制数组
+        function drawArray() {
+            const canvas = arrayCanvas;
+            const ctx = arrayCtx;
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // 清空画布
+            ctx.clearRect(0, 0, width, height);
+            
+            if (currentArray.length === 0) return;
+            
+            // 计算元素宽度和间距
+            const elementCount = currentArray.length;
+            const maxElement = Math.max(...currentArray);
+            const padding = 20;
+            const elementWidth = (width - 2 * padding) / elementCount;
+            const elementSpacing = 5;
+            const actualElementWidth = elementWidth - elementSpacing;
+            
+            // 绘制每个元素
+            for (let i = 0; i < elementCount; i++) {
+                const value = currentArray[i];
+                const x = padding + i * elementWidth;
+                const elementHeight = (value / maxElement) * (height - 100);
+                const y = height - 40 - elementHeight;
+                
+                // 确定元素颜色
+                let color = '#ecf0f1'; // 默认颜色
+                let borderColor = '#7f8c8d';
+                let textColor = '#2c3e50';
+                
+                // 检查当前步骤以确定高亮
+                if (currentStep > 0 && currentStep <= animationSteps.length) {
+                    const step = animationSteps[currentStep - 1];
+                    
+                    // 如果是分区步骤，检查是否在当前分区内
+                    if (step.node && step.node.isCurrentPartition && i >= step.node.left && i <= step.node.right) {
+                        color = '#fcf3cf'; // 当前分区背景色
+                    }
+                    
+                    // 检查是否是基准值
+                    if (step.type === StepType.SELECT_PIVOT && i === step.pivotIndex) {
+                        color = '#e67e22'; // 基准值
+                        borderColor = '#d35400';
+                        textColor = 'white';
+                    }
+                    
+                    // 检查是否是左指针
+                    if ((step.type === StepType.COMPARE || step.type === StepType.MOVE_POINTER || step.type === StepType.SWAP) && step.i === i) {
+                        color = '#2ecc71'; // 左指针
+                        borderColor = '#27ae60';
+                        textColor = 'white';
+                    }
+                    
+                    // 检查是否是右指针
+                    if ((step.type === StepType.COMPARE || step.type === StepType.MOVE_POINTER || step.type === StepType.SWAP) && step.j === i) {
+                        color = '#e74c3c'; // 右指针
+                        borderColor = '#c0392b';
+                        textColor = 'white';
+                    }
+                    
+                    // 检查是否是已交换元素
+                    if (step.type === StepType.SWAP && (step.i === i || step.j === i)) {
+                        color = '#3498db'; // 已交换
+                        borderColor = '#2980b9';
+                        textColor = 'white';
+                    }
+                    
+                    // 检查分区完成后的基准值位置
+                    if (step.type === StepType.PARTITION_COMPLETE && i === step.pivotIndex) {
+                        color = '#3498db'; // 已确定位置
+                        borderColor = '#2980b9';
+                        textColor = 'white';
+                    }
+                }
+                
+                // 绘制元素矩形
+                ctx.fillStyle = color;
+                ctx.fillRect(x, y, actualElementWidth, elementHeight);
+                ctx.strokeStyle = borderColor;
+                ctx.lineWidth = 2;
+                ctx.strokeRect(x, y, actualElementWidth, elementHeight);
+                
+                // 绘制元素值
+                ctx.fillStyle = textColor;
+                ctx.font = 'bold 16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(value, x + actualElementWidth / 2, y - 10);
+                
+                // 绘制索引
+                ctx.fillStyle = '#7f8c8d';
+                ctx.font = '14px Arial';
+                ctx.fillText(`[${i}]`, x + actualElementWidth / 2, height - 20);
+            }
+            
+            // 如果有当前节点
+<!--检测到代码截断，自动续写中...-->
+            // 如果有当前节点，绘制分区范围
+            if (currentNode && currentNode.isCurrentPartition) {
+                const left = currentNode.left;
+                const right = currentNode.right;
+                
+                // 绘制分区背景
+                ctx.fillStyle = 'rgba(252, 243, 207, 0.2)';
+                const leftX = padding + left * elementWidth;
+                const rightX = padding + (right + 1) * elementWidth;
+                ctx.fillRect(leftX, 0, rightX - leftX, height);
+                
+                // 绘制分区标签
+                ctx.fillStyle = '#e67e22';
+                ctx.font = 'bold 16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(`当前分区: [${left}, ${right}]`, width / 2, 30);
+            }
+        }
+        
+        // 绘制递归树
+        function drawTree() {
+            const canvas = treeCanvas;
+            const ctx = treeCtx;
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // 清空画布
+            ctx.clearRect(0, 0, width, height);
+            
+            if (!treeRoot) return;
+            
+            // 计算树布局
+            const nodeWidth = 80;
+            const nodeHeight = 40;
+            const horizontalSpacing = 40;
+            const verticalSpacing = 80;
+            
+            // 递归绘制树节点
+            function drawNode(node, x, y, levelWidth) {
+                if (!node) return;
+                
+                // 确定节点颜色
+                let bgColor = '#ffffff';
+                let borderColor = '#34495e';
+                let textColor = '#2c3e50';
+                
+                if (node.isActive) {
+                    bgColor = '#fcf3cf'; // 活跃节点
+                    borderColor = '#e67e22';
+                } else if (node.isCompleted) {
+                    bgColor = '#d5f4e6'; // 已完成节点
+                    borderColor = '#27ae60';
+                }
+                
+                // 绘制节点
+                ctx.fillStyle = bgColor;
+                ctx.fillRect(x - nodeWidth/2, y - nodeHeight/2, nodeWidth, nodeHeight);
+                ctx.strokeStyle = borderColor;
+                ctx.lineWidth = 2;
+                ctx.strokeRect(x - nodeWidth/2, y - nodeHeight/2, nodeWidth, nodeHeight);
+                
+                // 绘制节点文本
+                ctx.fillStyle = textColor;
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                // 显示节点信息
+                let nodeText = `[${node.left}, ${node.right}]`;
+                if (node.pivotIndex !== -1) {
+                    nodeText += `\npivot: ${node.pivotIndex}`;
+                }
+                
+                const lines = nodeText.split('\n');
+                for (let i = 0; i < lines.length; i++) {
+                    ctx.fillText(lines[i], x, y - (lines.length-1)*8 + i*16);
+                }
+                
+                // 绘制到子节点的连接线
+                if (node.children.length > 0) {
+                    const childCount = node.children.length;
+                    const childY = y + verticalSpacing;
+                    
+                    // 计算子节点的水平分布
+                    let childXStart;
+                    if (childCount === 1) {
+                        childXStart = x;
+                    } else {
+                        const totalWidth = (childCount - 1) * (nodeWidth + horizontalSpacing);
+                        childXStart = x - totalWidth / 2;
+                    }
+                    
+                    // 绘制连接线
+                    ctx.strokeStyle = '#bdc3c7';
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    
+                    for (let i = 0; i < childCount; i++) {
+                        const childX = childXStart + i * (nodeWidth + horizontalSpacing);
+                        
+                        // 从父节点底部到子节点顶部
+                        ctx.moveTo(x, y + nodeHeight/2);
+                        ctx.lineTo(childX, childY - nodeHeight/2);
+                        
+                        // 递归绘制子节点
+                        drawNode(node.children[i], childX, childY, nodeWidth + horizontalSpacing);
+                    }
+                    
+                    ctx.stroke();
+                }
+            }
+            
+            // 从根节点开始绘制
+            drawNode(treeRoot, width / 2, 50, nodeWidth);
+            
+            // 绘制图例
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = 'bold 14px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText('递归树图例:', 20, height - 80);
+            
+            ctx.font = '12px Arial';
+            ctx.fillStyle = '#fcf3cf';
+            ctx.fillRect(20, height - 60, 15, 15);
+            ctx.strokeStyle = '#e67e22';
+            ctx.strokeRect(20, height - 60, 15, 15);
+            ctx.fillStyle = '#2c3e50';
+            ctx.fillText('当前活跃节点', 40, height - 50);
+            
+            ctx.fillStyle = '#d5f4e6';
+            ctx.fillRect(150, height - 60, 15, 15);
+            ctx.strokeStyle = '#27ae60';
+            ctx.strokeRect(150, height - 60, 15, 15);
+            ctx.fillStyle = '#2c3e50';
+            ctx.fillText('已完成节点', 170, height - 50);
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(280, height - 60, 15, 15);
+            ctx.strokeStyle = '#34495e';
+            ctx.strokeRect(280, height - 60, 15, 15);
+            ctx.fillStyle = '#2c3e50';
+            ctx.fillText('待处理节点', 300, height - 50);
+        }
+        
+        // 切换播放/暂停
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            
+            if (isPlaying) {
+                playBtn.textContent = '暂停';
+                playBtn.classList.remove('button-success');
+                playBtn.classList.add('button-secondary');
+                
+                playInterval = setInterval(() => {
+                    nextStep();
+                }, speed);
+            } else {
+                playBtn.textContent = '播放';
+                playBtn.classList.remove('button-secondary');
+                playBtn.classList.add('button-success');
+                
+                clearInterval(playInterval);
+            }
+        }
+        
+        // 快速完成排序
+        function fastSort() {
+            if (isPlaying) {
+                togglePlay();
+            }
+            
+            // 直接跳到完成
+            while (currentStep < animationSteps.length) {
+                nextStep();
+            }
+        }
+        
+        // 更新速度
+        function updateSpeed() {
+            speed = 600 - (speedSlider.value * 50);
+            
+            if (isPlaying) {
+                clearInterval(playInterval);
+                playInterval = setInterval(() => {
+                    nextStep();
+                }, speed);
+            }
+        }
+        
+        // 事件监听
+        window.addEventListener('load', () => {
+            initCanvasSize();
+            initArray();
+            
+            // 窗口大小变化时调整Canvas
+            window.addEventListener('resize', initCanvasSize);
+            
+            // 按钮事件
+            randomBtn.addEventListener('click', generateRandomArray);
+            resetBtn.addEventListener('click', initArray);
+            prevBtn.addEventListener('click', prevStep);
+            nextBtn.addEventListener('click', nextStep);
+            playBtn.addEventListener('click', togglePlay);
+            fastBtn.addEventListener('click', fastSort);
+            
+            // 速度滑块事件
+            speedSlider.addEventListener('input', updateSpeed);
+            
+            // 输入框事件（按Enter键初始化）
+            arrayInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    initArray();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

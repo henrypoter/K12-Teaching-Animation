@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>化学教学动画 - K12 Teaching Animation</title>
+    <meta name="description" content="化学反应微观过程可视化教学动画集合，包含氧化还原、酸碱中和、有机化学等经典反应的动态演示">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --secondary-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --accent-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --dark-bg: #0a0a1a;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-hover: rgba(255, 255, 255, 0.08);
+            --text-primary: #ffffff;
+            --text-secondary: #b4b4c5;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(45deg, #0a0a1a 0%, #1a0a2e 50%, #0a0a1a 100%);
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(240, 147, 251, 0.08) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveBackground 20s linear infinite;
+        }
+
+        @keyframes moveBackground {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            100% {
+                transform: translate(50px, 50px);
+            }
+        }
+
+        /* Header */
+        header {
+            padding: 3rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .breadcrumb {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--card-bg);
+            border-radius: 50px;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.8s ease-out 0.4s both;
+            transition: all 0.3s ease;
+        }
+
+        .breadcrumb:hover {
+            background: var(--card-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .breadcrumb a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--text-primary);
+        }
+
+        .breadcrumb span {
+            color: var(--text-secondary);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Category Section */
+        .category-section {
+            margin-bottom: 4rem;
+        }
+
+        .category-title {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            padding-left: 1rem;
+            border-left: 4px solid;
+            border-image: var(--primary-gradient) 1;
+            animation: slideInLeft 0.6s ease-out;
+        }
+
+        /* Grid Layout */
+        .animation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        /* Card Styles */
+        .animation-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .animation-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--primary-gradient);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: 0;
+        }
+
+        .animation-card:hover::before {
+            opacity: 0.1;
+        }
+
+        .animation-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+            border-color: rgba(240, 147, 251, 0.5);
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            transition: transform 0.4s ease;
+        }
+
+        .animation-card:hover .card-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+            line-height: 1.4;
+        }
+
+        .card-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tag {
+            padding: 0.25rem 0.75rem;
+            background: rgba(240, 147, 251, 0.2);
+            border: 1px solid rgba(240, 147, 251, 0.3);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .animation-card:hover .tag {
+            background: rgba(240, 147, 251, 0.3);
+            border-color: rgba(240, 147, 251, 0.5);
+            color: var(--text-primary);
+        }
+
+        /* Stats Section */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+            padding: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border-color);
+            margin-top: 4rem;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            .animation-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .category-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-animation"></div>
+
+    <header>
+        <div class="header-content">
+            <h1>🧪 化学教学动画</h1>
+            <p class="subtitle">化学反应微观过程可视化教学动画集合</p>
+            <div class="breadcrumb">
+                <a href="../index.html">🏠 首页</a>
+                <span>/</span>
+                <span>化学</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Stats Section -->
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number">41</div>
+                <div class="stat-label">教学动画</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">10</div>
+                <div class="stat-label">主题分类</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">微观可视化</div>
+            </div>
+        </div>
+
+        <!-- Oxidation-Reduction -->
+        <section class="category-section">
+            <h2 class="category-title">⚡ 氧化还原反应</h2>
+            <div class="animation-grid">
+                <a href="./氧化还原反应电子转移（用箭头实时显示得失电子）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚡</div>
+                        <h3 class="card-title">氧化还原电子转移</h3>
+                        <p class="card-description">用箭头实时显示得失电子的过程</p>
+                        <div class="card-tags">
+                            <span class="tag">电子转移</span>
+                            <span class="tag">基础</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./任何氧化还原反应的电子转移箭头动画/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🔄</div>
+                        <h3 class="card-title">电子转移箭头动画</h3>
+                        <p class="card-description">通用的氧化还原电子转移可视化</p>
+                        <div class="card-tags">
+                            <span class="tag">通用模板</span>
+                            <span class="tag">电子</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./木炭还原氧化铜（黑变红+微观C夺氧）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🔥</div>
+                        <h3 class="card-title">木炭还原氧化铜</h3>
+                        <p class="card-description">黑变红的颜色变化+微观C夺氧过程</p>
+                        <div class="card-tags">
+                            <span class="tag">还原</span>
+                            <span class="tag">颜色变化</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./铁生锈的微观过程（铁原子失去电子→Fe³⁺ + O₂ + H₂O）/index.html" class="animation-card"
+                    style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🦀</div>
+                        <h3 class="card-title">铁生锈</h3>
+                        <p class="card-description">铁原子失电子形成铁锈的微观过程</p>
+                        <div class="card-tags">
+                            <span class="tag">腐蚀</span>
+                            <span class="tag">氧化</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Metal Reactions -->
+        <section class="category-section">
+            <h2 class="category-title">🔩 金属反应</h2>
+            <div class="animation-grid">
+                <a href="./金属与酸反应放氢气（Zn + 2HCl → ZnCl₂ + H₂↑ 微观动画）/index.html" class="animation-card"
+                    style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">💨</div>
+                        <h3 class="card-title">金属与酸反应</h3>
+                        <p class="card-description">锌与盐酸反应放出氢气的微观过程</p>
+                        <div class="card-tags">
+                            <span class="tag">置换</span>
+                            <span class="tag">氢气</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./钠与水反应（剧烈+放出氢气+微观：2Na + 2H₂O → 2NaOH + H₂↑）/index.html" class="animation-card"
+                    style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">💧</div>
+                        <h3 class="card-title">钠与水反应</h3>
+                        <p class="card-description">钠与水剧烈反应放出氢气的微观动画</p>
+                        <div class="card-tags">
+                            <span class="tag">活泼金属</span>
+                            <span class="tag">剧烈</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./镁条在空气中燃烧（剧烈白光+微观：Mg原子与O₂分子反应）/index.html" class="animation-card"
+                    style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">✨</div>
+                        <h3 class="card-title">镁条燃烧</h3>
+                        <p class="card-description">镁条燃烧发出剧烈白光的微观过程</p>
+                        <div class="card-tags">
+                            <span class="tag">燃烧</span>
+                            <span class="tag">白光</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./铁钉与硫酸铜溶液置换反应（Cu析出过程+微观单质-离子置换）/index.html" class="animation-card"
+                    style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🔵</div>
+                        <h3 class="card-title">铁铜置换</h3>
+                        <p class="card-description">铁钉与硫酸铜溶液的置换反应</p>
+                        <div class="card-tags">
+                            <span class="tag">置换</span>
+                            <span class="tag">析出</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Gas Reactions -->
+        <section class="category-section">
+            <h2 class="category-title">💨 气体反应</h2>
+            <div class="animation-grid">
+                <a href="./氧气制取与性质（微观显示过氧化氢分解成水和氧气分子）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🫧</div>
+                        <h3 class="card-title">氧气制取</h3>
+                        <p class="card-description">过氧化氢分解制取氧气的微观过程</p>
+                        <div class="card-tags">
+                            <span class="tag">分解</span>
+                            <span class="tag">氧气</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./二氧化碳制取与性质（大理石+盐酸→无数气泡是CO₂分子逃逸）/index.html" class="animation-card"
+                    style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🫧</div>
+                        <h3 class="card-title">二氧化碳制取</h3>
+                        <p class="card-description">大理石与盐酸反应产生CO₂气泡</p>
+                        <div class="card-tags">
+                            <span class="tag">气体</span>
+                            <span class="tag">CO₂</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./实验室制取二氧化碳的全微观过程（CaCO₃ → CaO + CO₂分子飞出）/index.html" class="animation-card"
+                    style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧪</div>
+                        <h3 class="card-title">实验室制CO₂</h3>
+                        <p class="card-description">碳酸钙分解的全微观过程</p>
+                        <div class="card-tags">
+                            <span class="tag">实验</span>
+                            <span class="tag">分解</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./氢气在氯气中燃烧（淡绿黄色火焰+微观H₂ + Cl₂ → 2HCl）/index.html" class="animation-card"
+                    style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🔥</div>
+                        <h3 class="card-title">氢气氯气燃烧</h3>
+                        <p class="card-description">氢气在氯气中燃烧的微观反应</p>
+                        <div class="card-tags">
+                            <span class="tag">燃烧</span>
+                            <span class="tag">化合</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./氯气与氢气爆炸（光照+微观链式反应）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">💥</div>
+                        <h3 class="card-title">氯气氢气爆炸</h3>
+                        <p class="card-description">光照条件下的链式反应爆炸</p>
+                        <div class="card-tags">
+                            <span class="tag">爆炸</span>
+                            <span class="tag">链式反应</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./一氧化碳毒性（与血红蛋白结合微观动画）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">☠️</div>
+                        <h3 class="card-title">一氧化碳毒性</h3>
+                        <p class="card-description">CO与血红蛋白结合的微观过程</p>
+                        <div class="card-tags">
+                            <span class="tag">毒性</span>
+                            <span class="tag">生物化学</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Acid-Base Reactions -->
+        <section class="category-section">
+            <h2 class="category-title">🧂 酸碱盐反应</h2>
+            <div class="animation-grid">
+                <a href="./酸碱中和反应的微观本质（H⁺ + OH⁻ → H₂O）/index.html" class="animation-card"
+                    style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">💧</div>
+                        <h3 class="card-title">酸碱中和</h3>
+                        <p class="card-description">H⁺与OH⁻结合生成水的微观本质</p>
+                        <div class="card-tags">
+                            <span class="tag">中和</span>
+                            <span class="tag">离子</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./复分解反应沉淀生成（AgNO₃ + NaCl → AgCl↓ + NaNO₃ 离子交换动画）/index.html" class="animation-card"
+                    style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⬇️</div>
+                        <h3 class="card-title">复分解沉淀</h3>
+                        <p class="card-description">离子交换生成沉淀的动画过程</p>
+                        <div class="card-tags">
+                            <span class="tag">复分解</span>
+                            <span class="tag">沉淀</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./浓硫酸稀释（错误操作喷溅危险，动画显示放热+水分子被拉开）/index.html" class="animation-card"
+                    style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚠️</div>
+                        <h3 class="card-title">浓硫酸稀释</h3>
+                        <p class="card-description">错误操作的危险性及正确方法</p>
+                        <div class="card-tags">
+                            <span class="tag">安全</span>
+                            <span class="tag">放热</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Electrochemistry -->
+        <section class="category-section">
+            <h2 class="category-title">🔋 电化学</h2>
+            <div class="animation-grid">
+                <a href="./原电池工作原理（锌铜-稀硫酸原电池电子流动+微观电极反应）/index.html" class="animation-card"
+                    style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🔋</div>
+                        <h3 class="card-title">原电池原理</h3>
+                        <p class="card-description">锌铜原电池的电子流动和电极反应</p>
+                        <div class="card-tags">
+                            <span class="tag">原电池</span>
+                            <span class="tag">电子流动</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./原电池和电解池的电子离子定向移动全过程/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚡</div>
+                        <h3 class="card-title">电化学全过程</h3>
+                        <p class="card-description">原电池和电解池的完整对比</p>
+                        <div class="card-tags">
+                            <span class="tag">对比</span>
+                            <span class="tag">离子移动</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./电解池（电解饱和食盐水、氯气+氢气+氢氧化钠生成微观全过程）/index.html" class="animation-card"
+                    style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧪</div>
+                        <h3 class="card-title">电解池</h3>
+                        <p class="card-description">电解饱和食盐水的微观全过程</p>
+                        <div class="card-tags">
+                            <span class="tag">电解</span>
+                            <span class="tag">氯碱工业</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./电解饱和食盐水的三产物生成微观同步动画/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🔬</div>
+                        <h3 class="card-title">电解食盐水</h3>
+                        <p class="card-description">三种产物同步生成的微观动画</p>
+                        <div class="card-tags">
+                            <span class="tag">电解</span>
+                            <span class="tag">工业</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./水在通电时分解成氢气和氧气（电解水微观动画，体积比21清晰可见）/index.html" class="animation-card"
+                    style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">💧</div>
+                        <h3 class="card-title">电解水</h3>
+                        <p class="card-description">水分解成氢气和氧气，体积比2:1</p>
+                        <div class="card-tags">
+                            <span class="tag">电解</span>
+                            <span class="tag">分解</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Organic Chemistry -->
+        <section class="category-section">
+            <h2 class="category-title">🧬 有机化学</h2>
+            <div class="animation-grid">
+                <a href="./甲烷分子空间结构（正四面体3D旋转动画）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🔷</div>
+                        <h3 class="card-title">甲烷结构</h3>
+                        <p class="card-description">正四面体空间结构的3D旋转</p>
+                        <div class="card-tags">
+                            <span class="tag">空间结构</span>
+                            <span class="tag">3D</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./苯分子结构与取代反应（六元环+离域π键动画）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⬡</div>
+                        <h3 class="card-title">苯的结构</h3>
+                        <p class="card-description">六元环和离域π键的动画演示</p>
+                        <div class="card-tags">
+                            <span class="tag">芳香烃</span>
+                            <span class="tag">π键</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./乙烯与溴水反应（π键断裂加成+颜色褪去）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🌈</div>
+                        <h3 class="card-title">乙烯加成</h3>
+                        <p class="card-description">π键断裂加成反应，溴水褪色</p>
+                        <div class="card-tags">
+                            <span class="tag">加成</span>
+                            <span class="tag">颜色变化</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./乙醇催化氧化成乙醛（微观脱氢过程）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🍷</div>
+                        <h3 class="card-title">乙醇氧化</h3>
+                        <p class="card-description">乙醇催化氧化成乙醛的脱氢过程</p>
+                        <div class="card-tags">
+                            <span class="tag">氧化</span>
+                            <span class="tag">脱氢</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./酯化反应（可逆+脱水+分子间力的断裂与重组）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🌸</div>
+                        <h3 class="card-title">酯化反应</h3>
+                        <p class="card-description">可逆脱水反应的分子重组过程</p>
+                        <div class="card-tags">
+                            <span class="tag">酯化</span>
+                            <span class="tag">可逆</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./酯化反应微观机理（羧酸+醇→酯+水，显示原子重组）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🔬</div>
+                        <h3 class="card-title">酯化机理</h3>
+                        <p class="card-description">羧酸与醇反应的原子重组机理</p>
+                        <div class="card-tags">
+                            <span class="tag">机理</span>
+                            <span class="tag">原子</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./有机化学加成、取代、消去反应机理（箭头推动法）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">➡️</div>
+                        <h3 class="card-title">有机反应机理</h3>
+                        <p class="card-description">加成、取代、消去的箭头推动法</p>
+                        <div class="card-tags">
+                            <span class="tag">机理</span>
+                            <span class="tag">通用</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Chemical Equilibrium -->
+        <section class="category-section">
+            <h2 class="category-title">⚖️ 化学平衡</h2>
+            <div class="animation-grid">
+                <a href="./化学平衡的动态建立与移动（分子个数实时变化）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚖️</div>
+                        <h3 class="card-title">化学平衡</h3>
+                        <p class="card-description">平衡建立过程中分子个数的变化</p>
+                        <div class="card-tags">
+                            <span class="tag">平衡</span>
+                            <span class="tag">动态</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./化学平衡移动（勒夏特列原理微观动态：如N₂ + 3H₂ ⇌ 2NH₃）/index.html" class="animation-card"
+                    style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🔄</div>
+                        <h3 class="card-title">平衡移动</h3>
+                        <p class="card-description">勒夏特列原理的微观动态演示</p>
+                        <div class="card-tags">
+                            <span class="tag">勒夏特列</span>
+                            <span class="tag">移动</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./勒夏特列原理所有情况（浓度、压强、温度）微观解释/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🌡️</div>
+                        <h3 class="card-title">勒夏特列原理</h3>
+                        <p class="card-description">浓度、压强、温度影响的微观解释</p>
+                        <div class="card-tags">
+                            <span class="tag">完整版</span>
+                            <span class="tag">三因素</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./化学反应速率影响因素（浓度、温度、催化剂的微观碰撞解释）/index.html" class="animation-card"
+                    style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">💥</div>
+                        <h3 class="card-title">反应速率</h3>
+                        <p class="card-description">浓度、温度、催化剂的微观碰撞</p>
+                        <div class="card-tags">
+                            <span class="tag">速率</span>
+                            <span class="tag">碰撞理论</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./任何涉及" 微观粒子运动与碰撞"的反应速率和活化能动画/index.html" class="animation-card"
+                    style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚡</div>
+                        <h3 class="card-title">粒子碰撞</h3>
+                        <p class="card-description">微观粒子运动碰撞与活化能</p>
+                        <div class="card-tags">
+                            <span class="tag">活化能</span>
+                            <span class="tag">碰撞</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Matter States -->
+        <section class="category-section">
+            <h2 class="category-title">🌡️ 物质状态</h2>
+            <div class="animation-grid">
+                <a href="./物质的三态变化微观过程（熔化、凝固、汽化、液化、升华、凝华）/index.html" class="animation-card"
+                    style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">❄️</div>
+                        <h3 class="card-title">物质三态变化</h3>
+                        <p class="card-description">六种状态变化的微观过程</p>
+                        <div class="card-tags">
+                            <span class="tag">状态变化</span>
+                            <span class="tag">六态</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./分子不断运动与扩散现象（溴蒸气、高锰酸钾在水中扩散的分子运动）/index.html" class="animation-card"
+                    style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🌊</div>
+                        <h3 class="card-title">分子扩散</h3>
+                        <p class="card-description">溴蒸气和高锰酸钾的扩散运动</p>
+                        <div class="card-tags">
+                            <span class="tag">扩散</span>
+                            <span class="tag">分子运动</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Atomic Structure -->
+        <section class="category-section">
+            <h2 class="category-title">⚛️ 原子结构</h2>
+            <div class="animation-grid">
+                <a href="./原子结构（核外电子云、分层、能级跃迁）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">原子结构</h3>
+                        <p class="card-description">核外电子云、分层和能级跃迁</p>
+                        <div class="card-tags">
+                            <span class="tag">原子</span>
+                            <span class="tag">电子云</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./配位键形成（如[Cu(NH₃)₄]²⁺深蓝色配合物）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🔵</div>
+                        <h3 class="card-title">配位键</h3>
+                        <p class="card-description">配位键形成与配合物的颜色</p>
+                        <div class="card-tags">
+                            <span class="tag">配位</span>
+                            <span class="tag">配合物</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Other Reactions -->
+        <section class="category-section">
+            <h2 class="category-title">🔥 其他反应</h2>
+            <div class="animation-grid">
+                <a href="./蜡烛燃烧的微观过程（蜡→气体→与氧气分子反应生成CO₂和H₂O分子）/index.html" class="animation-card"
+                    style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🕯️</div>
+                        <h3 class="card-title">蜡烛燃烧</h3>
+                        <p class="card-description">蜡烛燃烧生成CO₂和H₂O的微观过程</p>
+                        <div class="card-tags">
+                            <span class="tag">燃烧</span>
+                            <span class="tag">氧化</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./白磷自燃与红磷区别（微观P₄分子结构差异）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🔥</div>
+                        <h3 class="card-title">白磷红磷</h3>
+                        <p class="card-description">白磷自燃与红磷的分子结构差异</p>
+                        <div class="card-tags">
+                            <span class="tag">同素异形体</span>
+                            <span class="tag">自燃</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="./化学反应中的原子守恒（用彩色小球表示原子重组，如2H₂ + O₂ → 2H₂O）/index.html" class="animation-card"
+                    style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🎱</div>
+                        <h3 class="card-title">原子守恒</h3>
+                        <p class="card-description">彩色小球演示原子重组守恒</p>
+                        <div class="card-tags">
+                            <span class="tag">守恒</span>
+                            <span class="tag">基础</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 K12 Teaching Animation. All rights reserved.</p>
+        <p style="margin-top: 0.5rem; font-size: 0.85rem;">让化学反应可视化，让微观世界触手可及 ✨</p>
+    </footer>
+</body>
+
+</html>
