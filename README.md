@@ -113,7 +113,9 @@ npx http-server
 如有任何问题或建议，欢迎通过以下方式联系：
 
 - GitHub Issues: [项目Issues页面]
-- Email: [你的邮箱]
+- Email: [369660327@qq.com]
+
+![信息科技研究](qrcode.png)
 
 ---
 

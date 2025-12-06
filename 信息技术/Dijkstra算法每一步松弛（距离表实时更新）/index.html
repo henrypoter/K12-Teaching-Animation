@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -256,8 +257,13 @@
         }
 
         @keyframes updateFlash {
-            0% { background-color: #FFF9C4; }
-            100% { background-color: inherit; }
+            0% {
+                background-color: #FFF9C4;
+            }
+
+            100% {
+                background-color: inherit;
+            }
         }
 
         .current-row {
@@ -285,13 +291,15 @@
             .container {
                 flex-direction: column;
             }
-            
-            .graph-container, .table-container {
+
+            .graph-container,
+            .table-container {
                 min-width: 100%;
             }
         }
     </style>
 </head>
+
 <body>
     <div class="header">
         <h1>Dijkstra算法：松弛操作与距离表实时更新</h1>
@@ -330,7 +338,7 @@
             <button id="playPauseBtn" class="control-btn">播放</button>
             <button id="nextStepBtn" class="control-btn">下一步</button>
             <button id="autoCompleteBtn" class="control-btn">自动完成</button>
-            
+
             <div class="speed-control">
                 <label for="speedSlider">动画速度:</label>
                 <input type="range" id="speedSlider" min="1" max="10" value="5">
@@ -358,15 +366,18 @@
                 <div class="legend-text">未处理节点</div>
             </div>
             <div class="legend-item">
-                <div class="legend-color" style="background-color: #BDBDBD; width: 30px; height: 3px; border-radius: 0;"></div>
+                <div class="legend-color"
+                    style="background-color: #BDBDBD; width: 30px; height: 3px; border-radius: 0;"></div>
                 <div class="legend-text">普通边</div>
             </div>
             <div class="legend-item">
-                <div class="legend-color" style="background-color: #FF9800; width: 30px; height: 5px; border-radius: 0;"></div>
+                <div class="legend-color"
+                    style="background-color: #FF9800; width: 30px; height: 5px; border-radius: 0;"></div>
                 <div class="legend-text">当前松弛边</div>
             </div>
             <div class="legend-item">
-                <div class="legend-color" style="background-color: #2196F3; width: 30px; height: 5px; border-radius: 0;"></div>
+                <div class="legend-color"
+                    style="background-color: #2196F3; width: 30px; height: 5px; border-radius: 0;"></div>
                 <div class="legend-text">最短路径边</div>
             </div>
         </div>
@@ -435,7 +446,7 @@
         const tableBody = document.getElementById('tableBody');
         const statusText = document.getElementById('statusText');
         const tooltip = document.getElementById('tooltip');
-        
+
         // 控制按钮
         const resetBtn = document.getElementById('resetBtn');
         const prevStepBtn = document.getElementById('prevStepBtn');
@@ -455,10 +466,10 @@
             dijkstraState.currentNode = null;
             dijkstraState.relaxingEdge = null;
             dijkstraState.history = [];
-            
+
             // 保存初始状态到历史记录
             saveStateToHistory();
-            
+
             updateDistanceTable();
             updateStatusText();
             drawGraph();
@@ -467,8 +478,8 @@
         // 保存当前状态到历史记录
         function saveStateToHistory() {
             const stateCopy = {
-                distances: {...dijkstraState.distances},
-                previous: {...dijkstraState.previous},
+                distances: { ...dijkstraState.distances },
+                previous: { ...dijkstraState.previous },
                 settled: new Set(dijkstraState.settled),
                 currentNode: dijkstraState.currentNode,
                 relaxingEdge: dijkstraState.relaxingEdge,
@@ -480,18 +491,18 @@
         // 从历史记录恢复状态
         function restoreStateFromHistory(index) {
             if (index < 0 || index >= dijkstraState.history.length) return;
-            
+
             const savedState = dijkstraState.history[index];
-            dijkstraState.distances = {...savedState.distances};
-            dijkstraState.previous = {...savedState.previous};
+            dijkstraState.distances = { ...savedState.distances };
+            dijkstraState.previous = { ...savedState.previous };
             dijkstraState.settled = new Set(savedState.settled);
             dijkstraState.currentNode = savedState.currentNode;
             dijkstraState.relaxingEdge = savedState.relaxingEdge;
             dijkstraState.currentStep = savedState.currentStep;
-            
+
             // 移除之后的历史记录
             dijkstraState.history = dijkstraState.history.slice(0, index + 1);
-            
+
             updateDistanceTable();
             updateStatusText();
             drawGraph();
@@ -501,7 +512,7 @@
         // 更新距离表显示
         function updateDistanceTable() {
             tableBody.innerHTML = '';
-            
+
             for (const node of graph.nodes) {
                 const row = document.createElement('tr');
                 const nodeId = node.id;
@@ -509,14 +520,14 @@
                 const prevNode = dijkstraState.previous[nodeId];
                 const isSettled = dijkstraState.settled.has(nodeId);
                 const isCurrent = nodeId === dijkstraState.currentNode;
-                
+
                 // 设置行类名
                 if (isCurrent) {
                     row.classList.add('current-row');
                 } else if (isSettled) {
                     row.classList.add('settled-row');
                 }
-                
+
                 // 节点单元格
                 const nodeCell = document.createElement('td');
                 nodeCell.textContent = nodeId;
@@ -525,19 +536,19 @@
                     nodeCell.style.color = '#4CAF50';
                 }
                 row.appendChild(nodeCell);
-                
+
                 // 距离单元格
                 const distanceCell = document.createElement('td');
                 distanceCell.textContent = distance === Infinity ? '∞' : distance;
                 distanceCell.id = `dist-${nodeId}`;
                 row.appendChild(distanceCell);
-                
+
                 // 前驱节点单元格
                 const prevCell = document.createElement('td');
                 prevCell.textContent = prevNode || '-';
                 prevCell.id = `prev-${nodeId}`;
                 row.appendChild(prevCell);
-                
+
                 // 状态单元格
                 const statusCell = document.createElement('td');
                 if (nodeId === dijkstraState.source) {
@@ -554,7 +565,7 @@
                     statusCell.textContent = '未处理';
                 }
                 row.appendChild(statusCell);
-                
+
                 tableBody.appendChild(row);
             }
         }
@@ -563,7 +574,7 @@
         function highlightTableUpdate(nodeId, newDistance, newPrev) {
             const distanceCell = document.getElementById(`dist-${nodeId}`);
             const prevCell = document.getElementById(`prev-${nodeId}`);
-            
+
             if (distanceCell) {
                 distanceCell.textContent = newDistance === Infinity ? '∞' : newDistance;
                 distanceCell.classList.add('update-animation');
@@ -571,7 +582,7 @@
                     distanceCell.classList.remove('update-animation');
                 }, 800);
             }
-            
+
             if (prevCell) {
                 prevCell.textContent = newPrev || '-';
                 prevCell.classList.add('update-animation');
@@ -584,7 +595,7 @@
         // 更新状态文本
         function updateStatusText() {
             let status = '';
-            
+
             if (dijkstraState.currentStep === 0) {
                 status = dijkstraState.stepDescriptions[0];
             } else if (dijkstraState.currentStep === 1) {
@@ -598,11 +609,11 @@
                     const fromDist = dijkstraState.distances[edge.from];
                     const toDist = dijkstraState.distances[edge.to];
                     const newDist = fromDist + edge.weight;
-                    
+
                     status = `${dijkstraState.stepDescriptions[3]} 正在检查边 <span class="highlight">${edge.from}→${edge.to}</span> (权重=${edge.weight})。<br>`;
                     status += `当前距离: dist[${edge.to}] = ${toDist === Infinity ? '∞' : toDist}<br>`;
                     status += `经过${edge.from}的距离: dist[${edge.from}] + ${edge.weight} = ${fromDist} + ${edge.weight} = ${newDist}<br>`;
-                    
+
                     if (newDist < toDist) {
                         status += `<span class="highlight">${newDist} < ${toDist === Infinity ? '∞' : toDist}，更新距离表！</span>`;
                     } else {
@@ -614,7 +625,7 @@
             } else if (dijkstraState.currentStep === 4) {
                 status = dijkstraState.stepDescriptions[4];
             }
-            
+
             statusText.innerHTML = status;
         }
 
@@ -622,27 +633,27 @@
         function drawGraph() {
             // 清除画布
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
+
             // 绘制边
             for (const edge of graph.edges) {
                 const fromNode = graph.nodes.find(n => n.id === edge.from);
                 const toNode = graph.nodes.find(n => n.id === edge.to);
-                
+
                 // 确定边的颜色和宽度
                 let edgeColor = '#BDBDBD';
                 let edgeWidth = 1;
-                
+
                 // 检查是否是最短路径边
-                const isShortestPathEdge = dijkstraState.previous[toNode.id] === fromNode.id || 
-                                          dijkstraState.previous[fromNode.id] === toNode.id;
-                
+                const isShortestPathEdge = dijkstraState.previous[toNode.id] === fromNode.id ||
+                    dijkstraState.previous[fromNode.id] === toNode.id;
+
                 // 检查是否是当前正在松弛的边
-                const isRelaxingEdge = dijkstraState.relaxingEdge && 
-                                      ((dijkstraState.relaxingEdge.from === edge.from && 
-                                        dijkstraState.relaxingEdge.to === edge.to) ||
-                                       (dijkstraState.relaxingEdge.from === edge.to && 
-                                        dijkstraState.relaxingEdge.to === edge.from));
-                
+                const isRelaxingEdge = dijkstraState.relaxingEdge &&
+                    ((dijkstraState.relaxingEdge.from === edge.from &&
+                        dijkstraState.relaxingEdge.to === edge.to) ||
+                        (dijkstraState.relaxingEdge.from === edge.to &&
+                            dijkstraState.relaxingEdge.to === edge.from));
+
                 if (isRelaxingEdge) {
                     edgeColor = '#FF9800';
                     edgeWidth = 4;
@@ -650,7 +661,7 @@
                     edgeColor = '#2196F3';
                     edgeWidth = 3;
                 }
-                
+
                 // 绘制边
                 ctx.beginPath();
                 ctx.moveTo(fromNode.x, fromNode.y);
@@ -658,15 +669,15 @@
                 ctx.strokeStyle = edgeColor;
                 ctx.lineWidth = edgeWidth;
                 ctx.stroke();
-                
+
                 // 绘制边的权重
                 const midX = (fromNode.x + toNode.x) / 2;
                 const midY = (fromNode.y + toNode.y) / 2;
-                
+
                 // 绘制权重背景
                 ctx.fillStyle = 'white';
                 ctx.fillRect(midX - 15, midY - 10, 30, 20);
-                
+
                 // 绘制权重文本
                 ctx.fillStyle = '#333';
                 ctx.font = 'bold 14px Arial';
@@ -674,12 +685,12 @@
                 ctx.textBaseline = 'middle';
                 ctx.fillText(edge.weight.toString(), midX, midY);
             }
-            
+
             // 绘制节点
             for (const node of graph.nodes) {
                 // 确定节点颜色
                 let nodeColor = '#E0E0E0'; // 默认：未处理
-                
+
                 if (node.id === dijkstraState.source) {
                     nodeColor = '#4CAF50'; // 源节点
                 } else if (dijkstraState.settled.has(node.id)) {
@@ -687,7 +698,7 @@
                 } else if (node.id === dijkstraState.currentNode) {
                     nodeColor = '#FF9800'; // 当前节点
                 }
-                
+
                 // 绘制节点
                 ctx.beginPath();
                 ctx.arc(node.x, node.y, 20, 0, Math.PI * 2);
@@ -696,14 +707,14 @@
                 ctx.strokeStyle = '#333';
                 ctx.lineWidth = 2;
                 ctx.stroke();
-                
+
                 // 绘制节点标签
                 ctx.fillStyle = 'white';
                 ctx.font = 'bold 18px Arial';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.fillText(node.id, node.x, node.y);
-                
+
                 // 如果节点有距离值且不是无穷大，在节点下方显示
                 if (dijkstraState.distances[node.id] !== Infinity) {
                     ctx.fillStyle = '#333';
@@ -716,22 +727,22 @@
         // 执行Dijkstra算法的下一步
         function nextStep() {
             saveStateToHistory();
-            
+
             // 步骤1: 选择当前节点（如果还没有当前节点）
             if (dijkstraState.currentNode === null) {
                 dijkstraState.currentStep = 1;
-                
+
                 // 找到未处理节点中距离最小的节点
                 let minDistance = Infinity;
                 let minNode = null;
-                
+
                 for (const node of graph.nodes) {
                     if (!dijkstraState.settled.has(node.id) && dijkstraState.distances[node.id] < minDistance) {
                         minDistance = dijkstraState.distances[node.id];
                         minNode = node.id;
                     }
                 }
-                
+
                 if (minNode !== null) {
                     dijkstraState.currentNode = minNode;
                 } else {
@@ -741,12 +752,12 @@
                     updateControlButtons();
                     return;
                 }
-                
+
                 updateStatusText();
                 drawGraph();
                 return;
             }
-            
+
             // 步骤2: 标记当前节点为已处理
             if (!dijkstraState.settled.has(dijkstraState.currentNode)) {
                 dijkstraState.currentStep = 2;
@@ -756,13 +767,13 @@
                 drawGraph();
                 return;
             }
-            
+
             // 步骤3: 松弛当前节点的邻居
             dijkstraState.currentStep = 3;
-            
+
             // 找到当前节点的所有出边
             const outgoingEdges = graph.edges.filter(edge => edge.from === dijkstraState.currentNode);
-            
+
             // 如果还有未松弛的边
             for (const edge of outgoingEdges) {
                 // 如果邻居节点还未确定最短路径
@@ -770,7 +781,7 @@
                     dijkstraState.relaxingEdge = edge;
                     updateStatusText();
                     drawGraph();
-                    
+
                     // 执行松弛操作
                     const newDistance = dijkstraState.distances[edge.from] + edge.weight;
                     if (newDistance < dijkstraState.distances[edge.to]) {
@@ -778,11 +789,11 @@
                         dijkstraState.previous[edge.to] = edge.from;
                         highlightTableUpdate(edge.to, newDistance, edge.from);
                     }
-                    
+
                     // 短暂延迟后继续
                     setTimeout(() => {
                         dijkstraState.relaxingEdge = null;
-                        
+
                         // 检查是否所有邻居都已松弛
                         const nextEdgeIndex = outgoingEdges.indexOf(edge) + 1;
                         if (nextEdgeIndex < outgoingEdges.length) {
@@ -795,11 +806,11 @@
                             nextStep();
                         }
                     }, dijkstraState.animationSpeed);
-                    
+
                     return;
                 }
             }
-            
+
             // 如果没有未松弛的边，准备选择下一个节点
             dijkstraState.currentNode = null;
             nextStep();
@@ -816,16 +827,16 @@
         // 自动完成算法
         function autoComplete() {
             if (dijkstraState.isPlaying) return;
-            
+
             dijkstraState.isPlaying = true;
             playPauseBtn.textContent = '暂停';
             nextStepBtn.disabled = true;
             prevStepBtn.disabled = true;
             autoCompleteBtn.disabled = true;
-            
+
             function continueAutoComplete() {
                 if (!dijkstraState.isPlaying) return;
-                
+
                 // 检查算法是否完成
                 const allSettled = graph.nodes.every(node => dijkstraState.settled.has(node.id));
                 if (allSettled) {
@@ -837,23 +848,23 @@
                     updateControlButtons();
                     return;
                 }
-                
+
                 nextStep();
                 setTimeout(continueAutoComplete, dijkstraState.animationSpeed);
             }
-            
+
             continueAutoComplete();
         }
 
         // 更新控制按钮状态
         function updateControlButtons() {
             prevStepBtn.disabled = dijkstraState.history.length <= 1;
-            
+
             // 检查算法是否完成
             const allSettled = graph.nodes.every(node => dijkstraState.settled.has(node.id));
             nextStepBtn.disabled = allSettled;
             autoCompleteBtn.disabled = allSettled;
-            
+
             if (allSettled) {
                 playPauseBtn.disabled = true;
             }
@@ -882,10 +893,10 @@
                 nextStepBtn.disabled = true;
                 prevStepBtn.disabled = true;
                 autoCompleteBtn.disabled = true;
-                
+
                 function continuePlay() {
                     if (!dijkstraState.isPlaying) return;
-                    
+
                     // 检查算法是否完成
                     const allSettled = graph.nodes.every(node => dijkstraState.settled.has(node.id));
                     if (allSettled) {
@@ -897,11 +908,11 @@
                         updateControlButtons();
                         return;
                     }
-                    
+
                     nextStep();
                     setTimeout(continuePlay, dijkstraState.animationSpeed);
                 }
-                
+
                 continuePlay();
             }
         });
@@ -925,7 +936,7 @@
             const rect = canvas.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
-            
+
             // 检查是否悬停在节点上
             let hoveredNode = null;
             for (const node of graph.nodes) {
@@ -935,26 +946,26 @@
                     break;
                 }
             }
-            
+
             // 检查是否悬停在边上
             let hoveredEdge = null;
             if (!hoveredNode) {
                 for (const edge of graph.edges) {
                     const fromNode = graph.nodes.find(n => n.id === edge.from);
                     const toNode = graph.nodes.find(n => n.id === edge.to);
-                    
+
                     // 计算点到线段的距离
                     const A = { x: fromNode.x, y: fromNode.y };
                     const B = { x: toNode.x, y: toNode.y };
                     const P = { x, y };
-                    
+
                     const AB = { x: B.x - A.x, y: B.y - A.y };
                     const AP = { x: P.x - A.x, y: P.y - A.y };
                     const BP = { x: P.x - B.x, y: P.y - B.y };
-                    
+
                     const dotABAP = AB.x * AP.x + AB.y * AP.y;
                     const dotABAB = AB.x * AB.x + AB.y * AB.y;
-                    
+
                     let distance;
                     if (dotABAP <= 0) {
                         distance = Math.sqrt(AP.x * AP.x + AP.y * AP.y);
@@ -964,58 +975,57 @@
                         const modAB = Math.sqrt(dotABAB);
                         distance = Math.abs(AB.x * AP.y - AB.y * AP.x) / modAB;
                     }
-                    
+
                     if (distance <= 5) {
                         hoveredEdge = edge;
                         break;
                     }
                 }
             }
-            
+
             // 显示提示
             if (hoveredNode) {
                 tooltip.style.display = 'block';
                 tooltip.style.left = `${e.clientX + 10}px`;
                 tooltip.style.top = `${e.clientY + 10}px`;
-                
+
                 let tooltipText = `节点 ${hoveredNode.id}`;
                 tooltipText += `<br>距离: ${dijkstraState.distances[hoveredNode.id] === Infinity ? '∞' : dijkstraState.distances[hoveredNode.id]}`;
                 tooltipText += `<br>前驱: ${dijkstraState.previous[hoveredNode.id] || '无'}`;
-                
+
                 if (hoveredNode.id === dijkstraState.source) {
                     tooltipText += `<br>状态: 源节点`;
                 } else if (dijkstraState.settled.has(hoveredNode.id)) {
                     tooltipText += `<br>状态: 已确定最短路径`;
-                } else if (hoveredNode.id === dijkstraState.currentNode
-<!--检测到代码截断，自动续写中...-->
-                tooltipText += `<br>状态: 当前处理节点`;
+                } else if (hoveredNode.id === dijkstraState.currentNode) {
+                    tooltipText += `<br>状态: 当前处理节点`;
                 } else {
                     tooltipText += `<br>状态: 未处理`;
                 }
-                
+
                 tooltip.innerHTML = tooltipText;
             } else if (hoveredEdge) {
                 tooltip.style.display = 'block';
                 tooltip.style.left = `${e.clientX + 10}px`;
                 tooltip.style.top = `${e.clientY + 10}px`;
-                
+
                 let tooltipText = `边 ${hoveredEdge.from} → ${hoveredEdge.to}`;
                 tooltipText += `<br>权重: ${hoveredEdge.weight}`;
-                
+
                 // 检查是否是最短路径的一部分
-                if (dijkstraState.previous[hoveredEdge.to] === hoveredEdge.from || 
+                if (dijkstraState.previous[hoveredEdge.to] === hoveredEdge.from ||
                     dijkstraState.previous[hoveredEdge.from] === hoveredEdge.to) {
                     tooltipText += `<br>状态: 最短路径的一部分`;
-                } else if (dijkstraState.relaxingEdge && 
-                          ((dijkstraState.relaxingEdge.from === hoveredEdge.from && 
-                            dijkstraState.relaxingEdge.to === hoveredEdge.to) ||
-                           (dijkstraState.relaxingEdge.from === hoveredEdge.to && 
+                } else if (dijkstraState.relaxingEdge &&
+                    ((dijkstraState.relaxingEdge.from === hoveredEdge.from &&
+                        dijkstraState.relaxingEdge.to === hoveredEdge.to) ||
+                        (dijkstraState.relaxingEdge.from === hoveredEdge.to &&
                             dijkstraState.relaxingEdge.to === hoveredEdge.from))) {
                     tooltipText += `<br>状态: 当前正在松弛`;
                 } else {
                     tooltipText += `<br>状态: 普通边`;
                 }
-                
+
                 tooltip.innerHTML = tooltipText;
             } else {
                 tooltip.style.display = 'none';
@@ -1029,11 +1039,12 @@
         // 初始化
         initializeDistances();
         updateControlButtons();
-        
+
         // 窗口大小调整时重新绘制
         window.addEventListener('resize', () => {
             drawGraph();
         });
     </script>
 </body>
+
 </html>

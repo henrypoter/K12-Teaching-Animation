@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,7 +12,7 @@
             padding: 0;
             font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
         }
-        
+
         body {
             background-color: #f5f5f5;
             color: #333;
@@ -20,36 +21,36 @@
             max-width: 1200px;
             margin: 0 auto;
         }
-        
+
         header {
             text-align: center;
             margin-bottom: 30px;
             padding-bottom: 15px;
             border-bottom: 2px solid #007bff;
         }
-        
+
         h1 {
             color: #007bff;
             margin-bottom: 10px;
         }
-        
+
         .subtitle {
             color: #6c757d;
             font-size: 1.1rem;
         }
-        
+
         .container {
             display: flex;
             flex-direction: column;
             gap: 25px;
         }
-        
+
         .main-content {
             display: flex;
             flex-wrap: wrap;
             gap: 25px;
         }
-        
+
         .visualization-section {
             flex: 1;
             min-width: 300px;
@@ -58,7 +59,7 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
             padding: 20px;
         }
-        
+
         .code-section {
             flex: 1;
             min-width: 300px;
@@ -67,7 +68,7 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
             padding: 20px;
         }
-        
+
         .section-title {
             color: #495057;
             margin-bottom: 15px;
@@ -75,7 +76,7 @@
             border-bottom: 1px solid #e9ecef;
             font-size: 1.3rem;
         }
-        
+
         #animation-container {
             width: 100%;
             height: 300px;
@@ -85,7 +86,7 @@
             border-radius: 8px;
             overflow: hidden;
         }
-        
+
         .array-element {
             position: absolute;
             width: 60px;
@@ -100,7 +101,7 @@
             box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
             border: 2px solid transparent;
         }
-        
+
         .sorted-region {
             position: absolute;
             height: 90px;
@@ -109,7 +110,7 @@
             border: 2px dashed #c3e6cb;
             transition: all 0.5s ease;
         }
-        
+
         .unsorted-region {
             position: absolute;
             height: 90px;
@@ -118,7 +119,7 @@
             border: 2px dashed #e9ecef;
             transition: all 0.5s ease;
         }
-        
+
         .legend {
             display: flex;
             flex-wrap: wrap;
@@ -127,26 +128,26 @@
             padding-top: 15px;
             border-top: 1px solid #e9ecef;
         }
-        
+
         .legend-item {
             display: flex;
             align-items: center;
             gap: 8px;
         }
-        
+
         .legend-color {
             width: 20px;
             height: 20px;
             border-radius: 4px;
         }
-        
+
         .controls {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
             margin-top: 20px;
         }
-        
+
         button {
             padding: 10px 16px;
             border: none;
@@ -158,54 +159,56 @@
             align-items: center;
             gap: 6px;
         }
-        
+
         .btn-play {
             background-color: #28a745;
             color: white;
         }
-        
+
         .btn-play:hover {
             background-color: #218838;
         }
-        
+
         .btn-pause {
             background-color: #ffc107;
             color: #333;
         }
-        
+
         .btn-pause:hover {
             background-color: #e0a800;
         }
-        
-        .btn-next, .btn-prev {
+
+        .btn-next,
+        .btn-prev {
             background-color: #007bff;
             color: white;
         }
-        
-        .btn-next:hover, .btn-prev:hover {
+
+        .btn-next:hover,
+        .btn-prev:hover {
             background-color: #0069d9;
         }
-        
+
         .btn-reset {
             background-color: #6c757d;
             color: white;
         }
-        
+
         .btn-reset:hover {
             background-color: #5a6268;
         }
-        
+
         .speed-control {
             display: flex;
             align-items: center;
             gap: 10px;
             margin-left: auto;
         }
-        
+
         #speedSlider {
             width: 120px;
         }
-        
+
         .code-container {
             background-color: #f8f9fa;
             border-radius: 8px;
@@ -217,18 +220,18 @@
             margin-bottom: 20px;
             border: 1px solid #e9ecef;
         }
-        
+
         .code-line {
             padding: 2px 5px;
             margin: 2px 0;
             border-radius: 3px;
             transition: background-color 0.3s;
         }
-        
+
         .highlight {
             background-color: #fff3cd;
         }
-        
+
         .variables-panel {
             background-color: #f8f9fa;
             border-radius: 8px;
@@ -236,13 +239,13 @@
             margin-top: 20px;
             border: 1px solid #e9ecef;
         }
-        
+
         .variables-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
             gap: 15px;
         }
-        
+
         .variable-item {
             display: flex;
             flex-direction: column;
@@ -252,13 +255,13 @@
             border-radius: 6px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
         }
-        
+
         .variable-name {
             font-weight: bold;
             color: #007bff;
             margin-bottom: 5px;
         }
-        
+
         .variable-value {
             font-size: 1.2rem;
             font-weight: bold;
@@ -268,7 +271,7 @@
             align-items: center;
             justify-content: center;
         }
-        
+
         .status-panel {
             background-color: #e7f3ff;
             border-radius: 8px;
@@ -276,17 +279,17 @@
             margin-top: 20px;
             border-left: 4px solid #007bff;
         }
-        
+
         .status-title {
             font-weight: bold;
             color: #007bff;
             margin-bottom: 8px;
         }
-        
+
         .status-text {
             color: #333;
         }
-        
+
         .explanation {
             background-color: white;
             border-radius: 10px;
@@ -294,25 +297,25 @@
             padding: 20px;
             margin-top: 20px;
         }
-        
+
         .explanation h3 {
             color: #495057;
             margin-bottom: 15px;
         }
-        
+
         .explanation p {
             margin-bottom: 10px;
         }
-        
+
         @media (max-width: 768px) {
             .main-content {
                 flex-direction: column;
             }
-            
+
             .controls {
                 justify-content: center;
             }
-            
+
             .speed-control {
                 margin-left: 0;
                 margin-top: 10px;
@@ -322,12 +325,13 @@
         }
     </style>
 </head>
+
 <body>
     <header>
         <h1>插入排序（抓牌整理）教学动画</h1>
         <p class="subtitle">像整理扑克牌一样理解插入排序算法</p>
     </header>
-    
+
     <div class="container">
         <div class="main-content">
             <section class="visualization-section">
@@ -335,7 +339,7 @@
                 <div id="animation-container">
                     <!-- 数组元素将通过JS动态生成 -->
                 </div>
-                
+
                 <div class="legend">
                     <div class="legend-item">
                         <div class="legend-color" style="background-color: #fd7e14;"></div>
@@ -354,7 +358,7 @@
                         <span>未排序区域</span>
                     </div>
                 </div>
-                
+
                 <div class="controls">
                     <button id="playBtn" class="btn-play">
                         <span>▶ 播放</span>
@@ -371,60 +375,60 @@
                     <button id="resetBtn" class="btn-reset">
                         <span>↺ 重置</span>
                     </button>
-                    
+
                     <div class="speed-control">
                         <span>速度:</span>
                         <input type="range" id="speedSlider" min="1" max="10" value="5">
                         <span id="speedValue">中速</span>
                     </div>
                 </div>
-                
+
                 <div class="status-panel">
                     <div class="status-title">当前状态</div>
                     <div id="statusText" class="status-text">点击"播放"开始排序动画</div>
                 </div>
             </section>
-            
+
             <section class="code-section">
                 <h2 class="section-title">算法代码</h2>
                 <div class="code-container">
                     <div id="codeLine1" class="code-line">for (i = 1; i < n; i++) {</div>
-                    <div id="codeLine2" class="code-line">  key = arr[i];</div>
-                    <div id="codeLine3" class="code-line">  j = i - 1;</div>
-                    <div id="codeLine4" class="code-line">  </div>
-                    <div id="codeLine5" class="code-line">  while (j >= 0 && arr[j] > key) {</div>
-                    <div id="codeLine6" class="code-line">    arr[j + 1] = arr[j];</div>
-                    <div id="codeLine7" class="code-line">    j = j - 1;</div>
-                    <div id="codeLine8" class="code-line">  }</div>
-                    <div id="codeLine9" class="code-line">  </div>
-                    <div id="codeLine10" class="code-line">  arr[j + 1] = key;</div>
-                    <div id="codeLine11" class="code-line">}</div>
-                </div>
-                
-                <div class="variables-panel">
-                    <h3 class="section-title">当前变量值</h3>
-                    <div class="variables-grid">
-                        <div class="variable-item">
-                            <div class="variable-name">i (当前索引)</div>
-                            <div id="varI" class="variable-value">-</div>
-                        </div>
-                        <div class="variable-item">
-                            <div class="variable-name">key (待插入值)</div>
-                            <div id="varKey" class="variable-value">-</div>
-                        </div>
-                        <div class="variable-item">
-                            <div class="variable-name">j (比较索引)</div>
-                            <div id="varJ" class="variable-value">-</div>
-                        </div>
-                        <div class="variable-item">
-                            <div class="variable-name">循环次数</div>
-                            <div id="varLoop" class="variable-value">0</div>
+                            <div id="codeLine2" class="code-line"> key = arr[i];</div>
+                            <div id="codeLine3" class="code-line"> j = i - 1;</div>
+                            <div id="codeLine4" class="code-line"> </div>
+                            <div id="codeLine5" class="code-line"> while (j >= 0 && arr[j] > key) {</div>
+                            <div id="codeLine6" class="code-line"> arr[j + 1] = arr[j];</div>
+                            <div id="codeLine7" class="code-line"> j = j - 1;</div>
+                            <div id="codeLine8" class="code-line"> }</div>
+                            <div id="codeLine9" class="code-line"> </div>
+                            <div id="codeLine10" class="code-line"> arr[j + 1] = key;</div>
+                            <div id="codeLine11" class="code-line">}</div>
+                    </div>
+
+                    <div class="variables-panel">
+                        <h3 class="section-title">当前变量值</h3>
+                        <div class="variables-grid">
+                            <div class="variable-item">
+                                <div class="variable-name">i (当前索引)</div>
+                                <div id="varI" class="variable-value">-</div>
+                            </div>
+                            <div class="variable-item">
+                                <div class="variable-name">key (待插入值)</div>
+                                <div id="varKey" class="variable-value">-</div>
+                            </div>
+                            <div class="variable-item">
+                                <div class="variable-name">j (比较索引)</div>
+                                <div id="varJ" class="variable-value">-</div>
+                            </div>
+                            <div class="variable-item">
+                                <div class="variable-name">循环次数</div>
+                                <div id="varLoop" class="variable-value">0</div>
+                            </div>
                         </div>
                     </div>
-                </div>
             </section>
         </div>
-        
+
         <section class="explanation">
             <h3>插入排序算法解析</h3>
             <p><strong>核心思想：</strong>插入排序的工作方式像整理手中的扑克牌。每次从未排序部分取出一张牌（元素），将其插入到已排序部分的正确位置。</p>
@@ -450,25 +454,25 @@
                 this.originalArray = [5, 2, 9, 1, 7, 4, 8, 3, 6];
                 this.array = [...this.originalArray];
                 this.n = this.array.length;
-                
+
                 // 算法状态变量
                 this.i = 1;      // 外层循环索引
                 this.j = 0;      // 内层循环索引
                 this.key = 0;    // 当前待插入值
                 this.loopCount = 0; // 循环计数
-                
+
                 // 动画状态
                 this.isPlaying = false;
                 this.speed = 5;  // 1-10，值越大速度越快
                 this.animationInterval = null;
                 this.currentStep = 0; // 当前步骤
                 this.stepHistory = []; // 步骤历史，用于回退
-                
+
                 // 算法阶段
                 this.phase = 'init'; // init, pick, compare, shift, insert, done
                 this.comparing = false;
                 this.shifting = false;
-                
+
                 // DOM 元素引用
                 this.animationContainer = document.getElementById('animation-container');
                 this.statusText = document.getElementById('statusText');
@@ -478,13 +482,13 @@
                 this.varLoop = document.getElementById('varLoop');
                 this.speedSlider = document.getElementById('speedSlider');
                 this.speedValue = document.getElementById('speedValue');
-                
+
                 // 代码高亮元素
                 this.codeLines = [];
                 for (let i = 1; i <= 11; i++) {
                     this.codeLines.push(document.getElementById(`codeLine${i}`));
                 }
-                
+
                 // 初始化
                 this.init();
                 this.renderArray();
@@ -492,7 +496,7 @@
                 this.updateStatus();
                 this.setupEventListeners();
             }
-            
+
             init() {
                 // 重置状态
                 this.array = [...this.originalArray];
@@ -505,14 +509,14 @@
                 this.shifting = false;
                 this.currentStep = 0;
                 this.stepHistory = [];
-                
+
                 // 清除高亮
                 this.clearCodeHighlight();
-                
+
                 // 保存初始状态
                 this.saveStep();
             }
-            
+
             saveStep() {
                 this.stepHistory.push({
                     array: [...this.array],
@@ -525,12 +529,12 @@
                     shifting: this.shifting
                 });
             }
-            
+
             restorePreviousStep() {
                 if (this.stepHistory.length > 1) {
                     this.stepHistory.pop(); // 移除当前状态
                     const prevState = this.stepHistory[this.stepHistory.length - 1];
-                    
+
                     this.array = [...prevState.array];
                     this.i = prevState.i;
                     this.j = prevState.j;
@@ -539,21 +543,21 @@
                     this.phase = prevState.phase;
                     this.comparing = prevState.comparing;
                     this.shifting = prevState.shifting;
-                    
+
                     this.renderArray();
                     this.updateVariables();
                     this.updateStatus();
                     this.updateCodeHighlight();
-                    
+
                     return true;
                 }
                 return false;
             }
-            
+
             renderArray() {
                 // 清空容器
                 this.animationContainer.innerHTML = '';
-                
+
                 const containerWidth = this.animationContainer.clientWidth;
                 const containerHeight = this.animationContainer.clientHeight;
                 const elementWidth = 60;
@@ -562,7 +566,7 @@
                 const totalWidth = this.n * elementWidth + (this.n - 1) * spacing;
                 const startX = (containerWidth - totalWidth) / 2;
                 const y = (containerHeight - elementHeight) / 2;
-                
+
                 // 绘制已排序区域
                 if (this.i > 0) {
                     const sortedRegion = document.createElement('div');
@@ -572,7 +576,7 @@
                     sortedRegion.style.top = `${y - 5}px`;
                     this.animationContainer.appendChild(sortedRegion);
                 }
-                
+
                 // 绘制未排序区域
                 if (this.i < this.n) {
                     const unsortedRegion = document.createElement('div');
@@ -582,22 +586,42 @@
                     unsortedRegion.style.top = `${y - 5}px`;
                     this.animationContainer.appendChild(unsortedRegion);
                 }
-                
+
                 // 绘制数组元素
                 for (let index = 0; index < this.n; index++) {
                     const element = document.createElement('div');
                     element.className = 'array-element';
-                    element.textContent = this.array[index];
+
+                    // 确定是否是当前 key 的位置
+                    // 在 compare 或 shift 阶段，key 在 j+1 位置（即空出的位置）
+                    // 在 pick 阶段，key 在 i 位置
+                    let isKeyPos = false;
+                    if ((this.phase === 'compare' || this.phase === 'shift') && index === this.j + 1) {
+                        isKeyPos = true;
+                    } else if (this.phase === 'pick' && index === this.i) {
+                        isKeyPos = true;
+                    }
+
+                    // 设置内容：如果是 key 的位置且在排序过程中，显示 key 值，否则显示数组值
+                    if (isKeyPos && this.phase !== 'done' && this.phase !== 'init') {
+                        element.textContent = this.key;
+                    } else {
+                        element.textContent = this.array[index];
+                    }
+
                     element.style.left = `${startX + index * (elementWidth + spacing)}px`;
                     element.style.top = `${y}px`;
-                    
+
                     // 设置元素颜色
-                    if (index === this.i && this.phase !== 'done') {
-                        // 当前待插入元素
+                    if (isKeyPos && this.phase !== 'done') {
+                        // 当前待插入元素 (Key)
                         element.style.backgroundColor = '#fd7e14';
                         element.style.color = 'white';
                         element.style.borderColor = '#e8590c';
                         element.style.zIndex = '10';
+                        // 让 Key 稍微浮起一点，增强"抓牌"效果
+                        element.style.transform = 'translateY(-10px)';
+                        element.style.boxShadow = '0 10px 20px rgba(0,0,0,0.2)';
                     } else if (this.comparing && index === this.j) {
                         // 正在比较的元素
                         element.style.backgroundColor = '#007bff';
@@ -615,34 +639,36 @@
                         element.style.color = '#495057';
                         element.style.borderColor = '#dee2e6';
                     }
-                    
+
                     // 如果排序完成，所有元素变为完成色
                     if (this.phase === 'done') {
                         element.style.backgroundColor = '#155724';
                         element.style.color = 'white';
                         element.style.borderColor = '#0c4128';
+                        element.style.transform = 'none';
+                        element.style.boxShadow = '';
                     }
-                    
+
                     this.animationContainer.appendChild(element);
                 }
             }
-            
+
             updateVariables() {
                 this.varI.textContent = this.i < this.n ? this.i : '完成';
                 this.varKey.textContent = this.key > 0 ? this.key : '-';
                 this.varJ.textContent = this.j >= 0 ? this.j : '-';
                 this.varLoop.textContent = this.loopCount;
             }
-            
+
             updateStatus() {
                 let status = '';
-                
+
                 switch (this.phase) {
                     case 'init':
                         status = '准备开始排序。点击"播放"按钮开始动画。';
                         break;
                     case 'pick':
-                        status = `选取第 ${this.i+1} 个元素 (值=${this.array[this.i]}) 作为待插入元素。`;
+                        status = `选取第 ${this.i + 1} 个元素 (值=${this.array[this.i]}) 作为待插入元素。`;
                         break;
                     case 'compare':
                         status = `比较待插入元素 (${this.key}) 与已排序元素 arr[${this.j}] = ${this.array[this.j]}。`;
@@ -656,20 +682,20 @@
                         status = `将 arr[${this.j}] = ${this.array[this.j]} 向右移动一位。`;
                         break;
                     case 'insert':
-                        status = `将待插入元素 (${this.key}) 插入到 arr[${this.j+1}] 的位置。`;
+                        status = `将待插入元素 (${this.key}) 插入到 arr[${this.j + 1}] 的位置。`;
                         break;
                     case 'done':
                         status = '排序完成！所有元素已按升序排列。';
                         break;
                 }
-                
+
                 this.statusText.textContent = status;
             }
-            
+
             updateCodeHighlight() {
                 // 清除所有高亮
                 this.clearCodeHighlight();
-                
+
                 // 根据当前阶段高亮对应代码行
                 switch (this.phase) {
                     case 'pick':
@@ -692,15 +718,15 @@
                         break;
                 }
             }
-            
+
             clearCodeHighlight() {
                 this.codeLines.forEach(line => line.classList.remove('highlight'));
             }
-            
+
             nextStep() {
                 // 保存当前步骤
                 this.saveStep();
-                
+
                 // 执行算法下一步
                 switch (this.phase) {
                     case 'init':
@@ -708,14 +734,14 @@
                         this.key = this.array[this.i];
                         this.updateCodeHighlight();
                         break;
-                        
+
                     case 'pick':
                         this.phase = 'compare';
                         this.j = this.i - 1;
                         this.comparing = true;
                         this.updateCodeHighlight();
                         break;
-                        
+
                     case 'compare':
                         if (this.j >= 0 && this.array[this.j] > this.key) {
                             this.phase = 'shift';
@@ -726,15 +752,15 @@
                         }
                         this.updateCodeHighlight();
                         break;
-                        
+
                     case 'shift':
                         // 执行移动操作
                         this.array[this.j + 1] = this.array[this.j];
                         this.j = this.j - 1;
-                        
+
                         // 渲染移动效果
                         this.renderArray();
-                        
+
                         // 判断下一步
                         if (this.j >= 0 && this.array[this.j] > this.key) {
                             this.phase = 'compare';
@@ -747,71 +773,71 @@
                         }
                         this.updateCodeHighlight();
                         break;
-                        
+
                     case 'insert':
                         // 执行插入操作
                         this.array[this.j + 1] = this.key;
-                        
+
                         // 准备下一轮循环
                         this.i++;
                         this.loopCount++;
-                        
+
                         if (this.i < this.n) {
                             this.phase = 'pick';
                             this.key = this.array[this.i];
                         } else {
                             this.phase = 'done';
                         }
-                        
+
                         this.comparing = false;
                         this.shifting = false;
                         this.updateCodeHighlight();
                         break;
-                        
+
                     case 'done':
                         // 排序已完成，不再前进
                         return;
                 }
-                
+
                 this.renderArray();
                 this.updateVariables();
                 this.updateStatus();
                 this.currentStep++;
             }
-            
+
             prevStep() {
                 if (this.restorePreviousStep()) {
                     this.currentStep--;
                 }
             }
-            
+
             play() {
                 if (this.phase === 'done') {
                     this.reset();
                 }
-                
+
                 this.isPlaying = true;
                 const speedMap = {
                     1: 1500, 2: 1200, 3: 1000, 4: 800, 5: 600,
                     6: 500, 7: 400, 8: 300, 9: 200, 10: 100
                 };
-                
+
                 const intervalTime = speedMap[this.speed] || 600;
-                
+
                 if (this.animationInterval) {
                     clearInterval(this.animationInterval);
                 }
-                
+
                 this.animationInterval = setInterval(() => {
                     if (this.phase === 'done') {
                         this.pause();
                         return;
                     }
-                    
+
                     this.nextStep();
                 }, intervalTime);
             }
-            
+
             pause() {
                 this.isPlaying = false;
                 if (this.animationInterval) {
@@ -819,7 +845,7 @@
                     this.animationInterval = null;
                 }
             }
-            
+
             reset() {
                 this.pause();
                 this.init();
@@ -827,7 +853,7 @@
                 this.updateVariables();
                 this.updateStatus();
             }
-            
+
             setSpeed(value) {
                 this.speed = parseInt(value);
                 const speedLabels = {
@@ -835,56 +861,57 @@
                     6: '较快', 7: '快速', 8: '很快', 9: '极快', 10: '最快'
                 };
                 this.speedValue.textContent = speedLabels[this.speed] || '中速';
-                
+
                 // 如果正在播放，更新播放速度
                 if (this.isPlaying) {
                     this.pause();
                     this.play();
                 }
             }
-            
+
             setupEventListeners() {
                 document.getElementById('playBtn').addEventListener('click', () => {
                     this.play();
                 });
-                
+
                 document.getElementById('pauseBtn').addEventListener('click', () => {
                     this.pause();
                 });
-                
+
                 document.getElementById('nextBtn').addEventListener('click', () => {
                     this.pause();
                     this.nextStep();
                 });
-                
+
                 document.getElementById('prevBtn').addEventListener('click', () => {
                     this.pause();
                     this.prevStep();
                 });
-                
+
                 document.getElementById('resetBtn').addEventListener('click', () => {
                     this.reset();
                 });
-                
+
                 this.speedSlider.addEventListener('input', (e) => {
                     this.setSpeed(e.target.value);
                 });
-                
+
                 // 初始速度设置
                 this.speedSlider.value = this.speed;
                 this.setSpeed(this.speed);
-                
+
                 // 窗口大小变化时重新渲染
                 window.addEventListener('resize', () => {
                     this.renderArray();
                 });
             }
         }
-        
+
         // 页面加载完成后初始化动画
         document.addEventListener('DOMContentLoaded', () => {
             const insertionSort = new InsertionSortAnimation();
         });
     </script>
 </body>
+
 </html>
