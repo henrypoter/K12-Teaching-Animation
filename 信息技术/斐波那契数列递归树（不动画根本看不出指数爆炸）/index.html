@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>斐波那契数列递归树 - 可视化指数爆炸</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #212529;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .visualization-panel {
+            flex: 1;
+            min-width: 700px;
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .control-panel {
+            flex: 0 0 320px;
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .panel-title {
+            font-size: 1.4rem;
+            color: #2575fc;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .canvas-container {
+            flex: 1;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #f8f9fa;
+            position: relative;
+        }
+        
+        #fibCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .control-section {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #2575fc;
+        }
+        
+        .control-group {
+            margin-bottom: 15px;
+        }
+        
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+        
+        .control-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .input-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        input[type="number"] {
+            width: 80px;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-size: 1rem;
+            text-align: center;
+        }
+        
+        button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+        }
+        
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #545b62;
+        }
+        
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #1e7e34;
+        }
+        
+        .btn-warning {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        
+        .btn-warning:hover {
+            background-color: #e0a800;
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #bd2130;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.85rem;
+        }
+        
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        input[type="range"] {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: #dee2e6;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #007bff;
+            cursor: pointer;
+        }
+        
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: #28a745;
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        .info-panel {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+            margin-top: 10px;
+        }
+        
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed #dee2e6;
+        }
+        
+        .info-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .info-value {
+            font-weight: 700;
+            color: #fd7e14;
+        }
+        
+        .teaching-tips {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        
+        .teaching-tips h3 {
+            color: #856404;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+        
+        .teaching-tips p {
+            color: #856404;
+        }
+        
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding: 10px 15px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .status-item {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 15px;
+            color: #6c757d;
+            font-size: 0.9rem;
+            border-top: 1px solid #dee2e6;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 1100px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .visualization-panel {
+                min-width: 100%;
+            }
+            
+            .control-panel {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>斐波那契数列递归树可视化</h1>
+            <p class="subtitle">通过动画直观展示递归算法的重复计算与指数爆炸现象</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="visualization-panel">
+                <h2 class="panel-title">递归树可视化</h2>
+                <div class="canvas-container">
+                    <canvas id="fibCanvas"></canvas>
+                </div>
+                
+                <div class="status-bar">
+                    <div class="status-item">
+                        <span>当前状态:</span>
+                        <strong id="currentStatus">就绪</strong>
+                    </div>
+                    <div class="status-item">
+                        <span>当前计算:</span>
+                        <strong id="currentCalculation">-</strong>
+                    </div>
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #d0e7ff;"></div>
+                        <span>待计算节点</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #fff9c4;"></div>
+                        <span>正在计算节点</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #d4edda;"></div>
+                        <span>已计算完成节点</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #e9ecef; background-image: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0,0,0,0.1) 5px, rgba(0,0,0,0.1) 10px);"></div>
+                        <span>重复计算的子树</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="control-panel">
+                <h2 class="panel-title">控制面板</h2>
+                
+                <div class="control-section">
+                    <div class="control-group">
+                        <label class="control-label">斐波那契数 n (3-15):</label>
+                        <div class="input-row">
+                            <input type="number" id="fibInput" min="3" max="15" value="5">
+                            <button id="generateBtn" class="btn-primary">生成递归树</button>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">动画控制:</label>
+                        <div class="btn-group">
+                            <button id="startBtn" class="btn-success">开始</button>
+                            <button id="pauseBtn" class="btn-warning">暂停</button>
+                            <button id="stepBtn" class="btn-secondary">单步执行</button>
+                            <button id="resetBtn" class="btn-danger">重置</button>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">动画速度:</label>
+                        <div class="slider-container">
+                            <span>慢</span>
+                            <input type="range" id="speedSlider" min="1" max="10" value="5">
+                            <span>快</span>
+                            <span id="speedValue">中速</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="control-section">
+                    <div class="control-group">
+                        <label class="control-label">可视化选项:</label>
+                        <div class="toggle-switch">
+                            <span>显示节点数值</span>
+                            <label class="switch">
+                                <input type="checkbox" id="showValuesToggle" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-switch">
+                            <span>高亮重复子树</span>
+                            <label class="switch">
+                                <input type="checkbox" id="highlightRepeatsToggle" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">快速示例:</label>
+                        <div class="btn-group">
+                            <button class="btn-small btn-secondary" data-n="4">n=4</button>
+                            <button class="btn-small btn-secondary" data-n="6">n=6</button>
+                            <button class="btn-small btn-secondary" data-n="8">n=8</button>
+                            <button class="btn-small btn-secondary" data-n="10">n=10</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-panel">
+                    <h3 class="panel-title">计算信息</h3>
+                    <div class="info-item">
+                        <span class="info-label">递归调用次数:</span>
+                        <span class="info-value" id="callCount">0</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">当前递归深度:</span>
+                        <span class="info-value" id="currentDepth">0</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">重复计算次数:</span>
+                        <span class="info-value" id="repeatCount">0</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">最终结果 fib(n):</span>
+                        <span class="info-value" id="finalResult">-</span>
+                    </div>
+                </div>
+                
+                <div class="teaching-tips">
+                    <h3>教学提示</h3>
+                    <p id="teachingText">点击"生成递归树"按钮开始。观察递归树如何展开，注意相同子问题被重复计算的现象。</p>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>斐波那契递归树可视化教学工具 | 设计用于展示递归算法的指数时间复杂度与重复子问题</p>
+        </footer>
+    </div>
+
+    <script>
+        // 全局变量
+        let canvas, ctx;
+        let animationId = null;
+        let isAnimating = false;
+        let animationSpeed = 500; // 毫秒
+        let currentStep = 0;
+        let totalSteps = 0;
+        
+        // 斐波那契递归树数据
+        let treeData = {
+            nodes: [],
+            edges: [],
+            root: null
+        };
+        
+        // 计算状态
+        let calculationState = {
+            n: 5,
+            callCount: 0,
+            repeatCount: 0,
+            currentDepth: 0,
+            finalResult: null,
+            calculatedValues: {}, // 缓存已计算的值
+            currentCalculation: null,
+            isRepeating: false
+        };
+        
+        // 节点状态常量
+        const NODE_STATE = {
+            PENDING: 'pending',      // 待计算
+            CALCULATING: 'calculating', // 正在计算
+            CALCULATED: 'calculated',   // 已计算完成
+            REPEAT: 'repeat'         // 重复计算
+        };
+        
+        // 颜色配置
+        const COLORS = {
+            [NODE_STATE.PENDING]: '#d0e7ff',
+            [NODE_STATE.CALCULATING]: '#fff9c4',
+            [NODE_STATE.CALCULATED]: '#d4edda',
+            [NODE_STATE.REPEAT]: '#e9ecef',
+            edge: '#495057',
+            text: '#212529',
+            highlight: '#fd7e14'
+        };
+        
+        // 节点类
+        class TreeNode {
+            constructor(id, value, depth, x, y) {
+                this.id = id;
+                this.value = value;
+                this.depth = depth;
+                this.x = x;
+                this.y = y;
+                this.state = NODE_STATE.PENDING;
+                this.result = null;
+                this.children = [];
+                this.parent = null;
+                this.width = 60;
+                this.height = 40;
+                this.isRepeatingSubtree = false;
+            }
+            
+            draw() {
+                // 绘制节点背景
+                let fillColor = COLORS[this.state];
+                
+                // 如果是重复子树，添加斜纹图案
+                if (this.isRepeatingSubtree && document.getElementById('highlightRepeatsToggle').checked) {
+                    ctx.fillStyle = COLORS[NODE_STATE.REPEAT];
+                    ctx.fillRect(this.x - this.width/2, this.y - this.height/2, this.width, this.height);
+                    
+                    // 绘制斜纹
+                    ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    for (let i = -this.width; i < this.width; i += 10) {
+                        ctx.moveTo(this.x - this.width/2 + i, this.y - this.height/2);
+                        ctx.lineTo(this.x - this.width/2 + i + this.height, this.y + this.height/2);
+                    }
+                    ctx.stroke();
+                    
+                    // 覆盖一层半透明原色
+                    ctx.fillStyle = fillColor + '80'; // 添加透明度
+                    ctx.fillRect(this.x - this.width/2, this.y - this.height/2, this.width, this.height);
+                } else {
+                    ctx.fillStyle = fillColor;
+                    ctx.fillRect(this.x - this.width/2, this.y - this.height/2, this.width, this.height);
+                }
+                
+                // 绘制节点边框
+                ctx.strokeStyle = this.state === NODE_STATE.CALCULATING ? '#ffc107' : '#495057';
+                ctx.lineWidth = this.state === NODE_STATE.CALCULATING ? 3 : 1;
+                ctx.strokeRect(this.x - this.width/2, this.y - this.height/2, this.width, this.height);
+                
+                // 绘制节点文本
+                ctx.fillStyle = COLORS.text;
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                let displayText = `fib(${this.value})`;
+                if (this.result !== null && document.getElementById('showValuesToggle').checked) {
+                    displayText += `\n=${this.result}`;
+                }
+                
+                // 绘制多行文本
+                const lines = displayText.split('\n');
+                const lineHeight = 18;
+                const startY = this.y - (lines.length - 1) * lineHeight / 2;
+                
+                lines.forEach((line, index) => {
+                    ctx.fillText(line, this.x, startY + index * lineHeight);
+                });
+            }
+        }
+        
+        // 初始化Canvas
+        function initCanvas() {
+            canvas = document.getElementById('fibCanvas');
+            ctx = canvas.getContext('2d');
+            
+            // 设置Canvas尺寸
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            // 初始化树
+            generateTree(5);
+        }
+        
+        // 调整Canvas大小
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            drawTree();
+        }
+        
+        // 生成斐波那契递归树
+        function generateTree(n) {
+            // 重置状态
+            resetCalculation();
+            calculationState.n = n;
+            
+            // 清空树数据
+            treeData.nodes = [];
+            treeData.edges = [];
+            
+            // 创建根节点
+            const rootX = canvas.width / 2;
+            const rootY = 80;
+            const rootNode = new TreeNode(`fib(${n})`, n, 0, rootX, rootY);
+            treeData.root = rootNode;
+            treeData.nodes.push(rootNode);
+            
+            // 生成树结构
+            generateSubtree(rootNode, n, 0, rootX, rootY, canvas.width * 0.8);
+            
+            // 更新UI
+            updateTeachingText(`已生成 fib(${n}) 的递归树结构。点击"开始"按钮观察递归计算过程。`);
+            updateInfoPanel();
+            drawTree();
+        }
+        
+        // 递归生成子树
+        function generateSubtree(node, value, depth, x, y, width) {
+            if (value <= 1) {
+                return;
+            }
+            
+            // 计算子节点的位置
+            const childDepth = depth + 1;
+            const childY = y + 100;
+            const spacing = width / (Math.pow(2, childDepth));
+            
+            // 左子节点: fib(n-1)
+            if (value - 1 >= 0) {
+                const leftX = x - spacing;
+                const leftNode = new TreeNode(`fib(${value-1})`, value-1, childDepth, leftX, childY);
+                leftNode.parent = node;
+                node.children.push(leftNode);
+                treeData.nodes.push(leftNode);
+                treeData.edges.push({from: node, to: leftNode});
+                
+                generateSubtree(leftNode, value-1, childDepth, leftX, childY, width);
+            }
+            
+            // 右子节点: fib(n-2)
+            if (value - 2 >= 0) {
+                const rightX = x + spacing;
+                const rightNode = new TreeNode(`fib(${value-2})`, value-2, childDepth, rightX, childY);
+                rightNode.parent = node;
+                node.children.push(rightNode);
+                treeData.nodes.push(rightNode);
+                treeData.edges.push({from: node, to: rightNode});
+                
+                generateSubtree(rightNode, value-2, childDepth, rightX, childY, width);
+            }
+        }
+        
+        // 绘制整个树
+        function drawTree() {
+            if (!ctx) return;
+            
+            // 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制边
+            ctx.strokeStyle = COLORS.edge;
+            ctx.lineWidth = 1;
+            treeData.edges.forEach(edge => {
+                ctx.beginPath();
+                ctx.moveTo(edge.from.x, edge.from.y + edge.from.height/2);
+                ctx.lineTo(edge.to.x, edge.to.y - edge.to.height/2);
+                ctx.stroke();
+            });
+            
+            // 绘制节点
+            treeData.nodes.forEach(node => {
+                node.draw();
+            });
+        }
+        
+        // 模拟递归计算斐波那契数
+        function fib(n, node, isRepeat = false) {
+            calculationState.callCount++;
+            calculationState.currentDepth = Math.max(calculationState.currentDepth, node.depth);
+            
+            // 更新当前计算节点
+            node.state = NODE_STATE.CALCULATING;
+            calculationState.currentCalculation = `fib(${n})`;
+            
+            if (isRepeat) {
+                calculationState.repeatCount++;
+                node.isRepeatingSubtree = true;
+                node.state = NODE_STATE.REPEAT;
+                
+                // 标记整个子树为重复
+                markSubtreeAsRepeat(node);
+                
+                updateTeachingText(`发现重复计算: fib(${n}) 已经在之前计算过了！这是递归算法效率低下的主要原因。`);
+                updateInfoPanel();
+                drawTree();
+                
+                // 直接返回缓存的值
+                return calculationState.calculatedValues[n];
+            }
+            
+            // 更新教学提示
+            if (n <= 1) {
+                updateTeachingText(`基础情况: fib(${n}) = ${n}。递归到达终点，开始回溯。`);
+            } else {
+                updateTeachingText(`计算 fib(${n}) = fib(${n-1}) + fib(${n-2})。递归调用继续深入...`);
+            }
+            
+            updateInfoPanel();
+            drawTree();
+            
+            // 等待动画
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    // 检查是否已经计算过这个值
+                    if (calculationState.calculatedValues.hasOwnProperty(n)) {
+                        calculationState.repeatCount++;
+                        node.isRepeatingSubtree = true;
+                        node.state = NODE_STATE.REPEAT;
+                        markSubtreeAsRepeat(node);
+                        
+                        updateTeachingText(`发现重复计算: fib(${n}) 已经在之前计算过了！这是递归算法效率低下的主要原因。`);
+                        updateInfoPanel();
+                        drawTree();
+                        
+                        resolve(calculationState.calculatedValues[n]);
+                        return;
+                    }
+                    
+                    // 基础情况
+                    if (n <= 1) {
+                        node.result = n;
+                        node.state = NODE_STATE.CALCULATED;
+                        calculationState.calculatedValues[n] = n;
+                        
+                        // 如果是根节点，更新最终结果
+                        if (n === calculationState.n) {
+                            calculationState.finalResult = n;
+                        }
+                        
+                        updateInfoPanel();
+                        drawTree();
+                        resolve(n);
+                        return;
+                    }
+                    
+                    // 递归计算 fib(n-1) 和 fib(n-2)
+                    const leftChild = node.children.find(child => child.value === n-1);
+                    const rightChild = node.children.find(child => child.value === n-2);
+                    
+                    // 递归计算左子树
+                    fib(n-1, leftChild).then(leftResult => {
+                        // 递归计算右子树
+                        fib(n-2, rightChild).then(rightResult => {
+                            // 计算当前节点的值
+                            const result = leftResult + rightResult;
+                            node.result = result;
+                            node.state = NODE_STATE.CALCULATED;
+                            calculationState.calculatedValues[n] = result;
+                            
+                            // 如果是根节点，更新最终结果
+                            if (n === calculationState.n) {
+                                calculationState.finalResult = result;
+                            }
+                            
+                            updateTeachingText(`完成计算: fib(${n}) = ${leftResult} + ${rightResult} = ${result}。回溯到上一层。`);
+                            updateInfoPanel();
+                            drawTree();
+                            
+                            resolve(result);
+                        });
+                    });
+                }, animationSpeed);
+            });
+        }
+        
+        // 标记整个子树为重复
+        function markSubtreeAsRepeat(node) {
+            node.state = NODE_STATE.REPEAT;
+            node.isRepeatingSubtree = true;
+            
+            node.children.forEach(child => {
+                markSubtreeAsRepeat(child);
+            });
+        }
+        
+        // 开始动画
+        function startAnimation() {
+            if (isAnimating) return;
+            
+            isAnimating = true;
+            document.getElementById('currentStatus').textContent = '计算中...';
+            
+            // 重置计算状态但保留树结构
+            calculationState.callCount = 0;
+            calculationState.repeatCount = 0;
+            calculationState.currentDepth = 0;
+            calculationState.finalResult = null;
+            calculationState.calculatedValues = {};
+            calculationState.currentCalculation = null;
+            
+            // 重置所有节点状态
+            treeData.nodes.forEach(node => {
+                node.state = NODE_STATE.PENDING;
+                node.result = null;
+                node.isRepeatingSubtree = false;
+            });
+            
+            updateInfoPanel();
+            drawTree();
+            
+            // 开始递归计算
+            fib(calculationState.n, treeData.root).then(result => {
+                isAnimating = false;
+                document.getElementById('currentStatus').textContent = '计算完成';
+                
+                updateTeachingText(`计算完成! fib(${calculationState.n}) = ${result}。总共进行了 ${calculationState.callCount} 次递归调用，其中 ${calculationState.repeatCount} 次是重复计算。这就是指数时间复杂度的体现！`);
+            });
+        }
+        
+        // 暂停动画
+        function pauseAnimation() {
+            isAnimating = false;
+            document.getElementById('currentStatus').textContent = '已暂停';
+            updateTeachingText('动画已暂停。点击"开始"继续观察递归过程。');
+        }
+        
+        // 单步执行
+        function stepAnimation() {
+            // 简化版本：单步执行会直接完成当前节点的计算
+            updateTeachingText('单步执行功能在完整动画中更易观察。请使用开始/暂停控制动画速度。');
+        }
+        
+        // 重置计算
+        function resetCalculation() {
+            isAnimating = false;
+            
+            calculationState.callCount = 0;
+            calculationState.repeatCount = 0;
+            calculationState.currentDepth = 0;
+            calculationState.finalResult = null;
+            calculationState.calculatedValues = {};
+            calculationState.currentCalculation = null;
+            
+            document.getElementById('currentStatus').textContent = '就绪';
+            document.getElementById('currentCalculation').textContent = '-';
+            
+            updateInfoPanel();
+        }
+        
+        // 更新信息面板
+        function updateInfoPanel() {
+            document.getElementById('callCount').textContent = calculationState.callCount;
+            document.getElementById('currentDepth').textContent = calculationState.currentDepth;
+            document.getElementById('repeatCount').textContent = calculationState.repeatCount;
+            document.getElementById('finalResult').textContent = calculationState.finalResult !== null ? calculationState.finalResult : '-';
+            document.getElementById('currentCalculation').textContent = calculationState.currentCalculation || '-';
+        }
+        
+        // 更新教学提示
+        function updateTeachingText(text) {
+            document.getElementById('teachingText').textContent = text;
+        }
+        
+        // 事件监听器设置
+        function setupEventListeners() {
+            // 生成递归树按钮
+            document.getElementById('generateBtn').addEventListener('click', () => {
+                const n = parseInt(document.getElementById('fibInput').value);
+                if (n >= 3 && n <= 15) {
+                    generateTree(n);
+                } else {
+                    alert('请输入3到15之间的整数');
+                }
+            });
+            
+            // 动画控制按钮
+            document.getElementById('startBtn').addEventListener('click', startAnimation);
+            document.getElementById('pauseBtn').addEventListener('click', pauseAnimation);
+            document.getElementById('stepBtn').addEventListener('click', stepAnimation);
+            document.getElementById('resetBtn').addEventListener('click', () => {
+                generateTree(calculationState.n);
+            });
+            
+            // 速度滑块
+            document.getElementById('speedSlider').addEventListener('input', (e) => {
+                const speed = parseInt(e.target.value);
+                // 速度值映射到动画延迟时间（毫秒）
+                animationSpeed = 1000 - (speed - 1) * 100;
+                
+                // 更新速度显示
+                const speedText = speed <= 3 ? '慢速' : speed <= 7 ? '中速' : '快速';
+                document.getElementById('speedValue').textContent = speedText;
+            });
+            
+            // 可视化选项切换
+            document.getElementById('showValuesToggle').addEventListener('change', drawTree);
+            document.getElementById('highlightRepeatsToggle').addEventListener('change', drawTree);
+            
+            // 快速示例按钮
+            document.querySelectorAll('.btn-small[data-n]').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const n = parseInt(e.target.getAttribute('data-n'));
+                    document.getElementById('fibInput').value = n;
+                    generateTree(n);
+                });
+            });
+            
+            // 输入框回车事件
+            document.getElementById('fibInput').addEventListener('keyup', (e) => {
+                if (e.key === 'Enter') {
+                    document.getElementById('generateBtn').click();
+                }
+            });
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('load', () => {
+            initCanvas();
+            setupEventListeners();
+            
+            // 初始教学提示
+            updateTeachingText('欢迎使用斐波那契递归树可视化工具。输入一个n值(3-15)，点击"生成递归树"，然后点击"开始"观察递归计算过程。注意观察相同子问题被重复计算的现象！');
+        });
+    </script>
+</body>
+</html>

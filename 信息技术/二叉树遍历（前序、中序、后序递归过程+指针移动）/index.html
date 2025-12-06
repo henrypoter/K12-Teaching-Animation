@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>二叉树遍历递归过程可视化</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #2196F3;
+        }
+
+        h1 {
+            color: #1565C0;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .control-panel {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .control-group h3 {
+            color: #2196F3;
+            font-size: 1em;
+            margin-bottom: 5px;
+        }
+
+        .tree-selector, .traversal-selector {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            background-color: #E3F2FD;
+            border: 1px solid #BBDEFB;
+            border-radius: 6px;
+            cursor: pointer;
+            color: #1565C0;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #BBDEFB;
+            transform: translateY(-2px);
+        }
+
+        .btn.active {
+            background-color: #2196F3;
+            color: white;
+            border-color: #1976D2;
+        }
+
+        .animation-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .speed-slider {
+            width: 120px;
+        }
+
+        .status-display {
+            background-color: #FFF3E0;
+            padding: 12px 20px;
+            border-radius: 8px;
+            border-left: 4px solid #FFA726;
+            font-weight: 500;
+            color: #333;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .visualization-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .tree-section {
+            flex: 1;
+            min-width: 300px;
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tree-section h2 {
+            color: #2196F3;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #E0E0E0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tree-section h2 .color-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .preorder .color-indicator { background-color: #FFCDD2; }
+        .inorder .color-indicator { background-color: #C8E6C9; }
+        .postorder .color-indicator { background-color: #BBDEFB; }
+
+        .tree-container {
+            flex: 1;
+            position: relative;
+            min-height: 300px;
+            border: 1px solid #E0E0E0;
+            border-radius: 8px;
+            overflow: auto;
+            background-color: #fafafa;
+        }
+
+        .code-container, .stack-container, .sequence-container {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            border: 1px solid #E0E0E0;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            overflow: auto;
+        }
+
+        .code-line {
+            padding: 4px 8px;
+            margin: 2px 0;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .code-line.highlighted {
+            background-color: #FFF3E0;
+            font-weight: bold;
+        }
+
+        .stack-visualization {
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: center;
+            gap: 5px;
+            min-height: 150px;
+        }
+
+        .stack-frame {
+            background-color: #E3F2FD;
+            border: 2px solid #BBDEFB;
+            border-radius: 6px;
+            padding: 10px 15px;
+            width: 80%;
+            text-align: center;
+            font-weight: 500;
+            color: #1565C0;
+            transition: all 0.3s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .stack-frame.active {
+            background-color: #BBDEFB;
+            border-color: #2196F3;
+            transform: scale(1.05);
+        }
+
+        .sequence-visualization {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            min-height: 60px;
+        }
+
+        .sequence-node {
+            background-color: #C8E6C9;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #2E7D32;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+
+        .sequence-node.new {
+            background-color: #81C784;
+            transform: scale(1.1);
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9em;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .node-default { background-color: white; border: 2px solid #333; }
+        .node-current { background-color: #FFA726; }
+        .node-visited { background-color: #C8E6C9; }
+
+        @media (max-width: 1200px) {
+            .visualization-area {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌳 二叉树遍历递归过程可视化</h1>
+            <p class="subtitle">前序、中序、后序遍历的递归过程、指针移动与调用栈可视化</p>
+        </header>
+
+        <div class="main-content">
+            <div class="control-panel">
+                <div class="control-group">
+                    <h3>二叉树结构</h3>
+                    <div class="tree-selector">
+                        <button class="btn active" data-tree="balanced">平衡二叉树</button>
+                        <button class="btn" data-tree="left-skewed">左斜树</button>
+                        <button class="btn" data-tree="right-skewed">右斜树</button>
+                        <button class="btn" data-tree="custom">普通二叉树</button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <h3>遍历模式</h3>
+                    <div class="traversal-selector">
+                        <button class="btn active" data-traversal="preorder">前序遍历 (V→L→R)</button>
+                        <button class="btn" data-traversal="inorder">中序遍历 (L→V→R)</button>
+                        <button class="btn" data-traversal="postorder">后序遍历 (L→R→V)</button>
+                        <label style="display: flex; align-items: center; gap: 8px; margin-left: 10px;">
+                            <input type="checkbox" id="compare-mode"> 对比模式
+                        </label>
+                    </div>
+                </div>
+
+                <div class="control-group animation-controls">
+                    <h3>动画控制</h3>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn" id="start-pause">▶️ 开始</button>
+                        <button class="btn" id="next-step">⏭️ 下一步</button>
+                        <button class="btn" id="prev-step">⏮️ 上一步</button>
+                        <button class="btn" id="reset">🔄 重置</button>
+                    </div>
+                    <div class="speed-control">
+                        <span>速度:</span>
+                        <input type="range" min="1" max="10" value="5" class="speed-slider" id="speed-slider">
+                        <span id="speed-value">中速</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="status-display" id="status-display">
+                请选择遍历模式并点击"开始"按钮启动动画。
+            </div>
+
+            <div class="visualization-area" id="visualization-area">
+                <!-- 前序遍历视图 -->
+                <div class="tree-section preorder" id="preorder-section">
+                    <h2><span class="color-indicator"></span>前序遍历 (V→L→R)</h2>
+                    <div class="tree-container" id="preorder-tree">
+                        <canvas id="preorder-canvas" width="600" height="300"></canvas>
+                    </div>
+                    <div class="code-container" id="preorder-code">
+                        <div class="code-line">function preorder(node) {</div>
+                        <div class="code-line">    if (node == null) return;</div>
+                        <div class="code-line">    visit(node);           // V</div>
+                        <div class="code-line">    preorder(node.left);  // L</div>
+                        <div class="code-line">    preorder(node.right); // R</div>
+                        <div class="code-line">}</div>
+                    </div>
+                    <div class="stack-container">
+                        <h3>递归调用栈</h3>
+                        <div class="stack-visualization" id="preorder-stack"></div>
+                    </div>
+                    <div class="sequence-container">
+                        <h3>访问序列</h3>
+                        <div class="sequence-visualization" id="preorder-sequence"></div>
+                    </div>
+                </div>
+
+                <!-- 中序遍历视图 -->
+                <div class="tree-section inorder" id="inorder-section" style="display: none;">
+                    <h2><span class="color-indicator"></span>中序遍历 (L→V→R)</h2>
+                    <div class="tree-container" id="inorder-tree">
+                        <canvas id="inorder-canvas" width="600" height="300"></canvas>
+                    </div>
+                    <div class="code-container" id="inorder-code">
+                        <div class="code-line">function inorder(node) {</div>
+                        <div class="code-line">    if (node == null) return;</div>
+                        <div class="code-line">    inorder(node.left);   // L</div>
+                        <div class="code-line">    visit(node);          // V</div>
+                        <div class="code-line">    inorder(node.right);  // R</div>
+                        <div class="code-line">}</div>
+                    </div>
+                    <div class="stack-container">
+                        <h3>递归调用栈</h3>
+                        <div class="stack-visualization" id="inorder-stack"></div>
+                    </div>
+                    <div class="sequence-container">
+                        <h3>访问序列</h3>
+                        <div class="sequence-visualization" id="inorder-sequence"></div>
+                    </div>
+                </div>
+
+                <!-- 后序遍历视图 -->
+                <div class="tree-section postorder" id="postorder-section" style="display: none;">
+                    <h2><span class="color-indicator"></span>后序遍历 (L→R→V)</h2>
+                    <div class="tree-container" id="postorder-tree">
+                        <canvas id="postorder-canvas" width="600" height="300"></canvas>
+                    </div>
+                    <div class="code-container" id="postorder-code">
+                        <div class="code-line">function postorder(node) {</div>
+                        <div class="code-line">    if (node == null) return;</div>
+                        <div class="code-line">    postorder(node.left);  // L</div>
+                        <div class="code-line">    postorder(node.right); // R</div>
+                        <div class="code-line">    visit(node);           // V</div>
+                        <div class="code-line">}</div>
+                    </div>
+                    <div class="stack-container">
+                        <h3>递归调用栈</h3>
+                        <div class="stack-visualization" id="postorder-stack"></div>
+                    </div>
+                    <div class="sequence-container">
+                        <h3>访问序列</h3>
+                        <div class="sequence-visualization" id="postorder-sequence"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color node-default"></div>
+                    <span>未访问节点</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color node-current"></div>
+                    <span>当前节点</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color node-visited"></div>
+                    <span>已访问节点</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #FFF3E0;"></div>
+                    <span>当前执行代码行</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #BBDEFB;"></div>
+                    <span>活动栈帧</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 二叉树节点类
+        class TreeNode {
+            constructor(value, x, y) {
+                this.value = value;
+                this.left = null;
+                this.right = null;
+                this.x = x;
+                this.y = y;
+                this.radius = 25;
+                this.state = 'default'; // 'default', 'current', 'visited'
+            }
+        }
+
+        // 遍历状态类
+        class TraversalState {
+            constructor(type) {
+                this.type = type; // 'preorder', 'inorder', 'postorder'
+                this.currentNode = null;
+                this.callStack = [];
+                this.visitedSequence = [];
+                this.isAnimating = false;
+                this.speed = 500; // 毫秒
+                this.stepIndex = 0;
+                this.traversalSteps = [];
+                this.codeLines = [];
+                this.initCodeLines();
+            }
+
+            initCodeLines() {
+                if (this.type === 'preorder') {
+                    this.codeLines = [2, 3, 4, 5, 6];
+                } else if (this.type === 'inorder') {
+                    this.codeLines = [2, 3, 4, 5, 6];
+                } else if (this.type === 'postorder') {
+                    this.codeLines = [2, 3, 4, 5, 6];
+                }
+            }
+
+            reset() {
+                this.currentNode = null;
+                this.callStack = [];
+                this.visitedSequence = [];
+                this.isAnimating = false;
+                this.stepIndex = 0;
+                this.traversalSteps = [];
+            }
+
+            generateSteps(node) {
+                this.traversalSteps = [];
+                this._generateStepsRecursive(node, []);
+                return this.traversalSteps;
+            }
+
+            _generateStepsRecursive(node, stack) {
+                if (!node) {
+                    this.traversalSteps.push({
+                        action: 'return',
+                        node: null,
+                        stack: [...stack],
+                        codeLine: 2
+                    });
+                    return;
+                }
+
+                // 根据遍历类型生成不同的步骤序列
+                if (this.type === 'preorder') {
+                    // 前序: V -> L -> R
+                    this.traversalSteps.push({
+                        action: 'enter',
+                        node: node,
+                        stack: [...stack, {node: node, nextAction: 'V'}],
+                        codeLine: 2
+                    });
+                    
+                    this.traversalSteps.push({
+                        action: 'visit',
+                        node: node,
+                        stack: [...stack, {node: node, nextAction: 'L'}],
+                        codeLine: 3
+                    });
+                    
+                    this._generateStepsRecursive(node.left, [...stack, {node: node, nextAction: 'R'}]);
+                    
+                    this.traversalSteps.push({
+                        action: 'enter_right',
+                        node: node,
+                        stack: [...stack, {node: node, nextAction: 'R'}],
+                        codeLine: 5
+                    });
+                    
+                    this._generateStepsRecursive(node.right, [...stack]);
+                    
+                    this.traversalSteps.push({
+                        action: 'return',
+                        node: node,
+                        stack: [...stack],
+                        codeLine: 6
+                    });
+                } else if (this.type === 'inorder') {
+                    // 中序: L -> V -> R
+                    this.traversalSteps.push({
+                        action: 'enter',
+                        node: node,
+                        stack: [...stack, {node: node, nextAction: 'L'}],
+                        codeLine: 2
+                    });
+                    
+                    this._generateStepsRecursive(node.left, [...stack, {node: node, nextAction: 'V'}]);
+                    
+                    this.traversalSteps.push({
+                        action: 'visit',
+                        node: node,
+                        stack: [...stack, {node: node, nextAction: 'R'}],
+                        codeLine: 4
+                    });
+                    
+                    this.traversalSteps.push({
+                        action: 'enter_right',
+                        node: node,
+                        stack: [...stack, {node: node, nextAction: 'R'}],
+                        codeLine: 5
+                    });
+                    
+                    this._generateStepsRecursive(node.right, [...stack]);
+                    
+                    this.traversalSteps.push({
+                        action: 'return',
+                        node: node,
+                        stack: [...stack],
+                        codeLine: 6
+                    });
+                } else if (this.type === 'postorder') {
+                    // 后序: L -> R -> V
+                    this.traversalSteps.push({
+                        action: 'enter',
+                        node: node,
+                        stack: [...stack, {node: node, nextAction: 'L'}],
+                        codeLine: 2
+                    });
+                    
+                    this._generateStepsRecursive(node.left, [...stack, {node: node, nextAction: 'R'}]);
+                    
+                    this.traversalSteps.push({
+                        action: 'enter_right',
+                        node: node,
+                        stack: [...stack, {node: node, nextAction: 'R'}],
+                        codeLine: 4
+                    });
+                    
+                    this._generateStepsRecursive(node.right, [...stack, {node: node, nextAction: 'V'}]);
+                    
+                    this.traversalSteps.push({
+                        action: 'visit',
+                        node: node,
+                        stack: [...stack],
+                        codeLine: 5
+                    });
+                    
+                    this.traversalSteps.push({
+                        action: 'return',
+                        node: node,
+                        stack: [...stack],
+                        codeLine: 6
+                    });
+                }
+            }
+
+            getCurrentStep() {
+                if (this.stepIndex < this.traversalSteps.length) {
+                    return this.traversalSteps[this.stepIndex];
+                }
+                return null;
+            }
+
+            nextStep() {
+                if (this.stepIndex < this.traversalSteps.length) {
+                    const step = this.traversalSteps[this.stepIndex];
+                    this.stepIndex++;
+                    
+                    // 更新状态
+                    if (step.action === 'visit') {
+                        this.visitedSequence.push(step.node.value);
+                        step.node.state = 'visited';
+                    } else if (step.action === 'enter' || step.action === 'enter_right') {
+                        this.currentNode = step.node;
+                        step.node.state = 'current';
+                    } else if (step.action === 'return') {
+                        if (this.currentNode) {
+                            this.currentNode.state = 'visited';
+                        }
+                        this.currentNode = null;
+                    }
+                    
+                    this.callStack = step.stack;
+                    return step;
+                }
+                return null;
+            }
+
+            prevStep() {
+                if (this.stepIndex > 0) {
+                    this.stepIndex--;
+                    const step = this.traversalSteps[this.stepIndex];
+                    
+                    // 回退状态
+                    if (step.action === 'visit') {
+                        this.visitedSequence.pop();
+                        step.node.state = 'default';
+                    } else if (step.action === 'enter' || step.action === 'enter_right') {
+                        step.node.state = 'default';
+                        this.currentNode = null;
+                    } else if (step.action === 'return') {
+                        // 查找前一个节点
+                        if (this.stepIndex > 0) {
+                            const prevStep = this.traversalSteps[this.stepIndex - 1];
+                            if (prevStep.node) {
+                                this.currentNode = prevStep.node;
+                                this.currentNode.state = 'current';
+                            }
+                        }
+                    }
+                    
+                    // 更新调用栈
+                    if (this.stepIndex > 0) {
+                        this.callStack = this.traversalSteps[this.stepIndex - 1].stack;
+                    } else {
+                        this.callStack = [];
+                    }
+                    
+                    return step;
+                }
+                return null;
+            }
+        }
+
+        // 主应用类
+        class BinaryTreeVisualizer {
+            constructor() {
+                this.treeRoot = null;
+                this.traversalStates = {
+                    preorder: new TraversalState('preorder'),
+                    inorder: new TraversalState('inorder'),
+                    postorder: new TraversalState('postorder')
+                };
+                this.currentTraversal = 'preorder';
+                this.compareMode = false;
+                this.animationInterval = null;
+                this.speed = 5;
+                
+                this.initTree();
+                this.initEventListeners();
+                this.render();
+            }
+
+            initTree() {
+                // 创建平衡二叉树
+                this.createBalancedTree();
+            }
+
+            createBalancedTree() {
+                // 创建节点
+                const root = new TreeNode('A', 300, 50);
+                const b = new TreeNode('B', 200, 120);
+                const c = new TreeNode('C', 400, 120);
+                const d = new TreeNode('D', 150, 190);
+                const e = new TreeNode('E', 250, 190);
+                const f = new TreeNode('F', 350, 190);
+                const g = new TreeNode('G', 450, 190);
+                
+                // 构建树结构
+                root.left = b;
+                root.right = c;
+                b.left = d;
+                b.right = e;
+                c.left = f;
+                c.right = g;
+                
+                this.treeRoot = root;
+                this.resetAllTraversals();
+            }
+
+            createLeftSkewedTree() {
+                const root = new TreeNode('A', 400, 50);
+                const b = new TreeNode('B', 350, 120);
+                const c = new TreeNode('C', 300, 190);
+                const d = new TreeNode('D', 250, 260);
+                
+                root.left = b;
+                b.left = c;
+                c.left = d;
+                
+                this.treeRoot = root;
+                this.resetAllTraversals();
+            }
+
+            createRightSkewedTree() {
+                const root = new TreeNode('A', 200, 50);
+                const b = new TreeNode('B', 250, 120);
+                const c = new TreeNode('C', 300, 190);
+                const d = new TreeNode('D', 350, 260);
+                
+                root.right = b;
+                b.right = c;
+                c.right = d;
+                
+                this.treeRoot = root;
+                this.resetAllTraversals();
+            }
+
+            createCustomTree() {
+                const root = new TreeNode('A', 300, 50);
+                const b = new TreeNode('B', 200, 120);
+                const c = new TreeNode('C', 400, 120);
+                const d = new TreeNode('D', 150, 190);
+                const e = new TreeNode('E', 350, 190);
+                const f = new TreeNode('F', 450, 190);
+                
+                root.left = b;
+                root.right = c;
+                b.left = d;
+                c.left = e;
+                c.right = f;
+                
+                this.treeRoot = root;
+                this.resetAllTraversals();
+            }
+
+            resetAllTraversals() {
+                // 重置所有节点状态
+                this.resetNodeStates(this.treeRoot);
+                
+                // 重置所有遍历状态
+                Object.values(this.traversalStates).forEach(state => {
+                    state.reset();
+                    state.generateSteps(this.treeRoot);
+                });
+            }
+
+            resetNodeStates(node) {
+                if (!node) return;
+                node.state = 'default';
+                this.resetNodeStates(node.left);
+                this.resetNodeStates(node.right);
+            }
+
+            initEventListeners() {
+                // 树结构选择
+                document.querySelectorAll('.tree-selector .btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        document.querySelectorAll('.tree-selector .btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        
+                        const treeType = btn.dataset.tree;
+                        if (treeType === 'balanced') {
+                            this.createBalancedTree();
+                        } else if (treeType === 'left-skewed') {
+                            this.createLeftSkewedTree();
+                        } else if (treeType === 'right-skewed') {
+                            this.createRightSkewedTree();
+                        } else if (treeType === 'custom') {
+                            this.createCustomTree();
+                        }
+                        
+                        this.render();
+                    });
+                });
+
+                // 遍历模式选择
+                document.querySelectorAll('.traversal-selector .btn[data-traversal]').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        document.querySelectorAll('.traversal-selector .btn[data-traversal]').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        
+                        this.currentTraversal = btn.dataset.traversal;
+                        this.updateViewVisibility();
+                        this.render();
+                    });
+                });
+
+                // 对比模式切换
+                document.getElementById('compare-mode').addEventListener('change', (e) => {
+                    this.compareMode = e.target.checked;
+                    this.updateViewVisibility();
+                    this.render();
+                });
+
+                // 动画控制
+                document.getElementById('start-pause').addEventListener('click', () => {
+                    this.toggleAnimation();
+                });
+
+                document.getElementById('next-step').addEventListener('click', () => {
+                    this.stopAnimation();
+                    this.nextStep();
+                });
+
+                document.getElementById('prev-step').addEventListener('click', () => {
+                    this.stopAnimation();
+                    this.prevStep();
+                });
+
+                document.getElementById('reset').addEventListener('click', () => {
+                    this.stopAnimation();
+                    this.resetAllTraversals();
+                    this.render();
+                });
+
+                // 速度控制
+                document.getElementById('speed-slider').addEventListener('input', (e) => {
+                    this.speed = parseInt(e.target.value);
+                    document.getElementById('speed-value').textContent = 
+                        this.speed <= 3 ? '慢速' : this.speed <= 7 ? '中速' : '快速';
+                    
+                    if (this.animationInterval) {
+                        this.stopAnimation();
+                        this.startAnimation();
+                    }
+                });
+            }
+
+            updateViewVisibility() {
+                const preorderSection = document.getElementById('preorder-section');
+                const inorderSection = document.getElementById('inorder-section');
+                const postorderSection = document.getElementById('postorder-section');
+                const visualizationArea = document.getElementById('visualization-area');
+                
+                if (this.compareMode) {
+                    // 对比模式：显示所有三个视图
+                    preorderSection.style.display = 'flex';
+                    inorderSection.style.display = 'flex';
+                    postorderSection.style.display = 'flex';
+                    visualizationArea.style.flexDirection = 'row';
+                } else {
+                    // 单视图模式：只显示当前选择的遍历
+                    preorderSection.style.display = this.currentTraversal === 'preorder' ? 'flex' : 'none';
+                    inorderSection.style.display = this.currentTraversal === 'inorder' ? 'flex' : 'none';
+                    postorderSection.style.display = this.currentTraversal === 'postorder' ? 'flex' : 'none';
+                    visualizationArea.style.flexDirection = 'column';
+                }
+            }
+
+            toggleAnimation() {
+                const btn = document.getElementById('start-pause');
+                if (this.animationInterval) {
+                    this.stopAnimation();
+                    btn.innerHTML = '▶️ 继续';
+                } else {
+                    this.startAnimation();
+                    btn.innerHTML = '⏸️ 暂停';
+                }
+            }
+
+            startAnimation() {
+                this.stopAnimation();
+                
+                const interval = 1100 - (this.speed * 100); // 速度映射：1=1000ms, 10=100ms
+                this.animationInterval = setInterval(() => {
+                    if (!this.nextStep()) {
+                        this.stopAnimation();
+                        document.getElementById('start-pause').innerHTML = '▶️ 开始';
+                    }
+                }, interval);
+            }
+
+            stopAnimation() {
+                if (this.animationInterval) {
+                    clearInterval(this.animationInterval);
+                    this.animationInterval = null;
+                }
+            }
+
+            nextStep() {
+                let stepPerformed = false;
+                
+                if (this.compareMode) {
+                    // 对比模式下，所有遍历同时前进
+                    Object.values(this.traversalStates).forEach(state => {
+                        if (state.nextStep()) {
+                            stepPerformed = true;
+                        }
+                    });
+                } else {
+                    // 单视图模式下，只前进当前遍历
+                    const state = this.traversalStates[this.currentTraversal];
+                    if (state.nextStep()) {
+                        stepPerformed = true;
+                    }
+                }
+                
+                if (stepPerformed) {
+                    this.render();
+                    this.updateStatus();
+                }
+                
+                return stepPerformed;
+            }
+
+            prevStep() {
+                let stepPerformed = false;
+                
+                if (this.compareMode) {
+                    // 对比模式下，所有遍历同时回退
+                    Object.values(this.traversalStates).forEach(state => {
+                        if (state.prevStep()) {
+                            stepPerformed = true;
+                        }
+                    });
+                } else {
+                    // 单视图模式下，只回退当前遍历
+                    const state = this.traversalStates[this.currentTraversal];
+                    if (state.prevStep()) {
+                        stepPerformed = true;
+                    }
+                }
+                
+                if (stepPerformed) {
+                    this.render();
+                    this.updateStatus();
+                }
+            }
+
+            updateStatus() {
+                const statusDisplay = document.getElementById('status-display');
+                let statusText = '';
+                
+                if (this.compareMode) {
+                    statusText = '对比模式：三种遍历同步进行中...';
+                } else {
+                    const state = this.traversalStates[this.currentTraversal];
+                    const step = state.getCurrentStep();
+                    
+                    if (step) {
+                        const actionMap = {
+                            'enter': '进入节点',
+                            'visit': '访问节点',
+                            'enter_right': '进入右子树',
+                            'return': '返回'
+                        };
+                        
+                        const nodeName = step.node ? step.node.value : 'null';
+                        statusText = `${actionMap[step.action]} ${nodeName}`;
+                        
+                        if (step.action === 'visit') {
+                            statusText += ` (已访问节点: ${state.visitedSequence.join(' → ')})`;
+                        }
+                    } else {
+                        statusText = '遍历完成！';
+                    }
+                }
+                
+                statusDisplay.textContent = statusText;
+            }
+
+            drawTree(canvasId, traversalType) {
+                const canvas = document.getElementById(canvasId);
+                const ctx = canvas.getContext('2d');
+                const state = this.traversalStates[traversalType];
+                
+                // 清除画布
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // 绘制树
+                this.drawTreeRecursive(ctx, this.treeRoot, state);
+                
+                // 绘制当前节点指针
+                if (state.currentNode) {
+                    this.drawPointer(ctx, state.currentNode);
+                }
+            }
+
+            drawTreeRecursive(ctx, node, state) {
+                if (!node) return;
+                
+                // 绘制连线
+                if (node.left) {
+                    ctx.beginPath();
+                    ctx.moveTo(node.x, node.y + node.radius);
+                    ctx.lineTo(node.left.x, node.left.y - node.left.radius);
+                    ctx.strokeStyle = '#666';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                }
+                
+                if (node.right) {
+                    ctx.beginPath();
+                    ctx.moveTo(node.x, node.y + node.radius);
+                    ctx.lineTo(node.right.x, node.right.y - node.right.radius);
+                    ctx.strokeStyle = '#666';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                }
+                
+                // 绘制子节点
+                this.drawTreeRecursive(ctx, node.left, state);
+                this.drawTreeRecursive(ctx, node.right, state);
+                
+                // 绘制当前节点
+                this.drawNode(ctx, node, state);
+            }
+
+            drawNode(ctx, node, state) {
+                // 设置节点颜色
+                let fillColor = '#FFFFFF';
+                if (node.state === 'current') {
+                    fillColor = '#FFA726';
+                } else if (node.state === 'visited') {
+                    fillColor = '#C8E6C9';
+                }
+                
+                // 绘制节点圆
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+                ctx.fillStyle = fillColor;
+                ctx.fill();
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // 绘制节点值
+                ctx.fillStyle = '#000';
+                ctx.font = 'bold 16px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(node.value, node.x, node.y);
+            }
+
+            drawPointer(ctx, node) {
+                // 绘制指向当前节点的三角形指针
+                ctx.beginPath();
+                ctx.moveTo(node.x, node.y - node.radius - 15);
+                ctx.lineTo(node.x - 10, node.y - node.radius - 5);
+                ctx.lineTo(node.x + 10, node.y - node.radius - 5);
+                ctx.closePath();
+                ctx.fillStyle = '#FF5722';
+                ctx.fill();
+                
+                // 添加指针动画效果
+                ctx.beginPath();
+                ctx.arc(node.x, node.y - node.radius - 10, 3, 0, Math.PI * 2);
+                ctx.fillStyle = '#FFF';
+                ctx.fill();
+            }
+
+            updateCodeHighlight(traversalType) {
+                const state = this.traversalStates[traversalType];
+                const step = state.getCurrentStep();
+                const codeContainer = document.getElementById(`${traversalType}-code`);
+                
+                // 清除所有高亮
+                codeContainer.querySelectorAll('.code-line').forEach(line => {
+                    line.classList.remove('highlighted');
+                });
+                
+                // 高亮当前代码行
+                if (step && step.codeLine
+<!--检测到代码截断，自动续写中...-->
+) {
+                    const lines = codeContainer.querySelectorAll('.code-line');
+                    if (step.codeLine - 1 < lines.length) {
+                        lines[step.codeLine - 1].classList.add('highlighted');
+                    }
+                }
+            }
+
+            updateStackVisualization(traversalType) {
+                const state = this.traversalStates[traversalType];
+                const stackContainer = document.getElementById(`${traversalType}-stack`);
+                
+                // 清空栈显示
+                stackContainer.innerHTML = '';
+                
+                // 显示栈帧（从栈底到栈顶）
+                const stackFrames = [...state.callStack].reverse();
+                
+                stackFrames.forEach((frame, index) => {
+                    const frameElement = document.createElement('div');
+                    frameElement.className = 'stack-frame';
+                    
+                    // 最后一个栈帧是活动的
+                    if (index === 0) {
+                        frameElement.classList.add('active');
+                    }
+                    
+                    frameElement.textContent = `${frame.node.value} (下一步: ${frame.nextAction})`;
+                    stackContainer.appendChild(frameElement);
+                });
+                
+                // 如果栈为空，显示提示
+                if (stackFrames.length === 0) {
+                    const emptyFrame = document.createElement('div');
+                    emptyFrame.className = 'stack-frame';
+                    emptyFrame.textContent = '调用栈为空';
+                    stackContainer.appendChild(emptyFrame);
+                }
+            }
+
+            updateSequenceVisualization(traversalType) {
+                const state = this.traversalStates[traversalType];
+                const sequenceContainer = document.getElementById(`${traversalType}-sequence`);
+                
+                // 清空序列显示
+                sequenceContainer.innerHTML = '';
+                
+                // 显示访问序列
+                state.visitedSequence.forEach((value, index) => {
+                    const nodeElement = document.createElement('div');
+                    nodeElement.className = 'sequence-node';
+                    
+                    // 最后一个节点是新访问的
+                    if (index === state.visitedSequence.length - 1) {
+                        nodeElement.classList.add('new');
+                    }
+                    
+                    nodeElement.textContent = value;
+                    sequenceContainer.appendChild(nodeElement);
+                    
+                    // 添加箭头（除了最后一个）
+                    if (index < state.visitedSequence.length - 1) {
+                        const arrow = document.createElement('span');
+                        arrow.textContent = '→';
+                        arrow.style.color = '#666';
+                        arrow.style.margin = '0 5px';
+                        sequenceContainer.appendChild(arrow);
+                    }
+                });
+                
+                // 如果序列为空，显示提示
+                if (state.visitedSequence.length === 0) {
+                    const emptyText = document.createElement('div');
+                    emptyText.textContent = '尚未访问任何节点';
+                    emptyText.style.color = '#999';
+                    emptyText.style.fontStyle = 'italic';
+                    sequenceContainer.appendChild(emptyText);
+                }
+            }
+
+            render() {
+                // 更新所有视图
+                const traversals = this.compareMode ? 
+                    ['preorder', 'inorder', 'postorder'] : 
+                    [this.currentTraversal];
+                
+                traversals.forEach(traversalType => {
+                    // 绘制树
+                    this.drawTree(`${traversalType}-canvas`, traversalType);
+                    
+                    // 更新代码高亮
+                    this.updateCodeHighlight(traversalType);
+                    
+                    // 更新栈可视化
+                    this.updateStackVisualization(traversalType);
+                    
+                    // 更新序列可视化
+                    this.updateSequenceVisualization(traversalType);
+                });
+                
+                // 更新状态显示
+                this.updateStatus();
+            }
+        }
+
+        // 页面加载完成后初始化应用
+        document.addEventListener('DOMContentLoaded', () => {
+            const visualizer = new BinaryTreeVisualizer();
+            
+            // 初始渲染
+            visualizer.render();
+            
+            // 将visualizer暴露给全局，便于调试
+            window.visualizer = visualizer;
+        });
+    </script>
+</body>
+</html>

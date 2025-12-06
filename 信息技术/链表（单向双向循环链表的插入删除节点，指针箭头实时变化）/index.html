@@ -1,0 +1,2290 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>链表操作可视化教学动画</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: #212121;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        h1 {
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #616161;
+            font-size: 1.1em;
+        }
+
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .control-panel {
+            flex: 1;
+            min-width: 300px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .visualization-area {
+            flex: 2;
+            min-width: 500px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .code-panel {
+            flex: 1;
+            min-width: 300px;
+            background-color: #2d2d2d;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            color: #f5f5f5;
+        }
+
+        .panel-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #1976d2;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .code-panel .panel-title {
+            color: #4fc3f7;
+            border-bottom-color: #555;
+        }
+
+        .control-group {
+            margin-bottom: 25px;
+        }
+
+        .control-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #424242;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            background-color: #e0e0e0;
+            color: #424242;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .btn:hover {
+            background-color: #d5d5d5;
+            transform: translateY(-2px);
+        }
+
+        .btn.active {
+            background-color: #2196f3;
+            color: white;
+            box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+        }
+
+        .btn.primary {
+            background-color: #4caf50;
+            color: white;
+        }
+
+        .btn.primary:hover {
+            background-color: #43a047;
+        }
+
+        .btn.warning {
+            background-color: #ff9800;
+            color: white;
+        }
+
+        .btn.warning:hover {
+            background-color: #f57c00;
+        }
+
+        .btn.danger {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .btn.danger:hover {
+            background-color: #e53935;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 5px;
+            color: #424242;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #bdbdbd;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #2196f3;
+            box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+        }
+
+        .animation-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .animation-controls .btn {
+            flex: 1;
+        }
+
+        #canvas-container {
+            flex: 1;
+            position: relative;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #fafafa;
+            min-height: 400px;
+        }
+
+        #linked-list-canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .step-info {
+            margin-top: 15px;
+            padding: 12px;
+            background-color: #e3f2fd;
+            border-radius: 6px;
+            border-left: 4px solid #2196f3;
+            font-size: 0.95em;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+        }
+
+        .step-info .step-text {
+            flex: 1;
+        }
+
+        .step-counter {
+            font-weight: 600;
+            color: #1976d2;
+            margin-right: 10px;
+        }
+
+        #code-display {
+            background-color: #1e1e1e;
+            border-radius: 6px;
+            padding: 15px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.5;
+            height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            margin-bottom: 15px;
+        }
+
+        .code-line {
+            padding: 2px 0;
+            transition: background-color 0.3s ease;
+        }
+
+        .code-line.highlighted {
+            background-color: rgba(255, 152, 0, 0.2);
+            border-left: 3px solid #ff9800;
+            padding-left: 10px;
+        }
+
+        .code-keyword {
+            color: #569cd6;
+        }
+
+        .code-comment {
+            color: #6a9955;
+        }
+
+        .code-function {
+            color: #dcdcaa;
+        }
+
+        .code-variable {
+            color: #9cdcfe;
+        }
+
+        .code-operator {
+            color: #d4d4d4;
+        }
+
+        .code-string {
+            color: #ce9178;
+        }
+
+        .summary {
+            background-color: rgba(76, 175, 80, 0.1);
+            border-radius: 6px;
+            padding: 15px;
+            border-left: 4px solid #4caf50;
+            font-size: 0.95em;
+        }
+
+        .summary-title {
+            font-weight: 600;
+            color: #2e7d32;
+            margin-bottom: 8px;
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background-color: #eeeeee;
+            border-radius: 6px;
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+
+        .node-count {
+            font-weight: 500;
+        }
+
+        .instructions {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #fff8e1;
+            border-radius: 8px;
+            border-left: 4px solid #ffb300;
+            font-size: 0.9em;
+        }
+
+        .instructions h3 {
+            color: #ff8f00;
+            margin-bottom: 10px;
+        }
+
+        .instructions ul {
+            padding-left: 20px;
+        }
+
+        .instructions li {
+            margin-bottom: 5px;
+        }
+
+        @media (max-width: 1100px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .control-panel, .visualization-area, .code-panel {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>链表操作可视化教学动画</h1>
+            <p class="subtitle">单向链表 / 双向链表 / 循环链表 | 插入与删除节点 | 指针箭头实时变化</p>
+        </header>
+        
+        <div class="main-content">
+            <!-- 左侧控制面板 -->
+            <div class="control-panel">
+                <h2 class="panel-title">控制面板</h2>
+                
+                <div class="control-group">
+                    <div class="control-label">链表类型</div>
+                    <div class="btn-group">
+                        <button id="btn-singly" class="btn active">单向链表</button>
+                        <button id="btn-doubly" class="btn">双向链表</button>
+                        <button id="btn-circular" class="btn">循环链表</button>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-label">演示模式</div>
+                    <div class="btn-group">
+                        <button id="btn-auto" class="btn">自动演示</button>
+                        <button id="btn-interactive" class="btn active">交互学习</button>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-label">操作类型</div>
+                    <div class="btn-group">
+                        <button id="btn-insert" class="btn active">插入节点</button>
+                        <button id="btn-delete" class="btn">删除节点</button>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label class="input-label" for="node-data">节点数据 (插入时)</label>
+                    <input type="text" id="node-data" class="input-field" placeholder="输入新节点数据，如: A, 1, X" maxlength="3" value="N">
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-label">操作位置</div>
+                    <div class="btn-group">
+                        <button id="btn-head" class="btn active">头部</button>
+                        <button id="btn-tail" class="btn">尾部</button>
+                        <button id="btn-middle" class="btn">选中节点后</button>
+                    </div>
+                </div>
+                
+                <div class="animation-controls">
+                    <button id="btn-start" class="btn primary">开始执行</button>
+                    <button id="btn-reset" class="btn warning">重置链表</button>
+                </div>
+                
+                <div class="status-bar">
+                    <div class="node-count">当前节点数: <span id="node-count">4</span></div>
+                    <div>模式: <span id="current-mode">交互学习</span></div>
+                </div>
+            </div>
+            
+            <!-- 中间可视化区域 -->
+            <div class="visualization-area">
+                <h2 class="panel-title">链表可视化</h2>
+                <div id="canvas-container">
+                    <canvas id="linked-list-canvas"></canvas>
+                </div>
+                
+                <div class="step-info">
+                    <div class="step-text">
+                        <span class="step-counter">就绪</span>
+                        <span id="step-description">请选择操作类型和位置，然后点击"开始执行"</span>
+                    </div>
+                </div>
+                
+                <div class="animation-controls">
+                    <button id="btn-prev" class="btn" disabled>上一步</button>
+                    <button id="btn-next" class="btn" disabled>下一步</button>
+                    <button id="btn-pause" class="btn" disabled>暂停</button>
+                </div>
+            </div>
+            
+            <!-- 右侧代码面板 -->
+            <div class="code-panel">
+                <h2 class="panel-title">算法伪代码</h2>
+                <div id="code-display"></div>
+                
+                <div class="summary">
+                    <div class="summary-title">操作总结</div>
+                    <div id="summary-text">请开始一个操作以查看步骤总结</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h3>使用说明</h3>
+            <ul>
+                <li>1. 首先选择链表类型（单向、双向或循环链表）</li>
+                <li>2. 选择"插入节点"或"删除节点"操作</li>
+                <li>3. 选择操作位置（头部、尾部或选中节点后）</li>
+                <li>4. 点击"开始执行"按钮启动动画</li>
+                <li>5. 使用"上一步"/"下一步"按钮控制动画进度</li>
+                <li>6. 在画布上点击节点可以选中它（用于中间位置操作）</li>
+                <li>7. 右侧代码区会高亮显示当前步骤对应的伪代码</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let canvas, ctx;
+        let listType = 'singly'; // 'singly', 'doubly', 'circular'
+        let demoMode = 'interactive'; // 'auto', 'interactive'
+        let operation = 'insert'; // 'insert', 'delete'
+        let position = 'head'; // 'head', 'tail', 'middle'
+        let selectedNodeId = null;
+        let animationSteps = [];
+        let currentStep = 0;
+        let isAnimating = false;
+        let autoPlayInterval = null;
+        let animationSpeed = 1000; // 毫秒
+        
+        // 链表节点类
+        class ListNode {
+            constructor(id, data, x, y) {
+                this.id = id;
+                this.data = data;
+                this.x = x;
+                this.y = y;
+                this.next = null;
+                this.prev = null;
+                this.width = 100;
+                this.height = 60;
+                this.color = '#e3f2fd'; // 默认浅蓝色
+                this.borderColor = '#2196f3';
+                this.isSelected = false;
+                this.isNew = false;
+                this.isToDelete = false;
+            }
+            
+            draw() {
+                // 绘制节点主体
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+                
+                // 绘制边框
+                ctx.lineWidth = this.isSelected ? 3 : 2;
+                ctx.strokeStyle = this.isSelected ? '#ffeb3b' : this.borderColor;
+                ctx.strokeRect(this.x, this.y, this.width, this.height);
+                
+                // 绘制数据区
+                ctx.fillStyle = '#212121';
+                ctx.font = 'bold 16px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(`data: ${this.data}`, this.x + this.width/2, this.y + this.height/3);
+                
+                // 绘制指针区
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'left';
+                
+                // 根据链表类型绘制指针
+                if (listType === 'singly') {
+                    ctx.fillText('next:', this.x + 10, this.y + 2*this.height/3);
+                } else if (listType === 'doubly') {
+                    ctx.fillText('prev:', this.x + 10, this.y + 2*this.height/3);
+                    ctx.fillText('next:', this.x + 10, this.y + 2.5*this.height/3);
+                } else if (listType === 'circular') {
+                    ctx.fillText('next:', this.x + 10, this.y + 2*this.height/3);
+                }
+                
+                // 绘制节点ID（调试用）
+                ctx.font = '10px Arial';
+                ctx.fillStyle = '#757575';
+                ctx.fillText(`ID:${this.id}`, this.x + 5, this.y + this.height - 5);
+            }
+            
+            containsPoint(x, y) {
+                return x >= this.x && x <= this.x + this.width && 
+                       y >= this.y && y <= this.y + this.height;
+            }
+        }
+        
+        // 链表类
+        class LinkedList {
+            constructor() {
+                this.head = null;
+                this.tail = null;
+                this.nodes = [];
+                this.nodeCounter = 0;
+                this.initList();
+            }
+            
+            initList() {
+                this.nodes = [];
+                this.nodeCounter = 0;
+                
+                // 创建初始链表：A -> B -> C -> D
+                const nodeData = ['A', 'B', 'C', 'D'];
+                let prevNode = null;
+                
+                for (let i = 0; i < nodeData.length; i++) {
+                    const x = 150 + i * 150;
+                    const y = 200;
+                    const node = new ListNode(this.nodeCounter++, nodeData[i], x, y);
+                    
+                    if (prevNode) {
+                        prevNode.next = node;
+                        if (listType === 'doubly') {
+                            node.prev = prevNode;
+                        }
+                    } else {
+                        this.head = node;
+                    }
+                    
+                    this.nodes.push(node);
+                    prevNode = node;
+                    
+                    if (i === nodeData.length - 1) {
+                        this.tail = node;
+                        if (listType === 'circular') {
+                            node.next = this.head;
+                            if (listType === 'doubly') {
+                                this.head.prev = node;
+                            }
+                        }
+                    }
+                }
+                
+                updateNodeCount();
+            }
+            
+            draw() {
+                // 清除画布
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // 绘制所有指针箭头
+                this.drawPointers();
+                
+                // 绘制所有节点
+                for (const node of this.nodes) {
+                    node.draw();
+                }
+                
+                // 绘制头指针和尾指针
+                this.drawHeadTailPointers();
+            }
+            
+            drawPointers() {
+                for (const node of this.nodes) {
+                    // 绘制next指针
+                    if (node.next) {
+                        this.drawArrow(node, node.next, 'next', '#616161');
+                    } else if (listType !== 'circular') {
+                        // 绘制NULL指针（非循环链表）
+                        this.drawNullPointer(node, 'next');
+                    }
+                    
+                    // 绘制prev指针（双向链表）
+                    if (listType === 'doubly' && node.prev) {
+                        this.drawArrow(node, node.prev, 'prev', '#616161', true);
+                    } else if (listType === 'doubly' && node !== this.head) {
+                        // 双向链表中非头节点的prev应为NULL
+                        this.drawNullPointer(node, 'prev', true);
+                    }
+                }
+                
+                // 绘制循环链表的尾部指向头部的箭头
+                if (listType === 'circular' && this.tail && this.head) {
+                    this.drawCircularArrow(this.tail, this.head);
+                }
+            }
+            
+            drawArrow(fromNode, toNode, pointerType, color, isReverse = false) {
+                const startX = fromNode.x + fromNode.width;
+                const startY = fromNode.y + (pointerType === 'next' ? fromNode.height * 2/3 : fromNode.height * 2.5/3);
+                
+                const endX = toNode.x;
+                const endY = toNode.y + toNode.height / 2;
+                
+                // 计算控制点使曲线更自然
+                const controlX1 = startX + 50;
+                const controlY1 = startY;
+                const controlX2 = endX - 50;
+                const controlY2 = endY;
+                
+                // 绘制曲线
+                ctx.beginPath();
+                ctx.moveTo(startX, startY);
+                ctx.bezierCurveTo(controlX1, controlY1, controlX2, controlY2, endX, endY);
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // 绘制箭头
+                const angle = Math.atan2(endY - controlY2, endX - controlX2);
+                const arrowLength = 10;
+                
+                ctx.beginPath();
+                ctx.moveTo(endX, endY);
+                ctx.lineTo(
+                    endX - arrowLength * Math.cos(angle - Math.PI/6),
+                    endY - arrowLength * Math.sin(angle - Math.PI/6)
+                );
+                ctx.moveTo(endX, endY);
+                ctx.lineTo(
+                    endX - arrowLength * Math.cos(angle + Math.PI/6),
+                    endY - arrowLength * Math.sin(angle + Math.PI/6)
+                );
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // 如果是活动箭头，添加高亮效果
+                if (color === '#ff9800') {
+                    ctx.beginPath();
+                    ctx.moveTo(startX, startY);
+                    ctx.bezierCurveTo(controlX1, controlY1, controlX2, controlY2, endX, endY);
+                    ctx.strokeStyle = 'rgba(255, 152, 0, 0.2)';
+                    ctx.lineWidth = 8;
+                    ctx.stroke();
+                }
+            }
+            
+            drawNullPointer(node, pointerType, isLeft = false) {
+                const x = isLeft ? node.x : node.x + node.width;
+                const y = node.y + (pointerType === 'next' ? node.height * 2/3 : node.height * 2.5/3);
+                
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(x + (isLeft ? -30 : 30), y);
+                ctx.strokeStyle = '#616161';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // 绘制NULL文本
+                ctx.fillStyle = '#757575';
+                ctx.font = '12px Arial';
+                ctx.textAlign = isLeft ? 'right' : 'left';
+                ctx.fillText('NULL', x + (isLeft ? -35 : 35), y + 4);
+            }
+            
+            drawCircularArrow(fromNode, toNode) {
+                const startX = fromNode.x + fromNode.width;
+                const startY = fromNode.y + fromNode.height * 2/3;
+                
+                const endX = toNode.x;
+                const endY = toNode.y + toNode.height / 2;
+                
+                // 创建一条更长的曲线，从尾部绕到头
+                const controlX1 = startX + 100;
+                const controlY1 = startY - 100;
+                const controlX2 = endX - 100;
+                const controlY2 = endY - 100;
+                
+                ctx.beginPath();
+                ctx.moveTo(startX, startY);
+                ctx.bezierCurveTo(controlX1, controlY1, controlX2, controlY2, endX, endY);
+                ctx.strokeStyle = '#616161';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // 绘制箭头
+                const angle = Math.atan2(endY - controlY2, endX - controlX2);
+                const arrowLength = 10;
+                
+                ctx.beginPath();
+                ctx.moveTo(endX, endY);
+                ctx.lineTo(
+                    endX - arrowLength * Math.cos(angle - Math.PI/6),
+                    endY - arrowLength * Math.sin(angle - Math.PI/6)
+                );
+                ctx.moveTo(endX, endY);
+                ctx.lineTo(
+                    endX - arrowLength * Math.cos(angle + Math.PI/6),
+                    endY - arrowLength * Math.sin(angle + Math.PI/6)
+                );
+                ctx.strokeStyle = '#616161';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+            
+            drawHeadTailPointers() {
+                // 绘制头指针
+                if (this.head) {
+                    ctx.fillStyle = '#1976d2';
+                    ctx.font = 'bold 14px Arial';
+                    ctx.textAlign = 'right';
+                    ctx.fillText('head', this.head.x - 10, this.head.y + this.head.height/2);
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(this.head.x - 30, this.head.y + this.head.height/2);
+                    ctx.lineTo(this.head.x, this.head.y + this.head.height/2);
+                    ctx.strokeStyle = '#1976d2';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                }
+                
+                // 绘制尾指针（双向和循环链表）
+                if (this.tail && (listType === 'doubly' || listType === 'circular')) {
+                    ctx.fillStyle = '#d81b60';
+                    ctx.font = 'bold 14px Arial';
+                    ctx.textAlign = 'left';
+                    ctx.fillText('tail', this.tail.x + this.tail.width + 10, this.tail.y + this.tail.height/2);
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(this.tail.x + this.tail.width, this.tail.y + this.tail.height/2);
+                    ctx.lineTo(this.tail.x + this.tail.width + 30, this.tail.y + this.tail.height/2);
+                    ctx.strokeStyle = '#d81b60';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                }
+            }
+            
+            getNodeById(id) {
+                return this.nodes.find(node => node.id === id);
+            }
+            
+            getNodeAtPosition(x, y) {
+                for (let i = this.nodes.length - 1; i >= 0; i--) {
+                    if (this.nodes[i].containsPoint(x, y)) {
+                        return this.nodes[i];
+                    }
+                }
+                return null;
+            }
+            
+            selectNode(node) {
+                // 取消所有节点的选中状态
+                for (const n of this.nodes) {
+                    n.isSelected = false;
+                }
+                
+                if (node) {
+                    node.isSelected = true;
+                    selectedNodeId = node.id;
+                } else {
+                    selectedNodeId = null;
+                }
+                
+                this.draw();
+            }
+            
+            // 插入节点算法
+            insertNode(data, position) {
+                const steps = [];
+                let newNode = null;
+                
+                // 步骤1: 创建新节点
+                steps.push({
+                    description: `创建新节点，数据为: ${data}`,
+                    codeLine: 1,
+                    action: () => {
+                        newNode = new ListNode(this.nodeCounter++, data, 0, 0);
+                        newNode.color = '#c8e6c9'; // 绿色表示新节点
+                        newNode.isNew = true;
+                        steps[0].newNode = newNode;
+                        updateStepDescription(steps[0].description);
+                        highlightCodeLine(steps[0].codeLine);
+                    }
+                });
+                
+                if (position === 'head') {
+                    // 头部插入
+                    steps.push({
+                        description: "将新节点的next指针指向当前头节点",
+                        codeLine: 2,
+                        action: () => {
+                            newNode.next = this.head;
+                            updateStepDescription(steps[1].description);
+                            highlightCodeLine(steps[1].codeLine);
+                            // 可视化：绘制从newNode到head的箭头
+                            temporaryArrow = { from: newNode, to: this.head, type: 'next', color: '#ff9800' };
+                        }
+                    });
+                    
+                    steps.push({
+                        description: "更新头指针，使其指向新节点",
+                        codeLine: 3,
+                        action: () => {
+                            this.head = newNode;
+                            updateStepDescription(steps[2].description);
+                            highlightCodeLine(steps[2].codeLine);
+                        }
+                    });
+                    
+                    if (listType === 'doubly') {
+                        steps.push({
+                            description: "将原头节点的prev指针指向新节点",
+                            codeLine: 4,
+                            action: () => {
+                                if (newNode.next) {
+                                    newNode.next.prev = newNode;
+                                }
+                                updateStepDescription(steps[3].description);
+                                highlightCodeLine(steps[3].codeLine);
+                            }
+                        });
+                    }
+                    
+                    if (listType === 'circular') {
+                        steps.push({
+                            description: "更新尾节点的next指针指向新头节点",
+                            codeLine: listType === 'doubly' ? 5 : 4,
+                            action: () => {
+                                if (this.tail) {
+                                    this.tail.next = newNode;
+                                } else {
+                                    // 如果链表为空，新节点也指向自己
+                                    newNode.next = newNode;
+                                    this.tail = newNode;
+                                }
+                                updateStepDescription(steps[steps.length-1].description);
+                                highlightCodeLine(steps[steps.length-1].codeLine);
+                            }
+                        });
+                    }
+                    
+                    steps.push({
+                        description: "将新节点添加到链表并更新位置",
+                        codeLine: listType === 'singly' ? 4 : (listType === 'doubly' ? 6 : 5),
+                        action: () => {
+                            this.nodes.unshift(newNode);
+                            this.repositionNodes();
+                            newNode.color = '#e3f2fd'; // 恢复默认颜色
+                            newNode.isNew = false;
+                            updateStepDescription(steps[steps.length-1].description);
+                            highlightCodeLine(steps[steps.length-1].codeLine);
+                            updateNodeCount();
+                        }
+                    });
+                    
+                } else if (position === 'tail') {
+                    // 尾部插入
+                    if (!this.tail) {
+                        // 空链表情况
+                        steps.push({
+                            description: "链表为空，新节点既是头节点也是尾节点",
+                            codeLine: 2,
+                            action: () => {
+                                this.head = newNode;
+                                this.tail = newNode;
+                                if (listType === 'circular') {
+                                    newNode.next = newNode;
+                                }
+                                updateStepDescription(steps[1].description);
+                                highlightCodeLine(steps[1].codeLine);
+                            }
+                        });
+                    } else {
+                        steps.push({
+                            description: "将当前尾节点的next指针指向新节点",
+                            codeLine: 2,
+                            action: () => {
+                                this.tail.next = newNode;
+                                updateStepDescription(steps[1].description);
+                                highlightCodeLine(steps[1].codeLine);
+                                temporaryArrow = { from: this.tail, to: newNode, type: 'next', color: '#ff9800' };
+                            }
+                        });
+                        
+                        if (listType === 'doubly') {
+                            steps.push({
+                                description: "将新节点的prev指针指向当前尾节点",
+                                codeLine: 3,
+                                action: () => {
+                                    newNode.prev = this.tail;
+                                    updateStepDescription(steps[2].description);
+                                    highlightCodeLine(steps[2].codeLine);
+                                }
+                            });
+                        }
+                        
+                        steps.push({
+                            description: "更新尾指针，使其指向新节点",
+                            codeLine: listType === 'doubly' ? 4 : 3,
+                            action: () => {
+                                this.tail = newNode;
+                                updateStepDescription(steps[steps.length-1].description);
+                                highlightCodeLine(steps[steps.length-1].codeLine);
+                            }
+                        });
+                        
+                        if (listType === 'circular') {
+                            steps.push({
+                                description: "将新节点的next指针指向头节点",
+                                codeLine: listType === 'doubly' ? 5 : 4,
+                                action: () => {
+                                    newNode.next = this.head;
+                                    updateStepDescription(steps[steps.length-1].description);
+                                    highlightCodeLine(steps[steps.length-1].codeLine);
+                                }
+                            });
+                        }
+                    }
+                    
+                    steps.push({
+                        description: "将新节点添加到链表并更新位置",
+                        codeLine: listType === 'singly' ? (this.tail ? 4 : 3) : 
+                                 (listType === 'doubly' ? (this.tail ? 6 : 3) : 
+                                 (this.tail ? 5 : 3)),
+                        action: () => {
+                            this.nodes.push(newNode);
+                            this.repositionNodes();
+                            newNode.color = '#e3f2fd';
+                            newNode.isNew = false;
+                            updateStepDescription(steps[steps.length-1].description);
+                            highlightCodeLine(steps[steps.length-1].codeLine);
+                            updateNodeCount();
+                        }
+                    });
+                    
+                } else if (position === 'middle' && selectedNodeId !== null) {
+                    // 中间插入（在选中节点后插入）
+                    const selectedNode = this.getNodeById(selectedNodeId);
+                    
+                    if (!selectedNode) {
+                        steps.push({
+                            description: "未选中有效节点，请先点击选择一个节点",
+                            codeLine: 0,
+                            action: () => {
+                                updateStepDescription(steps[0].description);
+                            }
+                        });
+                        return steps;
+                    }
+                    
+                    steps[0].description = `创建新节点，数据为: ${data}，将在节点${selectedNode.data}后插入`;
+                    
+                    steps.push({
+                        description: `将新节点的next指针指向节点${selectedNode.data}的后继节点`,
+                        codeLine: 2,
+                        action: () => {
+                            newNode.next = selectedNode.next;
+                            updateStepDescription(steps[1].description);
+                            highlightCodeLine(steps[1].codeLine);
+                            if (selectedNode.next) {
+                                temporaryArrow = { from: newNode, to: selectedNode.next, type: 'next', color: '#ff9800' };
+                            }
+                        }
+                    });
+                    
+                    steps.push({
+                        description: `将节点${selectedNode.data}的next指针指向新节点`,
+                        codeLine: 3,
+                        action: () => {
+                            selectedNode.next = newNode;
+                            updateStepDescription(steps[2].description);
+                            highlightCodeLine(steps[2].codeLine);
+                            temporaryArrow = { from: selectedNode, to: newNode, type: 'next', color: '#ff9800' };
+                        }
+                    });
+                    
+                    if (listType === 'doubly') {
+                        steps.push({
+                            description: `将新节点的prev指针指向节点${selectedNode.data}`,
+                            codeLine: 4,
+                            action: () => {
+                                newNode.prev = selectedNode;
+                                updateStepDescription(steps[3].description);
+                            }
+                        });
+                        
+                        steps.push({
+                            description: `如果新节点有后继节点，更新其后继节点的prev指针`,
+                            codeLine: 5,
+                            action: () => {
+                                if (newNode.next) {
+                                    newNode.next.prev = newNode;
+                                }
+                                updateStepDescription(steps[4].description);
+                                highlightCodeLine(steps[4].codeLine);
+                            }
+                        });
+                    }
+                    
+                    // 如果选中的是尾节点，需要更新尾指针
+                    if (selectedNode === this.tail && listType !== 'circular') {
+                        steps.push({
+                            description: "由于在尾节点后插入，更新尾指针指向新节点",
+                            codeLine: listType === 'doubly' ? 6 : 4,
+                            action: () => {
+                                this.tail = newNode;
+                                updateStepDescription(steps[steps.length-1].description);
+                                highlightCodeLine(steps[steps.length-1].codeLine);
+                            }
+                        });
+                    }
+                    
+                    steps.push({
+                        description: "将新节点添加到链表并更新位置",
+                        codeLine: listType === 'singly' ? (selectedNode === this.tail ? 5 : 4) : 
+                                 (listType === 'doubly' ? (selectedNode === this.tail ? 7 : 6) : 4),
+                        action: () => {
+                            const selectedIndex = this.nodes.findIndex(n => n.id === selectedNodeId);
+                            this.nodes.splice(selectedIndex + 1, 0, newNode);
+                            this.repositionNodes();
+                            newNode.color = '#e3f2fd';
+                            newNode.isNew = false;
+                            updateStepDescription(steps[steps.length-1].description);
+                            highlightCodeLine(steps[steps.length-1].codeLine);
+                            updateNodeCount();
+                        }
+                    });
+                }
+                
+                return steps;
+            }
+            
+            // 删除节点算法
+            deleteNode(position) {
+                const steps = [];
+                let nodeToDelete = null;
+                
+                if (this.nodes.length === 0) {
+                    steps.push({
+                        description: "链表为空，无法删除节点",
+                        codeLine: 0,
+                        action: () => {
+                            updateStepDescription(steps[0
+<!--检测到代码截断，自动续写中...-->
+.description);
+                        }
+                    });
+                    return steps;
+                }
+                
+                if (position === 'head') {
+                    // 头部删除
+                    nodeToDelete = this.head;
+                    
+                    steps.push({
+                        description: "标记要删除的头节点",
+                        codeLine: 1,
+                        action: () => {
+                            nodeToDelete.color = '#ffcdd2'; // 红色表示待删除
+                            nodeToDelete.isToDelete = true;
+                            updateStepDescription(steps[0].description);
+                            highlightCodeLine(steps[0].codeLine);
+                        }
+                    });
+                    
+                    steps.push({
+                        description: "更新头指针，使其指向原头节点的下一个节点",
+                        codeLine: 2,
+                        action: () => {
+                            this.head = nodeToDelete.next;
+                            updateStepDescription(steps[1].description);
+                            highlightCodeLine(steps[1].codeLine);
+                        }
+                    });
+                    
+                    if (listType === 'doubly' && this.head) {
+                        steps.push({
+                            description: "将新头节点的prev指针置为NULL",
+                            codeLine: 3,
+                            action: () => {
+                                this.head.prev = null;
+                                updateStepDescription(steps[2].description);
+                                highlightCodeLine(steps[2].codeLine);
+                            }
+                        });
+                    }
+                    
+                    if (listType === 'circular') {
+                        steps.push({
+                            description: "更新尾节点的next指针指向新的头节点",
+                            codeLine: listType === 'doubly' ? 4 : 3,
+                            action: () => {
+                                if (this.tail) {
+                                    this.tail.next = this.head;
+                                }
+                                updateStepDescription(steps[steps.length-1].description);
+                                highlightCodeLine(steps[steps.length-1].codeLine);
+                            }
+                        });
+                        
+                        // 如果删除后链表为空
+                        if (this.nodes.length === 1) {
+                            steps.push({
+                                description: "链表变为空，头尾指针都置为NULL",
+                                codeLine: listType === 'doubly' ? 5 : 4,
+                                action: () => {
+                                    this.head = null;
+                                    this.tail = null;
+                                    updateStepDescription(steps[steps.length-1].description);
+                                    highlightCodeLine(steps[steps.length-1].codeLine);
+                                }
+                            });
+                        }
+                    }
+                    
+                    steps.push({
+                        description: "从链表中移除节点并释放内存",
+                        codeLine: listType === 'singly' ? 3 : (listType === 'doubly' ? (listType === 'circular' ? 6 : 4) : (listType === 'circular' ? 5 : 3)),
+                        action: () => {
+                            this.nodes = this.nodes.filter(node => node.id !== nodeToDelete.id);
+                            if (this.nodes.length === 0) {
+                                this.head = null;
+                                this.tail = null;
+                            }
+                            this.repositionNodes();
+                            updateStepDescription(steps[steps.length-1].description);
+                            highlightCodeLine(steps[steps.length-1].codeLine);
+                            updateNodeCount();
+                        }
+                    });
+                    
+                } else if (position === 'tail') {
+                    // 尾部删除
+                    nodeToDelete = this.tail;
+                    
+                    steps.push({
+                        description: "标记要删除的尾节点",
+                        codeLine: 1,
+                        action: () => {
+                            nodeToDelete.color = '#ffcdd2';
+                            nodeToDelete.isToDelete = true;
+                            updateStepDescription(steps[0].description);
+                            highlightCodeLine(steps[0].codeLine);
+                        }
+                    });
+                    
+                    if (this.nodes.length === 1) {
+                        // 只有一个节点的情况
+                        steps.push({
+                            description: "链表只有一个节点，删除后链表为空",
+                            codeLine: 2,
+                            action: () => {
+                                this.head = null;
+                                this.tail = null;
+                                updateStepDescription(steps[1].description);
+                                highlightCodeLine(steps[1].codeLine);
+                            }
+                        });
+                    } else {
+                        // 找到尾节点的前一个节点
+                        let prevNode = null;
+                        if (listType === 'doubly') {
+                            prevNode = nodeToDelete.prev;
+                        } else {
+                            // 对于单向链表，需要遍历找到前一个节点
+                            for (const node of this.nodes) {
+                                if (node.next === nodeToDelete) {
+                                    prevNode = node;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        steps.push({
+                            description: `找到尾节点的前一个节点: ${prevNode ? prevNode.data : '无'}`,
+                            codeLine: 2,
+                            action: () => {
+                                if (prevNode) {
+                                    prevNode.isSelected = true;
+                                }
+                                updateStepDescription(steps[1].description);
+                                highlightCodeLine(steps[1].codeLine);
+                            }
+                        });
+                        
+                        steps.push({
+                            description: "将前一个节点的next指针置为NULL",
+                            codeLine: 3,
+                            action: () => {
+                                if (prevNode) {
+                                    prevNode.next = null;
+                                    prevNode.isSelected = false;
+                                }
+                                updateStepDescription(steps[2].description);
+                                highlightCodeLine(steps[2].codeLine);
+                            }
+                        });
+                        
+                        if (listType === 'doubly') {
+                            steps.push({
+                                description: "断开要删除节点的prev指针",
+                                codeLine: 4,
+                                action: () => {
+                                    nodeToDelete.prev = null;
+                                    updateStepDescription(steps[3].description);
+                                    highlightCodeLine(steps[3].codeLine);
+                                }
+                            });
+                        }
+                        
+                        steps.push({
+                            description: "更新尾指针，使其指向前一个节点",
+                            codeLine: listType === 'doubly' ? 5 : 4,
+                            action: () => {
+                                this.tail = prevNode;
+                                updateStepDescription(steps[steps.length-1].description);
+                                highlightCodeLine(steps[steps.length-1].codeLine);
+                            }
+                        });
+                        
+                        if (listType === 'circular') {
+                            steps.push({
+                                description: "更新新的尾节点的next指针指向头节点",
+                                codeLine: listType === 'doubly' ? 6 : 5,
+                                action: () => {
+                                    if (this.tail) {
+                                        this.tail.next = this.head;
+                                    }
+                                    updateStepDescription(steps[steps.length-1].description);
+                                    highlightCodeLine(steps[steps.length-1].codeLine);
+                                }
+                            });
+                        }
+                    }
+                    
+                    steps.push({
+                        description: "从链表中移除节点并释放内存",
+                        codeLine: listType === 'singly' ? (this.nodes.length === 1 ? 3 : 5) : 
+                                 (listType === 'doubly' ? (this.nodes.length === 1 ? 3 : (listType === 'circular' ? 7 : 6)) : 
+                                 (this.nodes.length === 1 ? 3 : 6)),
+                        action: () => {
+                            this.nodes = this.nodes.filter(node => node.id !== nodeToDelete.id);
+                            this.repositionNodes();
+                            updateStepDescription(steps[steps.length-1].description);
+                            highlightCodeLine(steps[steps.length-1].codeLine);
+                            updateNodeCount();
+                        }
+                    });
+                    
+                } else if (position === 'middle' && selectedNodeId !== null) {
+                    // 中间删除（删除选中节点）
+                    nodeToDelete = this.getNodeById(selectedNodeId);
+                    
+                    if (!nodeToDelete) {
+                        steps.push({
+                            description: "未选中有效节点，请先点击选择一个节点",
+                            codeLine: 0,
+                            action: () => {
+                                updateStepDescription(steps[0].description);
+                            }
+                        });
+                        return steps;
+                    }
+                    
+                    if (nodeToDelete === this.head) {
+                        position = 'head';
+                        return this.deleteNode('head');
+                    }
+                    
+                    if (nodeToDelete === this.tail) {
+                        position = 'tail';
+                        return this.deleteNode('tail');
+                    }
+                    
+                    steps.push({
+                        description: `标记要删除的节点: ${nodeToDelete.data}`,
+                        codeLine: 1,
+                        action: () => {
+                            nodeToDelete.color = '#ffcdd2';
+                            nodeToDelete.isToDelete = true;
+                            updateStepDescription(steps[0].description);
+                            highlightCodeLine(steps[0].codeLine);
+                        }
+                    });
+                    
+                    // 找到前一个节点
+                    let prevNode = null;
+                    if (listType === 'doubly') {
+                        prevNode = nodeToDelete.prev;
+                    } else {
+                        // 对于单向链表，需要遍历找到前一个节点
+                        for (const node of this.nodes) {
+                            if (node.next === nodeToDelete) {
+                                prevNode = node;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    steps.push({
+                        description: `找到要删除节点的前一个节点: ${prevNode ? prevNode.data : '无'}`,
+                        codeLine: 2,
+                        action: () => {
+                            if (prevNode) {
+                                prevNode.isSelected = true;
+                            }
+                            updateStepDescription(steps[1].description);
+                            highlightCodeLine(steps[1].codeLine);
+                        }
+                    });
+                    
+                    steps.push({
+                        description: `将前一个节点的next指针指向要删除节点的下一个节点`,
+                        codeLine: 3,
+                        action: () => {
+                            if (prevNode) {
+                                prevNode.next = nodeToDelete.next;
+                                prevNode.isSelected = false;
+                            }
+                            updateStepDescription(steps[2].description);
+                            highlightCodeLine(steps[2].codeLine);
+                            if (prevNode && nodeToDelete.next) {
+                                temporaryArrow = { from: prevNode, to: nodeToDelete.next, type: 'next', color: '#ff9800' };
+                            }
+                        }
+                    });
+                    
+                    if (listType === 'doubly') {
+                        steps.push({
+                            description: `如果要删除节点有后继节点，更新其后继节点的prev指针`,
+                            codeLine: 4,
+                            action: () => {
+                                if (nodeToDelete.next) {
+                                    nodeToDelete.next.prev = prevNode;
+                                }
+                                updateStepDescription(steps[3].description);
+                                highlightCodeLine(steps[3].codeLine);
+                            }
+                        });
+                        
+                        steps.push({
+                            description: `断开要删除节点的prev和next指针`,
+                            codeLine: 5,
+                            action: () => {
+                                nodeToDelete.prev = null;
+                                nodeToDelete.next = null;
+                                updateStepDescription(steps[4].description);
+                                highlightCodeLine(steps[4].codeLine);
+                            }
+                        });
+                    }
+                    
+                    steps.push({
+                        description: "从链表中移除节点并释放内存",
+                        codeLine: listType === 'singly' ? 4 : 6,
+                        action: () => {
+                            this.nodes = this.nodes.filter(node => node.id !== nodeToDelete.id);
+                            this.repositionNodes();
+                            updateStepDescription(steps[steps.length-1].description);
+                            highlightCodeLine(steps[steps.length-1].codeLine);
+                            updateNodeCount();
+                        }
+                    });
+                }
+                
+                return steps;
+            }
+            
+            repositionNodes() {
+                // 重新计算所有节点的位置
+                const startX = 150;
+                const y = 200;
+                
+                for (let i = 0; i < this.nodes.length; i++) {
+                    this.nodes[i].x = startX + i * 150;
+                    this.nodes[i].y = y;
+                }
+                
+                this.draw();
+            }
+        }
+        
+        // 全局链表实例
+        let linkedList = new LinkedList();
+        let temporaryArrow = null;
+        
+        // 初始化函数
+        function init() {
+            canvas = document.getElementById('linked-list-canvas');
+            ctx = canvas.getContext('2d');
+            
+            // 设置Canvas尺寸
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            // 初始化链表
+            linkedList.draw();
+            
+            // 初始化代码显示
+            updateCodeDisplay();
+            
+            // 初始化事件监听
+            setupEventListeners();
+            
+            // 初始步骤描述
+            updateStepDescription("请选择操作类型和位置，然后点击'开始执行'");
+        }
+        
+        function resizeCanvas() {
+            const container = document.getElementById('canvas-container');
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            linkedList.draw();
+        }
+        
+        function setupEventListeners() {
+            // 链表类型按钮
+            document.getElementById('btn-singly').addEventListener('click', () => {
+                setListType('singly');
+            });
+            
+            document.getElementById('btn-doubly').addEventListener('click', () => {
+                setListType('doubly');
+            });
+            
+            document.getElementById('btn-circular').addEventListener('click', () => {
+                setListType('circular');
+            });
+            
+            // 演示模式按钮
+            document.getElementById('btn-auto').addEventListener('click', () => {
+                setDemoMode('auto');
+            });
+            
+            document.getElementById('btn-interactive').addEventListener('click', () => {
+                setDemoMode('interactive');
+            });
+            
+            // 操作类型按钮
+            document.getElementById('btn-insert').addEventListener('click', () => {
+                setOperation('insert');
+            });
+            
+            document.getElementById('btn-delete').addEventListener('click', () => {
+                setOperation('delete');
+            });
+            
+            // 操作位置按钮
+            document.getElementById('btn-head').addEventListener('click', () => {
+                setPosition('head');
+            });
+            
+            document.getElementById('btn-tail').addEventListener('click', () => {
+                setPosition('tail');
+            });
+            
+            document.getElementById('btn-middle').addEventListener('click', () => {
+                setPosition('middle');
+            });
+            
+            // 控制按钮
+            document.getElementById('btn-start').addEventListener('click', startAnimation);
+            document.getElementById('btn-reset').addEventListener('click', resetList);
+            document.getElementById('btn-prev').addEventListener('click', prevStep);
+            document.getElementById('btn-next').addEventListener('click', nextStep);
+            document.getElementById('btn-pause').addEventListener('click', togglePause);
+            
+            // 节点数据输入
+            document.getElementById('node-data').addEventListener('input', function() {
+                if (this.value.length > 3) {
+                    this.value = this.value.substring(0, 3);
+                }
+            });
+            
+            // Canvas点击事件（选择节点）
+            canvas.addEventListener('click', (e) => {
+                if (isAnimating) return;
+                
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const clickedNode = linkedList.getNodeAtPosition(x, y);
+                if (clickedNode) {
+                    linkedList.selectNode(clickedNode);
+                    if (position === 'middle') {
+                        updateStepDescription(`已选中节点: ${clickedNode.data}，点击"开始执行"进行${operation === 'insert' ? '插入' : '删除'}操作`);
+                    }
+                }
+            });
+        }
+        
+        function setListType(type) {
+            listType = type;
+            
+            // 更新按钮状态
+            document.getElementById('btn-singly').classList.toggle('active', type === 'singly');
+            document.getElementById('btn-doubly').classList.toggle('active', type === 'doubly');
+            document.getElementById('btn-circular').classList.toggle('active', type === 'circular');
+            
+            // 重置链表
+            resetList();
+            
+            // 更新代码显示
+            updateCodeDisplay();
+        }
+        
+        function setDemoMode(mode) {
+            demoMode = mode;
+            
+            document.getElementById('btn-auto').classList.toggle('active', mode === 'auto');
+            document.getElementById('btn-interactive').classList.toggle('active', mode === 'interactive');
+            document.getElementById('current-mode').textContent = mode === 'auto' ? '自动演示' : '交互学习';
+            
+            // 更新控制按钮状态
+            if (mode === 'auto') {
+                document.getElementById('btn-pause').textContent = '暂停';
+            }
+        }
+        
+        function setOperation(op) {
+            operation = op;
+            
+            document.getElementById('btn-insert').classList.toggle('active', op === 'insert');
+            document.getElementById('btn-delete').classList.toggle('active', op === 'delete');
+            
+            // 更新输入框状态
+            document.getElementById('node-data').disabled = (op === 'delete');
+            
+            // 更新步骤描述
+            updateStepDescription(`准备${op === 'insert' ? '插入' : '删除'}节点，请选择位置`);
+            
+            // 更新代码显示
+            updateCodeDisplay();
+        }
+        
+        function setPosition(pos) {
+            position = pos;
+            
+            document.getElementById('btn-head').classList.toggle('active', pos === 'head');
+            document.getElementById('btn-tail').classList.toggle('active', pos === 'tail');
+            document.getElementById('btn-middle').classList.toggle('active', pos === 'middle');
+            
+            if (pos === 'middle') {
+                updateStepDescription("请在画布上点击选择一个节点，然后点击'开始执行'");
+            } else {
+                updateStepDescription(`准备在${pos === 'head' ? '头部' : '尾部'}${operation === 'insert' ? '插入' : '删除'}节点，点击'开始执行'`);
+            }
+        }
+        
+        function updateStepDescription(text) {
+            document.getElementById('step-description').textContent = text;
+        }
+        
+        function updateNodeCount() {
+            document.getElementById('node-count').textContent = linkedList.nodes.length;
+        }
+        
+        function updateCodeDisplay() {
+            const codeDisplay = document.getElementById('code-display');
+            let code = '';
+            
+            if (operation === 'insert') {
+                if (position === 'head') {
+                    code = generateInsertHeadCode();
+                } else if (position === 'tail') {
+                    code = generateInsertTailCode();
+                } else if (position === 'middle') {
+                    code = generateInsertMiddleCode();
+                }
+            } else if (operation === 'delete') {
+                if (position === 'head') {
+                    code = generateDeleteHeadCode();
+                } else if (position === 'tail') {
+                    code = generateDeleteTailCode();
+                } else if (position === 'middle') {
+                    code = generateDeleteMiddleCode();
+                }
+            }
+            
+            codeDisplay.innerHTML = code;
+        }
+        
+        function generateInsertHeadCode() {
+            let code = '';
+            
+            if (listType === 'singly') {
+                code = `<div class="code-line"><span class="code-comment">// 在单向链表头部插入节点</span></div>
+<div class="code-line"><span class="code-keyword">function</span> <span class="code-function">insertAtHead</span>(data) {</div>
+<div class="code-line">  <span class="code-comment">// 1. 创建新节点</span></div>
+<div class="code-line">  newNode = <span class="code-keyword">new</span> <span class="code-function">Node</span>(data);</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 2. 新节点指向原头节点</span></div>
+<div class="code-line">  newNode.<span class="code-variable">next</span> = head;</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 3. 更新头指针</span></div>
+<div class="code-line">  head = newNode;</div>
+<div class="code-line">}</div>`;
+            } else if (listType === 'doubly') {
+                code = `<div class="code-line"><span class="code-comment">// 在双向链表头部插入节点</span></div>
+<div class="code-line"><span class="code-keyword">function</span> <span class="code-function">insertAtHead</span>(data) {</div>
+<div class="code-line">  <span class="code-comment">// 1. 创建新节点</span></div>
+<div class="code-line">  newNode = <span class="code-keyword">new</span> <span class="code-function">Node</span>(data);</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 2. 新节点指向原头节点</span></div>
+<div class="code-line">  newNode.<span class="code-variable">next</span> = head;</div>
+<div class="code-line">  newNode.<span class="code-variable">prev</span> = <span class="code-keyword">null</span>;</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 3. 如果链表非空，原头节点指向新节点</span></div>
+<div class="code-line">  <span class="code-keyword">if</span> (head <span class="code-operator">!=</span> <span class="code-keyword">null</span>) {</div>
+<div class="code-line">    head.<span class="code-variable">prev</span> = newNode;</div>
+<div class="code-line">  }</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 4. 更新头指针</span></div>
+<div class="code-line">  head = newNode;</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 5. 如果链表为空，更新尾指针</span></div>
+<div class="code-line">  <span class="code-keyword">if</span> (tail <span class="code-operator">==</span> <span class="code-keyword">null</span>) {</div>
+<div class="code-line">    tail = newNode;</div>
+<div class="code-line">  }</div>
+<div class="code-line">}</div>`;
+            } else if (listType === 'circular') {
+                code = `<div class="code-line"><span class="code-comment">// 在循环链表头部插入节点</span></div>
+<div class="code-line"><span class="code-keyword">function</span> <span class="code-function">insertAtHead</span>(data) {</div>
+<div class="code-line">  <span class="code-comment">// 1. 创建新节点</span></div>
+<div class="code-line">  newNode = <span class="code-keyword">new</span> <span class="code-function">Node</span>(data);</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 2. 如果链表为空</span></div>
+<div class="code-line">  <span class="code-keyword">if</span> (head <span class="code-operator">==</span> <span class="code-keyword">null</span>) {</div>
+<div class="code-line">    head = newNode;</div>
+<div class="code-line">    tail = newNode;</div>
+<div class="code-line">    newNode.<span class="code-variable">next</span> = newNode; <span class="code-comment">// 指向自己</span></div>
+<div class="code-line">    <span class="code-keyword">return</span>;</div>
+<div class="code-line">  }</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 3. 新节点指向原头节点</span></div>
+<div class="code-line">  newNode.<span class="code-variable">next</span> = head;</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 4. 更新头指针</span></div>
+<div class="code-line">  head = newNode;</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 5. 更新尾节点指向新头节点</span></div>
+<div class="code-line">  tail.<span class="code-variable">next</span> = head;</div>
+<div class="code-line">}</div>`;
+            }
+            
+            return code;
+        }
+        
+        function generateInsertTailCode() {
+            let code = '';
+            
+            if (listType === 'singly') {
+                code = `<div class="code-line"><span class="code-comment">// 在单向链表尾部插入节点</span></div>
+<div class="code-line"><span class="code-keyword">function</span> <span class="code-function">insertAtTail</span>(data) {</div>
+<div class="code-line">  <span class="code-comment">// 1. 创建新节点</span></div>
+<div class="code-line">  newNode = <span class="code-keyword">new</span> <span class="code-function">Node</span>(data);</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 2. 如果链表为空</span></div>
+<div class="code-line">  <span class="code-keyword">if</span> (head <span class="code-operator">==</span> <span class="code-keyword">null</span>) {</div>
+<div class="code-line">    head = newNode;</div>
+<div class="code-line">    <span class="code-keyword">return</span>;</div>
+<div class="code-line">  }</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 3. 遍历找到尾节点</span></div>
+<div class="code-line">  current = head;</div>
+<div class="code-line">  <span class="code-keyword">while</span> (current.<span class="code-variable">next</span> <span class="code-operator">!=</span> <span class="code-keyword">null</span>) {</div>
+<div class="code-line">    current = current.<span class="code-variable">next</span>;</div>
+<div class="code-line">  }</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 4. 尾节点指向新节点</span></div>
+<div class="code-line">  current.<span class="code-variable">next</span> = newNode;</div>
+<div class="code-line">}</div>`;
+            } else if (listType === 'doubly') {
+                code = `<div class="code-line"><span class="code-comment">// 在双向链表尾部插入节点</span></div>
+<div class="code-line"><span class="code-keyword">function</span> <span class="code-function">insertAtTail</span>(data) {</div>
+<div class="code-line">  <span class="code-comment">// 1. 创建新节点</span></div>
+<div class="code-line">  newNode = <span class="code-keyword">new</span> <span class="code-function">Node</span>(data);</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 2. 如果链表为空</span></div>
+<div class="code-line">  <span class="code-keyword">if</span> (head <span class="code-operator">==</span> <span class="code-keyword">null</span>) {</div>
+<div class="code-line">    head = newNode;</div>
+<div class="code-line">    tail = newNode;</div>
+<div class="code-line">    newNode.<span class="code-variable">prev</span> = <span class="code-keyword">null</span>;</div>
+<div class="code-line">    <span class="code-keyword">return</span>;</div>
+<div class="code-line">  }</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 3. 新节点的prev指向原尾节点</span></div>
+<div class="code-line">  newNode.<span class="code-variable">prev</span> = tail;</div>
+<div class="code-line">  newNode.<span class="code-variable">next</span> = <span class="code-keyword">null</span>;</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 4. 原尾节点指向新节点</span></div>
+<div class="code-line">  tail.<span class="code-variable">next</span> = newNode;</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 5. 更新尾指针</span></div>
+<div class="code-line">  tail = newNode;</div>
+<div class="code-line">}</div>`;
+            } else if (listType === 'circular') {
+                code = `<div class="code-line"><span class="code-comment">// 在循环链表尾部插入节点</span></div>
+<div class="code-line"><span class="code-keyword">function</span> <span class="code-function">insertAtTail</span>(data) {</div>
+<div class="code-line">  <span class="code-comment">// 1. 创建新节点</span></div>
+<div class="code-line">  newNode = <span class="code-keyword">new</span> <span class="code-function">Node</span>(data);</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 2. 如果链表为空</span></div>
+<div class="code-line">  <span class="code-keyword">if</span> (head <span class="code-operator">==</span> <span class="code-keyword">null</span>) {</div>
+<div class="code-line">    head = newNode;</div>
+<div class="code-line">    tail = newNode;</div>
+<div class="code-line">    newNode.<span class="code-variable">next</span> = newNode;</div>
+<div class="code-line">    <span class="code-keyword">return</span>;</div>
+<div class="code-line">  }</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 3. 新节点指向头节点</span></div>
+<div class="code-line">  newNode.<span class="code-variable">next</span> = head;</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 4. 原尾节点指向新节点</span></div>
+<div class="code-line">  tail.<span class="code-variable">next</span> = newNode;</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 5. 更新尾指针</span></div>
+<div class="code-line">  tail = newNode;</div>
+<div class="code-line">}</div>`;
+            }
+            
+            return code;
+        }
+        
+        function generateInsertMiddleCode() {
+            let code = '';
+            
+            if (listType === 'singly') {
+                code = `<div class="code-line"><span class="code-comment">// 在单向链表中间插入节点（在节点pos后）</span></div>
+<div class="code-line"><span class="code-keyword">function</span> <span class="code-function">insertAfter</span>(pos, data) {</div>
+<div class="code-line">  <span class="code-comment">// 1. 创建新节点</span></div>
+<div class="code-line">  newNode = <span class="code-keyword">new</span> <span class="code-function">Node</span>(data);</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 2. 新节点指向pos的后继节点</span></div>
+<div class="code-line">  newNode.<span class="code-variable">next</span> = pos.<span class="code-variable">next</span>;</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 3. pos节点指向新节点</span></div>
+<div class="code-line">  pos.<span class="code-variable">next</span> = newNode;</div>
+<div class="code-line">}</div>`;
+            } else if (listType === 'doubly') {
+                code = `<div class="code-line"><span class="code-comment">// 在双向链表中间插入节点（在节点pos后）</span></div>
+<div class="code-line"><span class="code-keyword">function</span> <span class="code-function">insertAfter</span>(pos, data) {</div>
+<div class="code-line">  <span class="code-comment">// 1. 创建新节点</span></div>
+<div class="code-line">  newNode = <span class="code-keyword">new</span> <span class="code-function">Node</span>(data);</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 2. 新节点指向pos的后继节点</span></div>
+<div class="code-line">  newNode.<span class="code-variable">next</span> = pos.<span class="code-variable">next</span>;</div>
+<div class="code-line">  <span class="code-comment">// 3. 新节点的prev指向pos</span></div>
+<div class="code-line">  newNode.<span class="code-variable">prev</span> = pos;</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 4. 如果pos不是尾节点，更新后继节点的prev</span></div>
+<div class="code-line">  <span class="code-keyword">if</span> (pos.<span class="code-variable">next</span> <span class="code-operator">!=</span> <span class="code-keyword">null</span>) {</div>
+<div class="code-line">    pos.<span class="code-variable">next</span>.<span class="code-variable">prev</span> = newNode;</div>
+<div class="code-line">  } <span class="code-keyword">else</span> {</div>
+<div class="code-line">    <span class="code-comment">// 5. 如果pos是尾节点，更新尾指针</span></div>
+<div class="code-line">    tail = newNode;</div>
+<div class="code-line">  }</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 6. pos节点指向新节点</span></div>
+<div class="code-line">  pos.<span class="code-variable">next</span> = newNode;</div>
+<div class="code-line">}</div>`;
+            } else if (listType === 'circular') {
+                code = `<div class="code-line"><span class="code-comment">// 在循环链表中间插入节点（在节点pos后）</span></div>
+<div class="code-line"><span class="code-keyword">function</span> <span class="code-function">insertAfter</span>(pos, data) {</div>
+<div class="code-line">  <span class="code-comment">// 1. 创建新节点</span></div>
+<div class="code-line">  newNode = <span class="code-keyword">new</span> <span class="code-function">Node</span>(data);</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 2. 新节点指向pos的后继节点</span></div>
+<div class="code-line">  newNode.<span class="code-variable">next</span> = pos.<span class="code-variable">next</span>;</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 3. pos节点指向新节点</span></div>
+<div class="code-line">  pos.<span class="code-variable">next</span> = newNode;</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 4. 如果pos是尾节点，更新尾指针</span></div>
+<div class="code-line">  <span class="code-keyword">if</span> (pos <span class="code-operator">==</span> tail) {</div>
+<div class="code-line">    tail = newNode;</div>
+<div class="code-line">  }</div>
+<div class="code-line">}</div>`;
+            }
+            
+            return code;
+        }
+        
+        function generateDeleteHead
+<!--检测到代码截断，自动续写中...-->
+Code() {
+            let code = '';
+            
+            if (listType === 'singly') {
+                code = `<div class="code-line"><span class="code-comment">// 删除单向链表头节点</span></div>
+<div class="code-line"><span class="code-keyword">function</span> <span class="code-function">deleteHead</span>() {</div>
+<div class="code-line">  <span class="code-comment">// 1. 如果链表为空，直接返回</span></div>
+<div class="code-line">  <span class="code-keyword">if</span> (head <span class="code-operator">==</span> <span class="code-keyword">null</span>) <span class="code-keyword">return</span>;</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 2. 保存要删除的节点</span></div>
+<div class="code-line">  temp = head;</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 3. 更新头指针指向下一个节点</span></div>
+<div class="code-line">  head = head.<span class="code-variable">next</span>;</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 4. 释放原头节点内存</span></div>
+<div class="code-line">  <span class="code-keyword">delete</span> temp;</div>
+<div class="code-line">}</div>`;
+            } else if (listType === 'doubly') {
+                code = `<div class="code-line"><span class="code-comment">// 删除双向链表头节点</span></div>
+<div class="code-line"><span class="code-keyword">function</span> <span class="code-function">deleteHead</span>() {</div>
+<div class="code-line">  <span class="code-comment">// 1. 如果链表为空，直接返回</span></div>
+<div class="code-line">  <span class="code-keyword">if</span> (head <span class="code-operator">==</span> <span class="code-keyword">null</span>) <span class="code-keyword">return</span>;</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 2. 保存要删除的节点</span></div>
+<div class="code-line">  temp = head;</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 3. 更新头指针指向下一个节点</span></div>
+<div class="code-line">  head = head.<span class="code-variable">next</span>;</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 4. 如果链表不为空，更新新头节点的prev</span></div>
+<div class="code-line">  <span class="code-keyword">if</span> (head <span class="code-operator">!=</span> <span class="code-keyword">null</span>) {</div>
+<div class="code-line">    head.<span class="code-variable">prev</span> = <span class="code-keyword">null</span>;</div>
+<div class="code-line">  } <span class="code-keyword">else</span> {</div>
+<div class="code-line">    <span class="code-comment">// 5. 如果链表变为空，更新尾指针</span></div>
+<div class="code-line">    tail = <span class="code-keyword">null</span>;</div>
+<div class="code-line">  }</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 6. 释放原头节点内存</span></div>
+<div class="code-line">  <span class="code-keyword">delete</span> temp;</div>
+<div class="code-line">}</div>`;
+            } else if (listType === 'circular') {
+                code = `<div class="code-line"><span class="code-comment">// 删除循环链表头节点</span></div>
+<div class="code-line"><span class="code-keyword">function</span> <span class="code-function">deleteHead</span>() {</div>
+<div class="code-line">  <span class="code-comment">// 1. 如果链表为空，直接返回</span></div>
+<div class="code-line">  <span class="code-keyword">if</span> (head <span class="code-operator">==</span> <span class="code-keyword">null</span>) <span class="code-keyword">return</span>;</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 2. 如果只有一个节点</span></div>
+<div class="code-line">  <span class="code-keyword">if</span> (head <span class="code-operator">==</span> tail) {</div>
+<div class="code-line">    <span class="code-keyword">delete</span> head;</div>
+<div class="code-line">    head = <span class="code-keyword">null</span>;</div>
+<div class="code-line">    tail = <span class="code-keyword">null</span>;</div>
+<div class="code-line">    <span class="code-keyword">return</span>;</div>
+<div class="code-line">  }</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 3. 保存要删除的节点</span></div>
+<div class="code-line">  temp = head;</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 4. 更新头指针指向下一个节点</span></div>
+<div class="code-line">  head = head.<span class="code-variable">next</span>;</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 5. 更新尾节点指向新的头节点</span></div>
+<div class="code-line">  tail.<span class="code-variable">next</span> = head;</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 6. 释放原头节点内存</span></div>
+<div class="code-line">  <span class="code-keyword">delete</span> temp;</div>
+<div class="code-line">}</div>`;
+            }
+            
+            return code;
+        }
+        
+        function generateDeleteTailCode() {
+            let code = '';
+            
+            if (listType === 'singly') {
+                code = `<div class="code-line"><span class="code-comment">// 删除单向链表尾节点</span></div>
+<div class="code-line"><span class="code-keyword">function</span> <span class="code-function">deleteTail</span>() {</div>
+<div class="code-line">  <span class="code-comment">// 1. 如果链表为空，直接返回</span></div>
+<div class="code-line">  <span class="code-keyword">if</span> (head <span class="code-operator">==</span> <span class="code-keyword">null</span>) <span class="code-keyword">return</span>;</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 2. 如果只有一个节点</span></div>
+<div class="code-line">  <span class="code-keyword">if</span> (head.<span class="code-variable">next</span> <span class="code-operator">==</span> <span class="code-keyword">null</span>) {</div>
+<div class="code-line">    <span class="code-keyword">delete</span> head;</div>
+<div class="code-line">    head = <span class="code-keyword">null</span>;</div>
+<div class="code-line">    <span class="code-keyword">return</span>;</div>
+<div class="code-line">  }</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 3. 找到尾节点的前一个节点</span></div>
+<div class="code-line">  current = head;</div>
+<div class="code-line">  <span class="code-keyword">while</span> (current.<span class="code-variable">next</span>.<span class="code-variable">next</span> <span class="code-operator">!=</span> <span class="code-keyword">null</span>) {</div>
+<div class="code-line">    current = current.<span class="code-variable">next</span>;</div>
+<div class="code-line">  }</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 4. 保存要删除的尾节点</span></div>
+<div class="code-line">  temp = current.<span class="code-variable">next</span>;</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 5. 前一个节点的next置为NULL</span></div>
+<div class="code-line">  current.<span class="code-variable">next</span> = <span class="code-keyword">null</span>;</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 6. 释放尾节点内存</span></div>
+<div class="code-line">  <span class="code-keyword">delete</span> temp;</div>
+<div class="code-line">}</div>`;
+            } else if (listType === 'doubly') {
+                code = `<div class="code-line"><span class="code-comment">// 删除双向链表尾节点</span></div>
+<div class="code-line"><span class="code-keyword">function</span> <span class="code-function">deleteTail</span>() {</div>
+<div class="code-line">  <span class="code-comment">// 1. 如果链表为空，直接返回</span></div>
+<div class="code-line">  <span class="code-keyword">if</span> (tail <span class="code-operator">==</span> <span class="code-keyword">null</span>) <span class="code-keyword">return</span>;</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 2. 保存要删除的尾节点</span></div>
+<div class="code-line">  temp = tail;</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 3. 如果只有一个节点</span></div>
+<div class="code-line">  <span class="code-keyword">if</span> (head <span class="code-operator">==</span> tail) {</div>
+<div class="code-line">    head = <span class="code-keyword">null</span>;</div>
+<div class="code-line">    tail = <span class="code-keyword">null</span>;</div>
+<div class="code-line">  } <span class="code-keyword">else</span> {</div>
+<div class="code-line">    <span class="code-comment">// 4. 更新尾指针指向前一个节点</span></div>
+<div class="code-line">    tail = tail.<span class="code-variable">prev</span>;</div>
+<div class="code-line">    <span class="code-comment">// 5. 新尾节点的next置为NULL</span></div>
+<div class="code-line">    tail.<span class="code-variable">next</span> = <span class="code-keyword">null</span>;</div>
+<div class="code-line">  }</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 6. 释放原尾节点内存</span></div>
+<div class="code-line">  <span class="code-keyword">delete</span> temp;</div>
+<div class="code-line">}</div>`;
+            } else if (listType === 'circular') {
+                code = `<div class="code-line"><span class="code-comment">// 删除循环链表尾节点</span></div>
+<div class="code-line"><span class="code-keyword">function</span> <span class="code-function">deleteTail</span>() {</div>
+<div class="code-line">  <span class="code-comment">// 1. 如果链表为空，直接返回</span></div>
+<div class="code-line">  <span class="code-keyword">if</span> (head <span class="code-operator">==</span> <span class="code-keyword">null</span>) <span class="code-keyword">return</span>;</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 2. 如果只有一个节点</span></div>
+<div class="code-line">  <span class="code-keyword">if</span> (head <span class="code-operator">==</span> tail) {</div>
+<div class="code-line">    <span class="code-keyword">delete</span> head;</div>
+<div class="code-line">    head = <span class="code-keyword">null</span>;</div>
+<div class="code-line">    tail = <span class="code-keyword">null</span>;</div>
+<div class="code-line">    <span class="code-keyword">return</span>;</div>
+<div class="code-line">  }</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 3. 找到尾节点的前一个节点</span></div>
+<div class="code-line">  current = head;</div>
+<div class="code-line">  <span class="code-keyword">while</span> (current.<span class="code-variable">next</span> <span class="code-operator">!=</span> tail) {</div>
+<div class="code-line">    current = current.<span class="code-variable">next</span>;</div>
+<div class="code-line">  }</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 4. 保存要删除的尾节点</span></div>
+<div class="code-line">  temp = tail;</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 5. 更新尾指针</span></div>
+<div class="code-line">  tail = current;</div>
+<div class="code-line">  <span class="code-comment">// 6. 新尾节点指向头节点</span></div>
+<div class="code-line">  tail.<span class="code-variable">next</span> = head;</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 7. 释放原尾节点内存</span></div>
+<div class="code-line">  <span class="code-keyword">delete</span> temp;</div>
+<div class="code-line">}</div>`;
+            }
+            
+            return code;
+        }
+        
+        function generateDeleteMiddleCode() {
+            let code = '';
+            
+            if (listType === 'singly') {
+                code = `<div class="code-line"><span class="code-comment">// 删除单向链表中间节点（删除节点pos）</span></div>
+<div class="code-line"><span class="code-keyword">function</span> <span class="code-function">deleteNode</span>(pos) {</div>
+<div class="code-line">  <span class="code-comment">// 1. 如果链表为空或pos为NULL，直接返回</span></div>
+<div class="code-line">  <span class="code-keyword">if</span> (head <span class="code-operator">==</span> <span class="code-keyword">null</span> <span class="code-operator">||</span> pos <span class="code-operator">==</span> <span class="code-keyword">null</span>) <span class="code-keyword">return</span>;</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 2. 如果要删除的是头节点</span></div>
+<div class="code-line">  <span class="code-keyword">if</span> (pos <span class="code-operator">==</span> head) {</div>
+<div class="code-line">    head = head.<span class="code-variable">next</span>;</div>
+<div class="code-line">    <span class="code-keyword">delete</span> pos;</div>
+<div class="code-line">    <span class="code-keyword">return</span>;</div>
+<div class="code-line">  }</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 3. 找到pos的前一个节点</span></div>
+<div class="code-line">  prev = head;</div>
+<div class="code-line">  <span class="code-keyword">while</span> (prev <span class="code-operator">!=</span> <span class="code-keyword">null</span> <span class="code-operator">&&</span> prev.<span class="code-variable">next</span> <span class="code-operator">!=</span> pos) {</div>
+<div class="code-line">    prev = prev.<span class="code-variable">next</span>;</div>
+<div class="code-line">  }</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 4. 如果pos不在链表中</span></div>
+<div class="code-line">  <span class="code-keyword">if</span> (prev <span class="code-operator">==</span> <span class="code-keyword">null</span>) <span class="code-keyword">return</span>;</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 5. 前一个节点指向pos的后继节点</span></div>
+<div class="code-line">  prev.<span class="code-variable">next</span> = pos.<span class="code-variable">next</span>;</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 6. 释放pos节点内存</span></div>
+<div class="code-line">  <span class="code-keyword">delete</span> pos;</div>
+<div class="code-line">}</div>`;
+            } else if (listType === 'doubly') {
+                code = `<div class="code-line"><span class="code-comment">// 删除双向链表中间节点（删除节点pos）</span></div>
+<div class="code-line"><span class="code-keyword">function</span> <span class="code-function">deleteNode</span>(pos) {</div>
+<div class="code-line">  <span class="code-comment">// 1. 如果链表为空或pos为NULL，直接返回</span></div>
+<div class="code-line">  <span class="code-keyword">if</span> (head <span class="code-operator">==</span> <span class="code-keyword">null</span> <span class="code-operator">||</span> pos <span class="code-operator">==</span> <span class="code-keyword">null</span>) <span class="code-keyword">return</span>;</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 2. 如果要删除的是头节点</span></div>
+<div class="code-line">  <span class="code-keyword">if</span> (pos <span class="code-operator">==</span> head) {</div>
+<div class="code-line">    head = head.<span class="code-variable">next</span>;</div>
+<div class="code-line">    <span class="code-keyword">if</span> (head <span class="code-operator">!=</span> <span class="code-keyword">null</span>) head.<span class="code-variable">prev</span> = <span class="code-keyword">null</span>;</div>
+<div class="code-line">    <span class="code-keyword">delete</span> pos;</div>
+<div class="code-line">    <span class="code-keyword">return</span>;</div>
+<div class="code-line">  }</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 3. 如果要删除的是尾节点</span></div>
+<div class="code-line">  <span class="code-keyword">if</span> (pos <span class="code-operator">==</span> tail) {</div>
+<div class="code-line">    tail = tail.<span class="code-variable">prev</span>;</div>
+<div class="code-line">    tail.<span class="code-variable">next</span> = <span class="code-keyword">null</span>;</div>
+<div class="code-line">    <span class="code-keyword">delete</span> pos;</div>
+<div class="code-line">    <span class="code-keyword">return</span>;</div>
+<div class="code-line">  }</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 4. 更新前一个节点的next指针</span></div>
+<div class="code-line">  pos.<span class="code-variable">prev</span>.<span class="code-variable">next</span> = pos.<span class="code-variable">next</span>;</div>
+<div class="code-line">  <span class="code-comment">// 5. 更新后一个节点的prev指针</span></div>
+<div class="code-line">  pos.<span class="code-variable">next</span>.<span class="code-variable">prev</span> = pos.<span class="code-variable">prev</span>;</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 6. 释放pos节点内存</span></div>
+<div class="code-line">  <span class="code-keyword">delete</span> pos;</div>
+<div class="code-line">}</div>`;
+            } else if (listType === 'circular') {
+                code = `<div class="code-line"><span class="code-comment">// 删除循环链表中间节点（删除节点pos）</span></div>
+<div class="code-line"><span class="code-keyword">function</span> <span class="code-function">deleteNode</span>(pos) {</div>
+<div class="code-line">  <span class="code-comment">// 1. 如果链表为空或pos为NULL，直接返回</span></div>
+<div class="code-line">  <span class="code-keyword">if</span> (head <span class="code-operator">==</span> <span class="code-keyword">null</span> <span class="code-operator">||</span> pos <span class="code-operator">==</span> <span class="code-keyword">null</span>) <span class="code-keyword">return</span>;</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 2. 如果只有一个节点</span></div>
+<div class="code-line">  <span class="code-keyword">if</span> (head <span class="code-operator">==</span> tail) {</div>
+<div class="code-line">    <span class="code-keyword">delete</span> head;</div>
+<div class="code-line">    head = <span class="code-keyword">null</span>;</div>
+<div class="code-line">    tail = <span class="code-keyword">null</span>;</div>
+<div class="code-line">    <span class="code-keyword">return</span>;</div>
+<div class="code-line">  }</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 3. 如果要删除的是头节点</span></div>
+<div class="code-line">  <span class="code-keyword">if</span> (pos <span class="code-operator">==</span> head) {</div>
+<div class="code-line">    head = head.<span class="code-variable">next</span>;</div>
+<div class="code-line">    tail.<span class="code-variable">next</span> = head;</div>
+<div class="code-line">    <span class="code-keyword">delete</span> pos;</div>
+<div class="code-line">    <span class="code-keyword">return</span>;</div>
+<div class="code-line">  }</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 4. 如果要删除的是尾节点</span></div>
+<div class="code-line">  <span class="code-keyword">if</span> (pos <span class="code-operator">==</span> tail) {</div>
+<div class="code-line">    <span class="code-comment">// 找到尾节点的前一个节点</span></div>
+<div class="code-line">    prev = head;</div>
+<div class="code-line">    <span class="code-keyword">while</span> (prev.<span class="code-variable">next</span> <span class="code-operator">!=</span> tail) {</div>
+<div class="code-line">      prev = prev.<span class="code-variable">next</span>;</div>
+<div class="code-line">    }</div>
+<div class="code-line">    tail = prev;</div>
+<div class="code-line">    tail.<span class="code-variable">next</span> = head;</div>
+<div class="code-line">    <span class="code-keyword">delete</span> pos;</div>
+<div class="code-line">    <span class="code-keyword">return</span>;</div>
+<div class="code-line">  }</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 5. 删除中间节点：找到pos的前一个节点</span></div>
+<div class="code-line">  prev = head;</div>
+<div class="code-line">  <span class="code-keyword">while</span> (prev.<span class="code-variable">next</span> <span class="code-operator">!=</span> pos) {</div>
+<div class="code-line">    prev = prev.<span class="code-variable">next</span>;</div>
+<div class="code-line">  }</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 6. 前一个节点指向pos的后继节点</span></div>
+<div class="code-line">  prev.<span class="code-variable">next</span> = pos.<span class="code-variable">next</span>;</div>
+<div class="code-line"></div>
+<div class="code-line">  <span class="code-comment">// 7. 释放pos节点内存</span></div>
+<div class="code-line">  <span class="code-keyword">delete</span> pos;</div>
+<div class="code-line">}</div>`;
+            }
+            
+            return code;
+        }
+        
+        function highlightCodeLine(lineNumber) {
+            const codeLines = document.querySelectorAll('#code-display .code-line');
+            codeLines.forEach(line => line.classList.remove('highlighted'));
+            
+            if (lineNumber > 0 && lineNumber <= codeLines.length) {
+                codeLines[lineNumber - 1].classList.add('highlighted');
+            }
+        }
+        
+        function startAnimation() {
+            if (isAnimating) return;
+            
+            // 验证输入
+            if (operation === 'insert' && position === 'middle' && selectedNodeId === null) {
+                updateStepDescription("请先在画布上点击选择一个节点");
+                return;
+            }
+            
+            if (operation === 'delete' && position === 'middle' && selectedNodeId === null) {
+                updateStepDescription("请先在画布上点击选择一个节点");
+                return;
+            }
+            
+            // 生成动画步骤
+            if (operation === 'insert') {
+                const data = document.getElementById('node-data').value || 'N';
+                animationSteps = linkedList.insertNode(data, position);
+            } else {
+                animationSteps = linkedList.deleteNode(position);
+            }
+            
+            if (animationSteps.length === 0) return;
+            
+            // 重置动画状态
+            currentStep = 0;
+            isAnimating = true;
+            
+            // 更新控制按钮状态
+            document.getElementById('btn-prev').disabled = true;
+            document.getElementById('btn-next').disabled = false;
+            document.getElementById('btn-pause').disabled = false;
+            document.getElementById('btn-start').disabled = true;
+            
+            // 更新步骤描述
+            updateStepDescription(`准备开始${operation === 'insert' ? '插入' : '删除'}操作，共${animationSteps.length}步`);
+            
+            // 如果是自动模式，开始自动播放
+            if (demoMode === 'auto') {
+                document.getElementById('btn-pause').textContent = '暂停';
+                startAutoPlay();
+            }
+        }
+        
+        function startAutoPlay() {
+            if (autoPlayInterval) clearInterval(autoPlayInterval);
+            
+            autoPlayInterval = setInterval(() => {
+                if (currentStep < animationSteps.length) {
+                    nextStep();
+                } else {
+                    stopAutoPlay();
+                }
+            }, animationSpeed);
+        }
+        
+        function stopAutoPlay() {
+            if (autoPlayInterval) {
+                clearInterval(autoPlayInterval);
+                autoPlayInterval = null;
+            }
+        }
+        
+        function prevStep() {
+            if (currentStep <= 0) return;
+            
+            currentStep--;
+            
+            // 执行上一步的动作（这里简化处理，实际应该保存状态）
+            // 在实际应用中，应该保存每一步的状态以便回退
+            
+            updateStepDescription(`已回退到第${currentStep}步`);
+            updateControlButtons();
+        }
+        
+        function nextStep() {
+            if (currentStep >= animationSteps.length) {
+                finishAnimation();
+                return;
+            }
+            
+            // 执行当前步骤的动作
+            const step = animationSteps[currentStep];
+            if (step.action) {
+                step.action();
+            }
+            
+            // 更新步骤计数器
+            currentStep++;
+            
+            // 更新步骤描述
+            if (currentStep < animationSteps.length) {
+                updateStepDescription(`步骤 ${currentStep}/${animationSteps.length}: ${animationSteps[currentStep].description}`);
+            } else {
+                updateStepDescription(`操作完成！共执行了${animationSteps.length}步`);
+                finishAnimation();
+            }
+            
+            // 更新控制按钮状态
+            updateControlButtons();
+            
+            // 重绘链表
+            linkedList.draw();
+            
+            // 绘制临时箭头（如果有）
+            if (temporaryArrow) {
+                linkedList.drawArrow(temporaryArrow.from, temporaryArrow.to, temporaryArrow.type, temporaryArrow.color);
+                temporaryArrow = null;
+            }
+        }
+        
+        function updateControlButtons() {
+            document.getElementById('btn-prev').disabled = (currentStep <= 0);
+            document.getElementById('btn-next').disabled = (currentStep >= animationSteps.length);
+        }
+        
+        function togglePause() {
+            if (demoMode !== 'auto') return;
+            
+            if (autoPlayInterval) {
+                stopAutoPlay();
+                document.getElementById('btn-pause').textContent = '继续';
+            } else {
+                startAutoPlay();
+                document.getElementById('btn-pause').textContent = '暂停';
+            }
+        }
+        
+        function finishAnimation() {
+            isAnimating = false;
+            stopAutoPlay();
+            
+            // 更新控制按钮状态
+            document.getElementById('btn-prev').disabled = true;
+            document.getElementById('btn-next').disabled = true;
+            document.getElementById('btn-pause').disabled = true;
+            document.getElementById('btn-start').disabled = false;
+            
+            // 更新总结
+            updateSummary();
+        }
+        
+        function updateSummary() {
+            const summaryText = document.getElementById('summary-text');
+            let summary = '';
+            
+            if (operation === 'insert') {
+                summary = `成功在${position === 'head' ? '头部' : position === 'tail' ? '尾部' : '选中节点后'}插入新节点。`;
+                summary += ` 关键步骤：1) 创建新节点 2) 调整指针指向 3) 更新${position === 'head' ? '头指针' : position === 'tail' ? '尾指针' : '相关节点的指针'}`;
+            } else {
+                summary = `成功${position === 'head' ? '删除头节点' : position === 'tail' ? '删除尾节点' : '删除选中节点'}。`;
+                summary += ` 关键步骤：1) 定位要删除的节点 2) 调整前后节点的指针 3) 释放节点内存`;
+            }
+            
+            if (listType === 'doubly') {
+                summary += ` (双向链表需要同时维护prev和next指针)`;
+            } else if (listType === 'circular') {
+                summary += ` (循环链表需要维护尾节点指向头节点的指针)`;
+            }
+            
+            summaryText.textContent = summary;
+        }
+        
+        function resetList() {
+            // 停止任何正在进行的动画
+            isAnimating = false;
+            stopAutoPlay();
+            
+            // 重置链表
+            linkedList.initList();
+            selectedNodeId = null;
+            
+            // 重置动画状态
+            animationSteps = [];
+            currentStep = 0;
+            
+            // 重置控制按钮
+            document.getElementById('btn-prev').disabled = true;
+            document.getElementById('btn-next').disabled = true;
+            document.getElementById('btn-pause').disabled = true;
+            document.getElementById('btn-start').disabled = false;
+            document.getElementById('btn-pause').textContent = '暂停';
+            
+            // 重置步骤描述
+            updateStepDescription("链表已重置，请选择操作类型和位置，然后点击'开始执行'");
+            
+            // 重置总结
+            document.getElementById('summary-text').textContent = "请开始一个操作以查看步骤总结";
+            
+            // 重置代码高亮
+            highlightCodeLine(0);
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

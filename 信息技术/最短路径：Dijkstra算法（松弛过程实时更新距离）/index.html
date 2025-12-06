@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dijkstra算法教学动画 - 松弛过程实时更新</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #2c3e50, #4a6491);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .visualization-section {
+            flex: 3;
+            min-width: 300px;
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .control-section {
+            flex: 2;
+            min-width: 300px;
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .section-title {
+            font-size: 1.4rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #eaeaea;
+        }
+        
+        #graph-canvas {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fdfdfd;
+            flex-grow: 1;
+            width: 100%;
+        }
+        
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .control-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .control-btn:active {
+            transform: translateY(0);
+        }
+        
+        .control-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        #reset-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        #prev-btn {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        #play-pause-btn {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        #next-btn {
+            background-color: #9b59b6;
+            color: white;
+        }
+        
+        #speed-slider {
+            flex-grow: 1;
+            min-width: 150px;
+        }
+        
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .speed-label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .info-panel {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .step-description {
+            font-size: 1.1rem;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            min-height: 60px;
+        }
+        
+        .step-highlight {
+            background-color: #fffacd;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .data-table th {
+            background-color: #2c3e50;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        .data-table td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .data-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .data-table tr:hover {
+            background-color: #f1f7fd;
+        }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 1px solid #ccc;
+        }
+        
+        .legend-text {
+            font-size: 0.9rem;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .status-unvisited {
+            background-color: #ecf0f1;
+            color: #7f8c8d;
+        }
+        
+        .status-visited {
+            background-color: #d6eaf8;
+            color: #2980b9;
+        }
+        
+        .status-current {
+            background-color: #fef9e7;
+            color: #f39c12;
+        }
+        
+        .status-finalized {
+            background-color: #d5f4e6;
+            color: #27ae60;
+        }
+        
+        .formula-display {
+            background-color: #f8f9fa;
+            border: 1px dashed #3498db;
+            border-radius: 6px;
+            padding: 12px;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            text-align: center;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 15px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            .control-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Dijkstra最短路径算法教学动画</h1>
+            <p class="subtitle">可视化演示松弛(Relaxation)过程与距离标签的实时更新</p>
+        </header>
+        
+        <div class="main-content">
+            <section class="visualization-section">
+                <h2 class="section-title">算法可视化</h2>
+                <canvas id="graph-canvas" width="800" height="500"></canvas>
+                
+                <div class="formula-display" id="formula-display">
+                    算法执行过程中，松弛操作的公式将显示在这里
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #27ae60;"></div>
+                        <span class="legend-text">起点 (Source)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #f1c40f;"></div>
+                        <span class="legend-text">当前节点 (Current)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #2ecc71;"></div>
+                        <span class="legend-text">已确定最短路径 (Finalized)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #3498db;"></div>
+                        <span class="legend-text">已访问但未确定 (Visited)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #ecf0f1;"></div>
+                        <span class="legend-text">未访问 (Unvisited)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #e74c3c; border-radius: 0;"></div>
+                        <span class="legend-text">最短路径边 (Shortest Path Edge)</span>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="control-section">
+                <h2 class="section-title">算法控制与状态</h2>
+                
+                <div class="controls">
+                    <button class="control-btn" id="reset-btn">
+                        <span>↺</span> 重置
+                    </button>
+                    <button class="control-btn" id="prev-btn" disabled>
+                        <span>←</span> 上一步
+                    </button>
+                    <button class="control-btn" id="play-pause-btn">
+                        <span>▶</span> 播放
+                    </button>
+                    <button class="control-btn" id="next-btn">
+                        <span>→</span> 下一步
+                    </button>
+                </div>
+                
+                <div class="speed-control">
+                    <span class="speed-label">动画速度:</span>
+                    <input type="range" id="speed-slider" min="1" max="10" value="5">
+                    <span id="speed-value">中速</span>
+                </div>
+                
+                <div class="info-panel">
+                    <div class="step-description" id="step-description">
+                        点击"下一步"开始Dijkstra算法演示。算法将从起点A开始，逐步探索图中的节点。
+                    </div>
+                </div>
+                
+                <h3 class="section-title">节点状态表</h3>
+                <table class="data-table" id="node-table">
+                    <thead>
+                        <tr>
+                            <th>节点</th>
+                            <th>距离 (dist)</th>
+                            <th>前驱 (prev)</th>
+                            <th>状态</th>
+                        </tr>
+                    </thead>
+                    <tbody id="node-table-body">
+                        <!-- 表格内容将由JavaScript动态生成 -->
+                    </tbody>
+                </table>
+            </section>
+        </div>
+        
+        <footer>
+            <p>Dijkstra算法教学动画 | 设计用于演示松弛过程与距离标签的实时更新 | 使用HTML5 Canvas实现</p>
+        </footer>
+    </div>
+
+    <script>
+        // ==================== 全局变量与配置 ====================
+        const NODE_RADIUS = 25;
+        const ANIMATION_SPEEDS = [1200, 900, 700, 500, 400, 300, 250, 200, 150, 100]; // 对应速度1-10
+        
+        // 图数据结构 - 加权有向图
+        const graph = {
+            nodes: [
+                { id: 'A', x: 150, y: 250 },
+                { id: 'B', x: 350, y: 150 },
+                { id: 'C', x: 350, y: 350 },
+                { id: 'D', x: 550, y: 150 },
+                { id: 'E', x: 550, y: 350 },
+                { id: 'F', x: 750, y: 250 }
+            ],
+            edges: [
+                { from: 'A', to: 'B', weight: 4 },
+                { from: 'A', to: 'C', weight: 2 },
+                { from: 'B', to: 'C', weight: 1 },
+                { from: 'B', to: 'D', weight: 5 },
+                { from: 'C', to: 'B', weight: 3 },
+                { from: 'C', to: 'E', weight: 6 },
+                { from: 'D', to: 'F', weight: 2 },
+                { from: 'E', to: 'D', weight: 1 },
+                { from: 'E', to: 'F', weight: 3 }
+            ]
+        };
+        
+        // Dijkstra算法状态
+        let algorithmState = {
+            step: 0, // 当前步骤
+            currentNode: null, // 当前处理的节点
+            finalizedNodes: new Set(), // 已确定最短路径的节点集合
+            distances: {}, // 距离标签
+            previous: {}, // 前驱节点
+            stepsHistory: [], // 步骤历史，用于回退
+            isPlaying: false, // 是否正在自动播放
+            playInterval: null, // 自动播放的定时器
+            animationSpeed: 5, // 动画速度 (1-10)
+            sourceNode: 'A' // 起点
+        };
+        
+        // 动画状态
+        let animationState = {
+            activeEdge: null, // 当前活跃的边（正在松弛的边）
+            activeNode: null, // 当前活跃的节点
+            distanceUpdate: null, // 距离更新信息 {node, oldDist, newDist}
+            isAnimating: false // 是否正在播放动画
+        };
+        
+        // ==================== DOM元素引用 ====================
+        const canvas = document.getElementById('graph-canvas');
+        const ctx = canvas.getContext('2d');
+        const stepDescription = document.getElementById('step-description');
+        const formulaDisplay = document.getElementById('formula-display');
+        const nodeTableBody = document.getElementById('node-table-body');
+        const resetBtn = document.getElementById('reset-btn');
+        const prevBtn = document.getElementById('prev-btn');
+        const playPauseBtn = document.getElementById('play-pause-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const speedSlider = document.getElementById('speed-slider');
+        const speedValue = document.getElementById('speed-value');
+        
+        // ==================== 初始化函数 ====================
+        function init() {
+            // 初始化算法状态
+            resetAlgorithm();
+            
+            // 初始化节点状态表格
+            updateNodeTable();
+            
+            // 绘制初始图
+            drawGraph();
+            
+            // 设置事件监听器
+            setupEventListeners();
+            
+            // 更新步骤描述
+            updateStepDescription();
+        }
+        
+        function resetAlgorithm() {
+            algorithmState = {
+                step: 0,
+                currentNode: null,
+                finalizedNodes: new Set(),
+                distances: {},
+                previous: {},
+                stepsHistory: [],
+                isPlaying: false,
+                playInterval: null,
+                animationSpeed: parseInt(speedSlider.value),
+                sourceNode: 'A'
+            };
+            
+            // 初始化距离和前驱
+            graph.nodes.forEach(node => {
+                algorithmState.distances[node.id] = (node.id === algorithmState.sourceNode) ? 0 : Infinity;
+                algorithmState.previous[node.id] = null;
+            });
+            
+            // 保存初始状态到历史
+            saveStateToHistory();
+            
+            // 更新控制按钮状态
+            updateControlButtons();
+            
+            // 清除动画状态
+            animationState = {
+                activeEdge: null,
+                activeNode: null,
+                distanceUpdate: null,
+                isAnimating: false
+            };
+        }
+        
+        function saveStateToHistory() {
+            // 深拷贝当前状态
+            const stateCopy = {
+                step: algorithmState.step,
+                currentNode: algorithmState.currentNode,
+                finalizedNodes: new Set(algorithmState.finalizedNodes),
+                distances: {...algorithmState.distances},
+                previous: {...algorithmState.previous}
+            };
+            
+            algorithmState.stepsHistory.push(stateCopy);
+        }
+        
+        // ==================== 绘图函数 ====================
+        function drawGraph() {
+            // 清除画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制边
+            drawEdges();
+            
+            // 绘制节点
+            drawNodes();
+            
+            // 如果正在动画，绘制动画效果
+            if (animationState.isAnimating) {
+                drawAnimation();
+            }
+        }
+        
+        function drawEdges() {
+            graph.edges.forEach(edge => {
+                const fromNode = graph.nodes.find(n => n.id === edge.from);
+                const toNode = graph.nodes.find(n => n.id === edge.to);
+                
+                if (!fromNode || !toNode) return;
+                
+                // 计算边的角度
+                const dx = toNode.x - fromNode.x;
+                const dy = toNode.y - fromNode.y;
+                const angle = Math.atan2(dy, dx);
+                
+                // 计算边的起点和终点（考虑节点半径）
+                const startX = fromNode.x + NODE_RADIUS * Math.cos(angle);
+                const startY = fromNode.y + NODE_RADIUS * Math.sin(angle);
+                const endX = toNode.x - NODE_RADIUS * Math.cos(angle);
+                const endY = toNode.y - NODE_RADIUS * Math.sin(angle);
+                
+                // 判断是否为最短路径的一部分
+                const isShortestPathEdge = isEdgeInShortestPath(edge);
+                
+                // 判断是否为当前活跃的边
+                const isActiveEdge = animationState.activeEdge && 
+                    animationState.activeEdge.from === edge.from && 
+                    animationState.activeEdge.to === edge.to;
+                
+                // 设置边的样式
+                ctx.beginPath();
+                ctx.lineWidth = isShortestPathEdge ? 4 : (isActiveEdge ? 3 : 2);
+                ctx.strokeStyle = isShortestPathEdge ? '#e74c3c' : (isActiveEdge ? '#e67e22' : '#7f8c8d');
+                ctx.setLineDash(isShortestPathEdge ? [] : []);
+                
+                // 绘制边
+                ctx.moveTo(startX, startY);
+                ctx.lineTo(endX, endY);
+                ctx.stroke();
+                
+                // 绘制箭头
+                drawArrow(endX, endY, angle);
+                
+                // 绘制权重
+                const midX = (startX + endX) / 2;
+                const midY = (startY + endY) / 2;
+                
+                // 权重标签背景
+                ctx.fillStyle = '#f8f9fa';
+                ctx.fillRect(midX - 20, midY - 15, 40, 30);
+                
+                // 权重文本
+                ctx.fillStyle = isActiveEdge ? '#e67e22' : '#2c3e50';
+                ctx.font = 'bold 16px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(edge.weight.toString(), midX, midY);
+            });
+        }
+        
+        function drawArrow(x, y, angle) {
+            const arrowLength = 15;
+            const arrowAngle = Math.PI / 6;
+            
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle);
+            
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(-arrowLength, arrowLength * Math.tan(arrowAngle));
+            ctx.lineTo(-arrowLength, -arrowLength * Math.tan(arrowAngle));
+            ctx.closePath();
+            
+            ctx.fillStyle = ctx.strokeStyle;
+            ctx.fill();
+            
+            ctx.restore();
+        }
+        
+        function drawNodes() {
+            graph.nodes.forEach(node => {
+                // 确定节点颜色
+                let fillColor;
+                let borderColor = '#2c3e50';
+                
+                if (node.id === algorithmState.sourceNode) {
+                    fillColor = '#27ae60'; // 起点 - 绿色
+                } else if (node.id === algorithmState.currentNode) {
+                    fillColor = '#f1c40f'; // 当前节点 - 黄色
+                } else if (algorithmState.finalizedNodes.has(node.id)) {
+                    fillColor = '#2ecc71'; // 已确定 - 浅绿色
+                } else if (algorithmState.distances[node.id] < Infinity) {
+                    fillColor = '#3498db'; // 已访问但未确定 - 蓝色
+                } else {
+                    fillColor = '#ecf0f1'; // 未访问 - 浅灰色
+                }
+                
+                // 绘制节点
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, NODE_RADIUS, 0, Math.PI * 2);
+                ctx.fillStyle = fillColor;
+                ctx.fill();
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = borderColor;
+                ctx.stroke();
+                
+                // 绘制节点标签
+                ctx.fillStyle = '#2c3e50';
+                ctx.font = 'bold 20px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(node.id, node.x, node.y);
+                
+                // 绘制距离标签
+                const dist = algorithmState.distances[node.id];
+                const distText = dist === Infinity ? '∞' : dist.toString();
+                
+                // 判断是否正在更新此节点的距离
+                const isUpdating = animationState.distanceUpdate && 
+                    animationState.distanceUpdate.node === node.id;
+                
+                ctx.fillStyle = isUpdating ? '#e74c3c' : '#2c3e50';
+                ctx.font = isUpdating ? 'bold 18px Arial' : '16px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+                ctx.fillText(`dist=${distText}`, node.x, node.y + NODE_RADIUS + 5);
+                
+                // 如果节点有前驱，绘制前驱指示
+                if (algorithmState.previous[node.id]) {
+                    ctx.fillStyle = '#7f8c8d';
+                    ctx.font = 'italic 14px Arial';
+                    ctx.textBaseline = 'bottom';
+                    ctx.fillText(`prev=${algorithmState.previous[node.id]}`, node.x, node.y - NODE_RADIUS - 5);
+                }
+            });
+        }
+        
+        function drawAnimation() {
+            // 绘制距离更新动画
+            if (animationState.distanceUpdate) {
+                const node = graph.nodes.find(n => n.id === animationState.distanceUpdate.node);
+                if (node) {
+                    // 绘制闪烁效果
+                    const blink = Math.sin(Date.now() / 200) > 0;
+                    if (blink) {
+                        ctx.beginPath();
+                        ctx.arc(node.x, node.y, NODE_RADIUS + 8, 0, Math.PI * 2);
+                        ctx.strokeStyle = '#e74c3c';
+                        ctx.lineWidth = 3;
+                        ctx.setLineDash([5, 5]);
+                        ctx.stroke();
+                        ctx.setLineDash([]);
+                    }
+                }
+            }
+            
+            // 绘制活跃边动画
+            if (animationState.activeEdge) {
+                const fromNode = graph.nodes.find(n => n.id === animationState.activeEdge.from);
+                const toNode = graph.nodes.find(n => n.id === animationState.activeEdge.to);
+                
+                if (fromNode && toNode) {
+                    // 计算边的角度
+                    const dx = toNode.x - fromNode.x;
+                    const dy = toNode.y - fromNode.y;
+                    const angle = Math.atan2(dy, dx);
+                    const length = Math.sqrt(dx * dx + dy * dy);
+                    
+                    // 绘制流动效果
+                    const progress = (Date.now() % 1000) / 1000;
+                    const flowX = fromNode.x + (length * progress) * Math.cos(angle);
+                    const flowY = fromNode.y + (length * progress) * Math.sin(angle);
+                    
+                    ctx.beginPath();
+                    ctx.arc(flowX, flowY, 8, 0, Math.PI * 2);
+                    ctx.fillStyle = '#e67e22';
+                    ctx.fill();
+                }
+            }
+        }
+        
+        function isEdgeInShortestPath(edge) {
+            // 检查边是否在从起点到某个已确定节点的最短路径上
+            for (const nodeId of algorithmState.finalizedNodes) {
+                let currentNode = nodeId;
+                while (algorithmState.previous[currentNode]) {
+                    const prevNode = algorithmState.previous[currentNode];
+                    if ((prevNode === edge.from && currentNode === edge.to) ||
+                        (prevNode === edge.to && currentNode === edge.from)) {
+                        return true;
+                    }
+                    currentNode = prevNode;
+                }
+            }
+            return false;
+        }
+        
+        // ==================== 算法执行函数 ====================
+        function executeNextStep() {
+            if (algorithmState.step === 0) {
+                // 步骤0: 初始化
+                algorithmState.currentNode = algorithmState.sourceNode;
+                algorithmState.step = 1;
+                updateStepDescription();
+                saveStateToHistory();
+            } else if (algorithmState.step === 1) {
+                // 步骤1: 将当前节点标记为已确定
+                algorithmState.finalizedNodes.add(algorithmState.currentNode);
+                algorithmState.step = 2;
+                updateStepDescription();
+                saveStateToHistory();
+            } else if (algorithmState.step === 2) {
+                // 步骤2: 松弛当前节点的所有邻居
+                const edgesToRelax = graph.edges.filter(edge => edge.from === algorithmState.currentNode);
+                
+                if (edgesToRelax.length > 0) {
+                    const edge = edgesToRelax[0]; // 一次只松弛一条边，便于演示
+                    
+                    // 设置动画状态
+                    animationState.activeEdge = edge;
+                    animationState.isAnimating = true;
+                    
+                    // 计算新距离
+                    const newDist = algorithmState.distances[edge.from] + edge.weight;
+                    const oldDist = algorithmState.distances[edge.to];
+                    
+                    // 显示公式
+                    formulaDisplay.textContent = `dist[${edge.to}] = min(${oldDist === Infinity ? '∞' : oldDist}, dist[${edge.from}] + weight(${edge.from}→${edge.to})) = min(${oldDist === Infinity ? '∞' : oldDist}, ${algorithmState.distances[edge.from]} + ${edge.weight})`;
+                    
+                    // 延迟执行实际的距离更新，以便显示动画
+                    setTimeout(() => {
+                        if (newDist < oldDist) {
+                            // 更新距离和前驱
+                            algorithmState.distances[edge.to] = newDist;
+                            algorithmState.previous[edge.to] = edge.from;
+                            
+                            // 设置距离更新动画
+                            animationState.distanceUpdate = {
+                                node: edge.to,
+                                oldDist: oldDist,
+                                newDist: newDist
+                            };
+                            
+                            formulaDisplay.textContent += ` = ${newDist} → 更新 dist[${edge.to}]!`;
+                        } else {
+                            formulaDisplay.textContent += ` = ${oldDist === Infinity ? '∞' : oldDist} → 无需更新`;
+                        }
+                        
+                        // 延迟清除动画状态
+                        setTimeout(() => {
+                            animationState.activeEdge = null;
+                            animationState.distanceUpdate = null;
+                            animationState.isAnimating = false;
+                            
+                            // 如果还有边需要松弛，继续步骤2
+                            const remainingEdges = graph.edges.filter(e => 
+                                e.from === algorithmState.currentNode && 
+                                !algorithmState.finalizedNodes.has(e.to)
+                            );
+                            
+                            if (remainingEdges.length > 0) {
+                                algorithmState.step = 2; // 继续松弛
+                            } else {
+                                algorithmState.step = 3; // 进入下一步：选择下一个节点
+                            }
+                            
+                            updateStepDescription();
+                            drawGraph();
+                            updateNodeTable();
+                        }, getAnimationSpeed() * 0.7);
+                        
+                        drawGraph();
+                        updateNodeTable();
+                    }, getAnimationSpeed() * 1.5);
+                } else {
+                    algorithmState.step = 3; // 如果没有边可松弛，直接进入下一步
+                }
+            } else if (algorithmState.step === 3) {
+                // 步骤3: 选择下一个当前节点（距离最小且未确定的节点）
+                let minDist = Infinity;
+                let nextNode = null;
+                
+                for (const node of graph.nodes) {
+                    if (!algorithmState.finalizedNodes.has(node.id) && 
+                        algorithmState.distances[node.id] < minDist) {
+                        minDist = algorithmState.distances[node.id];
+                        nextNode = node.id;
+                    }
+                }
+                
+                if (nextNode) {
+                    algorithmState.currentNode = nextNode;
+                    algorithmState.step = 1; // 回到步骤1：标记为已确定
+                    
+                    // 检查是否所有可达节点都已确定
+                    const allReachableFinalized = graph.nodes.every(node => 
+                        algorithmState.distances[node.id] === Infinity || 
+                        algorithmState.finalizedNodes.has(node.id)
+                    );
+                    
+                    if (allReachableFinalized) {
+                        algorithmState.step = 4; // 算法完成
+                    }
+                } else {
+                    algorithmState.step = 4; // 没有更多节点，算法完成
+                }
+                
+                updateStepDescription();
+                saveStateToHistory();
+            }
+            
+            // 如果不是在动画中，立即更新显示
+            if (!animationState.isAnimating) {
+                drawGraph();
+                updateNodeTable();
+            }
+            
+            updateControlButtons();
+        }
+        
+        function executePrevStep() {
+            if (algorithmState.stepsHistory.length <= 1) return;
+            
+            // 移除当前状态
+            algorithmState.stepsHistory.pop();
+            
+            // 恢复到上一个状态
+            const prevState = algorithmState.stepsHistory[algorithmState.stepsHistory.length - 1];
+            
+            algorithmState.step = prevState.step;
+            algorithmState.currentNode = prevState.currentNode;
+            algorithmState.finalizedNodes = new Set(prevState.finalizedNodes);
+            algorithmState.distances = {...prevState.distances};
+            algorithmState.previous = {...prevState.previous};
+            
+            // 清除动画状态
+            animationState = {
+                activeEdge: null,
+                activeNode: null,
+                distanceUpdate: null,
+                isAnimating: false
+            };
+            
+            formulaDisplay.textContent = "已回退到上一步";
+            
+            updateStepDescription();
+            drawGraph();
+            updateNodeTable();
+            updateControlButtons();
+        }
+        
+        function getAnimationSpeed() {
+            return ANIMATION_SPEEDS[algorithmState.animationSpeed - 1];
+        }
+        
+        // ==================== UI更新函数 ====================
+        function updateStepDescription() {
+            let description = "";
+            
+            switch(algorithmState.step) {
+                case 0:
+                    description = `初始化: 设置起点${algorithmState.sourceNode}的距离为0，其他所有节点的距离为∞。`;
+                    break;
+                case 1:
+                    description = `步骤${algorithmState.stepsHistory.length}: 将节点<span class="step-highlight">${algorithmState.currentNode}</span>标记为"已确定最短路径"。`;
+                    break;
+                case 2:
+                    const activeEdge = animationState.activeEdge;
+                    if (activeEdge) {
+                        description = `步骤${algorithmState.stepsHistory.length}: 松弛边<span class="step-highlight">${activeEdge.from}→${activeEdge.to}</span>，检查是否可以通过${algorithmState.currentNode}缩短到${activeEdge.to}的距离。`;
+                    } else {
+                        description = `步骤${algorithmState.stepsHistory.length}: 准备松弛节点<span class="step-highlight">${algorithmState.currentNode}</span>的所有出边。`;
+                    }
+                    break;
+                case 3:
+                    description = `步骤${algorithmState.stepsHistory.length}: 选择下一个"当前节点" - 从未确定的节点中选择距离最小的节点。`;
+                    break;
+                case 4:
+                    description = `算法完成! 所有可达节点的最短路径已确定。`;
+                    break;
+                default:
+                    description = `步骤${algorithmState.stepsHistory.length}: 执行算法...`;
+            }
+            
+            stepDescription.innerHTML = description;
+        }
+        
+        function updateNodeTable() {
+            // 清空表格
+            nodeTableBody.innerHTML = "";
+            
+            // 添加行
+            graph.nodes.forEach(node => {
+                const row = document.createElement('tr');
+                
+                // 节点列
+                const nodeCell = document.createElement('td');
+                nodeCell.textContent = node.id;
+                if (node.id === algorithmState.currentNode) {
+                    nodeCell.style.fontWeight = 'bold';
+                    nodeCell.style.color = '#e67e22';
+                }
+                row.appendChild(nodeCell);
+                
+                // 距离列
+                const distCell = document.createElement('td');
+                const dist = algorithmState.distances[node.id];
+                distCell.textContent = dist === Infinity ? '∞' : dist.toString();
+                
+                // 如果距离刚刚更新，添加高亮
+                if (animationState.distanceUpdate && animationState.distanceUpdate.node === node.id) {
+                    distCell.style.color = '#e74c3c';
+                    distCell.style.fontWeight = 'bold';
+                    distCell.style.backgroundColor = '#fff0f0';
+                }
+                row.appendChild(distCell);
+                
+                // 前驱列
+                const prevCell = document.createElement('td');
+                prevCell.textContent = algorithmState.previous[node.id] || '-';
+                row.appendChild(prevCell);
+                
+                // 状态列
+                const statusCell = document.createElement('td');
+                const statusBadge = document.createElement('span');
+                
+                if (node.id === algorithmState.sourceNode) {
+                    statusBadge.textContent = '起点';
+                    statusBadge.className = 'status-badge status-finalized';
+                } else if (node.id === algorithmState.currentNode) {
+                    statusBadge.textContent = '当前节点';
+                    statusBadge.className = 'status-badge status-current';
+                } else if (algorithmState.finalizedNodes.has(node.id)) {
+                    statusBadge.textContent = '已确定';
+                    statusBadge.className = 'status-badge status-finalized';
+                } else if (algorithmState.distances[node.id] < Infinity) {
+                    statusBadge.textContent = '已访问';
+                    statusBadge.className = 'status-badge status-visited';
+                } else {
+                    statusBadge.textContent = '未访问';
+                    statusBadge.className = 'status-badge status-unvisited';
+                }
+                
+                statusCell.appendChild(statusBadge);
+                row.appendChild(statusCell);
+                
+                nodeTableBody.appendChild(row);
+            });
+        }
+        
+        function updateControlButtons() {
+            // 更新上一步按钮状态
+            prevBtn.disabled = algorithmState.stepsHistory.length <= 1;
+            
+            // 更新播放/暂停按钮
+            const playIcon = playPauseBtn.querySelector('span');
+            if (algorithmState.isPlaying) {
+                playPauseBtn.innerHTML = '<span>⏸</span> 暂停';
+                playPauseBtn.style.backgroundColor = '#e67e22';
+            } else {
+                playPauseBtn.innerHTML = '<span>▶</span> 播放';
+                playPauseBtn.style.backgroundColor = '#2ecc71';
+            }
+            
+            // 更新下一步按钮状态
+            nextBtn.disabled = algorithmState.step === 4 || algorithmState.isPlaying;
+            
+            // 更新速度显示
+            const speedLabels = ['极慢', '很慢', '慢', '较慢', '中速', '较快', '快', '很快', '极快', '最快'];
+            speedValue.textContent = speedLabels[
+<!--检测到代码截断，自动续写中...-->
+algorithmState.animationSpeed - 1];
+        }
+        
+        function togglePlayPause() {
+            if (algorithmState.isPlaying) {
+                // 暂停
+                clearInterval(algorithmState.playInterval);
+                algorithmState.isPlaying = false;
+                playPauseBtn.innerHTML = '<span>▶</span> 播放';
+                playPauseBtn.style.backgroundColor = '#2ecc71';
+                nextBtn.disabled = false;
+            } else {
+                // 开始播放
+                algorithmState.isPlaying = true;
+                playPauseBtn.innerHTML = '<span>⏸</span> 暂停';
+                playPauseBtn.style.backgroundColor = '#e67e22';
+                nextBtn.disabled = true;
+                
+                algorithmState.playInterval = setInterval(() => {
+                    if (algorithmState.step === 4) {
+                        // 算法已完成，停止播放
+                        togglePlayPause();
+                        return;
+                    }
+                    
+                    executeNextStep();
+                }, getAnimationSpeed() * 2.5);
+            }
+            
+            updateControlButtons();
+        }
+        
+        // ==================== 事件监听器 ====================
+        function setupEventListeners() {
+            // 重置按钮
+            resetBtn.addEventListener('click', () => {
+                if (algorithmState.isPlaying) {
+                    togglePlayPause();
+                }
+                resetAlgorithm();
+                formulaDisplay.textContent = "算法已重置。点击'下一步'开始演示。";
+                drawGraph();
+                updateNodeTable();
+                updateStepDescription();
+            });
+            
+            // 上一步按钮
+            prevBtn.addEventListener('click', () => {
+                if (algorithmState.isPlaying) {
+                    togglePlayPause();
+                }
+                executePrevStep();
+            });
+            
+            // 播放/暂停按钮
+            playPauseBtn.addEventListener('click', togglePlayPause);
+            
+            // 下一步按钮
+            nextBtn.addEventListener('click', () => {
+                if (algorithmState.step === 4) return;
+                executeNextStep();
+            });
+            
+            // 速度滑块
+            speedSlider.addEventListener('input', () => {
+                algorithmState.animationSpeed = parseInt(speedSlider.value);
+                
+                // 更新速度显示
+                const speedLabels = ['极慢', '很慢', '慢', '较慢', '中速', '较快', '快', '很快', '极快', '最快'];
+                speedValue.textContent = speedLabels[algorithmState.animationSpeed - 1];
+                
+                // 如果正在播放，更新定时器
+                if (algorithmState.isPlaying) {
+                    clearInterval(algorithmState.playInterval);
+                    algorithmState.playInterval = setInterval(() => {
+                        if (algorithmState.step === 4) {
+                            togglePlayPause();
+                            return;
+                        }
+                        
+                        executeNextStep();
+                    }, getAnimationSpeed() * 2.5);
+                }
+            });
+            
+            // 窗口大小调整时重新绘制
+            window.addEventListener('resize', () => {
+                drawGraph();
+            });
+            
+            // 定期重绘以实现动画效果
+            function animate() {
+                if (animationState.isAnimating) {
+                    drawGraph();
+                }
+                requestAnimationFrame(animate);
+            }
+            
+            // 开始动画循环
+            animate();
+        }
+        
+        // ==================== 启动应用 ====================
+        // 页面加载完成后初始化
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

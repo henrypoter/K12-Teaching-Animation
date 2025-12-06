@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>归并排序可视化 - 分治的艺术</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background-color: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            max-width: 800px;
+        }
+
+        h1 {
+            color: #5eead4;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(94, 234, 212, 0.3);
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            max-width: 1400px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .panel {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(94, 234, 212, 0.1);
+        }
+
+        .left-panel {
+            flex: 1;
+            min-width: 500px;
+            max-width: 700px;
+        }
+
+        .right-panel {
+            flex: 1;
+            min-width: 500px;
+            max-width: 600px;
+        }
+
+        .panel-title {
+            color: #5eead4;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(94, 234, 212, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel-title i {
+            font-size: 1.2rem;
+        }
+
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        canvas {
+            display: block;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 10px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #5eead4, #2dd4bf);
+            color: #0f172a;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(94, 234, 212, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(148, 163, 184, 0.2);
+            color: #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(148, 163, 184, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .input-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 10px;
+        }
+
+        .input-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(94, 234, 212, 0.3);
+            border-radius: 8px;
+            color: #e2e8f0;
+            font-size: 1rem;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #5eead4;
+            box-shadow: 0 0 0 2px rgba(94, 234, 212, 0.2);
+        }
+
+        .toggle-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .toggle-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .toggle-item:hover {
+            background: rgba(15, 23, 42, 0.8);
+        }
+
+        .toggle-item input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .info-panel {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .info-item {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .info-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            color: #e2e8f0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .status-highlight {
+            color: #fde047;
+            font-weight: 700;
+        }
+
+        .color-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .color-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .color-box {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+
+        .color-default { background-color: #ffffff; border: 1px solid #64748b; }
+        .color-compare { background-color: #fb923c; }
+        .color-selected { background-color: #fde047; }
+        .color-left { background-color: #93c5fd; }
+        .color-right { background-color: #f9a8d4; }
+        .color-sorted { background-color: #4ade80; }
+
+        .pseudocode {
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .code-line {
+            padding: 5px 10px;
+            border-radius: 5px;
+            margin-bottom: 2px;
+            transition: background 0.3s ease;
+        }
+
+        .code-line.active {
+            background: rgba(94, 234, 212, 0.2);
+            color: #5eead4;
+            font-weight: 600;
+        }
+
+        .code-line.comment {
+            color: #94a3b8;
+            font-style: italic;
+        }
+
+        .code-line.keyword {
+            color: #f472b6;
+        }
+
+        .code-line.function {
+            color: #60a5fa;
+        }
+
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.9rem;
+            padding: 20px;
+            max-width: 800px;
+        }
+
+        @media (max-width: 1100px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .left-panel, .right-panel {
+                min-width: 90%;
+                max-width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>归并排序可视化</h1>
+        <div class="subtitle">分治策略 · 递归之美 · 合并艺术</div>
+    </div>
+
+    <div class="container">
+        <!-- 左面板：数组操作视图 -->
+        <div class="panel left-panel">
+            <div class="panel-title">
+                <span>📊 数组操作视图</span>
+            </div>
+            
+            <div class="canvas-container">
+                <canvas id="arrayCanvas" width="650" height="400"></canvas>
+            </div>
+            
+            <div class="controls">
+                <button id="playBtn" class="btn btn-primary">
+                    <span>▶️ 播放</span>
+                </button>
+                <button id="pauseBtn" class="btn btn-secondary">
+                    <span>⏸️ 暂停</span>
+                </button>
+                <button id="stepBtn" class="btn btn-secondary">
+                    <span>⏭️ 下一步</span>
+                </button>
+                <button id="prevBtn" class="btn btn-secondary">
+                    <span>⏮️ 上一步</span>
+                </button>
+                <button id="resetBtn" class="btn btn-secondary">
+                    <span>🔄 重置</span>
+                </button>
+                
+                <div style="flex: 1; min-width: 150px;">
+                    <label for="speedSlider">动画速度</label>
+                    <input type="range" id="speedSlider" min="1" max="10" value="5">
+                </div>
+            </div>
+            
+            <div class="input-section">
+                <div class="input-group">
+                    <label for="arrayInput">自定义数组（逗号分隔）</label>
+                    <input type="text" id="arrayInput" value="38, 27, 43, 3, 9, 82, 10">
+                </div>
+                
+                <div class="input-group">
+                    <label for="presetSelect">预设示例</label>
+                    <select id="presetSelect">
+                        <option value="custom">自定义</option>
+                        <option value="random">随机数组</option>
+                        <option value="reverse">逆序数组</option>
+                        <option value="nearly">基本有序数组</option>
+                        <option value="small">小型数组</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="info-panel">
+                <div class="info-item">
+                    <div class="info-label">当前操作</div>
+                    <div id="currentOperation" class="info-value">等待开始...</div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">当前子数组范围</div>
+                    <div id="currentRange" class="info-value">-</div>
+                </div>
+                
+                <div class="info-item">
+                    <div class="info-label">步骤计数</div>
+                    <div id="stepCount" class="info-value">0</div>
+                </div>
+                
+                <div class="color-legend">
+                    <div class="color-item">
+                        <div class="color-box color-default"></div>
+                        <span>默认元素</span>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-box color-compare"></div>
+                        <span>比较中</span>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-box color-selected"></div>
+                        <span>已选中</span>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-box color-left"></div>
+                        <span>左子数组</span>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-box color-right"></div>
+                        <span>右子数组</span>
+                    </div>
+                    <div class="color-item">
+                        <div class="color-box color-sorted"></div>
+                        <span>已排序</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 右面板：递归树视图 -->
+        <div class="panel right-panel">
+            <div class="panel-title">
+                <span>🌳 递归树视图</span>
+            </div>
+            
+            <div class="canvas-container">
+                <canvas id="treeCanvas" width="550" height="400"></canvas>
+            </div>
+            
+            <div class="toggle-section">
+                <div class="toggle-item">
+                    <input type="checkbox" id="showTreeToggle" checked>
+                    <label for="showTreeToggle">显示递归树</label>
+                </div>
+                
+                <div class="toggle-item">
+                    <input type="checkbox" id="highlightPathToggle" checked>
+                    <label for="highlightPathToggle">高亮递归路径</label>
+                </div>
+                
+                <div class="toggle-item">
+                    <input type="checkbox" id="showCodeToggle" checked>
+                    <label for="showCodeToggle">显示代码联动</label>
+                </div>
+            </div>
+            
+            <div id="pseudocodePanel" class="pseudocode">
+                <div class="code-line comment">// 归并排序主函数</div>
+                <div id="codeLine1" class="code-line">function mergeSort(arr, left, right) {</div>
+                <div id="codeLine2" class="code-line">  if (left < right) {</div>
+                <div id="codeLine3" class="code-line">    let mid = Math.floor((left + right) / 2);</div>
+                <div id="codeLine4" class="code-line">    mergeSort(arr, left, mid);      // 递归排序左半部分</div>
+                <div id="codeLine5" class="code-line">    mergeSort(arr, mid + 1, right); // 递归排序右半部分</div>
+                <div id="codeLine6" class="code-line">    merge(arr, left, mid, right);   // 合并两个有序数组</div>
+                <div id="codeLine7" class="code-line">  }</div>
+                <div id="codeLine8" class="code-line">}</div>
+                <div class="code-line comment" style="margin-top: 15px;">// 合并函数</div>
+                <div id="codeLine9" class="code-line">function merge(arr, left, mid, right) {</div>
+                <div id="codeLine10" class="code-line">  let temp = [];</div>
+                <div id="codeLine11" class="code-line">  let i = left, j = mid + 1;</div>
+                <div id="codeLine12" class="code-line">  while (i <= mid && j <= right) {</div>
+                <div id="codeLine13" class="code-line">    if (arr[i] <= arr[j]) {</div>
+                <div id="codeLine14" class="code-line">      temp.push(arr[i]); i++;</div>
+                <div id="codeLine15" class="code-line">    } else {</div>
+                <div id="codeLine16" class="code-line">      temp.push(arr[j]); j++;</div>
+                <div id="codeLine17" class="code-line">    }</div>
+                <div id="codeLine18" class="code-line">  }</div>
+                <div id="codeLine19" class="code-line">  while (i <= mid) { temp.push(arr[i]); i++; }</div>
+                <div id="codeLine20" class="code-line">  while (j <= right) { temp.push(arr[j]); j++; }</div>
+                <div id="codeLine21" class="code-line">  for (let k = left; k <= right; k++) {</div>
+                <div id="codeLine22" class="code-line">    arr[k] = temp[k - left];</div>
+                <div id="codeLine23" class="code-line">  }</div>
+                <div id="codeLine24" class="code-line">}</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>归并排序是一种采用分治策略的稳定排序算法，时间复杂度为 O(n log n)。通过递归地将数组分解，然后合并有序子数组，最终完成排序。</p>
+        <p style="margin-top: 10px;">交互式教学动画 © 2023 | 设计灵感：飞象老师</p>
+    </div>
+
+    <script>
+        // 全局变量
+        let originalArray = [38, 27, 43, 3, 9, 82, 10];
+        let currentArray = [...originalArray];
+        let animationSteps = [];
+        let currentStep = 0;
+        let isPlaying = false;
+        let animationSpeed = 5;
+        let animationInterval;
+        
+        // 配置选项
+        let showTree = true;
+        let highlightPath = true;
+        let showCode = true;
+        
+        // 获取DOM元素
+        const arrayCanvas = document.getElementById('arrayCanvas');
+        const treeCanvas = document.getElementById('treeCanvas');
+        const arrayCtx = arrayCanvas.getContext('2d');
+        const treeCtx = treeCanvas.getContext('2d');
+        
+        // 获取控制元素
+        const playBtn = document.getElementById('playBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const stepBtn = document.getElementById('stepBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const speedSlider = document.getElementById('speedSlider');
+        const arrayInput = document.getElementById('arrayInput');
+        const presetSelect = document.getElementById('presetSelect');
+        
+        // 获取信息显示元素
+        const currentOperation = document.getElementById('currentOperation');
+        const currentRange = document.getElementById('currentRange');
+        const stepCount = document.getElementById('stepCount');
+        
+        // 获取切换开关
+        const showTreeToggle = document.getElementById('showTreeToggle');
+        const highlightPathToggle = document.getElementById('highlightPathToggle');
+        const showCodeToggle = document.getElementById('showCodeToggle');
+        
+        // 获取代码行元素
+        const codeLines = {};
+        for (let i = 1; i <= 24; i++) {
+            codeLines[i] = document.getElementById(`codeLine${i}`);
+        }
+        
+        // 归并排序算法实现（生成动画步骤）
+        function generateMergeSortSteps(arr) {
+            const steps = [];
+            const tempArray = [...arr];
+            
+            function mergeSort(arr, left, right, depth, path) {
+                const stepId = steps.length;
+                steps.push({
+                    type: 'enter',
+                    left, right, depth, path,
+                    stepId,
+                    operation: `进入归并排序: [${left}, ${right}]`
+                });
+                
+                if (left < right) {
+                    const mid = Math.floor((left + right) / 2);
+                    
+                    // 递归左半部分
+                    const leftPath = [...path, 'L'];
+                    mergeSort(arr, left, mid, depth + 1, leftPath);
+                    
+                    // 递归右半部分
+                    const rightPath = [...path, 'R'];
+                    mergeSort(arr, mid + 1, right, depth + 1, rightPath);
+                    
+                    // 合并
+                    merge(arr, left, mid, right, depth, path);
+                } else {
+                    steps.push({
+                        type: 'base',
+                        left, right, depth, path,
+                        stepId: steps.length,
+                        operation: `基本情况: 单个元素 [${left}]`
+                    });
+                }
+                
+                steps.push({
+                    type: 'exit',
+                    left, right, depth, path,
+                    stepId: steps.length,
+                    operation: `退出归并排序: [${left}, ${right}]`
+                });
+            }
+            
+            function merge(arr, left, mid, right, depth, path) {
+                const temp = [];
+                let i = left;
+                let j = mid + 1;
+                let k = 0;
+                
+                steps.push({
+                    type: 'merge_start',
+                    left, mid, right, depth, path,
+                    stepId: steps.length,
+                    operation: `开始合并: [${left}, ${mid}] 和 [${mid+1}, ${right}]`
+                });
+                
+                // 比较并合并
+                while (i <= mid && j <= right) {
+                    steps.push({
+                        type: 'compare',
+                        left, mid, right, i, j, depth, path,
+                        stepId: steps.length,
+                        operation: `比较: arr[${i}]=${arr[i]} 和 arr[${j}]=${arr[j]}`
+                    });
+                    
+                    if (arr[i] <= arr[j]) {
+                        steps.push({
+                            type: 'select_left',
+                            left, mid, right, i, j, depth, path,
+                            stepId: steps.length,
+                            operation: `选择左元素: arr[${i}]=${arr[i]}`
+                        });
+                        temp[k++] = arr[i++];
+                    } else {
+                        steps.push({
+                            type: 'select_right',
+                            left, mid, right, i, j, depth, path,
+                            stepId: steps.length,
+                            operation: `选择右元素: arr[${j}]=${arr[j]}`
+                        });
+                        temp[k++] = arr[j++];
+                    }
+                }
+                
+                // 复制剩余元素
+                while (i <= mid) {
+                    steps.push({
+                        type: 'copy_left',
+                        left, mid, right, i, depth, path,
+                        stepId: steps.length,
+                        operation: `复制左剩余元素: arr[${i}]=${arr[i]}`
+                    });
+                    temp[k++] = arr[i++];
+                }
+                
+                while (j <= right) {
+                    steps.push({
+                        type: 'copy_right',
+                        left, mid, right, j, depth, path,
+                        stepId: steps.length,
+                        operation: `复制右剩余元素: arr[${j}]=${arr[j]}`
+                    });
+                    temp[k++] = arr[j++];
+                }
+                
+                // 复制回原数组
+                for (let t = 0; t < k; t++) {
+                    arr[left + t] = temp[t];
+                    steps.push({
+                        type: 'copy_back',
+                        left, mid, right, index: left + t, value: temp[t], depth, path,
+                        stepId: steps.length,
+                        operation: `复制回原数组: arr[${left + t}] = ${temp[t]}`
+                    });
+                }
+                
+                steps.push({
+                    type: 'merge_end',
+                    left, mid, right, depth, path,
+                    stepId: steps.length,
+                    operation: `合并完成: [${left}, ${right}] 已排序`
+                });
+            }
+            
+            mergeSort(tempArray, 0, tempArray.length - 1, 0, ['ROOT']);
+            return steps;
+        }
+        
+        // 绘制数组视图
+        function drawArrayView(step) {
+            const canvas = arrayCanvas;
+            const ctx = arrayCtx;
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // 清除画布
+            ctx.clearRect(0, 0, width, height);
+            
+            // 绘制背景
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.5)';
+            ctx.fillRect(0, 0, width, height);
+            
+            // 如果没有步骤，绘制初始数组
+            if (!step) {
+                drawArray(currentArray, 0, currentArray.length - 1, 'default');
+                return;
+            }
+            
+            // 根据步骤类型绘制
+            const { type, left, right, mid, i, j, index, value, depth, path } = step;
+            
+            switch (type) {
+                case 'enter':
+                case 'exit':
+                case 'base':
+                    drawArray(currentArray, left, right, 'highlight_range');
+                    break;
+                    
+                case 'merge_start':
+                    drawArray(currentArray, left, mid, 'left_array');
+                    drawArray(currentArray, mid + 1, right, 'right_array');
+                    break;
+                    
+                case 'compare':
+                    drawArray(currentArray, left, mid, 'left_array');
+                    drawArray(currentArray, mid + 1, right, 'right_array');
+                    drawArrayElement(i, 'compare');
+                    drawArrayElement(j, 'compare');
+                    break;
+                    
+                case 'select_left':
+                    drawArray(currentArray, left, mid, 'left_array');
+                    drawArray(currentArray, mid + 1, right, 'right_array');
+                    drawArrayElement(i, 'selected');
+                    break;
+                    
+                case 'select_right':
+                    drawArray(currentArray, left, mid, 'left_array');
+                    drawArray(currentArray, mid + 1, right, 'right_array');
+                    drawArrayElement(j, 'selected');
+                    break;
+                    
+                case 'copy_back':
+                    // 更新数组值
+                    if (index >= 0 && index < currentArray.length) {
+                        currentArray[index] = value;
+                    }
+                    drawArray(currentArray, left, right, 'sorted');
+                    drawArrayElement(index, 'selected');
+                    break;
+                    
+                default:
+                    drawArray(currentArray, 0, currentArray.length - 1, 'default');
+            }
+            
+            // 绘制当前操作信息
+            if (step.operation) {
+                ctx.fillStyle = '#5eead4';
+                ctx.font = '16px "Segoe UI", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(step.operation, width / 2, 30);
+            }
+        }
+        
+        // 绘制数组
+        function drawArray(arr, start, end, style) {
+            const canvas = arrayCanvas;
+            const ctx = arrayCtx;
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            const totalElements = arr.length;
+            const barWidth = (width - 100) / totalElements;
+            const maxBarHeight = height - 100;
+            const maxValue = Math.max(...arr);
+            
+            // 确定颜色
+            let fillColor, borderColor;
+            switch (style) {
+                case 'highlight_range':
+                    fillColor = 'rgba(253, 224, 71, 0.3)';
+                    borderColor = '#fde047';
+                    break;
+                case 'left_array':
+                    fillColor = 'rgba(147, 197, 253, 0.3)';
+                    borderColor = '#93c5fd';
+                    break;
+                case 'right_array':
+                    fillColor = 'rgba(249, 168, 212, 0.3)';
+                    borderColor = '#f9a8d4';
+                    break;
+                case 'sorted':
+                    fillColor = 'rgba(74, 222, 128, 0.3)';
+                    borderColor = '#4ade80';
+                    break;
+                default:
+                    fillColor = 'rgba(255, 255, 255, 0.1)';
+                    borderColor = '#64748b';
+            }
+            
+            // 绘制数组元素
+            for (let idx = 0; idx < arr.length; idx++) {
+                const x = 50 + idx * barWidth;
+                const barHeight = (arr[idx] / maxValue) * maxBarHeight;
+                const y = height - 50 - barHeight;
+                
+                // 如果元素在指定范围内，使用特殊样式
+                if (idx >= start && idx <= end) {
+                    ctx.fillStyle = fillColor;
+                    ctx.fillRect(x, y, barWidth - 2, barHeight);
+                    
+                    ctx.strokeStyle = borderColor;
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(x, y, barWidth - 2, barHeight);
+                } else {
+                    // 默认样式
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+                    ctx.fillRect(x, y, barWidth - 2, barHeight);
+                    
+                    ctx.strokeStyle = '#64748b';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(x, y, barWidth - 2, barHeight);
+                }
+                
+                // 绘制数值
+                ctx.fillStyle = '#e2e8f0';
+                ctx.font = '14px "Segoe UI", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(arr[idx], x + (barWidth - 2) / 2, y - 10);
+                
+                // 绘制索引
+                ctx.fillStyle = '#94a3b8';
+                ctx.font = '12px "Segoe UI", sans-serif';
+                ctx.fillText(idx, x + (barWidth - 2) / 2, height - 25);
+            }
+        }
+        
+        // 绘制单个数组元素（高亮）
+        function drawArrayElement(index, style) {
+            const canvas = arrayCanvas;
+            const ctx = arrayCtx;
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            const totalElements = currentArray.length;
+            const barWidth = (width - 100) / totalElements;
+            const maxBarHeight = height - 100;
+            const maxValue = Math.max(...currentArray);
+            
+            const x = 50 + index * barWidth;
+            const barHeight = (currentArray[index] / maxValue) * maxBarHeight;
+            const y = height - 50 - barHeight;
+            
+            // 确定颜色
+            let fillColor, borderColor;
+            switch (style) {
+                case 'compare':
+                    fillColor = 'rgba(251, 146, 60, 0.7)';
+                    borderColor = '#fb923c';
+                    break;
+                case 'selected':
+                    fillColor = 'rgba(253, 224, 71, 0.7)';
+                    borderColor = '#fde047';
+                    break;
+                default:
+                    return;
+            }
+            
+            // 绘制高亮元素
+            ctx.fillStyle = fillColor;
+            ctx.fillRect(x - 2, y - 2, barWidth + 2, barHeight + 4);
+            
+            ctx.strokeStyle = borderColor;
+            ctx.lineWidth = 3;
+            ctx.strokeRect(x - 2, y - 2, barWidth + 2, barHeight + 4);
+            
+            // 重新绘制数值（确保在顶部）
+            ctx.fillStyle = '#0f172a';
+            ctx.font = 'bold 14px "Segoe UI", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(currentArray[index], x + (barWidth - 2) / 2, y - 10);
+        }
+        
+        // 绘制递归树
+        function drawTreeView(step) {
+            if (!showTree) return;
+            
+            const canvas = treeCanvas;
+            const ctx = treeCtx;
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // 清除画布
+            ctx.clearRect(0, 0, width, height);
+            
+            // 绘制背景
+            ctx.fillStyle = 'rgba(15, 23, 42, 0.5)';
+            ctx.fillRect(0, 0, width, height);
+            
+            // 如果没有步骤，绘制空树
+            if (!step) {
+                ctx.fillStyle = '#5eead4';
+                ctx.font = '18px "Segoe UI", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('点击"播放"开始可视化递归树', width / 2, height / 2);
+                return;
+            }
+            
+            // 绘制递归树
+            const { depth, path, left, right, type } = step;
+            
+            // 计算节点位置
+            const maxDepth = 5;
+            const nodeRadius = 20;
+            const levelHeight = 70;
+            
+            // 绘制所有历史节点
+            for (let i = 0; i <= currentStep; i++) {
+                const stepInfo = animationSteps[i];
+                if (!stepInfo || !stepInfo.path) continue;
+                
+                // 计算节点位置
+                const nodeDepth = stepInfo.depth;
+                const pathStr = stepInfo.path.join('');
+                
+                // 计算水平位置（基于路径）
+                let position = 0.5; // 根节点在中间
+                for (let j = 1; j < stepInfo.path.length; j++) {
+                    const direction = stepInfo.path[j];
+                    const offset = Math.pow(0.5, j + 1);
+                    position += direction === 'L' ? -offset : offset;
+                }
+                
+                const x = 50 + position * (width - 100);
+                const y = 50 + nodeDepth * levelHeight;
+                
+                // 确定节点颜色
+                let nodeColor = '#334155';
+                let borderColor = '#64748b';
+                let textColor = '#e2e8f0';
+                
+                // 高亮当前路径
+                if (highlightPath && isPathPrefix(stepInfo.path, path)) {
+                    nodeColor = 'rgba(94, 234, 212, 0.3)';
+                    borderColor = '#5eead4';
+                }
+                
+                // 当前节点特殊高亮
+                if (i === currentStep) {
+                    nodeColor = 'rgba(253, 224, 71, 0.5)';
+                    borderColor = '#fde047';
+                }
+                
+                // 绘制节点
+                ctx.beginPath();
+                ctx.arc(x, y, nodeRadius, 0, Math.PI * 2);
+                ctx.fillStyle = nodeColor;
+                ctx.fill();
+                ctx.strokeStyle = borderColor;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // 绘制节点文本
+                ctx.fillStyle = textColor;
+                ctx.font = '12px "Segoe UI", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                let displayText = '';
+                if (stepInfo.type === 'base') {
+                    displayText = `[${left}]`;
+                } else if (stepInfo.left !== undefined && stepInfo.right !== undefined) {
+                    displayText = `[${stepInfo.left},${stepInfo.right}]`;
+                } else {
+                    displayText = pathStr.substring(0, 4) + (pathStr.length > 4 ? '...' : '');
+                }
+                
+                ctx.fillText(displayText, x, y);
+                
+                // 绘制连接线（连接到父节点）
+                if (stepInfo.path.length > 1) {
+                    const parentPath = stepInfo.path.slice(0, -1);
+                    const parentStep = findStepByPath(parentPath);
+                    
+                    if (parentStep) {
+                        // 计算父节点位置
+                        let parentPosition = 0.5;
+                        for (let j = 1; j < parentPath.length; j++) {
+                            const direction = parentPath[j];
+                            const offset = Math.pow(0.5, j + 1);
+                            parentPosition
+<!--检测到代码截断，自动续写中...-->
++= direction === 'L' ? -offset : offset;
+                        }
+                        
+                        const parentX = 50 + parentPosition * (width - 100);
+                        const parentY = 50 + parentStep.depth * levelHeight;
+                        
+                        // 绘制连接线
+                        ctx.beginPath();
+                        ctx.moveTo(parentX, parentY + nodeRadius);
+                        ctx.lineTo(x, y - nodeRadius);
+                        ctx.strokeStyle = highlightPath && isPathPrefix(parentPath, path) ? '#5eead4' : '#475569';
+                        ctx.lineWidth = 1.5;
+                        ctx.stroke();
+                    }
+                }
+            }
+            
+            // 绘制当前操作信息
+            if (step.operation) {
+                ctx.fillStyle = '#5eead4';
+                ctx.font = '16px "Segoe UI", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(step.operation, width / 2, height - 20);
+            }
+        }
+        
+        // 辅助函数：检查路径前缀
+        function isPathPrefix(prefix, fullPath) {
+            if (prefix.length > fullPath.length) return false;
+            for (let i = 0; i < prefix.length; i++) {
+                if (prefix[i] !== fullPath[i]) return false;
+            }
+            return true;
+        }
+        
+        // 辅助函数：根据路径查找步骤
+        function findStepByPath(path) {
+            for (let i = currentStep; i >= 0; i--) {
+                if (animationSteps[i] && 
+                    animationSteps[i].path.length === path.length &&
+                    animationSteps[i].path.every((val, idx) => val === path[idx])) {
+                    return animationSteps[i];
+                }
+            }
+            return null;
+        }
+        
+        // 更新代码高亮
+        function updateCodeHighlight(step) {
+            if (!showCode) {
+                // 清除所有高亮
+                for (let i = 1; i <= 24; i++) {
+                    codeLines[i].classList.remove('active');
+                }
+                return;
+            }
+            
+            // 清除所有高亮
+            for (let i = 1; i <= 24; i++) {
+                codeLines[i].classList.remove('active');
+            }
+            
+            if (!step) return;
+            
+            // 根据步骤类型高亮对应代码行
+            const { type } = step;
+            
+            switch (type) {
+                case 'enter':
+                    codeLines[1].classList.add('active');
+                    codeLines[2].classList.add('active');
+                    break;
+                    
+                case 'base':
+                    codeLines[7].classList.add('active');
+                    break;
+                    
+                case 'merge_start':
+                    codeLines[6].classList.add('active');
+                    codeLines[9].classList.add('active');
+                    break;
+                    
+                case 'compare':
+                    codeLines[12].classList.add('active');
+                    codeLines[13].classList.add('active');
+                    break;
+                    
+                case 'select_left':
+                    codeLines[14].classList.add('active');
+                    break;
+                    
+                case 'select_right':
+                    codeLines[16].classList.add('active');
+                    break;
+                    
+                case 'copy_left':
+                case 'copy_right':
+                    codeLines[19].classList.add('active');
+                    codeLines[20].classList.add('active');
+                    break;
+                    
+                case 'copy_back':
+                    codeLines[21].classList.add('active');
+                    codeLines[22].classList.add('active');
+                    break;
+                    
+                case 'merge_end':
+                    codeLines[23].classList.add('active');
+                    codeLines[24].classList.add('active');
+                    break;
+                    
+                case 'exit':
+                    codeLines[8].classList.add('active');
+                    break;
+            }
+        }
+        
+        // 更新信息面板
+        function updateInfoPanel(step) {
+            if (!step) {
+                currentOperation.textContent = '等待开始...';
+                currentRange.textContent = '-';
+                stepCount.textContent = '0';
+                return;
+            }
+            
+            currentOperation.textContent = step.operation;
+            stepCount.textContent = currentStep + 1;
+            
+            if (step.left !== undefined && step.right !== undefined) {
+                currentRange.textContent = `[${step.left}, ${step.right}]`;
+            } else {
+                currentRange.textContent = '-';
+            }
+        }
+        
+        // 执行一步动画
+        function executeStep(stepIndex) {
+            if (stepIndex < 0 || stepIndex >= animationSteps.length) return;
+            
+            currentStep = stepIndex;
+            const step = animationSteps[stepIndex];
+            
+            // 更新数组状态（对于copy_back步骤）
+            if (step.type === 'copy_back' && step.index !== undefined && step.value !== undefined) {
+                currentArray[step.index] = step.value;
+            }
+            
+            // 更新显示
+            drawArrayView(step);
+            drawTreeView(step);
+            updateCodeHighlight(step);
+            updateInfoPanel(step);
+            
+            // 更新按钮状态
+            updateButtonStates();
+        }
+        
+        // 下一步
+        function nextStep() {
+            if (currentStep < animationSteps.length - 1) {
+                executeStep(currentStep + 1);
+            } else {
+                pauseAnimation();
+            }
+        }
+        
+        // 上一步
+        function prevStep() {
+            if (currentStep > 0) {
+                // 需要重新计算数组状态
+                resetArrayState();
+                for (let i = 0; i < currentStep - 1; i++) {
+                    const step = animationSteps[i];
+                    if (step.type === 'copy_back' && step.index !== undefined && step.value !== undefined) {
+                        currentArray[step.index] = step.value;
+                    }
+                }
+                executeStep(currentStep - 1);
+            }
+        }
+        
+        // 重置数组状态
+        function resetArrayState() {
+            currentArray = [...originalArray];
+        }
+        
+        // 播放动画
+        function playAnimation() {
+            if (isPlaying) return;
+            
+            isPlaying = true;
+            updateButtonStates();
+            
+            animationInterval = setInterval(() => {
+                if (currentStep < animationSteps.length - 1) {
+                    nextStep();
+                } else {
+                    pauseAnimation();
+                }
+            }, 1000 / animationSpeed);
+        }
+        
+        // 暂停动画
+        function pauseAnimation() {
+            isPlaying = false;
+            clearInterval(animationInterval);
+            updateButtonStates();
+        }
+        
+        // 重置动画
+        function resetAnimation() {
+            pauseAnimation();
+            currentStep = 0;
+            resetArrayState();
+            drawArrayView(null);
+            drawTreeView(null);
+            updateCodeHighlight(null);
+            updateInfoPanel(null);
+            updateButtonStates();
+        }
+        
+        // 更新按钮状态
+        function updateButtonStates() {
+            playBtn.disabled = isPlaying || currentStep >= animationSteps.length - 1;
+            pauseBtn.disabled = !isPlaying;
+            stepBtn.disabled = isPlaying || currentStep >= animationSteps.length - 1;
+            prevBtn.disabled = isPlaying || currentStep <= 0;
+        }
+        
+        // 生成随机数组
+        function generateRandomArray(size = 8) {
+            const arr = [];
+            for (let i = 0; i < size; i++) {
+                arr.push(Math.floor(Math.random() * 90) + 10);
+            }
+            return arr;
+        }
+        
+        // 生成逆序数组
+        function generateReverseArray(size = 8) {
+            const arr = [];
+            for (let i = size; i > 0; i--) {
+                arr.push(i * 10);
+            }
+            return arr;
+        }
+        
+        // 生成基本有序数组
+        function generateNearlySortedArray(size = 8) {
+            const arr = [];
+            for (let i = 0; i < size; i++) {
+                arr.push((i + 1) * 10);
+            }
+            // 交换几对元素
+            for (let i = 0; i < 2; i++) {
+                const idx1 = Math.floor(Math.random() * size);
+                const idx2 = Math.floor(Math.random() * size);
+                [arr[idx1], arr[idx2]] = [arr[idx2], arr[idx1]];
+            }
+            return arr;
+        }
+        
+        // 初始化
+        function init() {
+            // 生成初始动画步骤
+            animationSteps = generateMergeSortSteps(originalArray);
+            
+            // 绘制初始状态
+            drawArrayView(null);
+            drawTreeView(null);
+            updateCodeHighlight(null);
+            updateInfoPanel(null);
+            updateButtonStates();
+            
+            // 事件监听器
+            playBtn.addEventListener('click', playAnimation);
+            pauseBtn.addEventListener('click', pauseAnimation);
+            stepBtn.addEventListener('click', nextStep);
+            prevBtn.addEventListener('click', prevStep);
+            resetBtn.addEventListener('click', resetAnimation);
+            
+            speedSlider.addEventListener('input', function() {
+                animationSpeed = parseInt(this.value);
+                if (isPlaying) {
+                    pauseAnimation();
+                    playAnimation();
+                }
+            });
+            
+            arrayInput.addEventListener('change', function() {
+                const input = this.value.trim();
+                if (input) {
+                    const newArray = input.split(',').map(num => parseInt(num.trim())).filter(num => !isNaN(num));
+                    if (newArray.length > 0) {
+                        originalArray = newArray;
+                        resetAnimation();
+                        animationSteps = generateMergeSortSteps(originalArray);
+                        presetSelect.value = 'custom';
+                    }
+                }
+            });
+            
+            presetSelect.addEventListener('change', function() {
+                const preset = this.value;
+                
+                switch (preset) {
+                    case 'random':
+                        originalArray = generateRandomArray();
+                        break;
+                    case 'reverse':
+                        originalArray = generateReverseArray();
+                        break;
+                    case 'nearly':
+                        originalArray = generateNearlySortedArray();
+                        break;
+                    case 'small':
+                        originalArray = [5, 2, 8, 1];
+                        break;
+                    case 'custom':
+                        return; // 保持当前数组
+                }
+                
+                arrayInput.value = originalArray.join(', ');
+                resetAnimation();
+                animationSteps = generateMergeSortSteps(originalArray);
+            });
+            
+            showTreeToggle.addEventListener('change', function() {
+                showTree = this.checked;
+                drawTreeView(animationSteps[currentStep]);
+            });
+            
+            highlightPathToggle.addEventListener('change', function() {
+                highlightPath = this.checked;
+                drawTreeView(animationSteps[currentStep]);
+            });
+            
+            showCodeToggle.addEventListener('change', function() {
+                showCode = this.checked;
+                updateCodeHighlight(animationSteps[currentStep]);
+            });
+            
+            // 初始生成步骤
+            resetAnimation();
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

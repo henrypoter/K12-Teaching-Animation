@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>堆排序算法可视化 | Heap Sort Visualization</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 15px;
+            border-bottom: 2px solid #3498db;
+            margin-bottom: 10px;
+        }
+        
+        h1 {
+            color: #3498db;
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            color: #bdc3c7;
+            font-size: 1.1rem;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .visualization-section {
+            flex: 2;
+            min-width: 300px;
+            background-color: rgba(44, 62, 80, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .control-section {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .panel {
+            background-color: rgba(44, 62, 80, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .panel-title {
+            color: #3498db;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #3498db;
+        }
+        
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            border: 2px solid #34495e;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #1a252f;
+        }
+        
+        #treeCanvas, #arrayCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .control-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background-color: #7f8c8d;
+            color: white;
+        }
+        
+        .btn-success {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .btn-warning {
+            background-color: #f1c40f;
+            color: #2c3e50;
+        }
+        
+        .btn-danger {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .config-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .option-label {
+            font-weight: bold;
+            color: #bdc3c7;
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        input[type="radio"] {
+            accent-color: #3498db;
+        }
+        
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        input[type="range"] {
+            flex: 1;
+            accent-color: #3498db;
+        }
+        
+        .status-display {
+            background-color: rgba(26, 37, 47, 0.8);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed #34495e;
+        }
+        
+        .status-item:last-child {
+            margin-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .status-label {
+            color: #bdc3c7;
+        }
+        
+        .status-value {
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .step-description {
+            background-color: rgba(26, 37, 47, 0.8);
+            border-radius: 8px;
+            padding: 15px;
+            min-height: 120px;
+            line-height: 1.6;
+        }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .legend-text {
+            font-size: 0.9rem;
+            color: #bdc3c7;
+        }
+        
+        .code-panel {
+            font-family: 'Consolas', 'Monaco', monospace;
+            background-color: #1a252f;
+            border-radius: 8px;
+            padding: 15px;
+            overflow-x: auto;
+            line-height: 1.5;
+        }
+        
+        .code-line {
+            padding: 2px 5px;
+            margin: 2px 0;
+            border-radius: 3px;
+            transition: background-color 0.3s;
+        }
+        
+        .code-line.active {
+            background-color: rgba(52, 152, 219, 0.3);
+            color: #3498db;
+            font-weight: bold;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #34495e;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>堆排序算法可视化</h1>
+            <p class="subtitle">Heap Sort Visualization | 建堆 → 取根 → 调整 → 排序完成</p>
+        </header>
+        
+        <div class="main-content">
+            <section class="visualization-section">
+                <h2 class="panel-title">堆排序过程可视化</h2>
+                <div class="canvas-container">
+                    <canvas id="treeCanvas"></canvas>
+                    <canvas id="arrayCanvas"></canvas>
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #ecf0f1;"></div>
+                        <span class="legend-text">默认节点</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #3498db;"></div>
+                        <span class="legend-text">当前操作节点</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #f1c40f;"></div>
+                        <span class="legend-text">比较节点</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #e74c3c;"></div>
+                        <span class="legend-text">交换节点</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #2ecc71;"></div>
+                        <span class="legend-text">已排序元素</span>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="control-section">
+                <div class="panel">
+                    <h2 class="panel-title">动画控制</h2>
+                    <div class="control-buttons">
+                        <button id="playPauseBtn" class="btn-primary">▶ 播放</button>
+                        <button id="nextStepBtn" class="btn-secondary">⏭ 下一步</button>
+                        <button id="prevStepBtn" class="btn-secondary">⏮ 上一步</button>
+                        <button id="resetBtn" class="btn-warning">↺ 重置</button>
+                        <button id="randomizeBtn" class="btn-success">🎲 随机数据</button>
+                    </div>
+                    
+                    <div class="config-options">
+                        <div class="option-group">
+                            <div class="option-label">排序模式</div>
+                            <div class="radio-group">
+                                <label class="radio-option">
+                                    <input type="radio" name="sortMode" value="max" checked>
+                                    <span>大顶堆 (升序排序)</span>
+                                </label>
+                                <label class="radio-option">
+                                    <input type="radio" name="sortMode" value="min">
+                                    <span>小顶堆 (降序排序)</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="option-group">
+                            <div class="option-label">动画速度</div>
+                            <div class="slider-container">
+                                <span>慢</span>
+                                <input type="range" id="speedSlider" min="1" max="10" value="5">
+                                <span>快</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="status-display">
+                        <div class="status-item">
+                            <span class="status-label">当前步骤:</span>
+                            <span id="currentStep" class="status-value">准备开始</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">堆大小:</span>
+                            <span id="heapSize" class="status-value">10</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">已排序:</span>
+                            <span id="sortedCount" class="status-value">0</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">比较次数:</span>
+                            <span id="comparisonCount" class="status-value">0</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">交换次数:</span>
+                            <span id="swapCount" class="status-value">0</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="panel">
+                    <h2 class="panel-title">步骤说明</h2>
+                    <div class="step-description" id="stepDescription">
+                        点击"播放"按钮开始堆排序可视化演示。算法分为两个阶段：1) 建堆阶段：从最后一个非叶子节点开始，自底向上调整，构建大顶堆/小顶堆；2) 排序阶段：反复将堆顶元素与末尾元素交换，然后调整堆结构。
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        <div class="panel">
+            <h2 class="panel-title">算法伪代码</h2>
+            <div class="code-panel">
+                <div id="codeLine1" class="code-line">function heapSort(arr):</div>
+                <div id="codeLine2" class="code-line">    n = arr.length</div>
+                <div id="codeLine3" class="code-line">    # 1. 建堆阶段</div>
+                <div id="codeLine4" class="code-line">    for i = n/2 - 1 down to 0:</div>
+                <div id="codeLine5" class="code-line">        heapify(arr, n, i)</div>
+                <div id="codeLine6" class="code-line">    # 2. 排序阶段</div>
+                <div id="codeLine7" class="code-line">    for i = n-1 down to 1:</div>
+                <div id="codeLine8" class="code-line">        swap(arr[0], arr[i])</div>
+                <div id="codeLine9" class="code-line">        heapify(arr, i, 0)</div>
+                <div id="codeLine10" class="code-line"></div>
+                <div id="codeLine11" class="code-line">function heapify(arr, n, i):</div>
+                <div id="codeLine12" class="code-line">    largest = i  # 或 smallest 对于小顶堆</div>
+                <div id="codeLine13" class="code-line">    left = 2*i + 1</div>
+                <div id="codeLine14" class="code-line">    right = 2*i + 2</div>
+                <div id="codeLine15" class="code-line">    </div>
+                <div id="codeLine16" class="code-line">    if left < n and arr[left] > arr[largest]:</div>
+                <div id="codeLine17" class="code-line">        largest = left</div>
+                <div id="codeLine18" class="code-line">    </div>
+                <div id="codeLine19" class="code-line">    if right < n and arr[right] > arr[largest]:</div>
+                <div id="codeLine20" class="code-line">        largest = right</div>
+                <div id="codeLine21" class="code-line">    </div>
+                <div id="codeLine22" class="code-line">    if largest != i:</div>
+                <div id="codeLine23" class="code-line">        swap(arr[i], arr[largest])</div>
+                <div id="codeLine24" class="code-line">        heapify(arr, n, largest)</div>
+            </div>
+        </div>
+        
+        <footer class="footer">
+            <p>堆排序算法可视化 | 时间复杂度: O(n log n) | 空间复杂度: O(1) | 不稳定排序</p>
+            <p>交互式教学动画设计 | 使用HTML5 Canvas实现</p>
+        </footer>
+    </div>
+
+    <script>
+        // 堆排序可视化主程序
+        document.addEventListener('DOMContentLoaded', function() {
+            // 常量定义
+            const TREE_CANVAS = document.getElementById('treeCanvas');
+            const ARRAY_CANVAS = document.getElementById('arrayCanvas');
+            const TREE_CTX = TREE_CANVAS.getContext('2d');
+            const ARRAY_CTX = ARRAY_CANVAS.getContext('2d');
+            
+            // 状态变量
+            let data = [];
+            let heapSize = 0;
+            let sortedElements = [];
+            let animationState = {
+                phase: 'idle', // 'idle', 'building', 'sorting', 'heapifying'
+                stepIndex: 0,
+                currentIndex: -1,
+                comparingIndex: -1,
+                swappingIndex: -1,
+                heapifyRoot: -1,
+                heapifyTarget: -1,
+                isMaxHeap: true,
+                isPlaying: false,
+                speed: 500,
+                comparisonCount: 0,
+                swapCount: 0,
+                steps: []
+            };
+            
+            // 初始化数据
+            function initializeData() {
+                data = [];
+                const size = 10;
+                for (let i = 0; i < size; i++) {
+                    data.push(Math.floor(Math.random() * 90) + 10); // 10-99之间的随机数
+                }
+                heapSize = data.length;
+                sortedElements = [];
+                animationState.stepIndex = 0;
+                animationState.currentIndex = -1;
+                animationState.comparingIndex = -1;
+                animationState.swappingIndex = -1;
+                animationState.heapifyRoot = -1;
+                animationState.heapifyTarget = -1;
+                animationState.comparisonCount = 0;
+                animationState.swapCount = 0;
+                animationState.steps = [];
+                animationState.phase = 'idle';
+                
+                updateStatusDisplay();
+                updateStepDescription('已生成新的随机数据。点击"播放"按钮开始堆排序演示。');
+                highlightCodeLine(1);
+                drawVisualization();
+            }
+            
+            // 更新状态显示
+            function updateStatusDisplay() {
+                document.getElementById('heapSize').textContent = heapSize;
+                document.getElementById('sortedCount').textContent = sortedElements.length;
+                document.getElementById('comparisonCount').textContent = animationState.comparisonCount;
+                document.getElementById('swapCount').textContent = animationState.swapCount;
+                
+                const modeRadios = document.getElementsByName('sortMode');
+                animationState.isMaxHeap = modeRadios[0].checked;
+                document.getElementById('currentStep').textContent = 
+                    animationState.phase === 'idle' ? '准备开始' :
+                    animationState.phase === 'building' ? '建堆阶段' :
+                    animationState.phase === 'sorting' ? '排序阶段' :
+                    animationState.phase === 'heapifying' ? '调整堆' : '完成';
+            }
+            
+            // 更新步骤说明
+            function updateStepDescription(text) {
+                document.getElementById('stepDescription').textContent = text;
+            }
+            
+            // 高亮代码行
+            function highlightCodeLine(lineNumber) {
+                // 清除所有高亮
+                for (let i = 1; i <= 24; i++) {
+                    const lineElement = document.getElementById(`codeLine${i}`);
+                    if (lineElement) {
+                        lineElement.classList.remove('active');
+                    }
+                }
+                
+                // 高亮指定行
+                const activeLine = document.getElementById(`codeLine${lineNumber}`);
+                if (activeLine) {
+                    activeLine.classList.add('active');
+                }
+            }
+            
+            // 绘制树形视图
+            function drawTree() {
+                TREE_CTX.clearRect(0, 0, TREE_CANVAS.width, TREE_CANVAS.height);
+                
+                // 设置画布尺寸
+                TREE_CANVAS.width = TREE_CANVAS.parentElement.clientWidth;
+                TREE_CANVAS.height = TREE_CANVAS.parentElement.clientHeight;
+                
+                const nodeRadius = 25;
+                const levelHeight = 80;
+                const canvasWidth = TREE_CANVAS.width;
+                
+                // 计算树的深度
+                const treeDepth = Math.floor(Math.log2(heapSize)) + 1;
+                
+                // 递归绘制节点
+                function drawNode(index, x, y, level) {
+                    if (index >= heapSize) return;
+                    
+                    // 确定节点颜色
+                    let nodeColor = '#ecf0f1'; // 默认
+                    if (index === animationState.currentIndex) {
+                        nodeColor = '#3498db'; // 当前操作节点
+                    } else if (index === animationState.comparingIndex) {
+                        nodeColor = '#f1c40f'; // 比较节点
+                    } else if (index === animationState.swappingIndex) {
+                        nodeColor = '#e74c3c'; // 交换节点
+                    } else if (index === animationState.heapifyRoot || index === animationState.heapifyTarget) {
+                        nodeColor = '#3498db'; // 堆化相关节点
+                    }
+                    
+                    // 绘制连接线到子节点
+                    const leftChildIndex = 2 * index + 1;
+                    const rightChildIndex = 2 * index + 2;
+                    
+                    if (leftChildIndex < heapSize) {
+                        const childX = x - (canvasWidth / Math.pow(2, level + 2));
+                        const childY = y + levelHeight;
+                        
+                        TREE_CTX.beginPath();
+                        TREE_CTX.moveTo(x, y + nodeRadius);
+                        TREE_CTX.lineTo(childX, childY - nodeRadius);
+                        TREE_CTX.strokeStyle = '#7f8c8d';
+                        TREE_CTX.lineWidth = 2;
+                        TREE_CTX.stroke();
+                        
+                        drawNode(leftChildIndex, childX, childY, level + 1);
+                    }
+                    
+                    if (rightChildIndex < heapSize) {
+                        const childX = x + (canvasWidth / Math.pow(2, level + 2));
+                        const childY = y + levelHeight;
+                        
+                        TREE_CTX.beginPath();
+                        TREE_CTX.moveTo(x, y + nodeRadius);
+                        TREE_CTX.lineTo(childX, childY - nodeRadius);
+                        TREE_CTX.strokeStyle = '#7f8c8d';
+                        TREE_CTX.lineWidth = 2;
+                        TREE_CTX.stroke();
+                        
+                        drawNode(rightChildIndex, childX, childY, level + 1);
+                    }
+                    
+                    // 绘制节点
+                    TREE_CTX.beginPath();
+                    TREE_CTX.arc(x, y, nodeRadius, 0, Math.PI * 2);
+                    TREE_CTX.fillStyle = nodeColor;
+                    TREE_CTX.fill();
+                    TREE_CTX.strokeStyle = '#34495e';
+                    TREE_CTX.lineWidth = 2;
+                    TREE_CTX.stroke();
+                    
+                    // 绘制节点值
+                    TREE_CTX.fillStyle = '#2c3e50';
+                    TREE_CTX.font = 'bold 16px Arial';
+                    TREE_CTX.textAlign = 'center';
+                    TREE_CTX.textBaseline = 'middle';
+                    TREE_CTX.fillText(data[index], x, y);
+                    
+                    // 绘制节点索引
+                    TREE_CTX.fillStyle = '#7f8c8d';
+                    TREE_CTX.font = '12px Arial';
+                    TREE_CTX.fillText(`[${index}]`, x, y + nodeRadius + 15);
+                }
+                
+                // 从根节点开始绘制
+                const rootX = canvasWidth / 2;
+                const rootY = nodeRadius + 30;
+                drawNode(0, rootX, rootY, 1);
+                
+                // 绘制已排序元素
+                const sortedStartY = TREE_CANVAS.height - 60;
+                const sortedSpacing = 40;
+                
+                TREE_CTX.fillStyle = '#bdc3c7';
+                TREE_CTX.font = '14px Arial';
+                TREE_CTX.textAlign = 'left';
+                TREE_CTX.fillText('已排序元素:', 20, sortedStartY - 20);
+                
+                for (let i = 0; i < sortedElements.length; i++) {
+                    const x = 30 + i * sortedSpacing;
+                    const y = sortedStartY;
+                    
+                    TREE_CTX.beginPath();
+                    TREE_CTX.arc(x, y, 15, 0, Math.PI * 2);
+                    TREE_CTX.fillStyle = '#2ecc71';
+                    TREE_CTX.fill();
+                    TREE_CTX.strokeStyle = '#27ae60';
+                    TREE_CTX.lineWidth = 2;
+                    TREE_CTX.stroke();
+                    
+                    TREE_CTX.fillStyle = '#2c3e50';
+                    TREE_CTX.font = 'bold 14px Arial';
+                    TREE_CTX.textAlign = 'center';
+                    TREE_CTX.textBaseline = 'middle';
+                    TREE_CTX.fillText(sortedElements[i], x, y);
+                }
+            }
+            
+            // 绘制数组视图
+            function drawArray() {
+                ARRAY_CTX.clearRect(0, 0, ARRAY_CANVAS.width, ARRAY_CANVAS.height);
+                
+                // 设置画布尺寸
+                ARRAY_CANVAS.width = ARRAY_CANVAS.parentElement.clientWidth;
+                ARRAY_CANVAS.height = ARRAY_CANVAS.parentElement.clientHeight;
+                
+                const cellWidth = 50;
+                const cellHeight = 40;
+                const startX = (ARRAY_CANVAS.width - (data.length * cellWidth)) / 2;
+                const startY = 50;
+                
+                // 绘制数组标题
+                ARRAY_CTX.fillStyle = '#bdc3c7';
+                ARRAY_CTX.font = 'bold 18px Arial';
+                ARRAY_CTX.textAlign = 'center';
+                ARRAY_CTX.fillText('数组表示', ARRAY_CANVAS.width / 2, 30);
+                
+                // 绘制堆范围指示
+                if (heapSize < data.length) {
+                    ARRAY_CTX.fillStyle = 'rgba(52, 152, 219, 0.2)';
+                    ARRAY_CTX.fillRect(
+                        startX + heapSize * cellWidth, 
+                        startY - 5, 
+                        (data.length - heapSize) * cellWidth, 
+                        cellHeight + 10
+                    );
+                    
+                    ARRAY_CTX.fillStyle = '#3498db';
+                    ARRAY_CTX.font = '14px Arial';
+                    ARRAY_CTX.textAlign = 'center';
+                    ARRAY_CTX.fillText(
+                        `堆范围: 0-${heapSize-1}`, 
+                        startX + (heapSize + (data.length - heapSize) / 2) * cellWidth, 
+                        startY + cellHeight + 25
+                    );
+                }
+                
+                // 绘制数组元素
+                for (let i = 0; i < data.length; i++) {
+                    const x = startX + i * cellWidth;
+                    const y = startY;
+                    
+                    // 确定单元格颜色
+                    let cellColor = '#ecf0f1'; // 默认
+                    if (i === animationState.currentIndex) {
+                        cellColor = '#3498db'; // 当前操作节点
+                    } else if (i === animationState.comparingIndex) {
+                        cellColor = '#f1c40f'; // 比较节点
+                    } else if (i === animationState.swappingIndex) {
+                        cellColor = '#e74c3c'; // 交换节点
+                    } else if (i === animationState.heapifyRoot || i === animationState.heapifyTarget) {
+                        cellColor = '#3498db'; // 堆化相关节点
+                    } else if (i >= heapSize) {
+                        cellColor = '#2ecc71'; // 已排序元素
+                    }
+                    
+                    // 绘制单元格
+                    ARRAY_CTX.fillStyle = cellColor;
+                    ARRAY_CTX.fillRect(x, y, cellWidth, cellHeight);
+                    ARRAY_CTX.strokeStyle = '#34495e';
+                    ARRAY_CTX.lineWidth = 2;
+                    ARRAY_CTX.strokeRect(x, y, cellWidth, cellHeight);
+                    
+                    // 绘制值
+                    ARRAY_CTX.fillStyle = '#2c3e50';
+                    ARRAY_CTX.font = 'bold 16px Arial';
+                    ARRAY_CTX.textAlign = 'center';
+                    ARRAY_CTX.textBaseline = 'middle';
+                    ARRAY_CTX.fillText(data[i], x + cellWidth / 2, y + cellHeight / 2);
+                    
+                    // 绘制索引
+                    ARRAY_CTX.fillStyle = '#7f8c8d';
+                    ARRAY_CTX.font = '12px Arial';
+                    ARRAY_CTX.fillText(`[${i}]`, x + cellWidth / 2, y + cellHeight + 15);
+                }
+            }
+            
+            // 绘制可视化
+            function drawVisualization() {
+                drawTree();
+                drawArray();
+            }
+            
+            // 执行建堆阶段
+            async function buildHeap() {
+                animationState.phase = 'building';
+                updateStatusDisplay();
+                
+                // 从最后一个非叶子节点开始
+                const startIdx = Math.floor(heapSize / 2) - 1;
+                
+                for (let i = startIdx; i >= 0; i--) {
+                    await heapify(i, heapSize);
+                }
+                
+                updateStepDescription(`建堆完成！现在堆顶元素是${animationState.isMaxHeap ? '最大' : '最小'}值: ${data[0]}`);
+                highlightCodeLine(6);
+                
+                // 建堆完成后进入排序阶段
+                animationState.phase = 'sorting';
+                updateStatusDisplay();
+            }
+            
+            // 堆化函数
+            async function heapify(rootIndex, size) {
+                animationState.heapifyRoot = rootIndex;
+                animationState.phase = 'heapifying';
+                updateStatusDisplay();
+                highlightCodeLine(11);
+                
+                let largestOrSmallest = rootIndex;
+                const leftChildIndex = 2 * rootIndex + 1;
+                const rightChildIndex = 2 * rootIndex + 2;
+                
+                // 与左子节点比较
+                if (leftChildIndex < size) {
+                    animationState.comparingIndex = leftChildIndex;
+                    animationState.currentIndex = largestOrSmallest;
+                    updateStepDescription(`比较节点[${largestOrSmallest}](${data[largestOrSmallest]})和左子节点[${leftChildIndex}](${data[leftChildIndex]})`);
+                    drawVisualization();
+                    animationState.comparisonCount++;
+                    updateStatusDisplay();
+                    highlightCodeLine(16);
+                    
+                    await sleep(animationState.speed);
+                    
+                    const shouldUpdate = animationState.isMaxHeap ? 
+                        data[leftChildIndex] > data[largestOrSmallest] : 
+                        data[leftChildIndex] < data[largestOrSmallest];
+                    
+                    if (shouldUpdate) {
+                        largestOrSmallest = leftChildIndex;
+                        highlightCodeLine(17);
+                    }
+                }
+                
+                // 与右子节点比较
+                if (rightChildIndex < size) {
+                    animationState.comparingIndex = rightChildIndex;
+                    animationState.currentIndex = largestOrSmallest;
+                    updateStepDescription(`比较节点[${largestOrSmallest}](${data[largestOrSmallest]})和右子节点[${rightChildIndex}](${data[rightChildIndex]})`);
+                    drawVisualization();
+                    animationState.comparisonCount++;
+                    updateStatusDisplay();
+                    highlightCodeLine(19);
+                    
+                    await sleep(animationState.speed);
+                    
+                    const shouldUpdate = animationState.isMaxHeap ? 
+                        data[rightChildIndex] > data[largestOrSmallest] : 
+                        data[rightChildIndex] < data[largestOrSmallest];
+                    
+                    if (shouldUpdate) {
+                        largestOrSmallest = rightChildIndex;
+                        highlightCodeLine(20);
+                    }
+                }
+                
+                // 如果需要交换
+                if (largestOrSmallest !== rootIndex) {
+                    animationState.heapifyTarget = largestOrSmallest;
+                    animationState.swappingIndex = rootIndex;
+                    updateStepDescription(`交换节点[${rootIndex}](${data[rootIndex]})和节点[${largestOrSmallest}](${data[largestOrSmallest]})`);
+                    highlightCodeLine(22);
+                    
+                    drawVisualization();
+                    await sleep(animationState.speed);
+                    
+                    // 执行交换
+                    [data[rootIndex], data[largestOrSmallest]] = [data[largestOrSmallest], data[rootIndex]];
+                    animationState.swapCount++;
+                    updateStatusDisplay();
+                    highlightCodeLine(23);
+                    
+                    drawVisualization();
+                    await sleep(animationState.speed);
+                    
+                    // 递归堆化受影响的子树
+                    highlightCodeLine(24);
+                    await heapify(largestOrSmallest, size);
+                }
+                
+                animationState.heapifyRoot = -1;
+                animationState.heapifyTarget = -1;
+                animationState.comparingIndex = -1;
+                animationState.currentIndex = -1;
+                animationState.swappingIndex = -1;
+            }
+            
+            // 执行排序阶段
+            async function sortHeap() {
+                for (let i = data.length - 1; i > 0; i--) {
+                    // 交换堆顶和当前末尾元素
+                    animationState.currentIndex = 0;
+                    animationState.swappingIndex = i;
+                    updateStepDescription(`交换堆顶元素[0](${data[0]})和末尾元素[${i}](${data[i]})，将${animationState.isMaxHeap ? '最大' : '最小'}值放到正确位置`);
+                    highlightCodeLine(8);
+                    
+                    drawVisualization();
+                    await sleep(animationState.speed);
+                    
+                    // 执行交换
+                    [data[0], data[i]] = [data[i], data[0]];
+                    animationState.swapCount++;
+                    updateStatusDisplay();
+                    
+                    drawVisualization();
+                    await sleep(animationState.speed);
+                    
+                    // 将交换后的元素标记为已排序
+                    sortedElements.unshift(data[i]);
+                    heapSize--;
+                    
+                    // 调整堆
+                    highlightCodeLine(9);
+                    if (heapSize > 1) {
+                        await heapify(0, heapSize);
+                    }
+                    
+                    updateStatusDisplay();
+                    drawVisualization();
+                    
+                    if (i > 1) {
+                        await sleep(animationState.speed);
+                    }
+                }
+                
+                // 最后一个元素
+                sortedElements.unshift(data[0]);
+                heapSize = 0;
+                
+                animationState.phase = 'idle';
+                updateStatusDisplay();
+                updateStepDescription(`排序完成！${animationState.isMaxHeap ? '升序' : '降序'}排序结果: ${sortedElements.join(', ')}`);
+                highlightCodeLine(1);
+                
+                // 更新播放按钮状态
+                const playPauseBtn = document.getElementById('playPauseBtn');
+                playPauseBtn.textContent = '▶ 播放';
+                playPauseBtn.classList.remove('btn-danger');
+                playPauseBtn.classList.add('btn-primary');
+                animationState.isPlaying = false;
+            }
+            
+            // 执行下一步
+            async function nextStep() {
+                if (animationState.phase === 'idle') {
+                    // 开始建堆
+                    await buildHeap();
+                } else if (animationState.phase === 'building' || animationState.phase === 'heapifying') {
+                    // 建堆阶段 - 继续执行
+                    // 在实际实现中，这里需要更精细的步骤控制
+                    // 为简化，我们直接执行完整建堆
+                    if (heapSize === data.length) {
+                        await buildHeap();
+                    }
+                } else if (animationState.phase === 'sorting') {
+                    // 排序阶段 - 继续执行
+                    if (heapSize > 0) {
+                        await sortHeap();
+                    }
+                }
+            }
+            
+            // 睡眠函数（用于动画延迟）
+            function sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+            
+            // 开始/暂停动画
+            async function togglePlayPause() {
+                const playPauseBtn = document.getElementById('playPauseBtn');
+                
+                if (animationState.isPlaying) {
+                    // 暂停
+                    animationState.isPlaying = false;
+                    playPauseBtn.textContent = '▶ 播放';
+                    playPauseBtn.classList.remove('btn-danger');
+                    playPauseBtn.classList.add('btn-primary');
+                } else {
+                    // 开始播放
+                    animationState.isPlaying = true
+<!--检测到代码截断，自动续写中...-->
+playPauseBtn.textContent = '⏸ 暂停';
+                    playPauseBtn.classList.remove('btn-primary');
+                    playPauseBtn.classList.add('btn-danger');
+                    
+                    // 如果还没开始，先建堆
+                    if (animationState.phase === 'idle') {
+                        await buildHeap();
+                    }
+                    
+                    // 然后执行排序
+                    await sortHeap();
+                    
+                    // 完成后重置按钮状态
+                    playPauseBtn.textContent = '▶ 播放';
+                    playPauseBtn.classList.remove('btn-danger');
+                    playPauseBtn.classList.add('btn-primary');
+                    animationState.isPlaying = false;
+                }
+            }
+            
+            // 上一步（简化实现，重置到初始状态）
+            function prevStep() {
+                if (animationState.stepIndex > 0) {
+                    animationState.stepIndex--;
+                    // 在实际完整实现中，这里应该恢复之前的状态
+                    // 为简化，我们提示用户使用重置功能
+                    updateStepDescription('上一步功能需要完整的状态历史记录。请使用"重置"按钮重新开始。');
+                }
+            }
+            
+            // 重置动画
+            function resetAnimation() {
+                // 停止任何正在进行的动画
+                animationState.isPlaying = false;
+                const playPauseBtn = document.getElementById('playPauseBtn');
+                playPauseBtn.textContent = '▶ 播放';
+                playPauseBtn.classList.remove('btn-danger');
+                playPauseBtn.classList.add('btn-primary');
+                
+                // 重新初始化数据
+                initializeData();
+            }
+            
+            // 随机生成新数据
+            function randomizeData() {
+                resetAnimation();
+                initializeData();
+            }
+            
+            // 更新动画速度
+            function updateSpeed() {
+                const speedSlider = document.getElementById('speedSlider');
+                // 将滑块值（1-10）转换为延迟时间（1000ms-100ms）
+                animationState.speed = 1100 - (speedSlider.value * 100);
+            }
+            
+            // 事件监听器
+            document.getElementById('playPauseBtn').addEventListener('click', togglePlayPause);
+            document.getElementById('nextStepBtn').addEventListener('click', async () => {
+                if (!animationState.isPlaying) {
+                    await nextStep();
+                }
+            });
+            document.getElementById('prevStepBtn').addEventListener('click', prevStep);
+            document.getElementById('resetBtn').addEventListener('click', resetAnimation);
+            document.getElementById('randomizeBtn').addEventListener('click', randomizeData);
+            
+            // 排序模式切换
+            const modeRadios = document.getElementsByName('sortMode');
+            modeRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (!animationState.isPlaying) {
+                        animationState.isMaxHeap = this.value === 'max';
+                        resetAnimation();
+                    }
+                });
+            });
+            
+            // 速度滑块
+            const speedSlider = document.getElementById('speedSlider');
+            speedSlider.addEventListener('input', updateSpeed);
+            
+            // 窗口大小变化时重绘
+            window.addEventListener('resize', drawVisualization);
+            
+            // 初始化
+            initializeData();
+            
+            // 初始绘制
+            drawVisualization();
+        });
+    </script>
+</body>
+</html>

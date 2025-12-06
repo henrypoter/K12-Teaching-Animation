@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数组插入与删除操作动画教学</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background-color: #f9f9f9;
+            color: #34495e;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #3498db;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .panel {
+            flex: 1;
+            min-width: 300px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .panel-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+            font-size: 1.2em;
+            color: white;
+        }
+
+        .insert .panel-icon {
+            background-color: #2ecc71;
+        }
+
+        .delete .panel-icon {
+            background-color: #e74c3c;
+        }
+
+        .panel-title {
+            font-size: 1.5em;
+            color: #2c3e50;
+        }
+
+        .panel-description {
+            color: #7f8c8d;
+            margin-top: 5px;
+            font-size: 0.95em;
+        }
+
+        .controls {
+            margin-bottom: 25px;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ecf0f1;
+            border-radius: 6px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .primary-btn {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .primary-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .secondary-btn {
+            background-color: #ecf0f1;
+            color: #2c3e50;
+        }
+
+        .secondary-btn:hover {
+            background-color: #d5dbdb;
+        }
+
+        .insert-btn {
+            background-color: #2ecc71;
+            color: white;
+        }
+
+        .insert-btn:hover {
+            background-color: #27ae60;
+        }
+
+        .delete-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .animation-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 300px;
+            border: 2px dashed #ecf0f1;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: #fdfdfd;
+        }
+
+        .array-container {
+            position: relative;
+            display: flex;
+            margin-bottom: 30px;
+        }
+
+        .array-element {
+            width: 70px;
+            height: 70px;
+            margin: 0 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #2c3e50;
+            border-radius: 8px;
+            background-color: #ecf0f1;
+            color: #2c3e50;
+            font-weight: bold;
+            font-size: 1.2em;
+            transition: all 0.5s ease;
+            position: relative;
+        }
+
+        .element-index {
+            position: absolute;
+            bottom: -25px;
+            font-size: 0.9em;
+            color: #7f8c8d;
+            font-weight: normal;
+        }
+
+        .array-length {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #3498db;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .step-info {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+            min-height: 80px;
+            width: 100%;
+        }
+
+        .step-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .step-description {
+            color: #555;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 30px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 5px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+
+        .instructions {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .instructions h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .instructions ul {
+            padding-left: 20px;
+        }
+
+        .instructions li {
+            margin-bottom: 10px;
+        }
+
+        .highlight-target {
+            background-color: #e67e22 !important;
+            color: white !important;
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(230, 126, 34, 0.3);
+        }
+
+        .highlight-moving {
+            background-color: #3498db !important;
+            color: white !important;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .highlight-new {
+            background-color: #2ecc71 !important;
+            color: white !important;
+            animation: pulse 0.5s ease;
+        }
+
+        .highlight-removed {
+            background-color: #e74c3c !important;
+            color: white !important;
+            animation: fadeOut 0.5s ease;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            70% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(0.5); opacity: 0; }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .panel {
+                min-width: 100%;
+            }
+            
+            .array-element {
+                width: 60px;
+                height: 60px;
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>数组插入与删除操作动画教学</h1>
+        <p class="subtitle">直观演示数组元素插入与删除时的集体挪动过程</p>
+    </header>
+
+    <div class="container">
+        <!-- 插入操作面板 -->
+        <div class="panel insert">
+            <div class="panel-header">
+                <div class="panel-icon">+</div>
+                <div>
+                    <h2 class="panel-title">插入操作</h2>
+                    <p class="panel-description">在指定位置插入新元素，后续元素向后移动</p>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <label for="insert-index">插入位置（索引）</label>
+                    <input type="number" id="insert-index" min="0" max="6" value="2">
+                </div>
+                
+                <div class="control-group">
+                    <label for="insert-value">插入的值</label>
+                    <input type="number" id="insert-value" value="88">
+                </div>
+                
+                <div class="button-group">
+                    <button id="insert-play" class="primary-btn">播放完整动画</button>
+                    <button id="insert-next" class="secondary-btn">下一步</button>
+                    <button id="insert-prev" class="secondary-btn">上一步</button>
+                    <button id="insert-reset" class="secondary-btn">重置</button>
+                </div>
+            </div>
+            
+            <div class="animation-area">
+                <div class="array-container" id="insert-array-container">
+                    <!-- 插入操作的数组将通过JS动态生成 -->
+                </div>
+                <div class="step-info" id="insert-step-info">
+                    <div class="step-title">准备就绪</div>
+                    <div class="step-description">请设置插入参数并点击"播放完整动画"或"下一步"开始</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 删除操作面板 -->
+        <div class="panel delete">
+            <div class="panel-header">
+                <div class="panel-icon">-</div>
+                <div>
+                    <h2 class="panel-title">删除操作</h2>
+                    <p class="panel-description">移除指定位置的元素，后续元素向前移动</p>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <label for="delete-index">删除位置（索引）</label>
+                    <input type="number" id="delete-index" min="0" max="6" value="2">
+                </div>
+                
+                <div class="button-group">
+                    <button id="delete-play" class="primary-btn">播放完整动画</button>
+                    <button id="delete-next" class="secondary-btn">下一步</button>
+                    <button id="delete-prev" class="secondary-btn">上一步</button>
+                    <button id="delete-reset" class="secondary-btn">重置</button>
+                </div>
+            </div>
+            
+            <div class="animation-area">
+                <div class="array-container" id="delete-array-container">
+                    <!-- 删除操作的数组将通过JS动态生成 -->
+                </div>
+                <div class="step-info" id="delete-step-info">
+                    <div class="step-title">准备就绪</div>
+                    <div class="step-description">请设置删除参数并点击"播放完整动画"或"下一步"开始</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #ecf0f1; border: 2px solid #2c3e50;"></div>
+            <span>普通元素</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #e67e22;"></div>
+            <span>目标位置</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #3498db;"></div>
+            <span>移动中的元素</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #2ecc71;"></div>
+            <span>新插入的元素</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #e74c3c;"></div>
+            <span>被删除的元素</span>
+        </div>
+    </div>
+    
+    <div class="instructions">
+        <h3>教学说明</h3>
+        <ul>
+            <li><strong>数组特性</strong>：数组在内存中是连续存储的，因此插入或删除元素时，需要移动后续元素以保持连续性。</li>
+            <li><strong>插入操作</strong>：在指定位置插入新元素时，该位置及之后的所有元素需要<strong>向后移动一位</strong>，为新元素腾出空间。</li>
+            <li><strong>删除操作</strong>：删除指定位置的元素时，该位置之后的所有元素需要<strong>向前移动一位</strong>，填补空缺。</li>
+            <li><strong>操作顺序</strong>：插入时从最后一个元素开始向后移动，避免覆盖；删除时从目标位置的下一个元素开始向前移动。</li>
+            <li><strong>数组长度</strong>：插入操作后数组长度增加，删除操作后数组长度减少。</li>
+            <li>使用"上一步"和"下一步"按钮可以分步观察操作过程，使用"播放完整动画"可以观看连续效果。</li>
+        </ul>
+    </div>
+
+    <script>
+        // 初始数组数据
+        const initialArray = [5, 9, 12, 7, 3];
+        const arrayCapacity = 7; // 数组容量
+        
+        // 插入操作状态
+        let insertArray = [...initialArray];
+        let insertStep = 0;
+        let insertMaxSteps = 0;
+        let insertTargetIndex = 2;
+        let insertValue = 88;
+        let insertAnimationInterval = null;
+        
+        // 删除操作状态
+        let deleteArray = [...initialArray];
+        let deleteStep = 0;
+        let deleteMaxSteps = 0;
+        let deleteTargetIndex = 2;
+        let deleteAnimationInterval = null;
+        
+        // DOM元素
+        const insertArrayContainer = document.getElementById('insert-array-container');
+        const deleteArrayContainer = document.getElementById('delete-array-container');
+        const insertStepInfo = document.getElementById('insert-step-info');
+        const deleteStepInfo = document.getElementById('delete-step-info');
+        
+        // 初始化数组显示
+        function initArrays() {
+            renderArray(insertArray, insertArrayContainer, 'insert');
+            renderArray(deleteArray, deleteArrayContainer, 'delete');
+            
+            // 更新步骤信息
+            updateInsertStepInfo();
+            updateDeleteStepInfo();
+            
+            // 重置步骤计数器
+            insertStep = 0;
+            deleteStep = 0;
+        }
+        
+        // 渲染数组到指定容器
+        function renderArray(array, container, type) {
+            container.innerHTML = '';
+            
+            // 添加数组长度标识
+            const lengthIndicator = document.createElement('div');
+            lengthIndicator.className = 'array-length';
+            lengthIndicator.textContent = `长度: ${array.length}`;
+            container.appendChild(lengthIndicator);
+            
+            // 创建数组元素
+            for (let i = 0; i < arrayCapacity; i++) {
+                const element = document.createElement('div');
+                element.className = 'array-element';
+                element.id = `${type}-element-${i}`;
+                
+                // 显示元素值或空位
+                if (i < array.length) {
+                    element.textContent = array[i];
+                } else {
+                    element.textContent = '';
+                    element.style.backgroundColor = '#f8f9fa';
+                    element.style.borderStyle = 'dashed';
+                }
+                
+                // 添加索引标签
+                const indexLabel = document.createElement('div');
+                indexLabel.className = 'element-index';
+                indexLabel.textContent = `[${i}]`;
+                element.appendChild(indexLabel);
+                
+                container.appendChild(element);
+            }
+        }
+        
+        // 更新插入步骤信息
+        function updateInsertStepInfo() {
+            const stepTitle = insertStepInfo.querySelector('.step-title');
+            const stepDescription = insertStepInfo.querySelector('.step-description');
+            
+            if (insertStep === 0) {
+                stepTitle.textContent = '准备就绪';
+                stepDescription.textContent = `初始数组: [${insertArray.join(', ')}]，将在索引 ${insertTargetIndex} 处插入值 ${insertValue}`;
+            } else if (insertStep === 1) {
+                stepTitle.textContent = '步骤 1: 检查数组容量';
+                stepDescription.textContent = `检查数组是否有足够空间插入新元素。当前长度: ${insertArray.length}, 容量: ${arrayCapacity}`;
+            } else if (insertStep === 2) {
+                stepTitle.textContent = '步骤 2: 定位目标位置';
+                stepDescription.textContent = `高亮显示索引 ${insertTargetIndex} 处，这是新元素要插入的位置`;
+            } else if (insertStep === 3) {
+                stepTitle.textContent = '步骤 3: 向后移动元素';
+                stepDescription.textContent = `从最后一个元素开始，将索引 ${insertTargetIndex} 及之后的元素依次向后移动一位`;
+            } else if (insertStep === 4) {
+                stepTitle.textContent = '步骤 4: 插入新元素';
+                stepDescription.textContent = `在腾出的位置插入新值 ${insertValue}`;
+            } else if (insertStep === 5) {
+                stepTitle.textContent = '步骤 5: 更新数组长度';
+                stepDescription.textContent = `数组长度从 ${initialArray.length} 增加到 ${insertArray.length}`;
+            } else if (insertStep === 6) {
+                stepTitle.textContent = '操作完成';
+                stepDescription.textContent = `插入操作完成。新数组: [${insertArray.join(', ')}]`;
+            }
+        }
+        
+        // 更新删除步骤信息
+        function updateDeleteStepInfo() {
+            const stepTitle = deleteStepInfo.querySelector('.step-title');
+            const stepDescription = deleteStepInfo.querySelector('.step-description');
+            
+            if (deleteStep === 0) {
+                stepTitle.textContent = '准备就绪';
+                stepDescription.textContent = `初始数组: [${deleteArray.join(', ')}]，将删除索引 ${deleteTargetIndex} 处的元素`;
+            } else if (deleteStep === 1) {
+                stepTitle.textContent = '步骤 1: 检查数组是否为空';
+                stepDescription.textContent = `检查数组是否有元素可以删除。当前长度: ${deleteArray.length}`;
+            } else if (deleteStep === 2) {
+                stepTitle.textContent = '步骤 2: 定位目标位置';
+                stepDescription.textContent = `高亮显示索引 ${deleteTargetIndex} 处，这是要删除的元素位置`;
+            } else if (deleteStep === 3) {
+                stepTitle.textContent = '步骤 3: 向前移动元素';
+                stepDescription.textContent = `从索引 ${deleteTargetIndex + 1} 开始，将后续元素依次向前移动一位`;
+            } else if (deleteStep === 4) {
+                stepTitle.textContent = '步骤 4: 更新数组长度';
+                stepDescription.textContent = `数组长度从 ${initialArray.length} 减少到 ${deleteArray.length}`;
+            } else if (deleteStep === 5) {
+                stepTitle.textContent = '操作完成';
+                stepDescription.textContent = `删除操作完成。新数组: [${deleteArray.join(', ')}]`;
+            }
+        }
+        
+        // 执行插入操作的下一个步骤
+        function nextInsertStep() {
+            if (insertStep === 0) {
+                // 步骤0: 准备阶段，获取用户输入
+                insertTargetIndex = parseInt(document.getElementById('insert-index').value);
+                insertValue = parseInt(document.getElementById('insert-value').value);
+                
+                // 验证输入
+                if (isNaN(insertTargetIndex) || insertTargetIndex < 0 || insertTargetIndex > arrayCapacity - 1) {
+                    alert('请输入有效的插入位置（0-6）');
+                    return;
+                }
+                
+                if (isNaN(insertValue)) {
+                    alert('请输入有效的插入值');
+                    return;
+                }
+                
+                // 重置数组到初始状态
+                insertArray = [...initialArray];
+                renderArray(insertArray, insertArrayContainer, 'insert');
+                insertMaxSteps = 6;
+                insertStep = 1;
+            } else if (insertStep === 1) {
+                // 步骤1: 检查数组容量
+                if (insertArray.length >= arrayCapacity) {
+                    alert('数组已满，无法插入新元素！');
+                    insertStep = 0;
+                    return;
+                }
+                insertStep = 2;
+            } else if (insertStep === 2) {
+                // 步骤2: 高亮目标位置
+                highlightElement('insert', insertTargetIndex, 'highlight-target');
+                insertStep = 3;
+            } else if (insertStep === 3) {
+                // 步骤3: 向后移动元素
+                // 先移除高亮
+                removeHighlight('insert', insertTargetIndex);
+                
+                // 从最后一个元素开始向后移动
+                for (let i = insertArray.length - 1; i >= insertTargetIndex; i--) {
+                    // 高亮移动中的元素
+                    highlightElement('insert', i, 'highlight-moving');
+                    
+                    // 在实际应用中，这里会有动画延迟，但为了简化，我们直接更新数组
+                    // 模拟动画效果：短暂延迟后更新显示
+                    setTimeout(() => {
+                        // 移动元素
+                        if (i + 1 < arrayCapacity) {
+                            // 在实际动画中，这里会有元素移动的视觉效果
+                            // 我们通过更新数组和重新渲染来模拟
+                        }
+                    }, (insertArray.length - i) * 300);
+                }
+                
+                // 执行实际移动
+                // 为插入腾出空间：从后向前移动元素
+                insertArray.length = Math.min(insertArray.length + 1, arrayCapacity);
+                for (let i = insertArray.length - 1; i > insertTargetIndex; i--) {
+                    insertArray[i] = insertArray[i - 1];
+                }
+                
+                // 重新渲染数组，显示移动后的状态
+                setTimeout(() => {
+                    renderArray(insertArray, insertArrayContainer, 'insert');
+                    insertStep = 4;
+                    updateInsertStepInfo();
+                }, 500);
+                
+                return; // 提前返回，等待setTimeout执行
+            } else if (insertStep === 4) {
+                // 步骤4: 插入新元素
+                insertArray[insertTargetIndex] = insertValue;
+                renderArray(insertArray, insertArrayContainer, 'insert');
+                
+                // 高亮新插入的元素
+                highlightElement('insert', insertTargetIndex, 'highlight-new');
+                insertStep = 5;
+            } else if (insertStep === 5) {
+                // 步骤5: 更新数组长度显示
+                // 移除高亮
+                removeHighlight('insert', insertTargetIndex);
+                insertStep = 6;
+            } else if (insertStep === 6) {
+                // 步骤6: 完成
+                insertStep = 0; // 重置为准备状态
+            }
+            
+            updateInsertStepInfo();
+        }
+        
+        // 执行插入操作的上一个步骤
+        function prevInsertStep() {
+            if (insertStep > 0) {
+                insertStep--;
+                
+                // 如果回退到步骤0，重置数组
+                if (insertStep === 0) {
+                    insertArray = [...initialArray];
+                    renderArray(insertArray, insertArrayContainer, 'insert');
+                }
+                // 如果回退到步骤3（移动元素），需要恢复移动前的状态
+                else if (insertStep === 3) {
+                    // 移除插入的值
+                    insertArray = [...initialArray];
+                    renderArray(insertArray, insertArrayContainer, 'insert');
+                }
+                
+                updateInsertStepInfo();
+            }
+        }
+        
+        // 执行删除操作的下一个步骤
+        function nextDeleteStep() {
+            if (deleteStep === 0) {
+                // 步骤0: 准备阶段，获取用户输入
+                deleteTargetIndex = parseInt(document.getElementById('delete-index').value);
+                
+                // 验证输入
+                if (isNaN(deleteTargetIndex) || deleteTargetIndex < 0 || deleteTargetIndex >= deleteArray.length) {
+                    alert('请输入有效的删除位置（0-' + (deleteArray.length - 1) + '）');
+                    return;
+                }
+                
+                // 重置数组到初始状态
+                deleteArray = [...initialArray];
+                renderArray(deleteArray, deleteArrayContainer, 'delete');
+                deleteMaxSteps = 5;
+                deleteStep = 1;
+            } else if (deleteStep === 1) {
+                // 步骤1: 检查数组是否为空
+                if (deleteArray.length === 0) {
+                    alert('数组为空，无法删除元素！');
+                    deleteStep = 0;
+                    return;
+                }
+                deleteStep = 2;
+            } else if (deleteStep === 2) {
+                // 步骤2: 高亮目标位置
+                highlightElement('delete', deleteTargetIndex, 'highlight-target');
+                deleteStep = 3;
+            } else if (deleteStep === 3) {
+                // 步骤3: 向前移动元素
+                // 先高亮要删除的元素
+                highlightElement('delete', deleteTargetIndex, 'highlight-removed');
+                
+                // 从目标位置的下一个元素开始向前移动
+                for (let i = deleteTargetIndex + 1; i < deleteArray.length; i++) {
+                    // 高亮移动中的元素
+                    highlightElement('delete', i, 'highlight-moving');
+                }
+                
+                // 执行实际移动
+                // 从目标位置的下一个元素开始向前移动
+                for (let i = deleteTargetIndex; i < deleteArray.length - 1; i++) {
+                    deleteArray[i] = deleteArray[i + 1];
+                }
+                
+                // 减少数组长度
+                deleteArray.length = deleteArray.length - 1;
+                
+                // 重新渲染数组，显示移动后的状态
+                setTimeout(() => {
+                    renderArray(deleteArray, deleteArrayContainer, 'delete');
+                    deleteStep = 4;
+                    updateDeleteStepInfo();
+                }, 500);
+                
+                return; // 提前返回，等待setTimeout执行
+            } else if (deleteStep === 4) {
+                // 步骤4: 更新数组长度显示
+                deleteStep = 5;
+            } else if (deleteStep === 5) {
+                // 步骤5: 完成
+                deleteStep = 0; // 重置为准备状态
+            }
+            
+            updateDeleteStepInfo();
+        }
+        
+        // 执行删除操作的上一个步骤
+        function prevDeleteStep() {
+            if (deleteStep > 0) {
+                deleteStep--;
+                
+                // 如果回退到步骤0，重置数组
+                if (deleteStep === 0) {
+                    deleteArray = [...initialArray];
+                    renderArray(deleteArray, deleteArrayContainer, 'delete');
+                }
+                // 如果回退到步骤3（移动元素），需要恢复移动前的状态
+                else if (deleteStep === 3) {
+                    deleteArray = [...initialArray];
+                    renderArray(deleteArray, deleteArrayContainer, 'delete');
+                }
+                
+                updateDeleteStepInfo();
+            }
+        }
+        
+        // 高亮指定元素
+        function highlightElement(type, index, className) {
+            const element = document.getElementById(`${type}-element-${index}`);
+            if (element) {
+                element.classList.add(className);
+            }
+        }
+        
+        // 移除元素高亮
+        function removeHighlight(type, index) {
+            const element = document.getElementById(`${type}-element-${index}`);
+            if (element) {
+                element.classList.remove('highlight-target', 'highlight-moving', 'highlight-new', 'highlight-removed');
+            }
+        }
+        
+        // 播放插入完整动画
+        function playInsertAnimation() {
+            // 如果已经在播放，先停止
+            if (insertAnimationInterval) {
+                clearInterval(insertAnimationInterval);
+            }
+            
+            // 重置到初始状态
+            insertStep = 0;
+            nextInsertStep(); // 进入步骤1
+            
+            // 设置定时器自动执行后续步骤
+            insertAnimationInterval = setInterval(() => {
+                if (insertStep > 0 && insertStep < insertMaxSteps) {
+                    nextInsertStep();
+                } else {
+                    clearInterval(insertAnimationInterval);
+                    insertAnimationInterval = null;
+                }
+            }, 1500);
+        }
+        
+        // 播放删除完整动画
+        function playDeleteAnimation() {
+            // 如果已经在播放，先停止
+            if (deleteAnimationInterval) {
+                clearInterval(deleteAnimationInterval);
+            }
+            
+            // 重置到初始状态
+            deleteStep = 0;
+            nextDeleteStep(); // 进入步骤1
+            
+            // 设置定时器自动执行后续步骤
+            deleteAnimationInterval = setInterval(() => {
+                if (deleteStep > 0 && deleteStep < deleteMaxSteps) {
+                    nextDeleteStep();
+                } else {
+                    clearInterval(deleteAnimationInterval);
+                    deleteAnimationInterval = null;
+                }
+            }, 1500);
+        }
+        
+        // 重置插入操作
+        function resetInsert() {
+            insertStep = 0;
+            insertArray = [...initialArray];
+            renderArray(insertArray, insertArrayContainer, 'insert');
+            updateInsertStepInfo();
+            
+            // 停止动画
+            if (insertAnimationInterval) {
+                clearInterval(insertAnimationInterval);
+                insertAnimationInterval = null;
+            }
+        }
+        
+        // 重置删除操作
+        function resetDelete() {
+            deleteStep = 0;
+            deleteArray = [...initialArray];
+            renderArray(deleteArray, deleteArrayContainer, 'delete');
+            updateDeleteStepInfo();
+            
+            // 停止动画
+            if (deleteAnimationInterval) {
+                clearInterval(deleteAnimationInterval);
+                deleteAnimationInterval = null;
+            }
+        }
+        
+        // 初始化事件监听
+        function initEventListeners() {
+            // 插入操作按钮
+            document.getElementById('insert-play').addEventListener('click', playInsertAnimation);
+            document.getElementById('insert-next').addEventListener('click', nextInsertStep);
+            document.getElementById('insert-prev').addEventListener('click', prevInsertStep);
+            document.getElementById('insert-reset').addEventListener('click', resetInsert);
+            
+            // 删除操作按钮
+            document.getElementById('delete-play').addEventListener('click', playDeleteAnimation);
+            document.getElementById('delete-next').addEventListener('click', nextDeleteStep);
+            document.getElementById('delete-prev').addEventListener('click', prevDeleteStep);
+            document.getElementById('delete-reset').addEventListener('click', resetDelete);
+            
+            // 输入框变化时更新状态
+            document.getElementById('insert-index').addEventListener('change', function() {
+                insertTargetIndex = parseInt(this.value);
+            });
+            
+            document.getElementById('insert-value').addEventListener('change', function() {
+                insertValue = parseInt(this.value);
+            });
+            
+            document.getElementById('delete-index').addEventListener('change', function() {
+                deleteTargetIndex = parseInt(this.value);
+            });
+        }
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initArrays();
+            initEventListeners();
+        });
+    </script>
+</body>
+</html>

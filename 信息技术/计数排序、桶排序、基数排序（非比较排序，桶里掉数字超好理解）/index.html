@@ -1,0 +1,1750 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>非比较排序算法动画演示：计数排序、桶排序、基数排序</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background-color: #f9f9f9;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #4A90E2;
+        }
+
+        h1 {
+            color: #4A90E2;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .control-panel {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .panel-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 200px;
+        }
+
+        .panel-title {
+            font-weight: 600;
+            color: #4A90E2;
+            font-size: 0.95em;
+        }
+
+        button {
+            background-color: #4A90E2;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        button:hover {
+            background-color: #3a7bc8;
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-secondary {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e0e0e0;
+        }
+
+        .btn-success {
+            background-color: #52C41A;
+        }
+
+        .btn-success:hover {
+            background-color: #45a016;
+        }
+
+        input[type="text"] {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.95em;
+            width: 100%;
+        }
+
+        input[type="range"] {
+            width: 100%;
+        }
+
+        .range-value {
+            font-size: 0.9em;
+            color: #666;
+            text-align: center;
+        }
+
+        .algorithm-tabs {
+            display: flex;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            background-color: #f5f5f5;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab:hover {
+            background-color: #eaeaea;
+        }
+
+        .tab.active {
+            background-color: white;
+            color: #4A90E2;
+            border-bottom: 3px solid #4A90E2;
+        }
+
+        .animation-container {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            min-height: 500px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .canvas-container {
+            width: 100%;
+            height: 450px;
+            position: relative;
+        }
+
+        #animationCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .status-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(74, 144, 226, 0.1);
+            padding: 12px 25px;
+            font-size: 0.95em;
+            border-top: 1px solid #eee;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .status-text {
+            font-weight: 600;
+            color: #4A90E2;
+            margin-right: 10px;
+        }
+
+        .explanation-panel {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .explanation-title {
+            color: #4A90E2;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .explanation-content {
+            line-height: 1.7;
+        }
+
+        .highlight {
+            background-color: #FFF9E6;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .algorithm-params {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .param-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .param-label {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .param-value {
+            font-weight: 600;
+            color: #4A90E2;
+            min-width: 30px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #888;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .control-panel {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .panel-section {
+                width: 100%;
+            }
+            
+            .algorithm-tabs {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>非比较排序算法动画演示</h1>
+        <p class="subtitle">计数排序、桶排序、基数排序 - 可视化理解"分桶-收集"过程</p>
+    </header>
+
+    <div class="container">
+        <div class="algorithm-tabs">
+            <div class="tab active" data-algorithm="counting">计数排序</div>
+            <div class="tab" data-algorithm="bucket">桶排序</div>
+            <div class="tab" data-algorithm="radix">基数排序</div>
+        </div>
+
+        <div class="control-panel">
+            <div class="panel-section">
+                <div class="panel-title">数据控制</div>
+                <div class="btn-group">
+                    <button id="randomBtn" class="btn-secondary">随机生成</button>
+                    <button id="resetBtn" class="btn-secondary">重置</button>
+                </div>
+                <input type="text" id="customInput" placeholder="输入数字，用逗号分隔，如：3,1,4,1,5,9,2,6">
+                <button id="customBtn" class="btn-secondary">使用自定义数据</button>
+            </div>
+
+            <div class="panel-section">
+                <div class="panel-title">动画控制</div>
+                <div class="btn-group">
+                    <button id="playPauseBtn">
+                        <span id="playIcon">▶</span>
+                        <span id="playText">播放</span>
+                    </button>
+                    <button id="stepBtn" class="btn-secondary">单步</button>
+                    <button id="resetAnimBtn" class="btn-secondary">重置动画</button>
+                </div>
+                <div class="algorithm-params">
+                    <div class="param-group">
+                        <span class="param-label">速度:</span>
+                        <input type="range" id="speedSlider" min="1" max="10" value="5">
+                        <span class="param-value" id="speedValue">5</span>
+                    </div>
+                    <div id="bucketParam" class="param-group" style="display: none;">
+                        <span class="param-label">桶数:</span>
+                        <input type="range" id="bucketSlider" min="2" max="10" value="5">
+                        <span class="param-value" id="bucketValue">5</span>
+                    </div>
+                    <div id="radixParam" class="param-group" style="display: none;">
+                        <span class="param-label">基数:</span>
+                        <select id="radixSelect">
+                            <option value="10">十进制</option>
+                            <option value="2">二进制</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <div class="panel-title">当前算法</div>
+                <div id="currentAlgorithm">计数排序</div>
+                <div id="algorithmDesc" style="font-size: 0.9em; color: #666; margin-top: 5px;">
+                    统计每个数字出现的次数，然后按顺序重建数组
+                </div>
+            </div>
+        </div>
+
+        <div class="animation-container">
+            <div class="canvas-container">
+                <canvas id="animationCanvas"></canvas>
+            </div>
+            <div class="status-bar">
+                <span class="status-text">状态:</span>
+                <span id="statusText">准备开始动画。请点击"播放"或"单步"按钮。</span>
+            </div>
+        </div>
+
+        <div class="explanation-panel">
+            <div class="explanation-title" id="explanationTitle">计数排序原理</div>
+            <div class="explanation-content" id="explanationContent">
+                <p><span class="highlight">计数排序</span>是一种非比较排序算法，适用于整数排序，特别是当整数的范围不大时。</p>
+                <p><strong>核心思想：</strong>统计每个数字出现的次数，然后根据统计结果直接构造有序序列。</p>
+                <p><strong>步骤：</strong></p>
+                <ol>
+                    <li>找出待排序数组中的最大值，创建计数数组（大小为最大值+1）</li>
+                    <li>遍历数组，统计每个数字出现的次数，存入计数数组</li>
+                    <li>将计数数组转换为前缀和数组（每个位置存储小于等于该数字的元素个数）</li>
+                    <li>从后往前遍历原数组，根据前缀和数组确定每个元素在有序数组中的位置</li>
+                </ol>
+                <p><strong>时间复杂度：</strong>O(n+k)，其中n是数组长度，k是整数范围大小。</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>非比较排序算法动画演示 | 设计：飞象老师 | 使用HTML5 Canvas实现</p>
+    </footer>
+
+    <script>
+        // 全局变量
+        let canvas, ctx;
+        let animationId = null;
+        let isPlaying = false;
+        let animationSpeed = 5; // 1-10
+        let currentAlgorithm = 'counting';
+        let currentStep = 0;
+        let totalSteps = 0;
+        let data = [];
+        let animationState = {};
+        
+        // 算法描述
+        const algorithmInfo = {
+            counting: {
+                name: '计数排序',
+                description: '统计每个数字出现的次数，然后按顺序重建数组',
+                explanation: {
+                    title: '计数排序原理',
+                    content: `<p><span class="highlight">计数排序</span>是一种非比较排序算法，适用于整数排序，特别是当整数的范围不大时。</p>
+                    <p><strong>核心思想：</strong>统计每个数字出现的次数，然后根据统计结果直接构造有序序列。</p>
+                    <p><strong>步骤：</strong></p>
+                    <ol>
+                        <li>找出待排序数组中的最大值，创建计数数组（大小为最大值+1）</li>
+                        <li>遍历数组，统计每个数字出现的次数，存入计数数组</li>
+                        <li>将计数数组转换为前缀和数组（每个位置存储小于等于该数字的元素个数）</li>
+                        <li>从后往前遍历原数组，根据前缀和数组确定每个元素在有序数组中的位置</li>
+                    </ol>
+                    <p><strong>时间复杂度：</strong>O(n+k)，其中n是数组长度，k是整数范围大小。</p>`
+                }
+            },
+            bucket: {
+                name: '桶排序',
+                description: '将数据分到有限数量的桶中，每个桶再分别排序',
+                explanation: {
+                    title: '桶排序原理',
+                    content: `<p><span class="highlight">桶排序</span>是计数排序的推广，将数据分到有限数量的桶中，每个桶再分别排序。</p>
+                    <p><strong>核心思想：</strong>假设输入数据均匀分布，将数据分到有限数量的桶中，每个桶再分别排序（通常使用插入排序等）。</p>
+                    <p><strong>步骤：</strong></p>
+                    <ol>
+                        <li>设置固定数量的空桶</li>
+                        <li>遍历数据，将每个元素放入对应的桶中</li>
+                        <li>对每个非空桶进行排序</li>
+                        <li>按顺序从每个桶中取出元素，组成有序序列</li>
+                    </ol>
+                    <p><strong>时间复杂度：</strong>平均O(n+k)，最坏O(n²)，取决于桶内排序算法。</p>`
+                }
+            },
+            radix: {
+                name: '基数排序',
+                description: '按照低位先排序，然后收集；再按照高位排序，然后再收集',
+                explanation: {
+                    title: '基数排序原理',
+                    content: `<p><span class="highlight">基数排序</span>是一种非比较整数排序算法，其原理是将整数按位数切割成不同的数字，然后按每个位数分别比较。</p>
+                    <p><strong>核心思想：</strong>从最低位开始，依次进行稳定的计数排序（或桶排序）。</p>
+                    <p><strong>步骤：</strong></p>
+                    <ol>
+                        <li>取得数组中的最大数，并取得其位数</li>
+                        <li>从最低位开始，依次进行稳定的排序（通常使用计数排序）</li>
+                        <li>每完成一位的排序，就收集结果，作为下一次排序的输入</li>
+                        <li>重复步骤2-3，直到最高位排序完成</li>
+                    </ol>
+                    <p><strong>时间复杂度：</strong>O(d*(n+k))，其中d是最大数字的位数，k是基数（如10）。</p>`
+                }
+            }
+        };
+
+        // 初始化
+        function init() {
+            canvas = document.getElementById('animationCanvas');
+            ctx = canvas.getContext('2d');
+            
+            // 设置Canvas尺寸
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            // 初始化数据
+            generateRandomData();
+            
+            // 初始化事件监听
+            initEventListeners();
+            
+            // 绘制初始状态
+            draw();
+        }
+
+        // 调整Canvas大小
+        function resizeCanvas() {
+            const container = document.querySelector('.canvas-container');
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            draw();
+        }
+
+        // 生成随机数据
+        function generateRandomData() {
+            const algorithm = currentAlgorithm;
+            let min, max, count;
+            
+            switch(algorithm) {
+                case 'counting':
+                    min = 1;
+                    max = 8;
+                    count = 10;
+                    break;
+                case 'bucket':
+                    min = 1;
+                    max = 99;
+                    count = 12;
+                    break;
+                case 'radix':
+                    min = 10;
+                    max = 999;
+                    count = 10;
+                    break;
+                default:
+                    min = 1;
+                    max = 10;
+                    count = 8;
+            }
+            
+            data = [];
+            for (let i = 0; i < count; i++) {
+                data.push(Math.floor(Math.random() * (max - min + 1)) + min);
+            }
+            
+            resetAnimation();
+        }
+
+        // 初始化事件监听
+        function initEventListeners() {
+            // 标签页切换
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const algorithm = tab.dataset.algorithm;
+                    switchAlgorithm(algorithm);
+                });
+            });
+            
+            // 控制按钮
+            document.getElementById('randomBtn').addEventListener('click', generateRandomData);
+            document.getElementById('resetBtn').addEventListener('click', () => {
+                data = [3, 1, 4, 1, 5, 9, 2, 6];
+                resetAnimation();
+            });
+            document.getElementById('customBtn').addEventListener('click', () => {
+                const input = document.getElementById('customInput').value;
+                if (input.trim()) {
+                    const numbers = input.split(',').map(num => parseInt(num.trim())).filter(num => !isNaN(num));
+                    if (numbers.length > 0) {
+                        data = numbers;
+                        resetAnimation();
+                    }
+                }
+            });
+            
+            // 动画控制
+            document.getElementById('playPauseBtn').addEventListener('click', togglePlayPause);
+            document.getElementById('stepBtn').addEventListener('click', stepForward);
+            document.getElementById('resetAnimBtn').addEventListener('click', resetAnimation);
+            
+            // 速度滑块
+            const speedSlider = document.getElementById('speedSlider');
+            const speedValue = document.getElementById('speedValue');
+            speedSlider.addEventListener('input', () => {
+                animationSpeed = parseInt(speedSlider.value);
+                speedValue.textContent = animationSpeed;
+            });
+            
+            // 桶数滑块（桶排序）
+            const bucketSlider = document.getElementById('bucketSlider');
+            const bucketValue = document.getElementById('bucketValue');
+            bucketSlider.addEventListener('input', () => {
+                bucketValue.textContent = bucketSlider.value;
+                if (currentAlgorithm === 'bucket') {
+                    resetAnimation();
+                }
+            });
+        }
+
+        // 切换算法
+        function switchAlgorithm(algorithm) {
+            // 更新标签页
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.dataset.algorithm === algorithm) {
+                    tab.classList.add('active');
+                }
+            });
+            
+            // 更新当前算法
+            currentAlgorithm = algorithm;
+            
+            // 更新显示
+            document.getElementById('currentAlgorithm').textContent = algorithmInfo[algorithm].name;
+            document.getElementById('algorithmDesc').textContent = algorithmInfo[algorithm].description;
+            document.getElementById('explanationTitle').innerHTML = algorithmInfo[algorithm].explanation.title;
+            document.getElementById('explanationContent').innerHTML = algorithmInfo[algorithm].explanation.content;
+            
+            // 显示/隐藏参数控件
+            document.getElementById('bucketParam').style.display = algorithm === 'bucket' ? 'flex' : 'none';
+            document.getElementById('radixParam').style.display = algorithm === 'radix' ? 'flex' : 'none';
+            
+            // 生成适合该算法的数据
+            generateRandomData();
+        }
+
+        // 切换播放/暂停
+        function togglePlayPause() {
+            if (isPlaying) {
+                pauseAnimation();
+            } else {
+                playAnimation();
+            }
+        }
+
+        // 播放动画
+        function playAnimation() {
+            if (isPlaying) return;
+            
+            isPlaying = true;
+            document.getElementById('playIcon').textContent = '⏸';
+            document.getElementById('playText').textContent = '暂停';
+            document.getElementById('stepBtn').disabled = true;
+            
+            animate();
+        }
+
+        // 暂停动画
+        function pauseAnimation() {
+            isPlaying = false;
+            document.getElementById('playIcon').textContent = '▶';
+            document.getElementById('playText').textContent = '播放';
+            document.getElementById('stepBtn').disabled = false;
+            
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+        }
+
+        // 单步前进
+        function stepForward() {
+            if (isPlaying) return;
+            
+            currentStep = Math.min(currentStep + 1, totalSteps);
+            updateAnimationState();
+            draw();
+        }
+
+        // 重置动画
+        function resetAnimation() {
+            pauseAnimation();
+            currentStep = 0;
+            
+            // 根据当前算法初始化动画状态
+            initAnimationState();
+            
+            // 更新状态文本
+            updateStatusText();
+            
+            // 重新绘制
+            draw();
+        }
+
+        // 初始化动画状态
+        function initAnimationState() {
+            switch(currentAlgorithm) {
+                case 'counting':
+                    initCountingSortState();
+                    break;
+                case 'bucket':
+                    initBucketSortState();
+                    break;
+                case 'radix':
+                    initRadixSortState();
+                    break;
+            }
+        }
+
+        // 初始化计数排序状态
+        function initCountingSortState() {
+            const maxVal = Math.max(...data);
+            animationState = {
+                algorithm: 'counting',
+                originalArray: [...data],
+                countingArray: new Array(maxVal + 1).fill(0),
+                prefixArray: null,
+                outputArray: [],
+                currentIndex: 0,
+                currentPhase: 0, // 0:计数, 1:前缀和, 2:构建输出
+                highlighted: null
+            };
+            
+            totalSteps = data.length + (maxVal + 1) + data.length + 3;
+        }
+
+        // 初始化桶排序状态
+        function initBucketSortState() {
+            const bucketCount = parseInt(document.getElementById('bucketSlider').value);
+            const minVal = Math.min(...data);
+            const maxVal = Math.max(...data);
+            const range = maxVal - minVal + 1;
+            const bucketSize = range / bucketCount;
+            
+            // 创建桶
+            const buckets = [];
+            for (let i = 0; i < bucketCount; i++) {
+                buckets.push([]);
+            }
+            
+            animationState = {
+                algorithm: 'bucket',
+                originalArray: [...data],
+                buckets: buckets,
+                bucketSize: bucketSize,
+                minVal: minVal,
+                currentIndex: 0,
+                currentPhase: 0, // 0:分配, 1:桶内排序, 2:收集
+                currentBucket: 0,
+                outputArray: [],
+                highlighted: null
+            };
+            
+            totalSteps = data.length + bucketCount + data.length + 3;
+        }
+
+        // 初始化基数排序状态
+        function initRadixSortState() {
+            const maxVal = Math.max(...data);
+            const maxDigits = Math.floor(Math.log10(maxVal)) + 1;
+            const radix = parseInt(document.getElementById('radixSelect').value);
+            
+            // 创建基数桶
+            const buckets = [];
+            for (let i = 0; i < radix; i++) {
+                buckets.push([]);
+            }
+            
+            animationState = {
+                algorithm: 'radix',
+                originalArray: [...data],
+                buckets: buckets,
+                currentArray: [...data],
+                currentDigit: 0,
+                maxDigits: maxDigits,
+                radix: radix,
+                currentPhase: 0, // 0:分配, 1:收集
+                currentIndex: 0,
+                outputArray: [],
+                highlighted: null
+            };
+            
+            totalSteps = (maxDigits * (data.length * 2 + radix)) + 2;
+        }
+
+        // 更新动画状态（根据当前步骤）
+        function updateAnimationState() {
+            switch(currentAlgorithm) {
+                case 'counting':
+                    updateCountingSortState();
+                    break;
+                case 'bucket':
+                    updateBucketSortState();
+                    break;
+                case 'radix':
+                    updateRadixSortState();
+                    break;
+            }
+            
+            updateStatusText();
+        }
+
+        // 更新计数排序状态
+        function updateCountingSortState() {
+            const state = animationState;
+            const maxVal = state.countingArray.length - 1;
+            
+            if (currentStep === 0) {
+                state.currentPhase = 0;
+                state.currentIndex = 0;
+                state.highlighted = null;
+            } else if (currentStep <= data.length) {
+                // 计数阶段
+                state.currentPhase = 0;
+                state.currentIndex = currentStep - 1;
+                const value = state.originalArray[state.currentIndex];
+                state.countingArray[value]++;
+                state.highlighted = {type: 'number', index: state.currentIndex, value: value};
+            } else if (currentStep <= data.length + maxVal + 1) {
+                // 前缀和阶段
+                state.currentPhase = 1;
+                const idx = currentStep - data.length - 1;
+                state.currentIndex = idx;
+                
+                if (idx === 0) {
+                    state.prefixArray = [...state.countingArray];
+                } else {
+                    state.prefixArray[idx] = state.prefixArray[idx-1] + state.countingArray[idx];
+                }
+                
+                state.highlighted = {type: 'count', index: idx};
+            } else if (currentStep <= data.length * 2 + maxVal + 1) {
+                // 构建输出阶段
+                state.currentPhase = 2;
+                const idx = currentStep - data.length - maxVal - 2;
+                state.currentIndex = data.length - 1 - idx;
+                const value = state.originalArray[state.currentIndex];
+                
+                if (state.prefixArray) {
+                    const position = state.prefixArray[value] - 1;
+                    state.outputArray[position] = value;
+                    state.prefixArray[value]--;
+                    state.highlighted = {type: 'output', index: position, value: value};
+                }
+            } else {
+                // 完成
+                state.currentPhase = 3;
+                state.highlighted = null;
+            }
+        }
+
+        // 更新桶排序状态
+        function updateBucketSortState() {
+            const state = animationState;
+            const bucketCount = state.buckets.length;
+            
+            if (currentStep === 0) {
+                state.currentPhase = 0;
+                state.currentIndex = 0;
+                state.highlighted = null;
+            } else if (currentStep <= data.length) {
+                // 分配阶段
+                state.currentPhase = 0;
+                state.currentIndex = currentStep - 1;
+                const value = state.originalArray[state.currentIndex];
+                const bucketIndex = Math.min(Math.floor((value - state.minVal) / state.bucketSize), bucketCount - 1);
+                state.buckets[bucketIndex].push(value);
+                state.highlighted = {type: 'number', index: state.currentIndex, value: value, bucket: bucketIndex};
+            } else if (currentStep <= data.length + bucketCount) {
+                // 桶内排序阶段（简化显示）
+                state.currentPhase = 1;
+                state.currentBucket = currentStep - data.length - 1;
+                if (state.currentBucket < bucketCount) {
+                    // 对当前桶进行排序（实际排序，但动画中只显示结果）
+                    state.buckets[state.currentBucket].sort((a, b) => a - b);
+                    state.highlighted = {type: 'bucket', index: state.currentBucket};
+                }
+            } else if (currentStep <= data.length * 2 + bucketCount) {
+                // 收集阶段
+                state.currentPhase = 2;
+                const idx = currentStep - data.length - bucketCount - 1;
+                
+                // 计算当前应该从哪个桶取元素
+                let count = 0;
+                let bucketIdx = 0;
+                let elementIdx = 0;
+                
+                for (let i = 0; i < bucketCount; i++) {
+                    if (idx < count + state.buckets[i].length) {
+                        bucketIdx = i;
+                        elementIdx = idx - count;
+                        break;
+                    }
+                    count += state.buckets[i].length;
+                }
+                
+                if (bucketIdx < bucketCount && elementIdx < state.buckets[bucketIdx].length) {
+                    const value = state.buckets[bucketIdx][elementIdx];
+                    state.outputArray.push(value);
+                    state.highlighted = {type: 'collect', bucket: bucketIdx, element: elementIdx, value: value};
+                }
+            } else {
+                // 完成
+                state.currentPhase = 3;
+                state.highlighted = null;
+            }
+        }
+
+        // 更新基数排序状态
+        function updateRadixSortState() {
+            const state = animationState;
+            const radix = state.radix;
+            const digit = state.currentDigit;
+            
+            if (currentStep === 0) {
+                state.currentPhase = 0;
+                state.currentIndex = 0;
+                state.highlighted = null;
+                state.buckets = Array(radix).fill().map(() => []);
+            } else {
+                // 计算当前处于哪一位、哪一阶段
+                const stepsPerDigit = data.length * 2 + radix;
+                const currentDigitStep = currentStep - 1;
+                const digitIndex = Math.floor(currentDigitStep / stepsPerDigit);
+                const stepInDigit = currentDigitStep % stepsPerDigit;
+                
+                state.currentDigit = digitIndex;
+                
+                if (digitIndex >= state.maxDigits) {
+                    // 完成
+                    state.currentPhase = 3;
+                    state.highlighted = null;
+                    state.outputArray = [...state.currentArray];
+                    return;
+                }
+                
+                if (stepInDigit < data.length) {
+                    // 分配阶段
+                    state.currentPhase = 0;
+                    state.currentIndex = stepInDigit;
+                    const value = state.currentArray[stepInDigit];
+                    const digitValue = Math.floor(value / Math.pow(radix, digitIndex)) % radix;
+                    state.buckets[digitValue].push(value);
+                    state.highlighted = {type: 'number', index: stepInDigit, value: value, digit: digitIndex, digitValue: digitValue};
+                } else if (stepInDigit < data.length + radix) {
+                    // 显示桶（分配完成）
+                    state.currentPhase = 1;
+                    const bucketIdx = stepInDigit - data.length;
+                    state.highlighted = {type: 'bucket', index: bucketIdx};
+                } else if (stepInDigit < data.length * 2 + radix) {
+                    // 收集阶段
+                    state.currentPhase = 2;
+                    const idx = stepInDigit - data.length - radix;
+                    
+                    // 计算当前应该从哪个桶取元素
+                    let count = 0;
+                    let bucketIdx = 0;
+                    let elementIdx = 0;
+                    
+                    for (let i = 0; i < radix; i++) {
+                        if (idx < count + state.buckets[i].length) {
+                            bucketIdx = i;
+                            elementIdx = idx - count;
+                            break;
+                        }
+                        count += state.buckets[i].length;
+                    }
+                    
+                    if (bucketIdx < radix && elementIdx < state.buckets[bucketIdx].length) {
+                        const value = state.buckets[bucketIdx][elementIdx];
+                        if (!state.outputArray) state.outputArray = [];
+                        state.outputArray[idx] = value;
+                        state.highlighted = {type: 'collect', bucket: bucketIdx, element: elementIdx, value: value, digit: digitIndex};
+                    }
+                    
+                    // 如果这是当前位的最后一步，准备下一位
+                    if (stepInDigit === stepsPerDigit - 1) {
+                        state.currentArray = [...state.outputArray];
+                        state.outputArray = [];
+                        state.buckets = Array(radix).fill().map(() => []);
+                    }
+                }
+            }
+        }
+
+        // 更新状态文本
+        function updateStatusText() {
+            const state = animationState;
+            let status = '';
+            
+            switch(state.algorithm) {
+                case 'counting':
+                    switch(state.currentPhase) {
+                        case 0:
+                            status = `计数阶段：正在统计数字 ${state.highlighted?.value || ''} 的出现次数`;
+                            break;
+                        case 1:
+                            status = `前缀和阶段：计算小于等于每个数字的元素个数`;
+                            break;
+                        case 2:
+                            status = `构建输出：将数字 ${state.highlighted?.value || ''} 放入输出数组的正确位置`;
+                            break;
+                        case 3:
+                            status = `排序完成！数组已完全有序`;
+                            break;
+                        default:
+                            status = '准备开始计数排序';
+                    }
+                    break;
+                    
+                case 'bucket':
+                    switch(state.currentPhase) {
+                        case 0:
+                            status = `分配阶段：将数字 ${state.highlighted?.value || ''} 放入桶 ${state.highlighted?.bucket + 1 || ''}`;
+                            break;
+                        case 1:
+                            status = `桶内排序：对桶 ${state.currentBucket + 1} 进行排序`;
+                            break;
+                        case 2:
+                            status = `收集阶段：从桶中收集元素，构建有序数组`;
+                            break;
+                        case 3:
+                            status = `排序完成！数组已完全有序`;
+                            break;
+                        default:
+                            status = '准备开始桶排序';
+                    }
+                    break;
+                    
+                case 'radix':
+                    switch(state.currentPhase) {
+                        case 0:
+                            const digitName = state.currentDigit === 0 ? '个位' : state.currentDigit === 1 ? '十位' : state.currentDigit === 2 ? '百位' : `${state.currentDigit}位`;
+                            status = `第${state.currentDigit + 1}轮（按${digitName}）：将数字 ${state.highlighted?.value || ''} 放入 ${state.highlighted?.digitValue || ''} 号桶`;
+                            break;
+                        case 1:
+                            status = `分配完成，准备收集`;
+                            break;
+                        case 2:
+                            status = `收集阶段：从桶中收集元素，准备下一轮排序`;
+                            break;
+                        case 3:
+                            status = `排序完成！数组已完全有序`;
+                            break;
+                        default:
+                            status = '准备开始基数排序';
+                    }
+                    break;
+            }
+            
+            document.getElementById('statusText').textContent = status;
+        }
+
+        // 动画循环
+        function animate() {
+            if (!isPlaying) return;
+            
+            // 计算帧间隔（速度越快，间隔越小）
+            const frameDelay = Math.max(100, 1000 - (animationSpeed * 80));
+            const now = Date.now();
+            
+            if (!animationState.lastFrameTime || now - animationState.lastFrameTime > frameDelay) {
+                animationState.lastFrameTime = now;
+                
+                // 前进到下一步
+                if (currentStep < totalSteps) {
+                    currentStep++;
+                    updateAnimationState();
+                    draw();
+                } else {
+                    // 动画完成
+                    pauseAnimation();
+                }
+            }
+            
+            animationId = requestAnimationFrame(animate);
+        }
+
+        // 绘制函数
+        function draw() {
+            // 清除画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 根据当前算法绘制
+            switch(currentAlgorithm) {
+                case 'counting':
+                    drawCountingSort();
+                    break;
+                case 'bucket':
+                    drawBucketSort();
+                    break;
+                case 'radix':
+                    drawRadixSort();
+                    break;
+            }
+            
+            // 绘制进度
+            drawProgress();
+        }
+
+        // 绘制计数排序
+        function drawCountingSort() {
+            const state = animationState;
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // 绘制标题
+            ctx.fillStyle = '#4A90E2';
+            ctx.font = 'bold 20px Arial';
+            ctx.fillText('计数排序动画演示', width/2 - 80, 40);
+            
+            // 绘制原始数组
+            ctx.fillStyle = '#333';
+            ctx.font = '16px Arial';
+            ctx.fillText('原始数组:', 50
+<!--检测到代码截断，自动续写中...-->
+, 70);
+            
+            const cellWidth = 50;
+            const cellHeight = 40;
+            const startX = 50;
+            const startY = 100;
+            
+            // 绘制原始数组元素
+            for (let i = 0; i < state.originalArray.length; i++) {
+                const x = startX + i * (cellWidth + 10);
+                const y = startY;
+                const value = state.originalArray[i];
+                
+                // 高亮当前元素
+                if (state.highlighted && state.highlighted.type === 'number' && state.highlighted.index === i) {
+                    ctx.fillStyle = '#FFD700';
+                    ctx.fillRect(x - 5, y - 5, cellWidth + 10, cellHeight + 10);
+                }
+                
+                // 绘制矩形
+                ctx.fillStyle = '#F5F5F5';
+                ctx.fillRect(x, y, cellWidth, cellHeight);
+                ctx.strokeStyle = '#333';
+                ctx.strokeRect(x, y, cellWidth, cellHeight);
+                
+                // 绘制数字
+                ctx.fillStyle = '#333';
+                ctx.font = 'bold 18px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(value.toString(), x + cellWidth/2, y + cellHeight/2 + 6);
+                
+                // 绘制索引
+                ctx.fillStyle = '#666';
+                ctx.font = '12px Arial';
+                ctx.fillText(`[${i}]`, x + cellWidth/2, y + cellHeight + 15);
+            }
+            
+            // 绘制计数数组
+            const countStartY = startY + 100;
+            ctx.fillStyle = '#333';
+            ctx.font = '16px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText('计数数组:', 50, countStartY - 10);
+            
+            for (let i = 0; i < state.countingArray.length; i++) {
+                const x = startX + i * (cellWidth + 10);
+                const y = countStartY;
+                const count = state.countingArray[i];
+                
+                // 高亮当前计数元素
+                if (state.highlighted && state.highlighted.type === 'count' && state.highlighted.index === i) {
+                    ctx.fillStyle = '#FFD700';
+                    ctx.fillRect(x - 5, y - 5, cellWidth + 10, cellHeight + 10);
+                }
+                
+                // 绘制矩形
+                ctx.fillStyle = '#E6F7FF';
+                ctx.fillRect(x, y, cellWidth, cellHeight);
+                ctx.strokeStyle = '#4A90E2';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(x, y, cellWidth, cellHeight);
+                
+                // 绘制数字和计数
+                ctx.fillStyle = '#4A90E2';
+                ctx.font = 'bold 16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(i.toString(), x + cellWidth/2, y + 20);
+                
+                ctx.fillStyle = '#333';
+                ctx.font = 'bold 18px Arial';
+                ctx.fillText(count.toString(), x + cellWidth/2, y + cellHeight - 10);
+                
+                // 绘制索引
+                ctx.fillStyle = '#666';
+                ctx.font = '12px Arial';
+                ctx.fillText(`值=${i}`, x + cellWidth/2, y + cellHeight + 15);
+            }
+            
+            // 绘制前缀和数组（如果存在）
+            if (state.prefixArray) {
+                const prefixStartY = countStartY + 100;
+                ctx.fillStyle = '#333';
+                ctx.font = '16px Arial';
+                ctx.textAlign = 'left';
+                ctx.fillText('前缀和数组:', 50, prefixStartY - 10);
+                
+                for (let i = 0; i < state.prefixArray.length; i++) {
+                    const x = startX + i * (cellWidth + 10);
+                    const y = prefixStartY;
+                    const prefix = state.prefixArray[i];
+                    
+                    // 绘制矩形
+                    ctx.fillStyle = '#F0FFF0';
+                    ctx.fillRect(x, y, cellWidth, cellHeight);
+                    ctx.strokeStyle = '#52C41A';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(x, y, cellWidth, cellHeight);
+                    
+                    // 绘制数字
+                    ctx.fillStyle = '#333';
+                    ctx.font = 'bold 18px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(prefix.toString(), x + cellWidth/2, y + cellHeight/2 + 6);
+                    
+                    // 绘制说明
+                    ctx.fillStyle = '#666';
+                    ctx.font = '12px Arial';
+                    ctx.fillText(`≤${i}`, x + cellWidth/2, y + cellHeight + 15);
+                }
+            }
+            
+            // 绘制输出数组
+            const outputStartY = (state.prefixArray ? countStartY + 200 : countStartY + 100);
+            ctx.fillStyle = '#333';
+            ctx.font = '16px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText('输出数组:', 50, outputStartY - 10);
+            
+            for (let i = 0; i < state.outputArray.length; i++) {
+                const x = startX + i * (cellWidth + 10);
+                const y = outputStartY;
+                const value = state.outputArray[i];
+                
+                // 高亮当前输出元素
+                if (state.highlighted && state.highlighted.type === 'output' && state.highlighted.index === i) {
+                    ctx.fillStyle = '#FFD700';
+                    ctx.fillRect(x - 5, y - 5, cellWidth + 10, cellHeight + 10);
+                }
+                
+                // 绘制矩形
+                ctx.fillStyle = '#F5F5F5';
+                if (value !== undefined) {
+                    ctx.fillStyle = '#F0FFF0';
+                }
+                ctx.fillRect(x, y, cellWidth, cellHeight);
+                ctx.strokeStyle = value !== undefined ? '#52C41A' : '#333';
+                ctx.lineWidth = value !== undefined ? 2 : 1;
+                ctx.strokeRect(x, y, cellWidth, cellHeight);
+                
+                // 绘制数字
+                ctx.fillStyle = '#333';
+                ctx.font = 'bold 18px Arial';
+                ctx.textAlign = 'center';
+                if (value !== undefined) {
+                    ctx.fillText(value.toString(), x + cellWidth/2, y + cellHeight/2 + 6);
+                }
+                
+                // 绘制索引
+                ctx.fillStyle = '#666';
+                ctx.font = '12px Arial';
+                ctx.fillText(`[${i}]`, x + cellWidth/2, y + cellHeight + 15);
+            }
+            
+            // 绘制箭头和说明
+            ctx.strokeStyle = '#4A90E2';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            
+            if (state.currentPhase === 0 && state.highlighted && state.highlighted.type === 'number') {
+                // 从原始数组指向计数数组
+                const fromX = startX + state.highlighted.index * (cellWidth + 10) + cellWidth/2;
+                const fromY = startY + cellHeight;
+                const toX = startX + state.highlighted.value * (cellWidth + 10) + cellWidth/2;
+                const toY = countStartY;
+                
+                drawArrow(ctx, fromX, fromY, toX, toY);
+                
+                ctx.fillStyle = '#4A90E2';
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(`计数+1`, (fromX + toX)/2, (fromY + toY)/2 - 10);
+            }
+            
+            if (state.currentPhase === 2 && state.highlighted && state.highlighted.type === 'output') {
+                // 从原始数组指向输出数组
+                const fromX = startX + state.currentIndex * (cellWidth + 10) + cellWidth/2;
+                const fromY = startY + cellHeight;
+                const toX = startX + state.highlighted.index * (cellWidth + 10) + cellWidth/2;
+                const toY = outputStartY;
+                
+                drawArrow(ctx, fromX, fromY, toX, toY);
+                
+                ctx.fillStyle = '#52C41A';
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(`放入正确位置`, (fromX + toX)/2, (fromY + toY)/2 - 10);
+            }
+            
+            ctx.setLineDash([]);
+        }
+
+        // 绘制桶排序
+        function drawBucketSort() {
+            const state = animationState;
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // 绘制标题
+            ctx.fillStyle = '#4A90E2';
+            ctx.font = 'bold 20px Arial';
+            ctx.fillText('桶排序动画演示', width/2 - 80, 40);
+            
+            // 绘制原始数组
+            ctx.fillStyle = '#333';
+            ctx.font = '16px Arial';
+            ctx.fillText('原始数组:', 50, 70);
+            
+            const cellWidth = 50;
+            const cellHeight = 40;
+            const startX = 50;
+            const startY = 100;
+            
+            // 绘制原始数组元素
+            for (let i = 0; i < state.originalArray.length; i++) {
+                const x = startX + i * (cellWidth + 10);
+                const y = startY;
+                const value = state.originalArray[i];
+                
+                // 高亮当前元素
+                if (state.highlighted && state.highlighted.type === 'number' && state.highlighted.index === i) {
+                    ctx.fillStyle = '#FFD700';
+                    ctx.fillRect(x - 5, y - 5, cellWidth + 10, cellHeight + 10);
+                }
+                
+                // 绘制矩形
+                ctx.fillStyle = '#F5F5F5';
+                ctx.fillRect(x, y, cellWidth, cellHeight);
+                ctx.strokeStyle = '#333';
+                ctx.strokeRect(x, y, cellWidth, cellHeight);
+                
+                // 绘制数字
+                ctx.fillStyle = '#333';
+                ctx.font = 'bold 18px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(value.toString(), x + cellWidth/2, y + cellHeight/2 + 6);
+                
+                // 绘制索引
+                ctx.fillStyle = '#666';
+                ctx.font = '12px Arial';
+                ctx.fillText(`[${i}]`, x + cellWidth/2, y + cellHeight + 15);
+            }
+            
+            // 绘制桶
+            const bucketStartY = startY + 100;
+            ctx.fillStyle = '#333';
+            ctx.font = '16px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText('桶:', 50, bucketStartY - 10);
+            
+            const bucketCount = state.buckets.length;
+            const bucketWidth = Math.min(80, (width - 100) / bucketCount - 10);
+            
+            for (let i = 0; i < bucketCount; i++) {
+                const x = startX + i * (bucketWidth + 20);
+                const y = bucketStartY;
+                const bucket = state.buckets[i];
+                
+                // 高亮当前桶
+                if (state.highlighted && 
+                   ((state.highlighted.type === 'number' && state.highlighted.bucket === i) ||
+                    (state.highlighted.type === 'bucket' && state.highlighted.index === i) ||
+                    (state.highlighted.type === 'collect' && state.highlighted.bucket === i))) {
+                    ctx.fillStyle = '#FFD700';
+                    ctx.fillRect(x - 5, y - 5, bucketWidth + 10, 150);
+                }
+                
+                // 绘制桶
+                ctx.fillStyle = '#E6F7FF';
+                ctx.fillRect(x, y, bucketWidth, 140);
+                ctx.strokeStyle = '#4A90E2';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(x, y, bucketWidth, 140);
+                
+                // 绘制桶标签
+                ctx.fillStyle = '#4A90E2';
+                ctx.font = 'bold 14px Arial';
+                ctx.textAlign = 'center';
+                const minVal = state.minVal + i * state.bucketSize;
+                const maxVal = state.minVal + (i + 1) * state.bucketSize - 1;
+                ctx.fillText(`桶 ${i+1}`, x + bucketWidth/2, y + 20);
+                ctx.fillStyle = '#666';
+                ctx.font = '12px Arial';
+                ctx.fillText(`${minVal.toFixed(0)}-${maxVal.toFixed(0)}`, x + bucketWidth/2, y + 35);
+                
+                // 绘制桶内元素
+                ctx.fillStyle = '#333';
+                ctx.font = '14px Arial';
+                for (let j = 0; j < bucket.length; j++) {
+                    const elemX = x + 10;
+                    const elemY = y + 50 + j * 25;
+                    const value = bucket[j];
+                    
+                    // 高亮桶内元素
+                    if (state.highlighted && state.highlighted.type === 'collect' && 
+                        state.highlighted.bucket === i && state.highlighted.element === j) {
+                        ctx.fillStyle = '#FFD700';
+                        ctx.fillRect(elemX - 5, elemY - 5, 40, 20);
+                        ctx.fillStyle = '#333';
+                    }
+                    
+                    ctx.fillRect(elemX, elemY, 30, 15);
+                    ctx.fillStyle = '#FFF';
+                    ctx.fillText(value.toString(), elemX + 15, elemY + 11);
+                    ctx.fillStyle = '#333';
+                }
+                
+                // 显示桶内元素数量
+                ctx.fillStyle = '#666';
+                ctx.font = '12px Arial';
+                ctx.fillText(`元素: ${bucket.length}`, x + bucketWidth/2, y + 130);
+            }
+            
+            // 绘制输出数组
+            const outputStartY = bucketStartY + 180;
+            ctx.fillStyle = '#333';
+            ctx.font = '16px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText('输出数组:', 50, outputStartY - 10);
+            
+            for (let i = 0; i < state.outputArray.length; i++) {
+                const x = startX + i * (cellWidth + 10);
+                const y = outputStartY;
+                const value = state.outputArray[i];
+                
+                // 绘制矩形
+                ctx.fillStyle = '#F0FFF0';
+                ctx.fillRect(x, y, cellWidth, cellHeight);
+                ctx.strokeStyle = '#52C41A';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(x, y, cellWidth, cellHeight);
+                
+                // 绘制数字
+                ctx.fillStyle = '#333';
+                ctx.font = 'bold 18px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(value.toString(), x + cellWidth/2, y + cellHeight/2 + 6);
+                
+                // 绘制索引
+                ctx.fillStyle = '#666';
+                ctx.font = '12px Arial';
+                ctx.fillText(`[${i}]`, x + cellWidth/2, y + cellHeight + 15);
+            }
+            
+            // 绘制箭头和说明
+            ctx.strokeStyle = '#4A90E2';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            
+            if (state.currentPhase === 0 && state.highlighted && state.highlighted.type === 'number') {
+                // 从原始数组指向桶
+                const fromX = startX + state.highlighted.index * (cellWidth + 10) + cellWidth/2;
+                const fromY = startY + cellHeight;
+                const toX = startX + state.highlighted.bucket * (bucketWidth + 20) + bucketWidth/2;
+                const toY = bucketStartY;
+                
+                drawArrow(ctx, fromX, fromY, toX, toY);
+                
+                ctx.fillStyle = '#4A90E2';
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(`放入桶 ${state.highlighted.bucket + 1}`, (fromX + toX)/2, (fromY + toY)/2 - 10);
+            }
+            
+            if (state.currentPhase === 2 && state.highlighted && state.highlighted.type === 'collect') {
+                // 从桶指向输出数组
+                const bucketIndex = state.highlighted.bucket;
+                const bucketX = startX + bucketIndex * (bucketWidth + 20) + bucketWidth/2;
+                const bucketY = bucketStartY + 50 + state.highlighted.element * 25;
+                const toX = startX + (state.outputArray.length - 1) * (cellWidth + 10) + cellWidth/2;
+                const toY = outputStartY;
+                
+                drawArrow(ctx, bucketX, bucketY, toX, toY);
+                
+                ctx.fillStyle = '#52C41A';
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(`收集到输出`, (bucketX + toX)/2, (bucketY + toY)/2 - 10);
+            }
+            
+            ctx.setLineDash([]);
+        }
+
+        // 绘制基数排序
+        function drawRadixSort() {
+            const state = animationState;
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // 绘制标题
+            ctx.fillStyle = '#4A90E2';
+            ctx.font = 'bold 20px Arial';
+            ctx.fillText('基数排序动画演示', width/2 - 80, 40);
+            
+            // 绘制当前数组
+            ctx.fillStyle = '#333';
+            ctx.font = '16px Arial';
+            ctx.textAlign = 'left';
+            const arrayLabel = state.currentPhase === 3 ? '最终排序结果:' : `第 ${state.currentDigit + 1} 轮排序 (按${getDigitName(state.currentDigit)}):`;
+            ctx.fillText(arrayLabel, 50, 70);
+            
+            const cellWidth = 50;
+            const cellHeight = 40;
+            const startX = 50;
+            const startY = 100;
+            
+            // 绘制当前数组元素
+            const currentArray = state.currentPhase === 3 ? state.outputArray : state.currentArray;
+            for (let i = 0; i < currentArray.length; i++) {
+                const x = startX + i * (cellWidth + 10);
+                const y = startY;
+                const value = currentArray[i];
+                
+                // 高亮当前元素
+                if (state.highlighted && state.highlighted.type === 'number' && state.highlighted.index === i) {
+                    ctx.fillStyle = '#FFD700';
+                    ctx.fillRect(x - 5, y - 5, cellWidth + 10, cellHeight + 10);
+                }
+                
+                // 绘制矩形
+                ctx.fillStyle = '#F5F5F5';
+                ctx.fillRect(x, y, cellWidth, cellHeight);
+                ctx.strokeStyle = '#333';
+                ctx.strokeRect(x, y, cellWidth, cellHeight);
+                
+                // 绘制数字
+                ctx.fillStyle = '#333';
+                ctx.font = 'bold 18px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(value.toString(), x + cellWidth/2, y + cellHeight/2 + 6);
+                
+                // 如果是分配阶段，突出显示当前位
+                if (state.highlighted && state.highlighted.type === 'number' && state.highlighted.index === i) {
+                    const digitValue = Math.floor(value / Math.pow(state.radix, state.currentDigit)) % state.radix;
+                    ctx.fillStyle = '#FF6B6B';
+                    ctx.font = 'bold 20px Arial';
+                    const digitX = x + cellWidth/2;
+                    const digitY = y + cellHeight/2 - 15;
+                    
+                    // 根据位数位置调整显示
+                    if (state.currentDigit === 0) {
+                        // 个位
+                        ctx.fillText(digitValue.toString(), digitX + 15, digitY);
+                    } else if (state.currentDigit === 1) {
+                        // 十位
+                        ctx.fillText(digitValue.toString(), digitX, digitY);
+                    } else {
+                        // 百位及以上
+                        ctx.fillText(digitValue.toString(), digitX - 15, digitY);
+                    }
+                }
+                
+                // 绘制索引
+                ctx.fillStyle = '#666';
+                ctx.font = '12px Arial';
+                ctx.fillText(`[${i}]`, x + cellWidth/2, y + cellHeight + 15);
+            }
+            
+            // 绘制基数桶
+            if (state.currentPhase !== 3) {
+                const bucketStartY = startY + 100;
+                ctx.fillStyle = '#333';
+                ctx.font = '16px Arial';
+                ctx.textAlign = 'left';
+                ctx.fillText(`基数桶 (0-${state.radix-1}):`, 50, bucketStartY - 10);
+                
+                const bucketCount = state.radix;
+                const bucketWidth = Math.min(60, (width - 100) / bucketCount - 5);
+                
+                for (let i = 0; i < bucketCount; i++) {
+                    const x = startX + i * (bucketWidth + 10);
+                    const y = bucketStartY;
+                    const bucket = state.buckets[i];
+                    
+                    // 高亮当前桶
+                    if (state.highlighted && 
+                       ((state.highlighted.type === 'number' && state.highlighted.digitValue === i) ||
+                        (state.highlighted.type === 'bucket' && state.highlighted.index === i) ||
+                        (state.highlighted.type === 'collect' && state.highlighted.bucket === i))) {
+                        ctx.fillStyle = '#FFD700';
+                        ctx.fillRect(x - 5, y - 5, bucketWidth + 10, 120);
+                    }
+                    
+                    // 绘制桶
+                    ctx.fillStyle = '#E6F7FF';
+                    ctx.fillRect(x, y, bucketWidth, 110);
+                    ctx.strokeStyle = '#4A90E2';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(x, y, bucketWidth, 110);
+                    
+                    // 绘制桶标签
+                    ctx.fillStyle = '#4A90E2';
+                    ctx.font = 'bold 14px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`${i}号桶`, x + bucketWidth/2, y + 20);
+                    
+                    // 绘制桶内元素
+                    ctx.fillStyle = '#333';
+                    ctx.font = '12px Arial';
+                    for (let j = 0; j < bucket.length; j++) {
+                        const elemX = x + 5;
+                        const elemY = y + 35 + j * 20;
+                        const value = bucket[j];
+                        
+                        // 高亮桶内元素
+                        if (state.highlighted && state.highlighted.type === 'collect' && 
+                            state.highlighted.bucket === i && state.highlighted.element === j) {
+                            ctx.fillStyle = '#FFD700';
+                            ctx.fillRect(elemX - 3, elemY - 3, 30, 15);
+                            ctx.fillStyle = '#333';
+                        }
+                        
+                        ctx.fillRect(elemX, elemY, 24, 12);
+                        ctx.fillStyle = '#FFF';
+                        ctx.fillText(value.toString(), elemX + 12, elemY + 9);
+                        ctx.fillStyle = '#333';
+                    }
+                    
+                    // 显示桶内元素数量
+                    ctx.fillStyle = '#666';
+                    ctx.font = '10px Arial';
+                    ctx.fillText(`${bucket.length}个`, x + bucketWidth/2, y + 105);
+                }
+                
+                // 绘制输出数组（中间结果）
+                const outputStartY = bucketStartY + 150;
+                if (state.outputArray && state.outputArray.length > 0) {
+                    ctx.fillStyle = '#333';
+                    ctx.font = '16px Arial';
+                    ctx.textAlign = 'left';
+                    ctx.fillText('当前轮结果:', 50, outputStartY - 10);
+                    
+                    for (let i = 0; i < state.outputArray.length; i++) {
+                        const x = startX + i * (cellWidth + 10);
+                        const y = outputStartY;
+                        const value = state.outputArray[i];
+                        
+                        // 高亮当前输出元素
+                        if (state.highlighted && state.highlighted.type === 'collect' && i === state.outputArray.length - 1) {
+                            ctx.fillStyle = '#FFD700';
+                            ctx.fillRect(x - 5, y - 5, cellWidth + 10, cellHeight + 10);
+                            ctx.fillStyle = '#F0FFF0';
+                        } else {
+                            ctx.fillStyle = '#F0FFF0';
+                        }
+                        
+                        ctx.fillRect(x, y, cellWidth, cellHeight);
+                        ctx.strokeStyle = '#52C41A';
+                        ctx.lineWidth = 2;
+                        ctx.strokeRect(x, y, cellWidth, cellHeight);
+                        
+                        // 绘制数字
+                        ctx.fillStyle = '#333';
+                        ctx.font = 'bold 18px Arial';
+                        ctx.textAlign = 'center';
+                        if (value !== undefined) {
+                            ctx.fillText(value.toString(), x + cellWidth/2, y + cellHeight/2 + 6);
+                        }
+                    }
+                }
+                
+                // 绘制箭头和说明
+                ctx.strokeStyle = '#4A90E2';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                
+                if (state.currentPhase === 0 && state.highlighted && state.highlighted.type === 'number') {
+                    // 从当前数组指向桶
+                    const fromX = startX + state.highlighted.index * (cellWidth + 10) + cellWidth/2;
+                    const fromY = startY + cellHeight;
+                    const toX = startX + state.highlighted.digitValue * (bucketWidth + 10) + bucketWidth/2;
+                    const toY = bucketStartY;
+                    
+                    drawArrow(ctx, fromX, fromY, toX, toY);
+                    
+                    ctx.fillStyle = '#4A90E2';
+                    ctx.font = '14px Arial';
+                    ctx.textAlign = 'center';
+                    const digitName = getDigitName(state.currentDigit);
+                    ctx.fillText(`按${digitName}放入${state.highlighted.digitValue}号桶`, (fromX + toX)/2, (fromY + toY)/2 - 10);
+                }
+                
+                if (state.currentPhase === 2 && state.highlighted && state.highlighted.type === 'collect') {
+                    // 从桶指向输出数组
+                    const bucketIndex = state.highlighted.bucket;
+                    const bucketX = startX + bucketIndex * (bucketWidth + 10) + bucketWidth/2;
+                    const bucketY = bucketStartY + 35 + state.highlighted.element * 20;
+                    const toX = startX + (state.outputArray.length - 1) * (cellWidth + 10) + cellWidth/2;
+                    const toY = outputStartY;
+                    
+                    drawArrow(ctx, bucketX, bucketY, toX, toY);
+                    
+                    ctx.fillStyle = '#52C41A';
+                    ctx.font = '14px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`收集`, (bucketX + toX)/2, (bucketY + toY)/2 - 10);
+                }
+                
+                ctx.setLineDash([]);
+            }
+            
+            // 绘制进度指示器
+            if (state.currentDigit < state.maxDigits) {
+                ctx.fillStyle = '#333';
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'left';
+                const progress = Math.min(100, ((state.currentDigit + 1) / state.maxDigits) * 100);
+                ctx.fillText(`进度: ${state.currentDigit + 1}/${state.maxDigits} 位 (${progress.toFixed(0)}%)`, width - 200, 80);
+                
+                // 绘制进度条
+                const progressBarWidth = 150;
+                const progressBarHeight = 10;
+                const progressBarX = width - 200;
+                const progressBarY = 100;
+                
+                ctx.fillStyle = '#EEE';
+                ctx.fillRect(progressBarX, progressBarY, progressBarWidth, progressBarHeight);
+                ctx.fillStyle = '#4A90E2';
+                ctx.fillRect(progressBarX, progressBarY, (progress / 100) * progressBarWidth, progressBarHeight);
+            }
+        }
+
+        // 获取位数名称
+        function getDigitName(digit) {
+            switch(digit) {
+                case 0: return '个位';
+                case 1: return '十位';
+                case 2: return '百位';
+                case 3: return '千位';
+                default: return `${digit+1}位`;
+            }
+        }
+
+        // 绘制进度
+        function drawProgress() {
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            if (totalSteps > 0) {
+                const progress = currentStep / totalSteps;
+                
+                // 绘制进度条背景
+                ctx.fillStyle = '#EEE';
+                ctx.fillRect(50, height - 40, width - 100, 10);
+                
+                // 绘制进度条
+                ctx.fillStyle = '#4A90E2';
+                ctx.fillRect(50, height - 40, (width - 100) * progress, 10);
+                
+                // 绘制进度文本
+                ctx.fillStyle = '#333';
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(`步骤: ${currentStep}/${totalSteps} (${(progress * 100).toFixed(1)}%)`, width/2, height - 50);
+            }
+        }
+
+        // 绘制箭头
+        function drawArrow(ctx, fromX, fromY, toX, toY) {
+            const headlen = 10;
+            const dx = toX - fromX;
+            const dy = toY - fromY;
+            const angle = Math.atan2(dy, dx);
+            
+            ctx.beginPath();
+            ctx.moveTo(fromX, fromY);
+            ctx.lineTo(toX, toY);
+            ctx.stroke();
+            
+            // 绘制箭头头部
+            ctx.beginPath();
+            ctx.moveTo(toX, toY);
+            ctx.lineTo(toX - headlen * Math.cos(angle - Math.PI/6), toY - headlen * Math.sin(angle - Math.PI/6));
+            ctx.moveTo(toX, toY);
+            ctx.lineTo(toX - headlen * Math.cos(angle + Math.PI/6), toY - headlen * Math.sin(angle + Math.PI/6));
+            ctx.stroke();
+        }
+
+        // 页面加载完成后初始化
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

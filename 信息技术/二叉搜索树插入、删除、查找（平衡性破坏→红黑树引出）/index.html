@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>二叉搜索树(BST)教学动画 - 插入、删除、查找与平衡性</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #495057;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        h1 {
+            color: #339af0;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+
+        .subtitle {
+            color: #868e96;
+            font-size: 1.1rem;
+        }
+
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .tree-section {
+            flex: 1;
+            min-width: 600px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .control-section {
+            flex: 1;
+            min-width: 400px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #495057;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title i {
+            margin-right: 10px;
+            color: #4dabf7;
+        }
+
+        #treeCanvas {
+            flex: 1;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            cursor: pointer;
+        }
+
+        .control-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #495057;
+            font-size: 0.95rem;
+        }
+
+        input, select, button {
+            padding: 12px 15px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #4dabf7;
+            box-shadow: 0 0 0 3px rgba(77, 171, 247, 0.1);
+        }
+
+        button {
+            background-color: #4dabf7;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            background-color: #339af0;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .danger-btn {
+            background-color: #ff6b6b;
+        }
+
+        .danger-btn:hover {
+            background-color: #fa5252;
+        }
+
+        .success-btn {
+            background-color: #69db7c;
+        }
+
+        .success-btn:hover {
+            background-color: #51cf66;
+        }
+
+        .warning-btn {
+            background-color: #ffd43b;
+            color: #495057;
+        }
+
+        .warning-btn:hover {
+            background-color: #fcc419;
+        }
+
+        .animation-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding: 15px;
+            background-color: #f1f3f5;
+            border-radius: 8px;
+        }
+
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .speed-slider {
+            flex: 1;
+        }
+
+        .info-panels {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .info-panel {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .info-panel h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 1.2rem;
+        }
+
+        #algorithmSteps {
+            height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .step-item {
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            border-left: 4px solid #4dabf7;
+            background-color: white;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #339af0;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #868e96;
+        }
+
+        .comparison-view {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fff3cd;
+            border-radius: 8px;
+            border-left: 4px solid #ffd43b;
+        }
+
+        .comparison-view.active {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .comparison-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .comparison-text {
+            flex: 1;
+        }
+
+        .comparison-text h4 {
+            color: #856404;
+            margin-bottom: 5px;
+        }
+
+        .comparison-text p {
+            color: #856404;
+            font-size: 0.95rem;
+        }
+
+        .highlight {
+            background-color: #ffd43b;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+            color: #868e96;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 1200px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .tree-section, .control-section {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌳 二叉搜索树(BST)教学动画</h1>
+            <p class="subtitle">可视化插入、删除、查找操作 | 探索平衡性问题 | 引出红黑树解决方案</p>
+        </header>
+
+        <div class="main-content">
+            <div class="tree-section">
+                <h2 class="section-title"><i>📊</i> 二叉搜索树可视化</h2>
+                <canvas id="treeCanvas" width="800" height="500"></canvas>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #4dabf7; border-color: #339af0;"></div>
+                        <span>普通节点</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #ffd43b; border-color: #fcc419;"></div>
+                        <span>活动/比较节点</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #69db7c; border-color: #51cf66;"></div>
+                        <span>插入节点</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #ff6b6b; border-color: #fa5252;"></div>
+                        <span>删除节点</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #dee2e6; border-color: #adb5bd;"></div>
+                        <span>查找路径</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <h2 class="section-title"><i>🎮</i> 交互控制面板</h2>
+                
+                <div class="control-panel">
+                    <div class="control-group">
+                        <label for="nodeValue">节点值 (1-99):</label>
+                        <input type="number" id="nodeValue" min="1" max="99" value="50">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="operation">选择操作:</label>
+                        <select id="operation">
+                            <option value="insert">插入节点</option>
+                            <option value="delete">删除节点</option>
+                            <option value="search">查找节点</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>&nbsp;</label>
+                        <button id="executeBtn" class="success-btn">
+                            <span>🚀 执行操作</span>
+                        </button>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>&nbsp;</label>
+                        <button id="randomTreeBtn" class="warning-btn">
+                            <span>🎲 随机生成BST</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="animation-controls">
+                    <button id="prevStepBtn" title="上一步">◀</button>
+                    <button id="playPauseBtn" title="播放/暂停">⏸️</button>
+                    <button id="nextStepBtn" title="下一步">▶</button>
+                    
+                    <div class="speed-control">
+                        <span>速度:</span>
+                        <input type="range" id="speedSlider" class="speed-slider" min="1" max="10" value="5">
+                        <span id="speedValue">中速</span>
+                    </div>
+                </div>
+
+                <div class="control-panel">
+                    <div class="control-group">
+                        <label for="sequenceInput">序列演示 (逗号分隔):</label>
+                        <input type="text" id="sequenceInput" placeholder="例如: 1,2,3,4,5 或 50,30,70,20,40" value="1,2,3,4,5">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>&nbsp;</label>
+                        <button id="demoBtn" class="warning-btn">
+                            <span>📽️ 开始序列演示</span>
+                        </button>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>&nbsp;</label>
+                        <button id="resetBtn" class="danger-btn">
+                            <span>🗑️ 重置树</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="comparison-view" id="comparisonView">
+                    <div class="comparison-content">
+                        <div class="comparison-text">
+                            <h4>⚠️ 发现不平衡问题！</h4>
+                            <p>当前BST已严重倾斜，查找效率从 <span class="highlight">O(log n)</span> 退化到 <span class="highlight">O(n)</span>！</p>
+                            <p>红黑树等平衡二叉搜索树通过旋转和变色操作保持平衡，确保稳定的 <span class="highlight">O(log n)</span> 性能。</p>
+                        </div>
+                        <button id="learnMoreBtn" class="success-btn">了解更多 →</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-panels">
+            <div class="info-panel">
+                <h3>📝 算法步骤</h3>
+                <div id="algorithmSteps">
+                    <div class="step-item">欢迎使用BST教学动画！请执行操作查看详细步骤。</div>
+                </div>
+            </div>
+            
+            <div class="info-panel">
+                <h3>📊 树状统计</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="nodeCount">0</div>
+                        <div class="stat-label">节点总数</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="treeHeight">0</div>
+                        <div class="stat-label">树的高度</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="avgSearchLength">0.0</div>
+                        <div class="stat-label">平均查找长度</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="balanceFactor">-</div>
+                        <div class="stat-label">平衡状态</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>© 2023 数据结构教学动画 | 设计用于展示二叉搜索树操作与平衡性问题 | 引出红黑树解决方案</p>
+        </footer>
+    </div>
+
+    <script>
+        // ==================== 数据结构定义 ====================
+        class TreeNode {
+            constructor(value) {
+                this.value = value;
+                this.left = null;
+                this.right = null;
+                this.parent = null;
+                this.x = 0;
+                this.y = 0;
+                this.radius = 25;
+                this.state = 'normal'; // normal, active, visited, inserting, deleting
+                this.highlight = false;
+            }
+        }
+
+        class BST {
+            constructor() {
+                this.root = null;
+                this.nodeCount = 0;
+                this.animationQueue = [];
+                this.isAnimating = false;
+                this.currentStep = 0;
+                this.speed = 5;
+                this.operationHistory = [];
+                this.lastSearchPath = [];
+            }
+
+            insert(value) {
+                this.addToHistory(`开始插入节点 ${value}`);
+                const newNode = new TreeNode(value);
+                newNode.state = 'inserting';
+                
+                if (!this.root) {
+                    this.root = newNode;
+                    this.addToHistory(`树为空，将 ${value} 设为根节点`);
+                    this.animationQueue.push({
+                        type: 'insert',
+                        node: newNode,
+                        message: `插入 ${value} 作为根节点`
+                    });
+                } else {
+                    this.addToHistory(`从根节点 ${this.root.value} 开始查找插入位置`);
+                    this.animationQueue.push({
+                        type: 'highlight',
+                        node: this.root,
+                        message: `比较 ${value} 与根节点 ${this.root.value}`
+                    });
+                    
+                    let current = this.root;
+                    let parent = null;
+                    
+                    while (current) {
+                        parent = current;
+                        this.animationQueue.push({
+                            type: 'visit',
+                            node: current,
+                            message: `访问节点 ${current.value}`
+                        });
+                        
+                        if (value < current.value) {
+                            this.addToHistory(`${value} < ${current.value}，向左子树查找`);
+                            if (current.left) {
+                                this.animationQueue.push({
+                                    type: 'highlight',
+                                    node: current.left,
+                                    message: `比较 ${value} 与左子节点 ${current.left.value}`
+                                });
+                                current = current.left;
+                            } else {
+                                current.left = newNode;
+                                newNode.parent = current;
+                                this.addToHistory(`找到空位，将 ${value} 插入为 ${current.value} 的左子节点`);
+                                break;
+                            }
+                        } else if (value > current.value) {
+                            this.addToHistory(`${value} > ${current.value}，向右子树查找`);
+                            if (current.right) {
+                                this.animationQueue.push({
+                                    type: 'highlight',
+                                    node: current.right,
+                                    message: `比较 ${value} 与右子节点 ${current.right.value}`
+                                });
+                                current = current.right;
+                            } else {
+                                current.right = newNode;
+                                newNode.parent = current;
+                                this.addToHistory(`找到空位，将 ${value} 插入为 ${current.value} 的右子节点`);
+                                break;
+                            }
+                        } else {
+                            this.addToHistory(`节点 ${value} 已存在，插入失败`);
+                            this.animationQueue.push({
+                                type: 'error',
+                                message: `节点 ${value} 已存在于树中`
+                            });
+                            return false;
+                        }
+                    }
+                    
+                    this.animationQueue.push({
+                        type: 'insert',
+                        node: newNode,
+                        message: `成功插入节点 ${value}`
+                    });
+                }
+                
+                this.nodeCount++;
+                this.updateStats();
+                return true;
+            }
+
+            delete(value) {
+                this.addToHistory(`开始删除节点 ${value}`);
+                let nodeToDelete = this.root;
+                let parent = null;
+                
+                // 查找要删除的节点
+                while (nodeToDelete && nodeToDelete.value !== value) {
+                    parent = nodeToDelete;
+                    this.animationQueue.push({
+                        type: 'highlight',
+                        node: nodeToDelete,
+                        message: `比较 ${value} 与节点 ${nodeToDelete.value}`
+                    });
+                    
+                    if (value < nodeToDelete.value) {
+                        this.addToHistory(`${value} < ${nodeToDelete.value}，向左子树查找`);
+                        nodeToDelete = nodeToDelete.left;
+                    } else {
+                        this.addToHistory(`${value} > ${nodeToDelete.value}，向右子树查找`);
+                        nodeToDelete = nodeToDelete.right;
+                    }
+                }
+                
+                if (!nodeToDelete) {
+                    this.addToHistory(`节点 ${value} 不存在，删除失败`);
+                    this.animationQueue.push({
+                        type: 'error',
+                        message: `节点 ${value} 不存在于树中`
+                    });
+                    return false;
+                }
+                
+                this.animationQueue.push({
+                    type: 'delete',
+                    node: nodeToDelete,
+                    message: `找到要删除的节点 ${value}`
+                });
+                
+                // 情况1: 叶子节点
+                if (!nodeToDelete.left && !nodeToDelete.right) {
+                    this.addToHistory(`节点 ${value} 是叶子节点，直接删除`);
+                    if (!parent) {
+                        this.root = null;
+                    } else if (parent.left === nodeToDelete) {
+                        parent.left = null;
+                    } else {
+                        parent.right = null;
+                    }
+                }
+                // 情况2: 只有一个子节点
+                else if (!nodeToDelete.left || !nodeToDelete.right) {
+                    const child = nodeToDelete.left || nodeToDelete.right;
+                    this.addToHistory(`节点 ${value} 有一个子节点 ${child.value}，用子节点替换`);
+                    
+                    this.animationQueue.push({
+                        type: 'highlight',
+                        node: child,
+                        message: `用子节点 ${child.value} 替换 ${value}`
+                    });
+                    
+                    if (!parent) {
+                        this.root = child;
+                    } else if (parent.left === nodeToDelete) {
+                        parent.left = child;
+                    } else {
+                        parent.right = child;
+                    }
+                    child.parent = parent;
+                }
+                // 情况3: 有两个子节点
+                else {
+                    this.addToHistory(`节点 ${value} 有两个子节点，查找后继节点`);
+                    // 查找后继节点（右子树的最小值）
+                    let successor = nodeToDelete.right;
+                    let successorParent = nodeToDelete;
+                    
+                    this.animationQueue.push({
+                        type: 'highlight',
+                        node: successor,
+                        message: `在右子树中查找 ${value} 的后继节点`
+                    });
+                    
+                    while (successor.left) {
+                        successorParent = successor;
+                        successor = successor.left;
+                        this.animationQueue.push({
+                            type: 'highlight',
+                            node: successor,
+                            message: `继续向左查找更小的值`
+                        });
+                    }
+                    
+                    this.addToHistory(`找到后继节点 ${successor.value}`);
+                    this.animationQueue.push({
+                        type: 'highlight',
+                        node: successor,
+                        message: `后继节点是 ${successor.value}`
+                    });
+                    
+                    // 用后继节点的值替换要删除的节点
+                    const successorValue = successor.value;
+                    this.addToHistory(`用后继节点 ${successorValue} 替换 ${value}`);
+                    
+                    // 删除后继节点（后继节点最多有一个右子节点）
+                    if (successorParent.left === successor) {
+                        successorParent.left = successor.right;
+                    } else {
+                        successorParent.right = successor.right;
+                    }
+                    
+                    if (successor.right) {
+                        successor.right.parent = successorParent;
+                    }
+                    
+                    // 更新要删除的节点的值
+                    nodeToDelete.value = successorValue;
+                    this.animationQueue.push({
+                        type: 'update',
+                        node: nodeToDelete,
+                        message: `节点值更新为 ${successorValue}`
+                    });
+                }
+                
+                this.nodeCount--;
+                this.updateStats();
+                return true;
+            }
+
+            search(value) {
+                this.addToHistory(`开始查找节点 ${value}`);
+                this.lastSearchPath = [];
+                let current = this.root;
+                let steps = 0;
+                
+                while (current) {
+                    steps++;
+                    this.lastSearchPath.push(current);
+                    this.animationQueue.push({
+                        type: 'highlight',
+                        node: current,
+                        message: `第${steps}步: 比较 ${value} 与节点 ${current.value}`
+                    });
+                    
+                    if (value === current.value) {
+                        this.addToHistory(`找到节点 ${value}，共查找 ${steps} 步`);
+                        this.animationQueue.push({
+                            type: 'found',
+                            node: current,
+                            message: `成功找到节点 ${value}`
+                        });
+                        return { found: true, steps };
+                    } else if (value < current.value) {
+                        this.addToHistory(`${value} < ${current.value}，向左子树查找`);
+                        current = current.left;
+                    } else {
+                        this.addToHistory(`${value} > ${current.value}，向右子树查找`);
+                        current = current.right;
+                    }
+                }
+                
+                this.addToHistory(`节点 ${value} 不存在于树中`);
+                this.animationQueue.push({
+                    type: 'notFound',
+                    message: `节点 ${value} 不存在`
+                });
+                return { found: false, steps };
+            }
+
+            addToHistory(message) {
+                this.operationHistory.push(message);
+                if (this.operationHistory.length > 50) {
+                    this.operationHistory.shift();
+                }
+                updateAlgorithmSteps(message);
+            }
+
+            updateStats() {
+                const height = this.getHeight(this.root);
+                const avgSearchLength = this.calculateASL(this.root);
+                const balanceStatus = this.checkBalance(this.root);
+                
+                document.getElementById('nodeCount').textContent = this.nodeCount;
+                document.getElementById('treeHeight').textContent = height;
+                document.getElementById('avgSearchLength').textContent = avgSearchLength.toFixed(2);
+                document.getElementById('balanceFactor').textContent = balanceStatus;
+                
+                // 检查是否需要显示不平衡警告
+                if (height > Math.log2(this.nodeCount + 1) * 2 && this.nodeCount > 5) {
+                    document.getElementById('comparisonView').classList.add('active');
+                }
+            }
+
+            getHeight(node) {
+                if (!node) return 0;
+                return 1 + Math.max(this.getHeight(node.left), this.getHeight(node.right));
+            }
+
+            calculateASL(node, depth = 1) {
+                if (!node) return 0;
+                return depth + this.calculateASL(node.left, depth + 1) + this.calculateASL(node.right, depth + 1);
+            }
+
+            checkBalance(node) {
+                if (!node) return '平衡';
+                
+                const leftHeight = this.getHeight(node.left);
+                const rightHeight = this.getHeight(node.right);
+                
+                if (Math.abs(leftHeight - rightHeight) > 1) {
+                    return '不平衡';
+                }
+                
+                const leftBalance = this.checkBalance(node.left);
+                const rightBalance = this.checkBalance(node.right);
+                
+                return leftBalance === '平衡' && rightBalance === '平衡' ? '平衡' : '不平衡';
+            }
+
+            clearAnimationQueue() {
+                this.animationQueue = [];
+                this.currentStep = 0;
+            }
+
+            async playAnimation() {
+                if (this.isAnimating || this.animationQueue.length === 0) return;
+                
+                this.isAnimating = true;
+                document.getElementById('playPauseBtn').textContent = '⏸️';
+                
+                while (this.currentStep < this.animationQueue.length && this.isAnimating) {
+                    const step = this.animationQueue[this.currentStep];
+                    await this.executeAnimationStep(step);
+                    this.currentStep++;
+                    
+                    // 根据速度调整延迟
+                    const delay = 1100 - (this.speed * 100);
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                }
+                
+                this.isAnimating = false;
+                document.getElementById('playPauseBtn').textContent = '▶️';
+            }
+
+            async executeAnimationStep(step) {
+                switch (step.type) {
+                    case 'highlight':
+                        step.node.state = 'active';
+                        step.node.highlight = true;
+                        updateAlgorithmSteps(step.message);
+                        await this.drawTree();
+                        step.node.state = 'normal';
+                        step.node.highlight = false;
+                        break;
+                        
+                    case 'visit':
+                        step.node.state = 'visited';
+                        updateAlgorithmSteps(step.message);
+                        await this.drawTree();
+                        step.node.state = 'normal';
+                        break;
+                        
+                    case 'insert':
+                        step.node.state = 'inserting';
+                        updateAlgorithmSteps(step.message);
+                        await this.drawTree();
+                        step.node.state = 'normal';
+                        break;
+                        
+                    case 'delete':
+                        step.node.state = 'deleting';
+                        updateAlgorithmSteps(step.message);
+                        await this.drawTree();
+                        // 节点将在下一帧被移除
+                        break;
+                        
+                    case 'update':
+                        step.node.highlight = true;
+                        updateAlgorithmSteps(step.message);
+                        await this.drawTree();
+                        step.node.highlight = false;
+                        break;
+                        
+                    case 'found':
+                        step.node.state = 'active';
+                        updateAlgorithmSteps(step.message);
+                        await this.drawTree();
+                        step.node.state = 'normal';
+                        break;
+                        
+                    case 'notFound':
+                    case 'error':
+                        updateAlgorithmSteps(step.message);
+                        break;
+                }
+            }
+
+            async drawTree() {
+                const canvas = document.getElementById('treeCanvas');
+                const ctx = canvas.getContext('2d');
+                
+                // 清除画布
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // 计算布局
+                this.calculatePositions(this.root, canvas.width / 2, 80, canvas.width / 4);
+                
+                // 绘制连接线
+                this.drawConnections(ctx, this.root);
+                
+                // 绘制节点
+                this.drawNodes(ctx, this.root);
+            }
+
+            calculatePositions(node, x, y, offsetX) {
+                if (!node) return;
+                
+                node.x = x;
+                node.y = y;
+                
+                if (node.left) {
+                    this.calculatePositions(node.left, x - offsetX, y + 80, offsetX / 1.8);
+                }
+                if (node.right) {
+                    this.calculatePositions(node.right, x + offsetX, y + 80, offsetX / 1.8);
+                }
+            }
+
+            drawConnections(ctx, node) {
+                if (!node) return;
+                
+                // 绘制到左子节点的连接线
+                if (node.left) {
+                    ctx.beginPath();
+                    ctx.moveTo(node.x, node.y + node.radius);
+                    ctx.lineTo(node.left.x, node.left.y - node.left.radius);
+                    ctx.strokeStyle = '#adb5bd';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    this.drawConnections(ctx, node.left);
+                }
+                
+                // 绘制到右子节点的连接线
+                if (node.right) {
+                    ctx.beginPath();
+                    ctx.moveTo(node.x, node.y + node.radius);
+                    ctx.lineTo(node.right.x, node.right.y - node.right.radius);
+                    ctx.strokeStyle = '#adb5bd';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    this.drawConnections(ctx, node.right);
+                }
+            }
+
+            drawNodes(ctx, node) {
+                if (!node) return;
+                
+                // 绘制节点
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+                
+                // 根据节点状态设置颜色
+                switch (node.state) {
+                    case 'active':
+                        ctx.fillStyle = '#ffd43b';
+                        ctx.strokeStyle = '#fcc419';
+                        break;
+                    case 'visited':
+                        ctx.fillStyle = '#dee2e6';
+                        ctx.strokeStyle = '#adb5bd';
+                        break;
+                    case 'inserting':
+                        ctx.fillStyle = '#69db7c';
+                        ctx.strokeStyle = '#51cf66';
+                        break;
+                    case 'deleting':
+                        ctx.fillStyle = '#ff6b6b';
+                        ctx.strokeStyle = '#fa5252';
+                        break;
+                    default:
+                        ctx.fillStyle = '#4dabf7';
+                        ctx.strokeStyle = '#339af0';
+                }
+                
+                if (node.highlight) {
+                    ctx.strokeStyle = '#ff6b6b';
+                    ctx.lineWidth = 3;
+                } else {
+                    ctx.lineWidth = 2;
+                }
+                
+                ctx.fill();
+                ctx.stroke();
+                
+                // 绘制节点值
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 16px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(node.value, node.x, node.y);
+                
+                // 递归绘制子节点
+                this.drawNodes(ctx, node.left);
+                this.drawNodes(ctx, node.right);
+            }
+
+            generateRandomTree(count = 7) {
+                this.root = null;
+                this.nodeCount = 0;
+                this.clearAnimationQueue();
+                
+                const values = new Set();
+                while (values.size < count) {
+                    values.add(Math.floor(Math.random() * 90) + 10);
+                }
+                
+                this.addToHistory(`生成随机BST，包含值: ${Array.from(values).join(', ')}`);
+                
+                Array.from(values).forEach(value => {
+                    this.insert(value);
+                });
+                
+                this.drawTree();
+            }
+        }
+
+        // ==================== 全局变量 ====================
+        const bst = new BST();
+        let isPlaying = false;
+
+        // ==================== DOM元素引用 ====================
+        const treeCanvas = document.getElementById('treeCanvas');
+        const nodeValueInput = document.getElementById('nodeValue');
+        const operationSelect = document.getElementById('operation');
+        const executeBtn = document.getElementById('executeBtn');
+        const randomTreeBtn = document.getElementById('randomTreeBtn');
+        const prevStepBtn = document.getElementById('prevStepBtn');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const nextStepBtn = document.getElementById('nextStepBtn');
+        const speedSlider = document.getElementById('speedSlider');
+        const speedValue = document.getElementById('speedValue');
+        const sequenceInput = document.getElementById('sequenceInput');
+        const demoBtn = document.getElementById('demoBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const learnMoreBtn = document.getElementById('learnMoreBtn');
+        const comparisonView = document.getElementById('comparisonView');
+
+        // ==================== 工具函数 ====================
+        function updateAlgorithmSteps(message) {
+            const stepsContainer = document.getElementById('algorithmSteps');
+            const stepItem = document.createElement('div');
+            stepItem.className = 'step-item';
+            stepItem.textContent = `• ${message}`;
+            
+            stepsContainer.appendChild(stepItem);
+            stepsContainer.scrollTop = stepsContainer.scrollHeight;
+        }
+
+        function clearAlgorithmSteps() {
+            const stepsContainer = document.getElementById('algorithmSteps');
+            stepsContainer.innerHTML = '<div class="step-item">欢迎使用BST教学动画！请执行操作查看详细步骤。</div>';
+        }
+
+        // ==================== 事件监听器 ====================
+        executeBtn.addEventListener('click', () => {
+            const value = parseInt(nodeValueInput.value);
+            const operation = operationSelect.value;
+            
+            if (isNaN(value) || value < 1 || value > 99) {
+                updateAlgorithmSteps('错误: 请输入1-99之间的有效数字');
+                return;
+            }
+            
+            bst.clearAnimationQueue();
+            clearAlgorithmSteps();
+            
+            switch (operation) {
+                case 'insert':
+                    bst.insert(value);
+                    break;
+                case 'delete':
+                    bst.delete(value);
+                    break;
+                case 'search':
+                    bst.search(value);
+                    break;
+            }
+            
+            bst.drawTree();
+            bst.playAnimation();
+        });
+
+        randomTreeBtn.addEventListener('click', () => {
+            bst.clearAnimationQueue();
+            clearAlgorithmSteps();
+            bst.generateRandomTree();
+            updateAlgorithmSteps('已生成随机二叉搜索树');
+        });
+
+        prevStepBtn.addEventListener('click', () => {
+            if (bst.currentStep > 0) {
+                bst.currentStep--;
+                bst.isAnimating = false;
+                const step = bst.animationQueue[bst.currentStep];
+                bst.executeAnimationStep(step);
+            }
+        });
+
+        playPauseBtn.addEventListener('click', () => {
+            if (bst.isAnimating) {
+                bst.isAnimating = false;
+                playPauseBtn.textContent = '▶️';
+            } else {
+                bst.playAnimation();
+            }
+        });
+
+        nextStepBtn.addEventListener('click', () => {
+            if (bst.currentStep < bst.animationQueue.length) {
+                bst.isAnimating = false;
+                const step = bst.animationQueue[bst.currentStep];
+                bst.executeAnimationStep(step);
+                bst.currentStep++;
+            }
+        });
+
+        speedSlider.addEventListener('input', () => {
+
+<!--检测到代码截断，自动续写中...-->
+bst.speed = parseInt(speedSlider.value);
+            const speedLabels = ['极慢', '很慢', '慢', '较慢', '中慢', '中速', '中快', '快', '很快', '极快'];
+            speedValue.textContent = speedLabels[bst.speed - 1];
+        });
+
+        demoBtn.addEventListener('click', () => {
+            const sequenceText = sequenceInput.value.trim();
+            if (!sequenceText) {
+                updateAlgorithmSteps('错误: 请输入演示序列');
+                return;
+            }
+            
+            const values = sequenceText.split(',').map(v => parseInt(v.trim())).filter(v => !isNaN(v));
+            
+            if (values.length === 0) {
+                updateAlgorithmSteps('错误: 请输入有效的数字序列');
+                return;
+            }
+            
+            bst.clearAnimationQueue();
+            clearAlgorithmSteps();
+            bst.root = null;
+            bst.nodeCount = 0;
+            
+            updateAlgorithmSteps(`开始序列演示: ${values.join(', ')}`);
+            updateAlgorithmSteps('注意观察有序序列插入时BST的退化过程！');
+            
+            // 逐个插入值
+            values.forEach((value, index) => {
+                bst.insert(value);
+            });
+            
+            bst.drawTree();
+            bst.playAnimation();
+            
+            // 检查是否是有序序列（可能导致严重不平衡）
+            const isSorted = values.every((val, i, arr) => i === 0 || val > arr[i-1]) || 
+                            values.every((val, i, arr) => i === 0 || val < arr[i-1]);
+            
+            if (isSorted && values.length >= 5) {
+                setTimeout(() => {
+                    comparisonView.classList.add('active');
+                    updateAlgorithmSteps('⚠️ 警告: 有序序列导致BST退化成链表！');
+                    updateAlgorithmSteps('查找效率从 O(log n) 退化到 O(n)');
+                }, values.length * 1000);
+            }
+        });
+
+        resetBtn.addEventListener('click', () => {
+            bst.root = null;
+            bst.nodeCount = 0;
+            bst.clearAnimationQueue();
+            bst.isAnimating = false;
+            clearAlgorithmSteps();
+            comparisonView.classList.remove('active');
+            bst.drawTree();
+            bst.updateStats();
+            updateAlgorithmSteps('已重置二叉搜索树');
+        });
+
+        learnMoreBtn.addEventListener('click', () => {
+            updateAlgorithmSteps('📚 红黑树是一种自平衡二叉搜索树，它通过以下规则保持平衡:');
+            updateAlgorithmSteps('1. 每个节点是红色或黑色');
+            updateAlgorithmSteps('2. 根节点是黑色');
+            updateAlgorithmSteps('3. 所有叶子节点(NIL)是黑色');
+            updateAlgorithmSteps('4. 红色节点的两个子节点都是黑色');
+            updateAlgorithmSteps('5. 从任一节点到其每个叶子的所有路径包含相同数目的黑色节点');
+            updateAlgorithmSteps('这些规则确保树大致平衡，查找、插入、删除的时间复杂度都是 O(log n)');
+            updateAlgorithmSteps('红黑树通过旋转和重新着色来维护这些性质');
+        });
+
+        treeCanvas.addEventListener('click', (event) => {
+            const rect = treeCanvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            
+            // 查找点击的节点
+            const clickedNode = findNodeAtPosition(bst.root, x, y);
+            if (clickedNode) {
+                nodeValueInput.value = clickedNode.value;
+                updateAlgorithmSteps(`选中节点 ${clickedNode.value}，已填入输入框`);
+                
+                // 高亮显示选中的节点
+                bst.root && resetNodeStates(bst.root);
+                clickedNode.highlight = true;
+                bst.drawTree();
+                
+                setTimeout(() => {
+                    clickedNode.highlight = false;
+                    bst.drawTree();
+                }, 1000);
+            }
+        });
+
+        function findNodeAtPosition(node, x, y) {
+            if (!node) return null;
+            
+            const distance = Math.sqrt(Math.pow(node.x - x, 2) + Math.pow(node.y - y, 2));
+            if (distance <= node.radius) {
+                return node;
+            }
+            
+            return findNodeAtPosition(node.left, x, y) || findNodeAtPosition(node.right, x, y);
+        }
+
+        function resetNodeStates(node) {
+            if (!node) return;
+            node.state = 'normal';
+            node.highlight = false;
+            resetNodeStates(node.left);
+            resetNodeStates(node.right);
+        }
+
+        // ==================== 初始化 ====================
+        function init() {
+            // 初始化速度显示
+            speedValue.textContent = '中速';
+            
+            // 绘制初始空树
+            bst.drawTree();
+            bst.updateStats();
+            
+            // 添加一些初始节点以便演示
+            setTimeout(() => {
+                updateAlgorithmSteps('💡 提示: 尝试以下操作:');
+                updateAlgorithmSteps('1. 插入一些节点（如: 50, 30, 70, 20, 40）');
+                updateAlgorithmSteps('2. 点击"随机生成BST"创建随机树');
+                updateAlgorithmSteps('3. 输入"1,2,3,4,5"并点击"开始序列演示"观察退化');
+                updateAlgorithmSteps('4. 点击画布上的节点可以选中它');
+            }, 1000);
+        }
+
+        // 页面加载完成后初始化
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

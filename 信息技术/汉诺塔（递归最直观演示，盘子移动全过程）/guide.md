@@ -1,0 +1,1275 @@
+# 需求：汉诺塔（递归最直观演示，盘子移动全过程）
+
+### 1. 专业思考
+
+### 1. 专业思考
+
+#### 用户需求分析
+1.  **目标用户**：主要为初次接触递归概念、数据结构或算法的学生（如计算机科学、数学专业低年级学生），以及对递归感到困惑的自学者。
+2.  **核心痛点**：
+    *   **抽象性**：递归的“自我调用”和“栈”的操作过程非常抽象，难以在脑中形成清晰的执行流程。
+    *   **步骤繁多**：汉诺塔的移动步骤随盘子数量（n）呈指数级增长（2^n - 1），手动追踪或静态图示极易混乱。
+    *   **缺乏直观性**：传统讲解侧重于公式和逻辑推导，缺少对“每一步如何发生”、“为什么这样移动”以及“递归调用与返回如何对应到物理移动”的可视化连接。
+3.  **核心需求**：用户需要一个**清晰、直观、可控制**的动画，能够将抽象的递归调用栈与具体的盘子移动过程**实时、同步地**对应起来，从而内化“分治”和“递归”的思想。
+
+#### 教学设计思路（核心概念、认知规律、交互设计、视觉呈现）
+1.  **核心概念**：
+    *   **递归三要素**：基线条件（只有一个盘子）、递归条件（将n个盘子从A移到C，分解为：1. 将n-1个从A移到B；2. 将第n个从A移到C；3. 将n-1个从B移到C）。
+    *   **分治思想**：将大问题分解为结构相同的小问题。
+    *   **调用栈**：递归函数的执行顺序，后进先出（LIFO）。
+2.  **认知规律**：
+    *   **双重编码**：同时呈现视觉动画（盘子移动）和语言/符号信息（递归调用栈、步骤说明），强化记忆与理解。
+    *   **渐进式呈现**：从少量盘子（n=2, 3）开始，逐步增加复杂度。动画速度可调，允许用户暂停、单步前进/后退，以适应不同的认知速度。
+    *   **建立映射**：关键设计是让“递归调用栈”的每一次“入栈”（进入新函数）和“出栈”（函数返回）都明确对应到动画场景中的某个具体状态或动作，建立抽象与具象之间的强关联。
+3.  **交互设计**：
+    *   **控制层**：提供开始、暂停、继续、单步前进、单步后退、重置、调整速度等控制按钮。
+    *   **配置层**：允许用户在动画开始前选择盘子数量（例如1-8个），并选择是否显示辅助信息（如调用栈、步骤计数器、移动规则提示）。
+    *   **探索层**：在单步模式下，当鼠标悬停在调用栈的某一层时，高亮显示该层调用所对应的“当前待解决的子问题”（即哪几个盘子要从哪根柱子移到哪根柱子）。
+4.  **视觉呈现**：
+    *   **三栏式布局**：
+        *   **左面板（逻辑视图）**：动态可视化“递归调用栈”。用堆叠的、带有标签的方块表示每次函数调用，标签显示参数（如 `move(3, A, C, B)`）。方块的高亮、入栈、出栈动画需与主动画同步。
+        *   **中面板（核心动画区）**：经典的三根柱子（A, B, C）和彩色盘子。盘子从上到下大小递增，颜色采用渐变色系以便区分。移动过程平滑、清晰。
+        *   **右面板（信息面板）**：显示当前步骤的详细文字说明（如“步骤 5：将盘子 [1] 从 A 柱移动到 C 柱”），以及当前正在执行的递归规则（如“执行：move(2, B, C, A)”）。可以显示总步骤数。
+    *   **动画同步**：当盘子开始物理移动时，对应的“函数调用”在栈中应被高亮。一次完整的移动（拿起、移动、放下）对应递归函数中一个“移动输出语句”的执行。当一个函数的所有子调用返回后，该函数调用方块从栈中弹出。
+
+#### 配色方案选择
+*   **主色调**：采用深蓝或深灰色（`#2c3e50` 或 `#34495e`）作为背景，营造专注、清晰的科技感学习环境。
+*   **柱子**：使用中性色，如浅灰色（`#bdc3c7`）或木质纹理色，避免分散对盘子的注意力。
+*   **盘子**：采用**同一色系（如蓝色系或绿色系）的渐变色**。最小的盘子用最浅/最亮的颜色（如 `#a3d9ff`），最大的盘子用最深/最暗的颜色（如 `#0066cc`）。这样既能清晰区分不同盘子，又能通过颜色深度直观反映大小关系，符合认知习惯。
+*   **UI控件**：使用对比明显的颜色，如绿色（开始/继续 `#2ecc71`）、黄色（暂停/单步 `#f1c40f`）、红色（重置 `#e74c3c`），并保持简洁扁平化设计。
+*   **调用栈方块**：未激活时半透明（`rgba(255,255,255,0.1)`），激活时高亮（如淡蓝色背景 `#3498db`，白色文字）。边框清晰。
+*   **高亮与提示**：使用醒目的暖色（如橙色 `#e67e22`）进行高亮提示，例如当前正在移动的盘子轮廓、调用栈中活动的层。
+
+#### 交互功能列表
+1.  **预配置**：
+    *   选择盘子数量（滑块或数字输入，范围建议1-8）。
+    *   开关辅助信息（调用栈可视化、文字说明、步骤计数器）。
+2.  **播放控制**：
+    *   开始 / 暂停 / 继续：控制动画整体运行。
+    *   单步前进：一次执行一个动作（一次移动或一次调用/返回）。
+    *   单步后退：回退到上一个状态，用于反复观察。
+    *   重置：恢复到初始状态。
+    *   动画速度调节：通过滑块控制移动和步骤切换的速度。
+3.  **动画过程中的交互**：
+    *   **调用栈悬停提示**：鼠标悬停在调用栈的某个方块上时，在主动画区用半透明高亮框标出该次调用所对应的“子问题范围”（即涉及的柱子和盘子）。
+    *   **步骤跳转**：（可选高级功能）点击步骤计数器或调用栈历史，可以跳转到动画的特定步骤。
+4.  **信息显示**：
+    *   实时显示当前步骤编号和总步骤数（2^n - 1）。
+    *   实时显示当前移动的详细描述。
+    *   实时显示当前递归函数执行到了哪个阶段（如“正在解决：将3个盘子从A移到C，借助B” -> “步骤1：递归移动上面的2个盘子从A到B”）。
+
+### 2. HTML_CODE
+
+### 2. HTML_CODE
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>汉诺塔递归算法可视化教学动画</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 1200px;
+        }
+        
+        h1 {
+            color: #3498db;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
+        
+        .subtitle {
+            color: #bdc3c7;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+        
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            width: 100%;
+            max-width: 1200px;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .panel {
+            background-color: rgba(52, 73, 94, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .left-panel {
+            flex: 1;
+            min-width: 280px;
+        }
+        
+        .center-panel {
+            flex: 2;
+            min-width: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .right-panel {
+            flex: 1;
+            min-width: 280px;
+        }
+        
+        .panel-title {
+            color: #3498db;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+            width: 100%;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+        }
+        
+        .control-label {
+            margin-bottom: 5px;
+            color: #bdc3c7;
+            font-size: 0.9rem;
+        }
+        
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        input[type="range"] {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: #7f8c8d;
+            outline: none;
+        }
+        
+        .slider-value {
+            min-width: 30px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-start {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .btn-pause {
+            background-color: #f1c40f;
+            color: #2c3e50;
+        }
+        
+        .btn-step {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .btn-reset {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .btn:disabled {
+            background-color: #7f8c8d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        #canvas-container {
+            width: 100%;
+            height: 350px;
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        #hanoi-canvas {
+            background-color: rgba(44, 62, 80, 0.9);
+            border-radius: 8px;
+            width: 100%;
+            height: 100%;
+        }
+        
+        #call-stack {
+            height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .stack-item {
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 5px;
+            border-left: 4px solid #3498db;
+            background-color: rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        
+        .stack-item.active {
+            background-color: rgba(52, 152, 219, 0.3);
+            border-left-color: #e67e22;
+            box-shadow: 0 0 8px rgba(231, 126, 34, 0.5);
+        }
+        
+        .stack-item.returned {
+            opacity: 0.6;
+            border-left-color: #2ecc71;
+        }
+        
+        .info-box {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .info-title {
+            color: #3498db;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+        
+        .info-content {
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .highlight {
+            color: #e67e22;
+            font-weight: bold;
+        }
+        
+        .step-counter {
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 10px;
+            color: #f1c40f;
+        }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.8rem;
+        }
+        
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+            margin-right: 5px;
+        }
+        
+        .footer {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-top: 20px;
+            width: 100%;
+            max-width: 1200px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .panel {
+                width: 100%;
+            }
+            
+            #canvas-container {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>汉诺塔递归算法可视化</h1>
+        <p class="subtitle">最直观的递归过程演示 - 同步显示调用栈与盘子移动全过程</p>
+    </div>
+    
+    <div class="container">
+        <!-- 左面板：递归调用栈 -->
+        <div class="panel left-panel">
+            <h2 class="panel-title">递归调用栈</h2>
+            <div id="call-stack">
+                <!-- 调用栈内容将通过JS动态生成 -->
+                <div class="stack-item">程序开始，等待执行...</div>
+            </div>
+            <div class="info-box">
+                <div class="info-title">调用栈说明</div>
+                <div class="info-content">
+                    <p>每个方块代表一次递归调用：</p>
+                    <p><span class="highlight">move(n, from, to, via)</span></p>
+                    <p>参数含义：将 <span class="highlight">n</span> 个盘子从 <span class="highlight">from</span> 柱移动到 <span class="highlight">to</span> 柱，借助 <span class="highlight">via</span> 柱。</p>
+                    <p><span style="color:#e67e22">高亮</span>表示当前正在执行的调用。</p>
+                    <p><span style="color:#2ecc71">绿色边框</span>表示已执行完成的调用。</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 中面板：汉诺塔动画 -->
+        <div class="panel center-panel">
+            <h2 class="panel-title">汉诺塔动画</h2>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <div class="control-label">盘子数量</div>
+                    <div class="slider-container">
+                        <input type="range" id="disk-count" min="1" max="8" value="4">
+                        <span class="slider-value" id="disk-count-value">4</span>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-label">动画速度</div>
+                    <div class="slider-container">
+                        <input type="range" id="speed" min="1" max="10" value="5">
+                        <span class="slider-value" id="speed-value">5</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="step-counter">
+                步骤: <span id="current-step">0</span> / <span id="total-steps">15</span>
+            </div>
+            
+            <div id="canvas-container">
+                <canvas id="hanoi-canvas"></canvas>
+            </div>
+            
+            <div class="controls">
+                <button id="btn-start" class="btn btn-start">开始</button>
+                <button id="btn-pause" class="btn btn-pause" disabled>暂停</button>
+                <button id="btn-step" class="btn btn-step" disabled>单步前进</button>
+                <button id="btn-reset" class="btn btn-reset">重置</button>
+            </div>
+            
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #a3d9ff;"></div>
+                    <span>最小盘子</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #0066cc;"></div>
+                    <span>最大盘子</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #e67e22;"></div>
+                    <span>当前移动的盘子</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 右面板：信息与说明 -->
+        <div class="panel right-panel">
+            <h2 class="panel-title">执行信息</h2>
+            
+            <div class="info-box">
+                <div class="info-title">当前操作</div>
+                <div class="info-content" id="current-action">
+                    等待开始...
+                </div>
+            </div>
+            
+            <div class="info-box">
+                <div class="info-title">递归规则</div>
+                <div class="info-content" id="recursion-rule">
+                    1. 如果只有一个盘子，直接移动<br>
+                    2. 否则：<br>
+                    &nbsp;&nbsp;a. 将 n-1 个盘子从 A 移到 B（借助 C）<br>
+                    &nbsp;&nbsp;b. 将第 n 个盘子从 A 移到 C<br>
+                    &nbsp;&nbsp;c. 将 n-1 个盘子从 B 移到 C（借助 A）
+                </div>
+            </div>
+            
+            <div class="info-box">
+                <div class="info-title">算法步骤</div>
+                <div class="info-content">
+                    <p>1. 选择盘子数量 (1-8)</p>
+                    <p>2. 点击"开始"按钮观看动画</p>
+                    <p>3. 使用"单步前进"仔细分析每一步</p>
+                    <p>4. 观察左侧调用栈与动画的同步关系</p>
+                    <p>5. 理解递归的分治思想</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>汉诺塔递归算法可视化教学动画 | 设计原理：将 n 个盘子的移动分解为 3 个子问题 | 总步骤数: 2<sup>n</sup> - 1</p>
+    </div>
+
+    <script>
+        // 汉诺塔可视化主程序
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取DOM元素
+            const canvas = document.getElementById('hanoi-canvas');
+            const ctx = canvas.getContext('2d');
+            const callStackElement = document.getElementById('call-stack');
+            const currentActionElement = document.getElementById('current-action');
+            const recursionRuleElement = document.getElementById('recursion-rule');
+            const currentStepElement = document.getElementById('current-step');
+            const totalStepsElement = document.getElementById('total-steps');
+            
+            // 控制按钮
+            const btnStart = document.getElementById('btn-start');
+            const btnPause = document.getElementById('btn-pause');
+            const btnStep = document.getElementById('btn-step');
+            const btnReset = document.getElementById('btn-reset');
+            
+            // 滑块控制
+            const diskCountSlider = document.getElementById('disk-count');
+            const diskCountValue = document.getElementById('disk-count-value');
+            const speedSlider = document.getElementById('speed');
+            const speedValue = document.getElementById('speed-value');
+            
+            // 汉诺塔状态
+            let disks = [];
+            let towers = [[], [], []];
+            let animationState = {
+                isRunning: false,
+                isPaused: false,
+                currentStep: 0,
+                totalSteps: 0,
+                speed: 5,
+                diskCount: 4,
+                animationQueue: [],
+                callStack: [],
+                moveHistory: []
+            };
+            
+            // 颜色配置
+            const colors = {
+                background: '#2c3e50',
+                tower: '#bdc3c7',
+                base: '#95a5a6',
+                diskMin: '#a3d9ff',
+                diskMax: '#0066cc',
+                activeDisk: '#e67e22',
+                text: '#ecf0f1'
+            };
+            
+            // 初始化
+            function init() {
+                // 设置canvas尺寸
+                resizeCanvas();
+                window.addEventListener('resize', resizeCanvas);
+                
+                // 初始化滑块显示
+                diskCountValue.textContent = diskCountSlider.value;
+                speedValue.textContent = speedSlider.value;
+                
+                // 设置滑块事件
+                diskCountSlider.addEventListener('input', function() {
+                    diskCountValue.textContent = this.value;
+                    if (!animationState.isRunning) {
+                        resetAnimation();
+                    }
+                });
+                
+                speedSlider.addEventListener('input', function() {
+                    speedValue.textContent = this.value;
+                    animationState.speed = parseInt(this.value);
+                });
+                
+                // 设置按钮事件
+                btnStart.addEventListener('click', startAnimation);
+                btnPause.addEventListener('click', pauseAnimation);
+                btnStep.addEventListener('click', stepAnimation);
+                btnReset.addEventListener('click', resetAnimation);
+                
+                // 初始化汉诺塔
+                resetAnimation();
+            }
+            
+            // 调整canvas大小
+            function resizeCanvas() {
+                const container = document.getElementById('canvas-container');
+                canvas.width = container.clientWidth;
+                canvas.height = container.clientHeight;
+                drawTowers();
+            }
+            
+            // 重置动画
+            function resetAnimation() {
+                animationState.isRunning = false;
+                animationState.isPaused = false;
+                animationState.currentStep = 0;
+                animationState.diskCount = parseInt(diskCountSlider.value);
+                animationState.totalSteps = Math.pow(2, animationState.diskCount) - 1;
+                animationState.animationQueue = [];
+                animationState.callStack = [];
+                animationState.moveHistory = [];
+                
+                // 更新UI
+                currentStepElement.textContent = animationState.currentStep;
+                totalStepsElement.textContent = animationState.totalSteps;
+                currentActionElement.textContent = "等待开始...";
+                recursionRuleElement.innerHTML = `
+                    1. 如果只有一个盘子，直接移动<br>
+                    2. 否则：<br>
+                    &nbsp;&nbsp;a. 将 n-1 个盘子从 A 移到 B（借助 C）<br>
+                    &nbsp;&nbsp;b. 将第 n 个盘子从 A 移到 C<br>
+                    &nbsp;&nbsp;c. 将 n-1 个盘子从 B 移到 C（借助 A）
+                `;
+                
+                // 清空调用栈显示
+                callStackElement.innerHTML = '<div class="stack-item">程序开始，等待执行...</div>';
+                
+                // 初始化盘子
+                disks = [];
+                towers = [[], [], []];
+                
+                // 创建盘子对象
+                for (let i = 0; i < animationState.diskCount; i++) {
+                    disks.push({
+                        id: i,
+                        width: 0, // 将在drawTowers中计算
+                        color: interpolateColor(colors.diskMin, colors.diskMax, i / (animationState.diskCount - 1 || 1)),
+                        tower: 0,
+                        position: i
+                    });
+                    towers[0].push(i); // 所有盘子初始在A柱
+                }
+                
+                // 更新按钮状态
+                btnStart.disabled = false;
+                btnPause.disabled = true;
+                btnStep.disabled = false;
+                
+                // 绘制初始状态
+                drawTowers();
+            }
+            
+            // 开始动画
+            function startAnimation() {
+                if (animationState.isRunning) return;
+                
+                animationState.isRunning = true;
+                animationState.isPaused = false;
+                
+                // 清空动画队列
+                animationState.animationQueue = [];
+                animationState.callStack = [];
+                animationState.moveHistory = [];
+                animationState.currentStep = 0;
+                
+                // 清空调用栈显示
+                callStackElement.innerHTML = '';
+                
+                // 生成汉诺塔移动序列
+                generateHanoiMoves(animationState.diskCount, 0, 2, 1);
+                
+                // 更新按钮状态
+                btnStart.disabled = true;
+                btnPause.disabled = false;
+                btnStep.disabled = true;
+                
+                // 开始执行动画
+                executeNextMove();
+            }
+            
+            // 暂停动画
+            function pauseAnimation() {
+                if (!animationState.isRunning) return;
+                
+                animationState.isPaused = !animationState.isPaused;
+                
+                if (animationState.isPaused) {
+                    btnPause.textContent = "继续";
+                    btnStep.disabled = false;
+                } else {
+                    btnPause.textContent = "暂停";
+                    btnStep.disabled = true;
+                    executeNextMove();
+                }
+            }
+            
+            // 单步前进
+            function stepAnimation() {
+                if (animationState.isRunning && animationState.isPaused) {
+                    executeNextMove(true);
+                }
+            }
+            
+            // 生成汉诺塔移动序列（递归算法）
+            function generateHanoiMoves(n, from, to, via) {
+                // 添加调用栈记录
+                const callId = animationState.callStack.length;
+                animationState.callStack.push({
+                    id: callId,
+                    n: n,
+                    from: from,
+                    to: to,
+                    via: via,
+                    state: 'calling',
+                    step: animationState.currentStep
+                });
+                
+                // 更新调用栈显示
+                updateCallStackDisplay();
+                
+                if (n === 1) {
+                    // 基线条件：只有一个盘子，直接移动
+                    animationState.animationQueue.push({
+                        type: 'move',
+                        disk: disks.find(d => d.tower === from && d.position === towers[from].length - 1).id,
+                        from: from,
+                        to: to,
+                        callId: callId
+                    });
+                    
+                    // 标记调用完成
+                    animationState.callStack[callId].state = 'returning';
+                } else {
+                    // 递归条件
+                    // 1. 将 n-1 个盘子从 from 移到 via
+                    generateHanoiMoves(n - 1, from, via, to);
+                    
+                    // 2. 将第 n 个盘子从 from 移到 to
+                    animationState.animationQueue.push({
+                        type: 'move',
+                        disk: disks.find(d => d.tower === from && d.position === towers[from].length - 1).id,
+                        from: from,
+                        to: to,
+                        callId: callId
+                    });
+                    
+                    // 3. 将 n-1 个盘子从 via 移到 to
+                    generateHanoiMoves(n - 1, via, to, from);
+                    
+                    // 标记调用完成
+                    animationState.callStack[callId].state = 'returning';
+                }
+            }
+            
+            // 执行下一步移动
+            function executeNextMove(isStep = false) {
+                if (animationState.animationQueue.length === 0) {
+                    // 动画完成
+                    animationState.isRunning = false;
+                    btnStart.disabled = false;
+                    btnPause.disabled = true;
+                    btnStep.disabled = true;
+                    currentActionElement.textContent = "动画完成！";
+                    return;
+                }
+                
+                if (animationState.isPaused && !isStep) {
+                    return; // 暂停状态，等待用户操作
+                }
+                
+                // 获取下一个移动
+                const move = animationState.animationQueue.shift();
+                
+                // 执行移动
+                performMove(move);
+                
+                // 如果不是单步模式，继续执行下一个移动
+                if (!animationState.isPaused) {
+                    const delay = 1100 - (animationState.speed * 100);
+                    setTimeout(() => executeNextMove(), delay);
+                }
+            }
+            
+            // 执行移动操作
+            function performMove(move) {
+                // 更新步骤计数器
+                animationState.currentStep++;
+                currentStepElement.textContent = animationState.currentStep;
+                
+                // 获取盘子对象
+                const disk = disks[move.disk];
+                
+                // 记录移动历史
+                animationState.moveHistory.push({
+                    disk: move.disk,
+                    from: move.from,
+                    to: move.to,
+                    step: animationState.currentStep
+                });
+                
+                // 更新盘子位置
+                const fromTower = towers[move.from];
+                const toTower = towers[move.to];
+                
+                // 从原柱子移除盘子
+                const diskIndex = fromTower.indexOf(move.disk);
+                fromTower.splice(diskIndex, 1);
+                
+                // 添加到目标柱子
+                toTower.push(move.disk);
+                
+                // 更新盘子对象
+                disk.tower = move.to;
+                disk.position = toTower.length - 1;
+                
+                // 更新调用栈显示
+                updateCallStackDisplay(move.callId);
+                
+                // 更新当前操作显示
+                const fromName = getTowerName(move.from);
+                const toName = getTowerName(move.to);
+                currentActionElement.innerHTML = `步骤 <span class="highlight">${animationState.currentStep}</span>: 移动盘子 <span class="highlight">${move.disk + 1}</span> 从 <span class="highlight">${fromName}</span> 柱到 <span class="highlight">${toName}</span> 柱`;
+                
+                // 更新递归规则显示
+                const call = animationState.callStack[move.callId];
+                if (call) {
+                    recursionRuleElement.innerHTML = `
+                        执行: <span class="highlight">move(${call.n}, ${getTowerName(call.from)}, ${getTowerName(call.to)}, ${getTowerName(call.via)})</span><br>
+                        当前步骤: <span class="highlight">${call.n === 1 ? '基线条件（直接移动）' : '递归条件（分解问题）'}</span>
+                    `;
+                }
+                
+                // 绘制动画
+                animateMove(disk, move.from, move.to);
+            }
+            
+            // 动画移动盘子
+            function animateMove(disk, fromTower, toTower) {
+                const canvasWidth = canvas.width;
+                const canvasHeight = canvas.height;
+                
+                // 计算柱子位置
+                const towerWidth = canvasWidth / 6;
+                const baseY = canvasHeight * 0.8;
+                const towerHeight = canvasHeight * 0.5;
+                const diskHeight = 20;
+                
+                // 计算起始和结束位置
+                const startX = canvasWidth / 4 + fromTower * (canvasWidth / 3);
+                const endX = canvasWidth / 4 + toTower * (canvasWidth / 3);
+                
+                // 计算盘子宽度
+                const maxDiskWidth = towerWidth * 1.5;
+                const minDiskWidth = towerWidth * 0.5;
+                const diskWidth = minDiskWidth + (maxDiskWidth - minDiskWidth) * 
+                                 (1 - disk.id / (animationState.diskCount - 1 || 1));
+                
+                // 动画参数
+                const animationDuration = 1000 - (animationState.speed * 80);
+                const startTime = Date.now();
+                
+                // 动画函数
+                function animate() {
+                    const elapsed = Date.now() - startTime;
+                    const progress = Math.min(elapsed / animationDuration, 1);
+                    
+                    // 清空画布
+                    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+                    
+                    // 绘制所有柱子
+                    drawAllTowers();
+                    
+                    // 绘制所有盘子（除了正在移动的）
+                    for (const d of disks) {
+                        if (d.id !== disk.id) {
+                            drawDisk(d);
+                        }
+                    }
+                    
+                    // 计算当前盘子位置
+                    let currentX, currentY;
+                    
+                    if (progress < 0.3) {
+                        // 第一阶段：上升
+                        const phaseProgress = progress / 0.3;
+                        currentX = startX;
+                        currentY = baseY - (towerHeight * 0.3) * phaseProgress;
+                    } else if (progress < 0.7) {
+                        // 第二阶段：水平移动
+                        const phaseProgress = (progress - 0.3) / 0.4;
+                        currentX = startX + (endX - startX) * phaseProgress;
+                        currentY = baseY - towerHeight * 0.3;
+                    } else {
+                        // 第三阶段：下降
+                        const phaseProgress = (progress - 0.7) / 0.3;
+                        currentX = endX;
+                        currentY = (baseY - towerHeight * 0.3) + (towerHeight * 0.3) * phaseProgress;
+                    }
+                    
+                    // 绘制正在移动的盘子（高亮显示）
+                    ctx.fillStyle = colors.activeDisk;
+                    ctx.beginPath();
+                    ctx.roundRect(
+                        currentX - diskWidth / 2,
+                        currentY - diskHeight / 2,
+                        diskWidth,
+                        diskHeight,
+                        5
+                    );
+                    ctx.fill();
+                    
+                    // 绘制盘子内部（原色）
+                    ctx.fillStyle = disk.color;
+                    ctx.beginPath();
+                    ctx.roundRect(
+                        currentX - diskWidth / 2 + 3,
+                        currentY - diskHeight / 2 + 3,
+                        diskWidth - 6,
+                        diskHeight - 6,
+                        3
+                    );
+                    ctx.fill();
+                    
+                    // 绘制盘子编号
+                    ctx.fillStyle = colors.text;
+                    ctx.font = 'bold 14px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(disk.id + 1, currentX, currentY);
+                    
+                    // 继续动画
+                    if (progress < 1) {
+                        requestAnimationFrame(animate);
+                    } else {
+                        // 动画完成，绘制最终状态
+                        drawTowers();
+                    }
+                }
+                
+                // 开始动画
+                animate();
+            }
+            
+            // 绘制所有柱子
+            function drawAllTowers() {
+                const canvasWidth = canvas.width;
+                const canvasHeight = canvas.height;
+                
+                // 绘制底座
+                ctx.fillStyle = colors.base;
+                ctx.beginPath();
+                ctx.roundRect(
+                    canvasWidth * 0.1,
+                    canvasHeight * 0.8,
+                    canvasWidth * 0.8,
+                    canvasHeight * 0.05,
+                    5
+                );
+                ctx.fill();
+                
+                // 绘制三根柱子
+                for (let i = 0; i < 3; i++) {
+                    const x = canvasWidth / 4 + i * (canvasWidth / 3);
+                    
+                    // 柱子
+                    ctx.fillStyle = colors.tower;
+                    ctx.beginPath();
+                    ctx.roundRect(
+                        x - 10,
+                        canvasHeight * 0.3,
+                        20,
+                        canvasHeight * 0.5,
+                        10
+                    );
+                    ctx.fill();
+                    
+                    // 柱子标签
+                    ctx.fillStyle = colors.text;
+                    ctx.font = 'bold 20px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(getTowerName(i), x, canvasHeight * 0.9);
+                }
+            }
+            
+            // 绘制汉诺塔（所有元素）
+            function drawTowers() {
+                // 清空画布
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // 绘制所有柱子
+                drawAllTowers();
+                
+                // 绘制所有盘子
+                for (const disk of disks) {
+                    drawDisk(disk);
+                }
+            }
+            
+            // 绘制单个盘子
+            function drawDisk(disk) {
+                const canvasWidth = canvas.width;
+                const canvasHeight = canvas.height;
+                
+                // 计算柱子位置
+                const towerWidth = canvasWidth / 6;
+                const baseY = canvasHeight * 0.8;
+                const towerHeight = canvasHeight * 0.5;
+                const diskHeight = 20;
+                
+                // 计算盘子位置
+                const towerIndex = disk.tower;
+                const x = canvasWidth / 4 + towerIndex * (canvasWidth / 3);
+                
+                // 计算盘子宽度
+                const maxDiskWidth = towerWidth * 1.5;
+                const minDiskWidth = towerWidth * 0.5;
+                const diskWidth = minDiskWidth + (maxDiskWidth - minDiskWidth) * 
+                                 (1 - disk.id / (animationState.diskCount - 1 || 1));
+                
+                // 计算Y位置（考虑盘子在柱子上的位置）
+                const y = baseY - (disk.position + 1) * diskHeight;
+                
+                // 绘制盘子
+                ctx.fillStyle = disk.color;
+                ctx.beginPath();
+                ctx.roundRect(
+                    x - diskWidth / 2,
+                    y - diskHeight / 2,
+                    diskWidth,
+                    diskHeight,
+                    5
+                );
+                ctx.fill();
+                
+                // 绘制盘子边框
+                ctx.strokeStyle = colors.background;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // 绘制盘子编号
+                ctx.fillStyle = colors.text;
+                ctx.font = 'bold 14px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(disk.id + 1, x, y);
+            }
+            
+            // 更新调用栈显示
+            function updateCallStackDisplay(activeCallId = null) {
+                callStackElement.innerHTML = '';
+                
+                // 显示当前调用栈（从最新到最旧）
+                for (let i = animationState.callStack.length - 1; i >= 0; i--) {
+                    const call = animationState.callStack[i];
+                    const stackItem = document.createElement('div');
+                    stackItem.className = 'stack-item';
+                    
+                    if (call.id === activeCallId) {
+                        stackItem.classList.add('active');
+                    } else if (call.state === 'returning') {
+                        stackItem.classList.add('returned');
+                    }
+                    
+                    const fromName = getTowerName(call.from);
+                    const toName = getTowerName(call.to);
+                    const viaName = getTowerName(call.via);
+                    
+                    stackItem.innerHTML = `
+                        <div><strong>move(${call.n}, ${fromName}, ${toName}, ${viaName})</strong></div>
+                        <div style="font-size:0.8rem; margin-top:5px;">
+                            状态: ${call.state === 'calling' ? '执行中' : '已完成'} | 
+                            步骤: ${call.step}
+                        </div>
+                    `;
+                    
+                    // 添加悬停效果
+                    stackItem.addEventListener('mouseenter', function() {
+                        highlightTowers(call.from, call.to, call.via);
+                    });
+                    
+                    stackItem.addEventListener('mouseleave', function() {
+                        drawTowers();
+                    });
+                    
+                    callStackElement.appendChild(stackItem);
+                }
+                
+                // 如果调用栈为空，显示提示
+                if (animationState.callStack.length === 0) {
+                    const stackItem = document.createElement('div');
+                    stackItem.className = 'stack-item';
+                    stackItem.textContent = '程序开始，等待执行...';
+                    callStackElement.appendChild(stackItem);
+                }
+            }
+            
+            // 高亮显示相关柱子
+            function highlightTowers(from, to, via) {
+                drawTowers();
+                
+                const canvasWidth = canvas.width;
+                const highlightColor = 'rgba(231, 126, 34, 0.3)';
+                
+                // 高亮相关柱子
+                [from, to, via].forEach((towerIndex, i) => {
+                    const x = canvasWidth / 4 + towerIndex * (canvasWidth / 3);
+                    const highlightWidth = 60;
+                    
+                    ctx.fillStyle = highlightColor;
+                    ctx.beginPath();
+                    ctx.roundRect(
+                        x - highlightWidth / 2,
+                        canvas.height * 0.3,
+                        highlightWidth,
+                        canvas.height * 0.5,
+                        10
+                    );
+                    ctx.fill();
+                });
+                
+                // 重新绘制盘子（在高亮上方）
+                for (const disk of disks) {
+                    drawDisk(disk);
+                }
+            }
+            
+            // 辅助函数：获取柱子名称
+            function getTowerName(index) {
+                return ['A', 'B', 'C'][index];
+            }
+            
+            // 辅助函数：颜色插值
+            function interpolateColor(color1, color2, factor) {
+                const hex = color => color.replace('#', '');
+                const hexToDec = hex => parseInt(hex, 16);
+                const decToHex = dec => Math.round(dec).toString(16).padStart(2, '0');
+                
+                const c1 = hex(color1);
+                const c2 = hex(color2);
+                
+                const r1 = hexToDec(c1.substring(0, 2));
+                const g1 = hexToDec(c1.substring(2, 4));
+                const b1 = hexToDec(c1.substring(4, 6));
+                
+                const r2 = hexToDec(c2.substring(0, 2));
+                const g2 = hexToDec(c2.substring(2, 4));
+                const b2 = hexToDec(c2.substring(4, 6));
+                
+                const r = r1 + (r2 - r1) * factor;
+                const g = g1 + (g2 - g1) * factor;
+                const b = b1 + (b2 - b1) * factor;
+                
+                return `#${decToHex(r)}${decToHex(g)}${decToHex(b)}`;
+            }
+            
+            // 初始化Canvas圆角矩形方法（如果不存在）
+            if (!CanvasRenderingContext2D.prototype.roundRect) {
+                CanvasRenderingContext2D.prototype.roundRect = function(x, y, width, height, radius) {
+                    if (width < 2 * radius) radius = width / 2;
+                    if (height < 2 * radius) radius = height / 2;
+                    
+                    this.beginPath();
+                    this.moveTo(x + radius, y);
+                    this.arcTo(x + width, y, x + width,
+<!--检测到代码截断，自动续写中...-->
+x + height, radius);
+                    this.arcTo(x + width, y + height, x, y + height, radius);
+                    this.arcTo(x, y + height, x, y, radius);
+                    this.arcTo(x, y, x + width, y, radius);
+                    this.closePath();
+                    return this;
+                };
+            }
+            
+            // 开始运行
+            init();
+        });
+    </script>
+</body>
+</html>
+
+### 3. 过程输出
+
+### 3. 使用指南
+
+## 汉诺塔递归算法可视化交互式教学动画使用指南
+
+欢迎使用汉诺塔递归算法可视化教学动画！本工具专为帮助您直观理解递归算法的核心思想而设计。通过同步展示递归调用栈与物理移动过程，您将能够"看见"递归的执行流程，突破抽象思维障碍。
+
+---
+
+### 一、功能说明
+
+本动画将经典的汉诺塔问题转化为一个**三面板交互式学习环境**：
+
+1. **左面板 - 递归调用栈**：实时显示递归函数的调用层次、参数和状态
+2. **中面板 - 汉诺塔动画**：可视化展示盘子的移动过程，包含完整的控制功能
+3. **右面板 - 执行信息**：显示当前操作、递归规则和算法步骤说明
+
+### 二、主要功能
+
+#### 1. 动画控制功能
+- **开始/暂停/继续**：控制动画的整体播放
+- **单步前进**：一次只执行一个移动步骤，适合仔细分析
+- **重置**：恢复到初始状态，可重新配置参数
+- **速度调节**：通过滑块控制动画播放速度（1-10档）
+
+#### 2. 参数配置功能
+- **盘子数量选择**：支持1-8个盘子（建议从3-4个开始学习）
+- **辅助信息开关**：默认显示所有辅助信息，帮助理解
+
+#### 3. 交互探索功能
+- **调用栈悬停高亮**：鼠标悬停在调用栈项目上时，动画区会高亮显示对应的柱子
+- **实时步骤跟踪**：显示当前步骤和总步骤数（2ⁿ - 1）
+
+### 三、设计特色
+
+#### 1. 双重编码学习体验
+- **视觉编码**：彩色渐变的盘子、平滑的移动动画、实时的调用栈变化
+- **语言编码**：详细的步骤说明、递归规则提示、函数调用参数显示
+- **同步映射**：每一次递归调用/返回都精确对应到具体的物理移动
+
+#### 2. 渐进式认知支持
+- **从简到繁**：建议从少量盘子开始，逐步增加复杂度
+- **可控节奏**：支持暂停、单步、速度调节，适应不同学习节奏
+- **错误预防**：在动画运行期间禁用可能引起混乱的操作
+
+#### 3. 专业视觉设计
+- **科学配色**：盘子采用蓝绿色系渐变，最小盘子最浅，最大盘子最深
+- **清晰布局**：三面板设计逻辑清晰，重点突出
+- **响应式设计**：适应不同屏幕尺寸，在移动设备上也能良好显示
+
+### 四、教学要点
+
+#### 理解递归三要素
+通过本动画，您可以直观观察到：
+
+1. **基线条件（Base Case）**
+   - 当n=1时，直接移动盘子
+   - 在调用栈中显示为最底层的简单调用
+
+2. **递归条件（Recursive Case）**
+   - 将大问题分解为三个子问题：
+     a. 移动n-1个盘子到辅助柱
+     b. 移动第n个盘子到目标柱
+     c. 移动n-1个盘子到目标柱
+
+3. **递归调用与返回**
+   - 观察调用栈的"入栈"（进入新函数）和"出栈"（函数返回）
+   - 理解后进先出（LIFO）的执行顺序
+
+#### 关键观察点
+- **调用栈的增长与收缩**：注意递归深度如何随问题规模变化
+- **子问题的独立性**：每个递归调用解决一个独立的子问题
+- **分治思想的体现**：大问题被分解为结构相同的小问题
+- **指数级步骤增长**：体验2ⁿ - 1的步骤增长规律
+
+### 五、使用建议
+
+#### 初学者学习路径
+1. **第一步：观察整体**（n=3，正常速度）
+   - 点击"开始"，完整观看一遍动画
+   - 感受递归算法的整体流程
+
+2. **第二步：单步分析**（n=3，单步模式）
+   - 使用"单步前进"按钮，一步步执行
+   - 观察每次移动时调用栈的变化
+   - 对照右面板的说明，理解当前执行的递归规则
+
+3. **第三步：深入探索**（n=4，悬停交互）
+   - 鼠标悬停在调用栈的不同层次
+   - 观察动画区对应柱子的高亮
+   - 理解每个递归调用对应的子问题范围
+
+4. **第四步：挑战自我**（n=5-6，预测下一步）
+   - 在单步模式下，尝试预测下一步移动
+   - 验证自己对递归执行顺序的理解
+
+#### 教学场景建议
+- **课堂演示**：教师可使用本工具进行递归概念的直观讲解
+- **自主学习**：学生可按照建议的学习路径自主探索
+- **小组讨论**：围绕特定步骤展开讨论，深化理解
+- **编程练习前导**：在编写汉诺塔递归代码前，先通过动画建立直观认识
+
+#### 高级学习技巧
+1. **对比不同盘子数量**：观察递归深度和步骤数的变化规律
+2. **关注调用栈模式**：注意递归调用的对称性和重复模式
+3. **尝试手动模拟**：观看动画后，尝试在纸上手动模拟小规模汉诺塔
+4. **联系实际代码**：将动画中的调用栈与实际递归代码对应起来
+
+---
+
+### 技术提示
+- 本工具使用纯HTML5 Canvas实现，无需任何外部依赖
+- 建议使用Chrome、Firefox或Edge等现代浏览器
+- 动画过程中可随时调整速度，但改变盘子数量需要先重置
+- 总移动步骤数计算公式：2ⁿ - 1（n为盘子数量）
+
+### 教育价值
+通过本交互式动画，您不仅能够学会汉诺塔问题的解法，更重要的是能够：
+1. 建立递归思维的直观模型
+2. 理解分治算法的核心思想
+3. 掌握调用栈的概念和运作机制
+4. 培养计算思维和问题分解能力
+
+祝您学习愉快！递归的世界既精妙又美丽，希望本工具能帮助您打开这扇门，享受算法之美。如有任何问题或建议，欢迎反馈。
+
+**记住：理解递归的关键在于信任递归——相信每个子问题都能被正确解决，就像这个动画展示的那样！**
