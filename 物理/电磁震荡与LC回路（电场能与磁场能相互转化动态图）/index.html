@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>电磁振荡与LC回路 - 电场能与磁场能相互转化</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border-left: 5px solid #8a2be2;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .panel-title {
+            font-size: 1.4rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .panel-title i {
+            font-style: normal;
+            background: #8a2be2;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        #simulationPanel {
+            flex: 2;
+            min-width: 500px;
+        }
+        
+        #controlPanel {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        #graphPanel {
+            flex: 2;
+            min-width: 500px;
+        }
+        
+        #energyPanel {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #e0e0e0;
+        }
+        
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .control-group {
+            margin-bottom: 20px;
+        }
+        
+        .control-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #444;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .slider-label {
+            min-width: 80px;
+            font-weight: 500;
+        }
+        
+        .slider-value {
+            min-width: 60px;
+            text-align: right;
+            font-weight: 600;
+            color: #8a2be2;
+        }
+        
+        input[type="range"] {
+            flex: 1;
+            height: 8px;
+            -webkit-appearance: none;
+            background: #e0e0e0;
+            border-radius: 4px;
+            outline: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #8a2be2;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            font-size: 1rem;
+        }
+        
+        #playBtn {
+            background: #2ecc71;
+            color: white;
+        }
+        
+        #playBtn:hover {
+            background: #27ae60;
+        }
+        
+        #resetBtn {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        #resetBtn:hover {
+            background: #c0392b;
+        }
+        
+        #speedSlider {
+            margin-top: 5px;
+        }
+        
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .checkbox-item input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .checkbox-item label {
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .phase-indicator {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .phase-title {
+            font-weight: 600;
+            color: #3498db;
+            margin-bottom: 5px;
+        }
+        
+        .phase-desc {
+            font-size: 0.95rem;
+            color: #555;
+        }
+        
+        .value-display {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .value-item {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .value-label {
+            font-size: 0.9rem;
+            color: #777;
+            margin-bottom: 5px;
+        }
+        
+        .value-number {
+            font-size: 1.3rem;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+        }
+        
+        #qValue {
+            color: #2980b9;
+        }
+        
+        #iValue {
+            color: #e74c3c;
+        }
+        
+        #energyValue {
+            color: #2ecc71;
+        }
+        
+        #periodValue {
+            color: #9b59b6;
+        }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+        }
+        
+        .legend-electric {
+            background: #8a2be2;
+        }
+        
+        .legend-magnetic {
+            background: #2ecc71;
+        }
+        
+        .legend-current {
+            background: #ffa500;
+        }
+        
+        .legend-charge-plus {
+            background: #ff6b8b;
+        }
+        
+        .legend-charge-minus {
+            background: #3498db;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 1100px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .panel {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>电磁振荡与LC回路</h1>
+            <p class="subtitle">电场能与磁场能相互转化动态模拟 | 理想无阻尼振荡 | 周期公式 T = 2π√LC</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="panel" id="simulationPanel">
+                <div class="panel-title"><i>1</i> LC回路动态模拟</div>
+                <div class="canvas-container">
+                    <canvas id="simulationCanvas"></canvas>
+                </div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color legend-electric"></div>
+                        <span>电场/电场能</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color legend-magnetic"></div>
+                        <span>磁场/磁场能</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color legend-current"></div>
+                        <span>电流方向</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color legend-charge-plus"></div>
+                        <span>正电荷</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color legend-charge-minus"></div>
+                        <span>负电荷</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel" id="controlPanel">
+                <div class="panel-title"><i>2</i> 控制面板</div>
+                
+                <div class="control-group">
+                    <div class="control-title">
+                        <span>动画控制</span>
+                    </div>
+                    <div class="button-group">
+                        <button id="playBtn">暂停</button>
+                        <button id="resetBtn">重置</button>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <div class="slider-label">动画速度</div>
+                        <input type="range" id="speedSlider" min="0.1" max="3" step="0.1" value="1">
+                        <div class="slider-value" id="speedValue">1.0x</div>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-title">
+                        <span>电路参数调节</span>
+                        <span id="periodDisplay">T = 0.00s</span>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <div class="slider-label">电感 L</div>
+                        <input type="range" id="lSlider" min="0.1" max="5" step="0.1" value="1">
+                        <div class="slider-value" id="lValue">1.0 H</div>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <div class="slider-label">电容 C</div>
+                        <input type="range" id="cSlider" min="10" max="500" step="10" value="100">
+                        <div class="slider-value" id="cValue">100 μF</div>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-title">
+                        <span>可视化选项</span>
+                    </div>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="showFieldLines" checked>
+                            <label for="showFieldLines">电场线/磁场线</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="showCurrent" checked>
+                            <label for="showCurrent">电流方向</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="showCharges" checked>
+                            <label for="showCharges">电荷显示</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="showEnergyFlow" checked>
+                            <label for="showEnergyFlow">能量流动</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="phase-indicator">
+                    <div class="phase-title" id="phaseTitle">电场能最大阶段</div>
+                    <div class="phase-desc" id="phaseDesc">电容器充满电，电流为零，能量全部储存在电场中。</div>
+                </div>
+            </div>
+            
+            <div class="panel" id="graphPanel">
+                <div class="panel-title"><i>3</i> 变量随时间变化曲线</div>
+                <div class="canvas-container">
+                    <canvas id="graphCanvas"></canvas>
+                </div>
+            </div>
+            
+            <div class="panel" id="energyPanel">
+                <div class="panel-title"><i>4</i> 能量转化与实时数据</div>
+                
+                <div class="canvas-container">
+                    <canvas id="energyCanvas"></canvas>
+                </div>
+                
+                <div class="value-display">
+                    <div class="value-item">
+                        <div class="value-label">电荷量 q</div>
+                        <div class="value-number" id="qValue">+1.00 C</div>
+                    </div>
+                    <div class="value-item">
+                        <div class="value-label">电流 i</div>
+                        <div class="value-number" id="iValue">0.00 A</div>
+                    </div>
+                    <div class="value-item">
+                        <div class="value-label">总能量</div>
+                        <div class="value-number" id="energyValue">5.00 J</div>
+                    </div>
+                    <div class="value-item">
+                        <div class="value-label">振荡周期</div>
+                        <div class="value-number" id="periodValue">0.063 s</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>电磁振荡教学动画 | 理想LC回路 | 能量守恒：电场能 + 磁场能 = 常量</p>
+            <p>交互提示：调节电感和电容可以改变振荡频率，观察各物理量的相位关系</p>
+        </footer>
+    </div>
+
+    <script>
+        // 获取Canvas元素和上下文
+        const simCanvas = document.getElementById('simulationCanvas');
+        const graphCanvas = document.getElementById('graphCanvas');
+        const energyCanvas = document.getElementById('energyCanvas');
+        
+        const simCtx = simCanvas.getContext('2d');
+        const graphCtx = graphCanvas.getContext('2d');
+        const energyCtx = energyCanvas.getContext('2d');
+        
+        // 设置Canvas尺寸
+        function resizeCanvases() {
+            const containers = document.querySelectorAll('.canvas-container');
+            
+            containers.forEach(container => {
+                const canvas = container.querySelector('canvas');
+                const rect = container.getBoundingClientRect();
+                
+                canvas.width = rect.width;
+                canvas.height = rect.height;
+            });
+        }
+        
+        // 初始调整尺寸
+        resizeCanvases();
+        window.addEventListener('resize', resizeCanvases);
+        
+        // 物理参数
+        let L = 1.0; // 电感 (H)
+        let C = 100e-6; // 电容 (F) - 100μF
+        let q0 = 1.0; // 初始电荷 (C)
+        let i0 = 0.0; // 初始电流 (A)
+        
+        // 计算振荡参数
+        const omega = () => 1 / Math.sqrt(L * C); // 角频率
+        const period = () => 2 * Math.PI * Math.sqrt(L * C); // 周期
+        
+        // 动画状态
+        let time = 0;
+        let isPlaying = true;
+        let speed = 1.0;
+        let animationId = null;
+        
+        // 获取DOM元素
+        const playBtn = document.getElementById('playBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const speedSlider = document.getElementById('speedSlider');
+        const speedValue = document.getElementById('speedValue');
+        const lSlider = document.getElementById('lSlider');
+        const lValue = document.getElementById('lValue');
+        const cSlider = document.getElementById('cSlider');
+        const cValue = document.getElementById('cValue');
+        const periodDisplay = document.getElementById('periodDisplay');
+        const periodValue = document.getElementById('periodValue');
+        
+        const showFieldLines = document.getElementById('showFieldLines');
+        const showCurrent = document.getElementById('showCurrent');
+        const showCharges = document.getElementById('showCharges');
+        const showEnergyFlow = document.getElementById('showEnergyFlow');
+        
+        const phaseTitle = document.getElementById('phaseTitle');
+        const phaseDesc = document.getElementById('phaseDesc');
+        
+        const qValue = document.getElementById('qValue');
+        const iValue = document.getElementById('iValue');
+        const energyValue = document.getElementById('energyValue');
+        
+        // 初始化UI
+        function updateUI() {
+            lValue.textContent = `${L.toFixed(1)} H`;
+            cValue.textContent = `${(C * 1e6).toFixed(0)} μF`;
+            speedValue.textContent = `${speed.toFixed(1)}x`;
+            
+            const T = period();
+            periodDisplay.textContent = `T = ${T.toFixed(3)}s`;
+            periodValue.textContent = `${T.toFixed(3)} s`;
+        }
+        
+        // 计算当前时刻的物理量
+        function calculatePhysics(t) {
+            const w = omega();
+            const q = q0 * Math.cos(w * t); // 电荷量
+            const i = -q0 * w * Math.sin(w * t); // 电流 (i = dq/dt)
+            
+            // 能量计算
+            const Ue = 0.5 * q * q / C; // 电场能
+            const Ub = 0.5 * L * i * i; // 磁场能
+            const totalEnergy = Ue + Ub; // 总能量
+            
+            return { q, i, Ue, Ub, totalEnergy, w };
+        }
+        
+        // 绘制LC回路模拟
+        function drawSimulation() {
+            const width = simCanvas.width;
+            const height = simCanvas.height;
+            
+            // 清空画布
+            simCtx.clearRect(0, 0, width, height);
+            
+            // 计算当前物理量
+            const physics = calculatePhysics(time);
+            const { q, i, Ue, Ub } = physics;
+            
+            // 确定相位
+            const phase = (physics.w * time) % (2 * Math.PI);
+            updatePhaseIndicator(phase);
+            
+            // 绘制背景
+            simCtx.fillStyle = '#f8f9fa';
+            simCtx.fillRect(0, 0, width, height);
+            
+            // 电路布局参数
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const capacitorWidth = 80;
+            const capacitorHeight = 120;
+            const coilRadius = 40;
+            const coilTurns = 6;
+            const wireLength = 150;
+            
+            // 绘制导线
+            simCtx.beginPath();
+            simCtx.moveTo(centerX - wireLength, centerY);
+            simCtx.lineTo(centerX - capacitorWidth/2, centerY);
+            simCtx.moveTo(centerX + capacitorWidth/2, centerY);
+            
+            // 绘制电感线圈
+            for (let j = 0; j < coilTurns; j++) {
+                const angle = j * (Math.PI / (coilTurns-1));
+                const x = centerX + capacitorWidth/2 + 20 + j * 15;
+                const y = centerY + coilRadius * Math.sin(angle);
+                if (j === 0) {
+                    simCtx.lineTo(x, y);
+                } else {
+                    simCtx.lineTo(x, y);
+                }
+            }
+            
+            simCtx.lineTo(centerX + wireLength, centerY);
+            simCtx.strokeStyle = '#333';
+            simCtx.lineWidth = 3;
+            simCtx.stroke();
+            
+            // 绘制电容
+            const capacitorLeft = centerX - capacitorWidth/2;
+            const capacitorRight = centerX + capacitorWidth/2;
+            const capacitorTop = centerY - capacitorHeight/2;
+            const capacitorBottom = centerY + capacitorHeight/2;
+            
+            // 电容极板
+            simCtx.fillStyle = '#444';
+            simCtx.fillRect(capacitorLeft - 5, capacitorTop, 10, capacitorHeight);
+            simCtx.fillRect(capacitorRight - 5, capacitorTop, 10, capacitorHeight);
+            
+            // 电荷显示
+            if (showCharges.checked) {
+                const maxChargeDots = 20;
+                const chargeDots = Math.min(maxChargeDots, Math.abs(q) * 10);
+                
+                // 正电荷
+                if (q > 0) {
+                    simCtx.fillStyle = '#ff6b8b'; // 粉色表示正电荷
+                    for (let j = 0; j < chargeDots; j++) {
+                        const x = capacitorLeft - 10;
+                        const y = capacitorTop + (j + 0.5) * (capacitorHeight / chargeDots);
+                        simCtx.beginPath();
+                        simCtx.arc(x, y, 4, 0, Math.PI * 2);
+                        simCtx.fill();
+                        simCtx.fillText('+', x - 3, y + 3);
+                    }
+                    
+                    simCtx.fillStyle = '#3498db'; // 蓝色表示负电荷
+                    for (let j = 0; j < chargeDots; j++) {
+                        const x = capacitorRight + 10;
+                        const y = capacitorTop + (j + 0.5) * (capacitorHeight / chargeDots);
+                        simCtx.beginPath();
+                        simCtx.arc(x, y, 4, 0, Math.PI * 2);
+                        simCtx.fill();
+                        simCtx.fillText('-', x - 3, y + 3);
+                    }
+                } else {
+                    simCtx.fillStyle = '#3498db'; // 蓝色表示负电荷
+                    for (let j = 0; j < chargeDots; j++) {
+                        const x = capacitorLeft - 10;
+                        const y = capacitorTop + (j + 0.5) * (capacitorHeight / chargeDots);
+                        simCtx.beginPath();
+                        simCtx.arc(x, y, 4, 0, Math.PI * 2);
+                        simCtx.fill();
+                        simCtx.fillText('-', x - 3, y + 3);
+                    }
+                    
+                    simCtx.fillStyle = '#ff6b8b'; // 粉色表示正电荷
+                    for (let j = 0; j < chargeDots; j++) {
+                        const x = capacitorRight + 10;
+                        const y = capacitorTop + (j + 0.5) * (capacitorHeight / chargeDots);
+                        simCtx.beginPath();
+                        simCtx.arc(x, y, 4, 0, Math.PI * 2);
+                        simCtx.fill();
+                        simCtx.fillText('+', x - 3, y + 3);
+                    }
+                }
+            }
+            
+            // 电场线
+            if (showFieldLines.checked) {
+                const fieldLineCount = 12;
+                const fieldStrength = Math.abs(q) / q0;
+                
+                simCtx.strokeStyle = 'rgba(138, 43, 226, 0.6)'; // 紫色电场线
+                simCtx.lineWidth = 1 + fieldStrength * 2;
+                
+                for (let j = 0; j < fieldLineCount; j++) {
+                    const y = capacitorTop + (j + 0.5) * (capacitorHeight / fieldLineCount);
+                    
+                    simCtx.beginPath();
+                    simCtx.moveTo(capacitorLeft, y);
+                    simCtx.bezierCurveTo(
+                        centerX - capacitorWidth/4, y,
+                        centerX + capacitorWidth/4, y,
+                        capacitorRight, y
+                    );
+                    simCtx.stroke();
+                    
+                    // 电场方向箭头
+                    if (q > 0) {
+                        drawArrow(simCtx, centerX, y, 8, Math.PI, '#8a2be2');
+                    } else {
+                        drawArrow(simCtx, centerX, y, 8, 0, '#8a2be2');
+                    }
+                }
+            }
+            
+            // 电流方向
+            if (showCurrent.checked) {
+                const currentStrength = Math.abs(i) / (q0 * physics.w);
+                const arrowCount = 8;
+                const arrowSpacing = (2 * wireLength - capacitorWidth - 40) / arrowCount;
+                
+                simCtx.fillStyle = 'rgba(255, 165, 0, 0.8)'; // 橙色电流
+                
+                for (let j = 0; j < arrowCount; j++) {
+                    const x = centerX - wireLength + 30 + j * arrowSpacing;
+                    
+                    // 跳过电容区域
+                    if (x > capacitorLeft - 20 && x < capacitorRight + 20) continue;
+                    
+                    if (i > 0) {
+                        drawArrow(simCtx, x, centerY, 10 + currentStrength * 10, Math.PI/2, '#ffa500');
+                    } else {
+                        drawArrow(simCtx, x, centerY, 10 + currentStrength * 10, -Math.PI/2, '#ffa500');
+                    }
+                }
+            }
+            
+            // 磁场线（电感周围）
+            if (showFieldLines.checked) {
+                const magneticStrength = Math.abs(i) / (q0 * physics.w);
+                const magneticLines = 8;
+                
+                simCtx.strokeStyle = 'rgba(46, 204, 113, 0.6)'; // 绿色磁场线
+                simCtx.lineWidth = 1 + magneticStrength * 2;
+                
+                const coilCenterX = centerX + capacitorWidth/2 + 20 + (coilTurns-1) * 15 / 2;
+                
+                for (let j = 0; j < magneticLines; j++) {
+                    const angle = j * (2 * Math.PI / magneticLines);
+                    const radius = coilRadius + 15;
+                    
+                    simCtx.beginPath();
+                    simCtx.arc(coilCenterX, centerY, radius, angle, angle + Math.PI * 1.8);
+                    simCtx.stroke();
+                    
+                    // 磁场方向
+                    const arrowAngle = angle + Math.PI * 0.9;
+                    const arrowX = coilCenterX + radius * Math.cos(arrowAngle);
+                    const arrowY = centerY + radius * Math.sin(arrowAngle);
+                    
+                    if (i > 0) {
+                        drawArrow(simCtx, arrowX, arrowY, 6, arrowAngle + Math.PI/2, '#2ecc71');
+                    } else {
+                        drawArrow(simCtx, arrowX, arrowY, 6, arrowAngle - Math.PI/2, '#2ecc71');
+                    }
+                }
+            }
+            
+            // 能量流动指示
+            if (showEnergyFlow.checked) {
+                const energyFlowRadius = 15;
+                const flowX = centerX;
+                const flowY = centerY + capacitorHeight/2 + 30;
+                
+                simCtx.beginPath();
+                simCtx.arc(flowX, flowY, energyFlowRadius, 0, Math.PI * 2);
+                simCtx.strokeStyle = '#9b59b6';
+                simCtx.lineWidth = 2;
+                simCtx.stroke();
+                
+                // 流动方向
+                if (Math.abs(Ub) > Math.abs(Ue)) {
+                    // 磁场能 > 电场能，能量流向电容
+                    drawArrow(simCtx, flowX, flowY, 12, Math.PI, '#9b59b6');
+                    simCtx.fillText('能量流向电容', flowX - 40, flowY - 25);
+                } else {
+                    // 电场能 > 磁场能，能量流向电感
+                    drawArrow(simCtx, flowX, flowY, 12, 0, '#9b59b6');
+                    simCtx.fillText('能量流向电感', flowX - 40, flowY - 25);
+                }
+            }
+            
+            // 标签
+            simCtx.fillStyle = '#333';
+            simCtx.font = 'bold 16px Arial';
+            simCtx.fillText('C', centerX, capacitorTop - 10);
+            simCtx.fillText('L', centerX + capacitorWidth/2 + 50, centerY - coilRadius - 10);
+            
+            // 更新数据显示
+            qValue.textContent = `${physics.q.toFixed(2)} C`;
+            iValue.textContent = `${physics.i.toFixed(2)} A`;
+            energyValue.textContent = `${physics.totalEnergy.toFixed(2)} J`;
+        }
+        
+        // 绘制曲线图
+        function drawGraph() {
+            const width = graphCanvas.width;
+            const height = graphCanvas.height;
+            
+            // 清空画布
+            graphCtx.clearRect(0, 0, width, height);
+            
+            // 绘制背景
+            graphCtx.fillStyle = '#f8f9fa';
+            graphCtx.fillRect(0, 0, width, height);
+            
+            // 绘制坐标轴
+            graphCtx.strokeStyle = '#aaa';
+            graphCtx.lineWidth = 1;
+            
+            // X轴
+            graphCtx.beginPath();
+            graphCtx.moveTo(50, height - 50);
+            graphCtx.lineTo(width - 20, height - 50);
+            graphCtx.stroke();
+            
+            // Y轴
+            graphCtx.beginPath();
+            graphCtx.moveTo(50, 20);
+            graphCtx.lineTo(50, height - 50);
+            graphCtx.stroke();
+            
+            // 坐标轴标签
+            graphCtx.fillStyle = '#666';
+            graphCtx.font = '14px Arial';
+            graphCtx.fillText('时间 t (s)', width - 80, height - 20);
+            graphCtx.save();
+            graphCtx.translate(15, height / 2);
+            graphCtx.rotate(-Math.PI / 2);
+            graphCtx.fillText('物理量', 0, 0);
+            graphCtx.restore();
+            
+            // 绘制网格
+            graphCtx.strokeStyle = '#eee';
+            graphCtx.lineWidth = 0.5;
+            
+            // 水平网格
+            for (let i = 0; i <= 10; i++) {
+                const y = 20 + (height - 70) * i / 10;
+                graphCtx.beginPath();
+                graphCtx.moveTo(50, y);
+                graphCtx.lineTo(width - 20, y);
+                graphCtx.stroke();
+            }
+            
+            // 垂直网格
+            const timeRange = 2 * period();
+            for (let i = 0; i <= 10; i++) {
+                const x = 50 + (width - 70) * i / 10;
+                graphCtx.beginPath();
+                graphCtx.moveTo(x, 20);
+                graphCtx.lineTo(x, height - 50);
+                graphCtx.stroke();
+                
+                // 时间刻度
+                const t = (i / 10) * timeRange;
+                graphCtx.fillStyle = '#666';
+                graphCtx.fillText(t.toFixed(2), x - 10, height - 30);
+            }
+            
+            // 绘制曲线
+            const timeRangeSeconds = 2 * period();
+            const points = 200;
+            const dx = (width - 70) / points;
+            
+            // 电荷曲线 (蓝色)
+            graphCtx.beginPath();
+            for (let i = 0; i <= points; i++) {
+                const t = (i / points) * timeRangeSeconds;
+                const physics = calculatePhysics(t);
+                const x = 50 + (i / points) * (width - 70);
+                const y = height/2 - (physics.q / q0) * (height - 70) / 3;
+                
+                if (i === 0) {
+                    graphCtx.moveTo(x, y);
+                } else {
+                    graphCtx.lineTo(x, y);
+                }
+            }
+            graphCtx.strokeStyle = '#2980b9';
+            graphCtx.lineWidth = 2;
+            graphCtx.stroke();
+            
+            // 电流曲线 (红色)
+            graphCtx.beginPath();
+            for (let i = 0; i <= points; i++) {
+                const t = (i / points) * timeRangeSeconds;
+                const physics = calculatePhysics(t);
+                const x = 50 + (i / points) * (width - 70);
+                const y = height/2 - (physics.i / (q0 * omega())) * (height - 70) / 3;
+                
+                if (i === 0) {
+                    graphCtx.moveTo(x, y);
+                } else {
+                    graphCtx.lineTo(x, y);
+                }
+            }
+            graphCtx.strokeStyle = '#e74c3c';
+            graphCtx.lineWidth = 2;
+            graphCtx.stroke();
+            
+            // 能量曲线
+            graphCtx.beginPath();
+            for (let i = 0; i <= points; i++) {
+                const t = (i / points) * timeRangeSeconds;
+                const physics = calculatePhysics(t);
+                const x = 50 + (i / points) * (width - 70);
+                const y = height - 50 - (physics.Ue / (0.5 * q0 * q0 / C)) * (height - 70) / 2;
+                
+                if (i === 0) {
+                    graphCtx.moveTo(x, y);
+                } else {
+                    graphCtx.lineTo(x, y);
+                }
+            }
+            graphCtx.strokeStyle = '#8a2be2';
+            graphCtx.lineWidth = 2;
+            graphCtx.stroke();
+            
+            graphCtx.beginPath();
+            for (let i = 0; i <= points; i++) {
+                const t = (i / points) * timeRangeSeconds;
+                const physics = calculatePhysics(t);
+                const x = 50 + (i / points) * (width - 70);
+                const y = height - 50 - (physics.Ub / (0.5 * q0 * q0 / C)) * (height - 70) / 2;
+                
+                if (i === 0) {
+                    graphCtx.moveTo(x, y);
+                } else {
+                    graphCtx.lineTo(x, y);
+                }
+            }
+            graphCtx.strokeStyle = '#2ecc71';
+            graphCtx.lineWidth = 2;
+            graphCtx.stroke();
+            
+            // 当前时间指示线
+            const currentX = 50 + (time % timeRangeSeconds) / timeRangeSeconds * (width - 70);
+            graphCtx.beginPath();
+            graphCtx.moveTo(currentX, 20);
+            graphCtx.lineTo(currentX, height - 50);
+            graphCtx.strokeStyle = '#e67e22';
+            graphCtx.lineWidth = 2;
+            graphCtx.stroke();
+            
+            // 图例
+            const legendY = 30;
+            const legendItems
+<!--检测到代码截断，自动续写中...-->
+= [
+                {color: '#2980b9', label: '电荷 q(t)'},
+                {color: '#e74c3c', label: '电流 i(t)'},
+                {color: '#8a2be2', label: '电场能 Ue(t)'},
+                {color: '#2ecc71', label: '磁场能 Ub(t)'}
+            ];
+            
+            legendItems.forEach((item, index) => {
+                const y = legendY + index * 25;
+                
+                graphCtx.fillStyle = item.color;
+                graphCtx.fillRect(width - 150, y, 15, 15);
+                
+                graphCtx.fillStyle = '#333';
+                graphCtx.font = '12px Arial';
+                graphCtx.fillText(item.label, width - 130, y + 12);
+            });
+        }
+        
+        // 绘制能量图
+        function drawEnergy() {
+            const width = energyCanvas.width;
+            const height = energyCanvas.height;
+            
+            // 清空画布
+            energyCtx.clearRect(0, 0, width, height);
+            
+            // 计算当前物理量
+            const physics = calculatePhysics(time);
+            const { Ue, Ub, totalEnergy } = physics;
+            
+            // 绘制能量柱状图
+            const barWidth = 60;
+            const maxBarHeight = height - 100;
+            
+            // 电场能柱
+            const electricHeight = (Ue / totalEnergy) * maxBarHeight;
+            energyCtx.fillStyle = '#8a2be2';
+            energyCtx.fillRect(width/2 - barWidth - 20, height - 50 - electricHeight, barWidth, electricHeight);
+            
+            // 磁场能柱
+            const magneticHeight = (Ub / totalEnergy) * maxBarHeight;
+            energyCtx.fillStyle = '#2ecc71';
+            energyCtx.fillRect(width/2 + 20, height - 50 - magneticHeight, barWidth, magneticHeight);
+            
+            // 柱状图标签
+            energyCtx.fillStyle = '#333';
+            energyCtx.font = 'bold 16px Arial';
+            energyCtx.fillText('电场能', width/2 - barWidth - 20, height - 20);
+            energyCtx.fillText('磁场能', width/2 + 20, height - 20);
+            
+            // 数值标签
+            energyCtx.font = '14px Arial';
+            energyCtx.fillStyle = '#8a2be2';
+            energyCtx.fillText(`${Ue.toFixed(2)} J`, width/2 - barWidth - 15, height - 60 - electricHeight);
+            
+            energyCtx.fillStyle = '#2ecc71';
+            energyCtx.fillText(`${Ub.toFixed(2)} J`, width/2 + 25, height - 60 - magneticHeight);
+            
+            // 总能量线
+            energyCtx.strokeStyle = '#7f8c8d';
+            energyCtx.lineWidth = 2;
+            energyCtx.setLineDash([5, 5]);
+            energyCtx.beginPath();
+            energyCtx.moveTo(30, height - 50 - maxBarHeight);
+            energyCtx.lineTo(width - 30, height - 50 - maxBarHeight);
+            energyCtx.stroke();
+            energyCtx.setLineDash([]);
+            
+            // 总能量标签
+            energyCtx.fillStyle = '#7f8c8d';
+            energyCtx.font = 'bold 14px Arial';
+            energyCtx.fillText(`总能量: ${totalEnergy.toFixed(2)} J`, width/2 - 50, height - 70 - maxBarHeight);
+            
+            // 绘制能量转化饼图
+            const pieRadius = 60;
+            const pieX = width/2;
+            const pieY = 80;
+            
+            // 电场能部分
+            const electricAngle = (Ue / totalEnergy) * 2 * Math.PI;
+            energyCtx.beginPath();
+            energyCtx.moveTo(pieX, pieY);
+            energyCtx.arc(pieX, pieY, pieRadius, 0, electricAngle);
+            energyCtx.closePath();
+            energyCtx.fillStyle = '#8a2be2';
+            energyCtx.fill();
+            
+            // 磁场能部分
+            energyCtx.beginPath();
+            energyCtx.moveTo(pieX, pieY);
+            energyCtx.arc(pieX, pieY, pieRadius, electricAngle, 2 * Math.PI);
+            energyCtx.closePath();
+            energyCtx.fillStyle = '#2ecc71';
+            energyCtx.fill();
+            
+            // 饼图边框
+            energyCtx.beginPath();
+            energyCtx.arc(pieX, pieY, pieRadius, 0, 2 * Math.PI);
+            energyCtx.strokeStyle = '#333';
+            energyCtx.lineWidth = 2;
+            energyCtx.stroke();
+            
+            // 饼图标签
+            energyCtx.fillStyle = '#333';
+            energyCtx.font = 'bold 14px Arial';
+            energyCtx.fillText('能量分布', pieX - 35, pieY + pieRadius + 30);
+            
+            // 百分比
+            const electricPercent = Math.round((Ue / totalEnergy) * 100);
+            const magneticPercent = Math.round((Ub / totalEnergy) * 100);
+            
+            energyCtx.font = '12px Arial';
+            energyCtx.fillStyle = '#8a2be2';
+            energyCtx.fillText(`${electricPercent}%`, pieX - 40, pieY - 10);
+            
+            energyCtx.fillStyle = '#2ecc71';
+            energyCtx.fillText(`${magneticPercent}%`, pieX + 20, pieY + 20);
+        }
+        
+        // 绘制箭头函数
+        function drawArrow(ctx, x, y, size, angle, color) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle);
+            ctx.fillStyle = color;
+            
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(-size, -size/2);
+            ctx.lineTo(-size, size/2);
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.restore();
+        }
+        
+        // 更新相位指示器
+        function updatePhaseIndicator(phase) {
+            const normalizedPhase = (phase + 2 * Math.PI) % (2 * Math.PI);
+            
+            if (normalizedPhase < Math.PI/4 || normalizedPhase > 7*Math.PI/4) {
+                phaseTitle.textContent = '电场能最大阶段';
+                phaseDesc.textContent = '电容器充满电，电流为零，能量全部储存在电场中。';
+            } else if (normalizedPhase >= Math.PI/4 && normalizedPhase < 3*Math.PI/4) {
+                phaseTitle.textContent = '能量转化阶段 (电场→磁场)';
+                phaseDesc.textContent = '电容器放电，电流增大，电场能转化为磁场能。';
+            } else if (normalizedPhase >= 3*Math.PI/4 && normalizedPhase < 5*Math.PI/4) {
+                phaseTitle.textContent = '磁场能最大阶段';
+                phaseDesc.textContent = '电容器电量为零，电流最大，能量全部储存在磁场中。';
+            } else {
+                phaseTitle.textContent = '能量转化阶段 (磁场→电场)';
+                phaseDesc.textContent = '电容器反向充电，电流减小，磁场能转化为电场能。';
+            }
+        }
+        
+        // 动画循环
+        function animate() {
+            if (isPlaying) {
+                time += 0.016 * speed; // 每帧增加的时间，乘以速度因子
+            }
+            
+            drawSimulation();
+            drawGraph();
+            drawEnergy();
+            
+            animationId = requestAnimationFrame(animate);
+        }
+        
+        // 事件监听器
+        playBtn.addEventListener('click', () => {
+            isPlaying = !isPlaying;
+            playBtn.textContent = isPlaying ? '暂停' : '播放';
+        });
+        
+        resetBtn.addEventListener('click', () => {
+            time = 0;
+            if (!isPlaying) {
+                isPlaying = true;
+                playBtn.textContent = '暂停';
+            }
+        });
+        
+        speedSlider.addEventListener('input', () => {
+            speed = parseFloat(speedSlider.value);
+            updateUI();
+        });
+        
+        lSlider.addEventListener('input', () => {
+            L = parseFloat(lSlider.value);
+            updateUI();
+        });
+        
+        cSlider.addEventListener('input', () => {
+            C = parseFloat(cSlider.value) * 1e-6; // 转换为法拉
+            updateUI();
+        });
+        
+        // 初始化UI
+        updateUI();
+        
+        // 开始动画
+        animate();
+        
+        // 初始绘制
+        drawSimulation();
+        drawGraph();
+        drawEnergy();
+    </script>
+</body>
+</html>

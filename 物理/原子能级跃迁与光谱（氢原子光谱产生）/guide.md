@@ -1,0 +1,1569 @@
+# 需求：原子能级跃迁与光谱（氢原子光谱产生）
+
+### 1. 专业思考
+
+### 1. 专业思考
+
+#### 用户需求分析
+目标用户主要是高中或大学低年级的物理、化学学生。他们需要理解：
+1.  **抽象概念可视化**：将看不见的原子内部能级结构、电子跃迁过程与宏观可观测的光谱线建立直观联系。
+2.  **因果逻辑链条**：清晰展示“电子吸收能量从低能级到高能级（激发）”→“电子自发从高能级跃迁回低能级（退激）”→“释放特定能量光子”→“光子能量对应特定波长（颜色）的光谱线”这一完整逻辑。
+3.  **核心公式的物理意义**：理解里德伯公式 `1/λ = R(1/n₁² - 1/n₂²)` 中各个参数的物理含义（n为能级主量子数），并看到公式计算与实际动画效果的对应。
+4.  **主动探索与验证**：用户希望通过自主操作（如选择跃迁系列、改变能级）来观察结果，从而加深理解和记忆。
+
+#### 教学设计思路
+*   **核心概念**：定态能级、量子化、激发与退激、光子能量（E = hν = hc/λ）、光谱系列（莱曼系、巴耳末系、帕邢系等）、发射光谱。
+*   **认知规律**：
+    1.  **从已知到未知**：从可见的彩色光谱（巴耳末系在可见光区）切入，回溯到不可见的原子内部机制。
+    2.  **从静态到动态**：先展示静态的氢原子能级图，再动态演示电子跃迁和光子发射过程。
+    3.  **从具体到抽象**：通过交互操作，将抽象的能级差（ΔE）与具体的光子颜色/波长直接关联。
+    4.  **归纳与验证**：允许用户自由探索不同能级间的跃迁，然后引导其归纳出光谱系列规律，并用公式进行验证。
+*   **交互设计**：
+    *   **双视图联动**：左侧为“原子模型与能级视图”，右侧为“光谱显示视图”。任何一侧的交互操作，都会在另一侧产生即时、联动的反馈。
+    *   **引导与自由模式**：初期提供“引导模式”，逐步演示一个完整跃迁案例。随后进入“探索模式”，让用户自主操作。
+    *   **渐进式信息呈现**：初始界面简洁，随着交互深入，逐步显示能级数值、光子能量、波长公式等详细信息，避免认知过载。
+*   **视觉呈现**：
+    *   **原子视图**：采用垂直的能级阶梯图，能级间距随n增大而减小（体现能量收敛）。电子用发光小球表示，能级用水平线表示并标注主量子数n。
+    *   **跃迁过程**：电子跃迁时用平滑的弧线运动，吸收能量时箭头指向原子，发射光子时箭头背离原子并飞向光谱仪。光子用带有对应颜色光晕的小球表示。
+    *   **光谱视图**：模拟光谱仪屏幕，显示连续的彩色背景（从紫外到红外，可见光区突出），跃迁产生的光谱线以明亮的垂直线在对应波长位置出现，并短暂保持高亮后淡化为持久谱线。
+
+#### 配色方案选择
+*   **主色调**：深空蓝（#0f1a2f）或深灰（#2c3e50）作为画布背景，营造科学感和聚焦感。
+*   **能级与原子**：
+    *   能级线：浅灰色（#ecf0f1）或淡蓝色（#bdc3c7）。
+    *   电子：核心用亮黄色（#f1c40f），外围带有柔和的光晕。
+    *   原子核：深红色（#c0392b）小点。
+*   **光子与能量**：
+    *   吸收能量过程：使用指向原子的、渐变的蓝色（#3498db）箭头或波纹。
+    *   发射光子：光子的颜色严格根据其波长（能量）决定。可见光区（巴耳末系）遵循彩虹色（红、橙、黄、绿、蓝、靛、紫），紫外区（莱曼系）用紫色（#8e44ad）到不可见的表示，红外区（帕邢系等）用暗红色（#922b21）。
+*   **光谱图**：
+    *   背景：从紫色（左，短波）到红色（右，长波）的平滑渐变水平条带，紫外和红外区域用暗色调区分。
+    *   谱线：亮白色或亮黄色高亮，淡出后变为与背景区分度高的纯色细线（如青色 #1abc9c）。
+*   **UI与控制面板**：使用中性浅色（如 #ecf0f1）背景，按钮用温和的蓝色（#3498db）和绿色（#2ecc71）表示开始/激发等正向操作。
+
+#### 交互功能列表
+1.  **模式选择按钮**：“引导教程” vs. “自由探索”。
+2.  **能量输入控制**（在引导模式或激发阶段）：
+    *   滑块：控制输入能量的数值（以eV或能级差为单位）。
+    *   “激发”按钮：向基态电子施加指定能量，使其跃迁到相应能级（如果能量匹配）。
+3.  **能级选择器**（在自由探索模式）：
+    *   点击低能级（如n=1），再点击高能级（如n=3），触发从高向低的跃迁演示。
+    *   或提供下拉菜单直接选择“跃迁系列”（莱曼系、巴耳末系…）。
+4.  **跃迁动画控制**：
+    *   “发射”按钮：触发已处于激发态的电子向低能级跃迁。
+    *   “单步演示”/“连续演示”切换。
+    *   “重置”按钮：将所有电子放回基态，清空气谱线。
+5.  **信息显示面板**：
+    *   实时显示当前跃迁的：高/低能级主量子数 (n₂, n₁)、能级差 ΔE (eV)、发射光子波长 λ (nm)、所属光谱系列。
+    *   显示里德伯公式，并将当前值代入公式中进行计算演示。
+6.  **光谱图图例与缩放**：点击光谱线可显示其详细信息。提供光谱图水平缩放功能，以便仔细观察特定区域。
+7.  **视图联动高亮**：当鼠标悬停在某条光谱线上时，在原子视图中高亮对应的两个能级及跃迁路径。反之，点击原子视图中的能级线，高亮所有与之相关的光谱线。
+
+### 2. HTML_CODE
+
+### 2. HTML_CODE
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>氢原子能级跃迁与光谱 - 交互式教学动画</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f1a2f 0%, #1a2b3c 100%);
+            color: #ecf0f1;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            border-bottom: 2px solid #3498db;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #3498db;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #bdc3c7;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .panel {
+            background: rgba(44, 62, 80, 0.8);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            border: 1px solid #34495e;
+        }
+        
+        .panel-title {
+            font-size: 1.5rem;
+            color: #2ecc71;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #3498db;
+        }
+        
+        .atom-panel {
+            flex: 1;
+            min-width: 500px;
+        }
+        
+        .spectrum-panel {
+            flex: 1;
+            min-width: 500px;
+        }
+        
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background-color: rgba(15, 26, 47, 0.9);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            border: 1px solid #2c3e50;
+        }
+        
+        canvas {
+            display: block;
+        }
+        
+        .controls-panel {
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .control-group {
+            background: rgba(52, 73, 94, 0.6);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .control-title {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            color: #f1c40f;
+        }
+        
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        button {
+            background: linear-gradient(to bottom, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+        
+        button:hover {
+            background: linear-gradient(to bottom, #3cb0fd, #3498db);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.3);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button:disabled {
+            background: #7f8c8d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(to bottom, #2ecc71, #27ae60);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(to bottom, #34e67e, #2ecc71);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(to bottom, #e67e22, #d35400);
+        }
+        
+        .btn-warning:hover {
+            background: linear-gradient(to bottom, #f39c12, #e67e22);
+        }
+        
+        .slider-container {
+            margin: 15px 0;
+        }
+        
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #34495e;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #f1c40f;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+        }
+        
+        .info-panel {
+            background: rgba(41, 128, 185, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border: 1px solid #3498db;
+        }
+        
+        .info-title {
+            color: #3498db;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+        
+        .info-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        
+        .info-item {
+            background: rgba(52, 152, 219, 0.1);
+            padding: 10px;
+            border-radius: 6px;
+        }
+        
+        .info-label {
+            font-size: 0.9rem;
+            color: #bdc3c7;
+        }
+        
+        .info-value {
+            font-size: 1.2rem;
+            color: #f1c40f;
+            font-weight: bold;
+        }
+        
+        .formula {
+            background: rgba(142, 68, 173, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border: 1px solid #8e44ad;
+            font-family: 'Cambria', 'Times New Roman', serif;
+            text-align: center;
+        }
+        
+        .formula-text {
+            font-size: 1.3rem;
+            color: #9b59b6;
+        }
+        
+        .formula-sub {
+            font-size: 0.9rem;
+            color: #bdc3c7;
+            margin-top: 5px;
+        }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        
+        .legend-text {
+            font-size: 0.9rem;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #34495e;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 1100px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .atom-panel, .spectrum-panel {
+                min-width: 100%;
+            }
+        }
+        
+        .highlight {
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { opacity: 0.7; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>氢原子能级跃迁与光谱产生</h1>
+            <p class="subtitle">探索电子在不同能级间跃迁时如何产生独特的光谱线。通过交互操作理解量子化能级、光子发射与光谱之间的关系。</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="panel atom-panel">
+                <h2 class="panel-title">原子模型与能级视图</h2>
+                <div class="canvas-container">
+                    <canvas id="atomCanvas" width="800" height="400"></canvas>
+                </div>
+                <div class="info-panel">
+                    <div class="info-title">当前状态</div>
+                    <div class="info-content">
+                        <div class="info-item">
+                            <div class="info-label">电子位置 (n)</div>
+                            <div class="info-value" id="currentLevel">1</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">原子状态</div>
+                            <div class="info-value" id="atomState">基态</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">最近跃迁</div>
+                            <div class="info-value" id="lastTransition">无</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel spectrum-panel">
+                <h2 class="panel-title">发射光谱视图</h2>
+                <div class="canvas-container">
+                    <canvas id="spectrumCanvas" width="800" height="400"></canvas>
+                </div>
+                <div class="info-panel">
+                    <div class="info-title">光谱信息</div>
+                    <div class="info-content">
+                        <div class="info-item">
+                            <div class="info-label">波长 λ</div>
+                            <div class="info-value" id="wavelength">0 nm</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">能量 ΔE</div>
+                            <div class="info-value" id="energy">0.00 eV</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">光谱系列</div>
+                            <div class="info-value" id="spectrumSeries">无</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel controls-panel">
+            <h2 class="panel-title">控制面板</h2>
+            <div class="controls-grid">
+                <div class="control-group">
+                    <div class="control-title">模式选择</div>
+                    <div class="button-group">
+                        <button id="guideMode" class="btn-primary">引导教程</button>
+                        <button id="freeMode" class="btn-primary">自由探索</button>
+                        <button id="resetBtn" class="btn-warning">重置</button>
+                    </div>
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>激发能量: <span id="energyValue">10.20</span> eV</span>
+                            <span>对应能级: n=<span id="targetLevel">2</span></span>
+                        </div>
+                        <input type="range" id="energySlider" min="1" max="20" step="0.1" value="10.2">
+                    </div>
+                    <div class="button-group">
+                        <button id="exciteBtn">激发原子</button>
+                        <button id="emitBtn" disabled>发射光子</button>
+                        <button id="autoBtn">自动演示</button>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-title">直接跃迁选择</div>
+                    <div class="button-group">
+                        <button class="series-btn" data-series="lyman">莱曼系 (n→1)</button>
+                        <button class="series-btn" data-series="balmer">巴耳末系 (n→2)</button>
+                        <button class="series-btn" data-series="paschen">帕邢系 (n→3)</button>
+                    </div>
+                    <div class="button-group">
+                        <button class="transition-btn" data-from="3" data-to="2">n=3 → n=2</button>
+                        <button class="transition-btn" data-from="4" data-to="2">n=4 → n=2</button>
+                        <button class="transition-btn" data-from="5" data-to="2">n=5 → n=2</button>
+                        <button class="transition-btn" data-from="6" data-to="2">n=6 → n=2</button>
+                    </div>
+                    <div class="button-group">
+                        <button class="transition-btn" data-from="2" data-to="1">n=2 → n=1</button>
+                        <button class="transition-btn" data-from="3" data-to="1">n=3 → n=1</button>
+                        <button class="transition-btn" data-from="4" data-to="1">n=4 → n=1</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="formula">
+                <div class="formula-text">里德伯公式: 1/λ = R(1/n₁² - 1/n₂²)</div>
+                <div class="formula-sub">其中 R ≈ 1.097×10⁷ m⁻¹，n₁ 和 n₂ 分别是低能级和高能级的主量子数 (n₂ > n₁)</div>
+                <div class="formula-sub" id="currentFormula">当前: 1/λ = R(1/1² - 1/1²) = 0 m⁻¹</div>
+            </div>
+            
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #f1c40f;"></div>
+                    <div class="legend-text">电子</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #3498db;"></div>
+                    <div class="legend-text">吸收能量</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: linear-gradient(to right, violet, indigo, blue, green, yellow, orange, red);"></div>
+                    <div class="legend-text">可见光谱</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #8e44ad;"></div>
+                    <div class="legend-text">紫外光子</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #922b21;"></div>
+                    <div class="legend-text">红外光子</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #1abc9c;"></div>
+                    <div class="legend-text">光谱线</div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>氢原子能级跃迁与光谱交互教学动画 | 设计原理：量子化能级、玻尔模型、里德伯公式</p>
+            <p>提示：使用引导教程学习基本概念，然后切换到自由探索模式进行实验</p>
+        </footer>
+    </div>
+
+    <script>
+        // 物理常数
+        const R = 1.097373e7; // 里德伯常数 (m^-1)
+        const h = 4.135667662e-15; // 普朗克常数 (eV·s)
+        const c = 2.99792458e8; // 光速 (m/s)
+        
+        // 氢原子能级能量公式: E_n = -13.6/n² eV
+        const energyLevels = {};
+        for (let n = 1; n <= 8; n++) {
+            energyLevels[n] = -13.6 / (n * n);
+        }
+        
+        // 状态变量
+        let currentLevel = 1;
+        let isExcited = false;
+        let targetLevel = 2;
+        let animationInProgress = false;
+        let mode = 'free'; // 'guide' 或 'free'
+        let spectrumLines = [];
+        let autoModeInterval = null;
+        
+        // 获取Canvas元素和上下文
+        const atomCanvas = document.getElementById('atomCanvas');
+        const atomCtx = atomCanvas.getContext('2d');
+        const spectrumCanvas = document.getElementById('spectrumCanvas');
+        const spectrumCtx = spectrumCanvas.getContext('2d');
+        
+        // 获取UI元素
+        const currentLevelEl = document.getElementById('currentLevel');
+        const atomStateEl = document.getElementById('atomState');
+        const lastTransitionEl = document.getElementById('lastTransition');
+        const wavelengthEl = document.getElementById('wavelength');
+        const energyEl = document.getElementById('energy');
+        const spectrumSeriesEl = document.getElementById('spectrumSeries');
+        const energySlider = document.getElementById('energySlider');
+        const energyValueEl = document.getElementById('energyValue');
+        const targetLevelEl = document.getElementById('targetLevel');
+        const exciteBtn = document.getElementById('exciteBtn');
+        const emitBtn = document.getElementById('emitBtn');
+        const autoBtn = document.getElementById('autoBtn');
+        const guideModeBtn = document.getElementById('guideMode');
+        const freeModeBtn = document.getElementById('freeMode');
+        const resetBtn = document.getElementById('resetBtn');
+        const currentFormulaEl = document.getElementById('currentFormula');
+        
+        // 初始化
+        function init() {
+            // 设置Canvas尺寸
+            resizeCanvases();
+            window.addEventListener('resize', resizeCanvases);
+            
+            // 绘制初始状态
+            drawAtom();
+            drawSpectrum();
+            
+            // 事件监听器
+            energySlider.addEventListener('input', updateEnergySlider);
+            exciteBtn.addEventListener('click', exciteAtom);
+            emitBtn.addEventListener('click', emitPhoton);
+            autoBtn.addEventListener('click', toggleAutoMode);
+            guideModeBtn.addEventListener('click', () => setMode('guide'));
+            freeModeBtn.addEventListener('click', () => setMode('free'));
+            resetBtn.addEventListener('click', resetAll);
+            
+            // 系列按钮
+            document.querySelectorAll('.series-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const series = this.getAttribute('data-series');
+                    selectSeries(series);
+                });
+            });
+            
+            // 跃迁按钮
+            document.querySelectorAll('.transition-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const from = parseInt(this.getAttribute('data-from'));
+                    const to = parseInt(this.getAttribute('data-to'));
+                    directTransition(from, to);
+                });
+            });
+            
+            // 初始模式
+            setMode('free');
+            
+            // 初始能量滑块更新
+            updateEnergySlider();
+        }
+        
+        // 调整Canvas尺寸
+        function resizeCanvases() {
+            const atomContainer = atomCanvas.parentElement;
+            const spectrumContainer = spectrumCanvas.parentElement;
+            
+            atomCanvas.width = atomContainer.clientWidth;
+            atomCanvas.height = atomContainer.clientHeight;
+            
+            spectrumCanvas.width = spectrumContainer.clientWidth;
+            spectrumCanvas.height = spectrumContainer.clientHeight;
+            
+            drawAtom();
+            drawSpectrum();
+        }
+        
+        // 更新能量滑块
+        function updateEnergySlider() {
+            const energy = parseFloat(energySlider.value);
+            energyValueEl.textContent = energy.toFixed(2);
+            
+            // 找到最接近的能级
+            let closestLevel = 1;
+            let minDiff = Infinity;
+            
+            for (let n = 2; n <= 8; n++) {
+                const levelEnergy = Math.abs(energyLevels[n] - energyLevels[1]);
+                const diff = Math.abs(energy - levelEnergy);
+                
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    closestLevel = n;
+                }
+            }
+            
+            targetLevel = closestLevel;
+            targetLevelEl.textContent = targetLevel;
+        }
+        
+        // 设置模式
+        function setMode(newMode) {
+            mode = newMode;
+            
+            if (mode === 'guide') {
+                guideModeBtn.classList.add('highlight');
+                freeModeBtn.classList.remove('highlight');
+                // 在引导模式下，禁用直接跃迁按钮
+                document.querySelectorAll('.series-btn, .transition-btn').forEach(btn => {
+                    btn.disabled = true;
+                });
+                // 显示引导提示
+                alert("引导模式：请使用能量滑块选择激发能量，然后点击'激发原子'按钮。观察电子如何跃迁到更高能级。");
+            } else {
+                guideModeBtn.classList.remove('highlight');
+                freeModeBtn.classList.add('highlight');
+                // 在自由模式下，启用所有按钮
+                document.querySelectorAll('.series-btn, .transition-btn').forEach(btn => {
+                    btn.disabled = false;
+                });
+            }
+            
+            resetAll();
+        }
+        
+        // 激发原子
+        function exciteAtom() {
+            if (animationInProgress) return;
+            
+            const energy = parseFloat(energySlider.value);
+            const requiredEnergy = Math.abs(energyLevels[targetLevel] - energyLevels[currentLevel]);
+            
+            // 检查能量是否足够接近目标能级
+            if (Math.abs(energy - requiredEnergy) < 0.5) {
+                // 成功激发
+                animateExcitation(currentLevel, targetLevel);
+                currentLevel = targetLevel;
+                isExcited = true;
+                atomStateEl.textContent = "激发态";
+                currentLevelEl.textContent = currentLevel;
+                lastTransitionEl.textContent = `吸收: ${requiredEnergy.toFixed(2)} eV`;
+                
+                // 更新按钮状态
+                exciteBtn.disabled = true;
+                emitBtn.disabled = false;
+                
+                // 在引导模式下，显示提示
+                if (mode === 'guide') {
+                    setTimeout(() => {
+                        alert("很好！电子已吸收能量跃迁到更高能级。现在点击'发射光子'按钮，观察电子如何返回低能级并发射光子。");
+                    }, 1000);
+                }
+            } else {
+                // 能量不匹配
+                alert(`能量不匹配！需要 ${requiredEnergy.toFixed(2)} eV 才能从 n=${currentLevel} 跃迁到 n=${targetLevel}。`);
+            }
+        }
+        
+        // 发射光子
+        function emitPhoton() {
+            if (animationInProgress || !isExcited) return;
+            
+            // 随机选择一个低能级（为了演示目的）
+            let lowerLevel;
+            if (mode === 'guide') {
+                lowerLevel = 1; // 在引导模式下，总是回到基态
+            } else {
+                // 在自由模式下，随机选择一个更低的能级
+                const possibleLevels = [];
+                for (let n = 1; n < currentLevel; n++) {
+                    possibleLevels.push(n);
+                }
+                lowerLevel = possibleLevels[Math.floor(Math.random() * possibleLevels.length)];
+            }
+            
+            animateEmission(currentLevel, lowerLevel);
+            
+            // 计算发射的光子特性
+            const deltaE = Math.abs(energyLevels[currentLevel] - energyLevels[lowerLevel]);
+            const wavelength = 1e9 / (R * (1/(lowerLevel*lowerLevel) - 1/(currentLevel*currentLevel))); // 转换为 nm
+            
+            // 确定光谱系列
+            let seriesName = "";
+            if (lowerLevel === 1) seriesName = "莱曼系 (紫外)";
+            else if (lowerLevel === 2) seriesName = "巴耳末系 (可见光)";
+            else if (lowerLevel === 3) seriesName = "帕邢系 (红外)";
+            else seriesName = "其他系列 (红外)";
+            
+            // 更新显示
+            energyEl.textContent = deltaE.toFixed(2) + " eV";
+            wavelengthEl.textContent = wavelength.toFixed(1) + " nm";
+            spectrumSeriesEl.textContent = seriesName;
+            
+            // 更新公式显示
+            currentFormulaEl.textContent = `当前: 1/λ = R(1/${lowerLevel}² - 1/${currentLevel}²) = ${(R * (1/(lowerLevel*lowerLevel) - 1/(currentLevel*currentLevel))).toExponential(3)} m⁻¹`;
+            
+            // 添加光谱线
+            addSpectrumLine(wavelength, deltaE, seriesName, currentLevel, lowerLevel);
+            
+            // 更新状态
+            currentLevel = lowerLevel;
+            isExcited = false;
+            atomStateEl.textContent = "基态";
+            currentLevelEl.textContent = currentLevel;
+            lastTransitionEl.textContent = `发射: n=${currentLevel}→${lowerLevel}`;
+            
+            // 更新按钮状态
+            exciteBtn.disabled = false;
+            emitBtn.disabled = true;
+            
+            // 在引导模式下，显示提示
+            if (mode === 'guide') {
+                setTimeout(() => {
+                    alert("完美！电子已跃迁回低能级，并发射了一个光子。观察右侧的光谱图，可以看到对应的光谱线。尝试不同的激发能量，观察不同的光谱线。");
+                }, 1000);
+            }
+        }
+        
+        // 选择光谱系列
+        function selectSeries(series) {
+            if (animationInProgress) return;
+            
+            let lowerLevel, upperLevel;
+            
+            switch(series) {
+                case 'lyman':
+                    lowerLevel = 1;
+                    upperLevel = 2 + Math.floor(Math.random() * 3); // n=2,3,4
+                    break;
+                case 'balmer':
+                    lowerLevel = 2;
+                    upperLevel = 3 + Math.floor(Math.random() * 4); // n=3,4,5,6
+                    break;
+                case 'paschen':
+                    lowerLevel = 3;
+                    upperLevel = 4 + Math.floor(Math.random() * 3); // n=4,5,6
+                    break;
+                default:
+                    return;
+            }
+            
+            // 确保电子在正确的起始能级
+            if (currentLevel !== upperLevel) {
+                // 快速设置电子到正确能级（不显示动画）
+                currentLevel = upperLevel;
+                isExcited = true;
+                atomStateEl.textContent = "激发态";
+                currentLevelEl.textContent = currentLevel;
+                exciteBtn.disabled = true;
+                emitBtn.disabled = false;
+                drawAtom();
+            }
+            
+            // 发射光子
+            setTimeout(() => {
+                directTransition(upperLevel, lowerLevel);
+            }, 500);
+        }
+        
+        // 直接跃迁
+        function directTransition(from, to) {
+            if (animationInProgress) return;
+            
+            // 确保 from > to
+            if (from <= to) {
+                alert("错误：跃迁必须从高能级到低能级！");
+                return;
+            }
+            
+            // 设置电子状态
+            currentLevel = from;
+            isExcited = true;
+            atomStateEl.textContent = "激发态";
+            currentLevelEl.textContent = currentLevel;
+            exciteBtn.disabled = true;
+            emitBtn.disabled = false;
+            
+            // 绘制原子
+            drawAtom();
+            
+            // 短暂延迟后发射光子
+            setTimeout(() => {
+                animateEmission(from, to);
+                
+                // 计算发射的光子特性
+                const deltaE = Math.abs(energyLevels[from] - energyLevels[to]);
+                const wavelength = 1e9 / (R * (1/(to*to) - 1/(from*from))); // 转换为 nm
+                
+                // 确定光谱系列
+                let seriesName = "";
+                if (to === 1) seriesName = "莱曼系 (紫外)";
+                else if (to === 2) seriesName = "巴耳末系 (可见光)";
+                else if (to === 3) seriesName = "帕邢系 (红外)";
+                else seriesName = "其他系列 (红外)";
+                
+                // 更新显示
+                energyEl.textContent = deltaE.toFixed(2) + " eV";
+                wavelengthEl.textContent = wavelength.toFixed(1) + " nm";
+                spectrumSeriesEl.textContent = seriesName;
+                
+                // 更新公式显示
+                currentFormulaEl.textContent = `当前: 1/λ = R(1/${to}² - 1/${from}²) = ${(R * (1/(to*to) - 1/(from*from))).toExponential(3)} m⁻¹`;
+                
+                // 添加光谱线
+                addSpectrumLine(wavelength, deltaE, seriesName, from, to);
+                
+                // 更新状态
+                currentLevel = to;
+                isExcited = false;
+                atomStateEl.textContent = "基态";
+                currentLevelEl.textContent = currentLevel;
+                lastTransitionEl.textContent = `发射: n=${from}→${to}`;
+                
+                // 更新按钮状态
+                exciteBtn.disabled = false;
+                emitBtn.disabled = true;
+            }, 800);
+        }
+        
+        // 添加光谱线
+        function addSpectrumLine(wavelength, energy, series, from, to) {
+            // 将波长映射到光谱图上的x位置 (假设光谱范围: 100nm - 1000nm)
+            const minWavelength = 100;
+            const maxWavelength = 1000;
+            const x = (wavelength - minWavelength) / (maxWavelength - minWavelength);
+            
+            // 只添加在范围内的光谱线
+            if (x >= 0 && x <= 1) {
+                spectrumLines.push({
+                    x: x,
+                    wavelength: wavelength,
+                    energy: energy,
+                    series: series,
+                    from: from,
+                    to: to,
+                    age: 0,
+                    highlight: true
+                });
+                
+                // 3秒后取消高亮
+                setTimeout(() => {
+                    const line = spectrumLines[spectrumLines.length - 1];
+                    if (line) line.highlight = false;
+                    drawSpectrum();
+                }, 3000);
+            }
+            
+            drawSpectrum();
+        }
+        
+        // 动画：激发过程
+        function animateExcitation(fromLevel, toLevel) {
+            animationInProgress = true;
+            
+            const centerX = atomCanvas.width / 2;
+            const centerY = atomCanvas.height / 2;
+            const radius = 15;
+            
+            // 能级位置
+            const fromY = centerY - (fromLevel - 1) * 40;
+            const toY = centerY - (toLevel - 1) * 40;
+            
+            let progress = 0;
+            const duration = 1000; // 1秒
+            
+            function animate() {
+                progress += 16; // 大约60fps
+                const t = Math.min(progress / duration, 1);
+                
+                // 清除画布
+                atomCtx.clearRect(0, 0, atomCanvas.width, atomCanvas.height);
+                
+                // 绘制原子核和能级
+                drawAtomStatic();
+                
+                // 绘制吸收能量箭头
+                const arrowY = fromY - 30;
+                const arrowHeight = 20;
+                
+                atomCtx.strokeStyle = '#3498db';
+                atomCtx.fillStyle = '#3498db';
+                atomCtx.lineWidth = 3;
+                
+                // 箭头线
+                atomCtx.beginPath();
+                atomCtx.moveTo(centerX - 100, arrowY);
+                atomCtx.lineTo(centerX - 20, arrowY);
+                atomCtx.stroke();
+                
+                // 箭头头
+                atomCtx.beginPath();
+                atomCtx.moveTo(centerX - 20, arrowY);
+                atomCtx.lineTo(centerX - 30, arrowY - 5);
+                atomCtx.lineTo(centerX - 30, arrowY + 5);
+                atomCtx.closePath();
+                atomCtx.fill();
+                
+                // 绘制能量文本
+                atomCtx.fillStyle = '#3498db';
+                atomCtx.font = '14px Arial';
+                atomCtx.fillText('能量输入', centerX - 120, arrowY - 10);
+                
+                // 绘制电子（从起始位置移动到目标位置）
+                const currentY = fromY + (toY - fromY) * t;
+                
+                // 电子
+                atomCtx.beginPath();
+                atomCtx.arc(centerX, currentY, radius, 0, Math.PI * 2);
+                atomCtx.fillStyle = '#f1c40f';
+                atomCtx.fill();
+                
+                // 电子光晕
+                const gradient = atomCtx.createRadialGradient(
+                    centerX, currentY, radius,
+                    centerX, currentY, radius + 10
+                );
+                gradient.addColorStop(0, 'rgba(241, 196, 15, 0.8)');
+                gradient.addColorStop(1, 'rgba(241, 196, 15, 0)');
+                
+                atomCtx.beginPath();
+                atomCtx.arc(centerX, currentY, radius + 10, 0, Math.PI * 2);
+                atomCtx.fillStyle = gradient;
+                atomCtx.fill();
+                
+                // 电子标签
+                atomCtx.fillStyle = '#fff';
+                atomCtx.font = 'bold 14px Arial';
+                atomCtx.fillText('e⁻', centerX - 8, currentY + 5);
+                
+                if (t < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    animationInProgress = false;
+                    drawAtom();
+                }
+            }
+            
+            animate();
+        }
+        
+        // 动画：发射过程
+        function animateEmission(fromLevel, toLevel) {
+            animationInProgress = true;
+            
+            const centerX = atomCanvas.width / 2;
+            const centerY = atomCanvas.height / 2;
+            const radius = 15;
+            
+            // 能级位置
+            const fromY = centerY - (fromLevel - 1) * 40;
+            const toY = centerY - (toLevel - 1) * 40;
+            
+            // 光子属性
+            const deltaE = Math.abs(energyLevels[fromLevel] - energyLevels[toLevel]);
+            const wavelength = 1e9 / (R * (1/(toLevel*toLevel) - 1/(fromLevel*fromLevel)));
+            
+            // 根据波长确定光子颜色
+            let photonColor;
+            if (wavelength < 400) {
+                photonColor = '#8e44ad'; // 紫外
+            } else if (wavelength > 700) {
+                photonColor = '#922b21'; // 红外
+            } else {
+                // 可见光：根据波长近似颜色
+                if (wavelength < 450) photonColor = '#3498db'; // 蓝
+                else if (wavelength < 500) photonColor = '#1abc9c'; // 青
+                else if (wavelength < 570) photonColor = '#2ecc71'; // 绿
+                else if (wavelength < 590) photonColor = '#f1c40f'; // 黄
+                else if (wavelength < 620) photonColor = '#e67e22'; // 橙
+                else photonColor = '#e74c3c'; // 红
+            }
+            
+            let progress = 0;
+            const duration = 1200; // 1.2秒
+            
+            // 光子起始位置（原子中心）
+            let photonX = centerX;
+            let photonY = fromY;
+            
+            function animate() {
+                progress += 16;
+                const t = Math.min(progress / duration, 1);
+                
+                // 清除画布
+                atomC
+<!--检测到代码截断，自动续写中...-->
+atomCtx.clearRect(0, 0, atomCanvas.width, atomCanvas.height);
+                
+                // 绘制原子核和能级
+                drawAtomStatic();
+                
+                // 绘制电子（从起始位置移动到目标位置）
+                const electronY = fromY + (toY - fromY) * t;
+                
+                // 电子
+                atomCtx.beginPath();
+                atomCtx.arc(centerX, electronY, radius, 0, Math.PI * 2);
+                atomCtx.fillStyle = '#f1c40f';
+                atomCtx.fill();
+                
+                // 电子光晕
+                const electronGradient = atomCtx.createRadialGradient(
+                    centerX, electronY, radius,
+                    centerX, electronY, radius + 10
+                );
+                electronGradient.addColorStop(0, 'rgba(241, 196, 15, 0.8)');
+                electronGradient.addColorStop(1, 'rgba(241, 196, 15, 0)');
+                
+                atomCtx.beginPath();
+                atomCtx.arc(centerX, electronY, radius + 10, 0, Math.PI * 2);
+                atomCtx.fillStyle = electronGradient;
+                atomCtx.fill();
+                
+                // 电子标签
+                atomCtx.fillStyle = '#fff';
+                atomCtx.font = 'bold 14px Arial';
+                atomCtx.fillText('e⁻', centerX - 8, electronY + 5);
+                
+                // 绘制光子（从原子飞出）
+                if (t > 0.3) {
+                    const photonProgress = (t - 0.3) / 0.7;
+                    photonX = centerX + 150 * photonProgress;
+                    
+                    // 光子轨迹弧线
+                    const controlY = fromY - 50;
+                    const bezierY = fromY + (controlY - fromY) * photonProgress;
+                    
+                    // 光子
+                    const photonSize = 8 + 4 * Math.sin(photonProgress * Math.PI * 5);
+                    
+                    atomCtx.beginPath();
+                    atomCtx.arc(photonX, bezierY, photonSize, 0, Math.PI * 2);
+                    atomCtx.fillStyle = photonColor;
+                    atomCtx.fill();
+                    
+                    // 光子光晕
+                    const photonGradient = atomCtx.createRadialGradient(
+                        photonX, bezierY, photonSize,
+                        photonX, bezierY, photonSize + 15
+                    );
+                    photonGradient.addColorStop(0, photonColor + 'CC');
+                    photonGradient.addColorStop(1, photonColor + '00');
+                    
+                    atomCtx.beginPath();
+                    atomCtx.arc(photonX, bezierY, photonSize + 15, 0, Math.PI * 2);
+                    atomCtx.fillStyle = photonGradient;
+                    atomCtx.fill();
+                    
+                    // 光子标签
+                    atomCtx.fillStyle = '#fff';
+                    atomCtx.font = 'bold 12px Arial';
+                    atomCtx.fillText('γ', photonX - 4, bezierY + 4);
+                    
+                    // 绘制指向光谱仪的光子路径
+                    if (photonProgress > 0.5) {
+                        atomCtx.strokeStyle = photonColor + '66';
+                        atomCtx.lineWidth = 2;
+                        atomCtx.setLineDash([5, 5]);
+                        atomCtx.beginPath();
+                        atomCtx.moveTo(photonX, bezierY);
+                        atomCtx.lineTo(atomCanvas.width, bezierY);
+                        atomCtx.stroke();
+                        atomCtx.setLineDash([]);
+                    }
+                }
+                
+                if (t < 1) {
+                    requestAnimationFrame(animate);
+                } else {
+                    animationInProgress = false;
+                    drawAtom();
+                }
+            }
+            
+            animate();
+        }
+        
+        // 绘制原子静态部分（原子核和能级）
+        function drawAtomStatic() {
+            const centerX = atomCanvas.width / 2;
+            const centerY = atomCanvas.height / 2;
+            
+            // 绘制原子核
+            atomCtx.beginPath();
+            atomCtx.arc(centerX, centerY, 10, 0, Math.PI * 2);
+            const nucleusGradient = atomCtx.createRadialGradient(
+                centerX, centerY, 0,
+                centerX, centerY, 10
+            );
+            nucleusGradient.addColorStop(0, '#e74c3c');
+            nucleusGradient.addColorStop(1, '#c0392b');
+            atomCtx.fillStyle = nucleusGradient;
+            atomCtx.fill();
+            
+            // 原子核标签
+            atomCtx.fillStyle = '#fff';
+            atomCtx.font = 'bold 12px Arial';
+            atomCtx.fillText('H⁺', centerX - 8, centerY + 4);
+            
+            // 绘制能级线
+            for (let n = 1; n <= 7; n++) {
+                const y = centerY - (n - 1) * 40;
+                
+                // 能级线
+                atomCtx.strokeStyle = n === 1 ? '#2ecc71' : (n <= 4 ? '#bdc3c7' : '#7f8c8d');
+                atomCtx.lineWidth = n === 1 ? 3 : 1;
+                atomCtx.setLineDash(n > 4 ? [5, 3] : []);
+                
+                atomCtx.beginPath();
+                atomCtx.moveTo(centerX - 150, y);
+                atomCtx.lineTo(centerX + 150, y);
+                atomCtx.stroke();
+                
+                atomCtx.setLineDash([]);
+                
+                // 能级标签
+                atomCtx.fillStyle = n === 1 ? '#2ecc71' : '#ecf0f1';
+                atomCtx.font = n === 1 ? 'bold 16px Arial' : '14px Arial';
+                atomCtx.fillText(`n = ${n}`, centerX + 160, y + 4);
+                
+                // 能级能量值
+                atomCtx.fillStyle = '#bdc3c7';
+                atomCtx.font = '12px Arial';
+                atomCtx.fillText(`${energyLevels[n].toFixed(2)} eV`, centerX - 180, y + 4);
+            }
+            
+            // 绘制能级图标题
+            atomCtx.fillStyle = '#3498db';
+            atomCtx.font = 'bold 16px Arial';
+            atomCtx.fillText('氢原子能级图', centerX - 50, 30);
+            
+            // 绘制能量标尺
+            atomCtx.strokeStyle = '#7f8c8d';
+            atomCtx.lineWidth = 1;
+            atomCtx.beginPath();
+            atomCtx.moveTo(centerX - 200, centerY - 200);
+            atomCtx.lineTo(centerX - 200, centerY + 40);
+            atomCtx.stroke();
+            
+            atomCtx.fillStyle = '#bdc3c7';
+            atomCtx.font = '12px Arial';
+            atomCtx.fillText('能量增加', centerX - 220, centerY - 210);
+            
+            for (let i = 0; i < 7; i++) {
+                const y = centerY - i * 40;
+                atomCtx.beginPath();
+                atomCtx.moveTo(centerX - 205, y);
+                atomCtx.lineTo(centerX - 195, y);
+                atomCtx.stroke();
+            }
+        }
+        
+        // 绘制完整原子视图
+        function drawAtom() {
+            atomCtx.clearRect(0, 0, atomCanvas.width, atomCanvas.height);
+            
+            drawAtomStatic();
+            
+            const centerX = atomCanvas.width / 2;
+            const centerY = atomCanvas.height / 2;
+            const radius = 15;
+            const electronY = centerY - (currentLevel - 1) * 40;
+            
+            // 绘制电子
+            atomCtx.beginPath();
+            atomCtx.arc(centerX, electronY, radius, 0, Math.PI * 2);
+            atomCtx.fillStyle = '#f1c40f';
+            atomCtx.fill();
+            
+            // 电子光晕
+            const gradient = atomCtx.createRadialGradient(
+                centerX, electronY, radius,
+                centerX, electronY, radius + 10
+            );
+            gradient.addColorStop(0, 'rgba(241, 196, 15, 0.8)');
+            gradient.addColorStop(1, 'rgba(241, 196, 15, 0)');
+            
+            atomCtx.beginPath();
+            atomCtx.arc(centerX, electronY, radius + 10, 0, Math.PI * 2);
+            atomCtx.fillStyle = gradient;
+            atomCtx.fill();
+            
+            // 电子标签
+            atomCtx.fillStyle = '#fff';
+            atomCtx.font = 'bold 14px Arial';
+            atomCtx.fillText('e⁻', centerX - 8, electronY + 5);
+            
+            // 如果处于激发态，绘制激发态指示
+            if (isExcited) {
+                atomCtx.strokeStyle = '#e74c3c';
+                atomCtx.lineWidth = 2;
+                atomCtx.setLineDash([5, 3]);
+                atomCtx.beginPath();
+                atomCtx.arc(centerX, electronY, radius + 20, 0, Math.PI * 2);
+                atomCtx.stroke();
+                atomCtx.setLineDash([]);
+                
+                atomCtx.fillStyle = '#e74c3c';
+                atomCtx.font = 'bold 12px Arial';
+                atomCtx.fillText('激发态', centerX - 25, electronY - 25);
+            }
+        }
+        
+        // 绘制光谱图
+        function drawSpectrum() {
+            spectrumCtx.clearRect(0, 0, spectrumCanvas.width, spectrumCanvas.height);
+            
+            const width = spectrumCanvas.width;
+            const height = spectrumCanvas.height;
+            
+            // 绘制光谱背景渐变
+            const gradient = spectrumCtx.createLinearGradient(0, height * 0.3, width, height * 0.3);
+            
+            // 紫外区域
+            gradient.addColorStop(0, '#2c3e50');
+            gradient.addColorStop(0.1, '#8e44ad');
+            
+            // 可见光区域
+            gradient.addColorStop(0.1, '#8e44ad'); // 紫
+            gradient.addColorStop(0.15, '#3498db'); // 蓝
+            gradient.addColorStop(0.25, '#1abc9c'); // 青
+            gradient.addColorStop(0.4, '#2ecc71'); // 绿
+            gradient.addColorStop(0.55, '#f1c40f'); // 黄
+            gradient.addColorStop(0.7, '#e67e22'); // 橙
+            gradient.addColorStop(0.85, '#e74c3c'); // 红
+            
+            // 红外区域
+            gradient.addColorStop(0.85, '#922b21');
+            gradient.addColorStop(1, '#2c3e50');
+            
+            spectrumCtx.fillStyle = gradient;
+            spectrumCtx.fillRect(0, height * 0.3, width, height * 0.2);
+            
+            // 绘制波长标尺
+            spectrumCtx.fillStyle = '#ecf0f1';
+            spectrumCtx.font = '12px Arial';
+            spectrumCtx.textAlign = 'center';
+            
+            const wavelengths = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
+            for (let wl of wavelengths) {
+                const x = (wl - 100) / 900 * width;
+                spectrumCtx.beginPath();
+                spectrumCtx.moveTo(x, height * 0.55);
+                spectrumCtx.lineTo(x, height * 0.6);
+                spectrumCtx.strokeStyle = '#ecf0f1';
+                spectrumCtx.lineWidth = 1;
+                spectrumCtx.stroke();
+                
+                spectrumCtx.fillText(wl + ' nm', x, height * 0.65);
+            }
+            
+            // 绘制区域标签
+            spectrumCtx.textAlign = 'left';
+            spectrumCtx.fillStyle = '#8e44ad';
+            spectrumCtx.fillText('紫外区', 10, height * 0.35);
+            
+            spectrumCtx.textAlign = 'center';
+            spectrumCtx.fillStyle = '#ecf0f1';
+            spectrumCtx.fillText('可见光区', width * 0.5, height * 0.25);
+            
+            spectrumCtx.textAlign = 'right';
+            spectrumCtx.fillStyle = '#922b21';
+            spectrumCtx.fillText('红外区', width - 10, height * 0.35);
+            
+            // 绘制光谱线
+            for (let line of spectrumLines) {
+                const x = line.x * width;
+                const lineHeight = 30 + line.energy * 5;
+                
+                // 光谱线
+                spectrumCtx.strokeStyle = line.highlight ? '#f1c40f' : '#1abc9c';
+                spectrumCtx.lineWidth = line.highlight ? 4 : 2;
+                spectrumCtx.beginPath();
+                spectrumCtx.moveTo(x, height * 0.3);
+                spectrumCtx.lineTo(x, height * 0.3 - lineHeight);
+                spectrumCtx.stroke();
+                
+                // 如果高亮，添加光晕效果
+                if (line.highlight) {
+                    spectrumCtx.strokeStyle = '#f1c40f66';
+                    spectrumCtx.lineWidth = 8;
+                    spectrumCtx.beginPath();
+                    spectrumCtx.moveTo(x, height * 0.3);
+                    spectrumCtx.lineTo(x, height * 0.3 - lineHeight);
+                    spectrumCtx.stroke();
+                }
+                
+                // 光谱线标签（仅显示最近的几条）
+                if (line.highlight || spectrumLines.length < 5 || line === spectrumLines[spectrumLines.length - 1]) {
+                    spectrumCtx.fillStyle = line.highlight ? '#f1c40f' : '#1abc9c';
+                    spectrumCtx.font = 'bold 12px Arial';
+                    spectrumCtx.textAlign = 'center';
+                    spectrumCtx.fillText(`n=${line.from}→${line.to}`, x, height * 0.3 - lineHeight - 10);
+                    spectrumCtx.font = '10px Arial';
+                    spectrumCtx.fillText(`${line.wavelength.toFixed(1)} nm`, x, height * 0.3 - lineHeight - 25);
+                }
+                
+                // 更新谱线年龄（用于淡出效果）
+                line.age++;
+            }
+            
+            // 绘制标题
+            spectrumCtx.textAlign = 'center';
+            spectrumCtx.fillStyle = '#3498db';
+            spectrumCtx.font = 'bold 16px Arial';
+            spectrumCtx.fillText('氢原子发射光谱', width / 2, 30);
+            
+            // 绘制图例
+            spectrumCtx.textAlign = 'left';
+            spectrumCtx.fillStyle = '#ecf0f1';
+            spectrumCtx.font = '12px Arial';
+            spectrumCtx.fillText('莱曼系 (n→1)', 20, height - 60);
+            spectrumCtx.fillText('巴耳末系 (n→2)', 20, height - 40);
+            spectrumCtx.fillText('帕邢系 (n→3)', 20, height - 20);
+            
+            // 绘制系列指示线
+            spectrumCtx.strokeStyle = '#8e44ad66';
+            spectrumCtx.lineWidth = 1;
+            spectrumCtx.setLineDash([3, 3]);
+            
+            // 莱曼系边界 (约122nm - 91nm，在紫外区)
+            const lymanX = (122 - 100) / 900 * width;
+            spectrumCtx.beginPath();
+            spectrumCtx.moveTo(lymanX, height * 0.3);
+            spectrumCtx.lineTo(lymanX, height * 0.1);
+            spectrumCtx.stroke();
+            spectrumCtx.fillText('莱曼', lymanX + 5, height * 0.15);
+            
+            // 巴耳末系边界 (约656nm - 365nm，主要在可见光区)
+            const balmerStartX = (365 - 100) / 900 * width;
+            const balmerEndX = (656 - 100) / 900 * width;
+            spectrumCtx.strokeStyle = '#3498db66';
+            spectrumCtx.beginPath();
+            spectrumCtx.moveTo(balmerStartX, height * 0.3);
+            spectrumCtx.lineTo(balmerStartX, height * 0.1);
+            spectrumCtx.stroke();
+            spectrumCtx.beginPath();
+            spectrumCtx.moveTo(balmerEndX, height * 0.3);
+            spectrumCtx.lineTo(balmerEndX, height * 0.1);
+            spectrumCtx.stroke();
+            spectrumCtx.fillText('巴耳末', balmerStartX + (balmerEndX - balmerStartX)/2, height * 0.15);
+            
+            // 帕邢系边界 (约1875nm - 820nm，在红外区)
+            const paschenX = (820 - 100) / 900 * width;
+            spectrumCtx.strokeStyle = '#922b2166';
+            spectrumCtx.beginPath();
+            spectrumCtx.moveTo(paschenX, height * 0.3);
+            spectrumCtx.lineTo(paschenX, height * 0.1);
+            spectrumCtx.stroke();
+            spectrumCtx.fillText('帕邢', paschenX + 5, height * 0.15);
+            
+            spectrumCtx.setLineDash([]);
+        }
+        
+        // 切换自动演示模式
+        function toggleAutoMode() {
+            if (autoModeInterval) {
+                clearInterval(autoModeInterval);
+                autoModeInterval = null;
+                autoBtn.textContent = '自动演示';
+                exciteBtn.disabled = false;
+                emitBtn.disabled = !isExcited;
+            } else {
+                autoBtn.textContent = '停止演示';
+                exciteBtn.disabled = true;
+                emitBtn.disabled = true;
+                
+                // 随机演示不同的跃迁
+                autoModeInterval = setInterval(() => {
+                    if (!animationInProgress) {
+                        const series = ['lyman', 'balmer', 'paschen'][Math.floor(Math.random() * 3)];
+                        selectSeries(series);
+                    }
+                }, 3000);
+            }
+        }
+        
+        // 重置所有状态
+        function resetAll() {
+            currentLevel = 1;
+            isExcited = false;
+            animationInProgress = false;
+            spectrumLines = [];
+            
+            // 停止自动演示
+            if (autoModeInterval) {
+                clearInterval(autoModeInterval);
+                autoModeInterval = null;
+                autoBtn.textContent = '自动演示';
+            }
+            
+            // 重置UI显示
+            currentLevelEl.textContent = '1';
+            atomStateEl.textContent = '基态';
+            lastTransitionEl.textContent = '无';
+            wavelengthEl.textContent = '0 nm';
+            energyEl.textContent = '0.00 eV';
+            spectrumSeriesEl.textContent = '无';
+            currentFormulaEl.textContent = '当前: 1/λ = R(1/1² - 1/1²) = 0 m⁻¹';
+            
+            // 重置按钮状态
+            exciteBtn.disabled = false;
+            emitBtn.disabled = true;
+            
+            // 重置能量滑块
+            energySlider.value = 10.2;
+            updateEnergySlider();
+            
+            // 重绘
+            drawAtom();
+            drawSpectrum();
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
+
+### 3. 过程输出
+
+### 3. 使用指南
+
+## 氢原子能级跃迁与光谱交互式教学动画使用指南
+
+欢迎使用这款专业的氢原子能级跃迁与光谱交互式教学动画！本工具旨在通过直观的视觉呈现和交互操作，帮助您深入理解量子物理中这一核心概念。无论您是学生、教师还是科学爱好者，都能从中获得启发。
+
+---
+
+### 一、功能说明
+
+本动画采用**双视图联动设计**，左侧展示氢原子的玻尔模型与量子化能级，右侧实时显示对应的发射光谱。所有操作在两个视图间即时同步反馈，构建完整的“微观跃迁-宏观观测”认知闭环。
+
+### 二、主要功能
+
+#### 1. **模式选择**
+   - **引导教程模式**：适合初次使用者，提供步骤化引导，学习基本操作流程。
+   - **自由探索模式**：适合已掌握基础概念者，开放所有功能供自主实验。
+
+#### 2. **原子激发与跃迁**
+   - **能量输入控制**：通过滑块精确调节激发能量（1-20 eV），系统自动匹配最接近的能级。
+   - **激发过程**：点击“激发原子”按钮，观察电子吸收能量跃迁到高能级。
+   - **光子发射**：点击“发射光子”按钮，观察电子自发跃迁回低能级并发射光子。
+
+#### 3. **光谱系列选择**
+   - **一键选择**：通过“莱曼系”、“巴耳末系”、“帕邢系”按钮，直接演示特定光谱系列。
+   - **直接跃迁**：使用预设按钮（如“n=3→n=2”）快速观察特定能级间的跃迁。
+
+#### 4. **信息显示面板**
+   - **实时数据**：显示当前电子位置、原子状态、光子波长、能量差、光谱系列。
+   - **公式计算**：动态展示里德伯公式，并代入当前跃迁参数进行计算演示。
+
+#### 5. **辅助功能**
+   - **自动演示**：系统自动循环演示不同光谱系列，适合课堂展示。
+   - **重置功能**：一键恢复到初始状态，便于重复实验。
+
+### 三、设计特色
+
+#### 1. **科学的视觉编码**
+   - **颜色系统**：光子颜色严格依据波长确定（紫外-紫-蓝-青-绿-黄-橙-红-红外）。
+   - **能级表示**：能级间距随n增大而减小，准确反映能量收敛特性。
+   - **动态效果**：电子跃迁弧线、光子发射轨迹、光谱线高亮等动画均基于物理原理设计。
+
+#### 2. **认知友好的交互**
+   - **渐进式信息**：初始界面简洁，详细信息随交互逐步呈现。
+   - **视觉反馈**：高亮显示当前活跃元素，增强注意力引导。
+   - **错误容错**：能量不匹配时提供明确提示，而非简单拒绝。
+
+#### 3. **教学深度适配**
+   - **从具体到抽象**：从可见的巴耳末系光谱入手，逐步揭示不可见的紫外和红外系列。
+   - **公式与现象结合**：每个跃迁都同步显示里德伯公式的具体计算过程。
+
+### 四、教学要点
+
+#### 1. **核心概念关联**
+   - **能级量子化**：观察电子只能存在于特定能级，不能停留在能级之间。
+   - **能量守恒**：光子能量严格等于能级差（ΔE = hν）。
+   - **光谱系列规律**：同一系列谱线对应电子跃迁到同一低能级。
+
+#### 2. **典型实验建议**
+   - **验证里德伯公式**：选择不同跃迁，观察公式计算结果与实际波长的一致性。
+   - **探索光谱系列**：比较莱曼系（紫外）、巴耳末系（可见光）、帕邢系（红外）的波长分布规律。
+   - **能量匹配实验**：尝试用“错误”的能量激发原子，理解量子化的精确性要求。
+
+#### 3. **常见问题探究**
+   - 为什么氢原子光谱是不连续的？
+   - 为什么巴耳末系只有部分谱线在可见光区？
+   - 能级n越大，能级间距为什么越小？
+   - 如何从光谱线推断原子内部结构？
+
+### 五、使用建议
+
+#### 1. **学习路径推荐**
+   ```
+   初学者：引导模式 → 巴耳末系观察 → 能量滑块实验 → 自由探索
+   进阶者：直接跃迁实验 → 系列对比 → 公式验证 → 自主发现规律
+   教师：自动演示模式 → 关键概念暂停讲解 → 学生自主验证
+   ```
+
+#### 2. **课堂应用场景**
+   - **概念引入**：使用自动演示模式展示完整过程，激发学生兴趣。
+   - **难点突破**：针对能级量子化、光子能量计算等难点进行反复演示。
+   - **探究活动**：布置任务，如“找出波长最短的巴耳末系谱线对应的跃迁”。
+   - **复习巩固**：作为课后复习工具，学生可自主验证课堂所学。
+
+#### 3. **最佳实践提示**
+   - **分步操作**：建议先完成一次完整的“激发-发射”循环，再尝试复杂操作。
+   - **观察细节**：注意光子颜色与波长的对应关系，以及光谱线上标注的能级信息。
+   - **记录数据**：鼓励记录不同跃迁的波长和能量值，尝试归纳规律。
+   - **联系实际**：将动画中的氢原子光谱与实验室光谱仪观测结果相联系。
+
+#### 4. **技术说明**
+   - 本动画基于标准玻尔模型和里德伯公式，适用于教学演示。
+   - 光谱波长范围限定在100-1000 nm，覆盖紫外、可见光、近红外区域。
+   - 动画性能已优化，支持主流现代浏览器。
+
+---
+
+**让抽象的量子世界触手可及，让复杂的光谱规律一目了然。** 希望这款交互式教学动画能成为您探索原子物理的得力助手，祝您学习愉快，探索无限！
+
+*提示：本工具最适合与教科书理论部分结合使用，实现“理论-可视化-实践”的完整学习循环。*

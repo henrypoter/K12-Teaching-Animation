@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>电磁感应：动生电动势与感生电动势</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #334155;
+        }
+        
+        h1 {
+            color: #60a5fa;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .subtitle {
+            color: #94a3b8;
+            font-size: 1.2rem;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .simulation-panel {
+            flex: 3;
+            min-width: 300px;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border: 1px solid #475569;
+        }
+        
+        .control-panel {
+            flex: 1;
+            min-width: 300px;
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border: 1px solid #475569;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .panel-title {
+            color: #38bdf8;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #475569;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .panel-title i {
+            font-size: 1.2rem;
+        }
+        
+        #simulationCanvas {
+            width: 100%;
+            height: 500px;
+            background-color: #0f172a;
+            border-radius: 10px;
+            border: 2px solid #475569;
+            display: block;
+        }
+        
+        .scene-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .scene-btn {
+            flex: 1;
+            padding: 12px;
+            background: #1e293b;
+            border: 2px solid #475569;
+            color: #cbd5e1;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .scene-btn:hover {
+            background: #334155;
+            transform: translateY(-2px);
+        }
+        
+        .scene-btn.active {
+            background: #3b82f6;
+            border-color: #60a5fa;
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        .control-group {
+            margin-bottom: 20px;
+        }
+        
+        .control-title {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            color: #94a3b8;
+            font-size: 0.95rem;
+        }
+        
+        .control-value {
+            color: #38bdf8;
+            font-weight: bold;
+        }
+        
+        .slider-container {
+            width: 100%;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            -webkit-appearance: none;
+            background: #334155;
+            border-radius: 4px;
+            outline: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+            border: 2px solid #93c5fd;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 8px 12px;
+            background: rgba(51, 65, 85, 0.5);
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        
+        .checkbox-item:hover {
+            background: rgba(51, 65, 85, 0.8);
+        }
+        
+        .checkbox-item input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .data-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 10px;
+        }
+        
+        .data-item {
+            background: rgba(15, 23, 42, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .data-label {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+        
+        .data-value {
+            color: #22c55e;
+            font-size: 1.8rem;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .data-unit {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-left: 5px;
+        }
+        
+        .formula-box {
+            background: rgba(15, 23, 42, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #475569;
+            margin-top: 15px;
+            font-family: 'Cambria Math', serif;
+        }
+        
+        .formula-title {
+            color: #f59e0b;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+        
+        .formula {
+            color: #fbbf24;
+            font-size: 1.5rem;
+            text-align: center;
+            padding: 10px;
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 8px;
+            font-family: 'Cambria Math', serif;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .action-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .reset-btn {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .reset-btn:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+        
+        .hint-btn {
+            background: #8b5cf6;
+            color: white;
+        }
+        
+        .hint-btn:hover {
+            background: #7c3aed;
+            transform: translateY(-2px);
+        }
+        
+        .hint-box {
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid #8b5cf6;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .hint-box.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .hint-step {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.3);
+        }
+        
+        .hint-step:last-child {
+            margin-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .hint-step-title {
+            color: #c4b5fd;
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .hint-step-content {
+            color: #ddd6fe;
+            font-size: 0.95rem;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #334155;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @media (max-width: 1100px) {
+            .main-content {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>电磁感应：动生电动势与感生电动势</h1>
+            <p class="subtitle">交互式教学动画 - 可视化理解法拉第电磁感应定律的两种表现形式</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="simulation-panel">
+                <div class="panel-title">
+                    <span>🔬 实验模拟</span>
+                </div>
+                
+                <div class="scene-selector">
+                    <button class="scene-btn active" data-scene="motional">动生电动势</button>
+                    <button class="scene-btn" data-scene="induced">感生电动势</button>
+                    <button class="scene-btn" data-scene="combined">综合实验</button>
+                </div>
+                
+                <canvas id="simulationCanvas" width="1000" height="500"></canvas>
+                
+                <div class="formula-box">
+                    <div class="formula-title">当前原理公式</div>
+                    <div class="formula" id="currentFormula">ε = B·L·v·sinθ</div>
+                </div>
+            </div>
+            
+            <div class="control-panel">
+                <div class="control-group">
+                    <div class="panel-title">
+                        <span>⚙️ 实验控制</span>
+                    </div>
+                    
+                    <div class="control-item" id="velocityControl">
+                        <div class="control-title">
+                            <span>导体运动速度 (v)</span>
+                            <span class="control-value" id="velocityValue">2.0 m/s</span>
+                        </div>
+                        <div class="slider-container">
+                            <input type="range" id="velocitySlider" min="-5" max="5" step="0.1" value="2">
+                        </div>
+                    </div>
+                    
+                    <div class="control-item" id="fieldChangeControl">
+                        <div class="control-title">
+                            <span>磁场变化率 (dB/dt)</span>
+                            <span class="control-value" id="fieldChangeValue">0.0 T/s</span>
+                        </div>
+                        <div class="slider-container">
+                            <input type="range" id="fieldChangeSlider" min="-2" max="2" step="0.1" value="0">
+                        </div>
+                    </div>
+                    
+                    <div class="control-item">
+                        <div class="control-title">
+                            <span>磁场强度 (B)</span>
+                            <span class="control-value" id="fieldStrengthValue">0.5 T</span>
+                        </div>
+                        <div class="slider-container">
+                            <input type="range" id="fieldStrengthSlider" min="0.1" max="1.5" step="0.1" value="0.5">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="panel-title">
+                        <span>👁️ 可视化选项</span>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="showFieldLines" checked>
+                            <span>磁场线</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="showCharges" checked>
+                            <span>电荷粒子</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="showForce" checked>
+                            <span>受力箭头</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="showElectricField">
+                            <span>电场线</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="showVelocity" checked>
+                            <span>速度箭头</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="panel-title">
+                        <span>📊 实时数据</span>
+                    </div>
+                    
+                    <div class="data-panel">
+                        <div class="data-item">
+                            <div class="data-label">感应电动势 (ε)</div>
+                            <div class="data-value" id="emfValue">0.00<span class="data-unit">V</span></div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">磁通量变化率 (dΦ/dt)</div>
+                            <div class="data-value" id="fluxChangeValue">0.00<span class="data-unit">Wb/s</span></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="action-btn reset-btn" id="resetBtn">
+                        <span>🔄</span> 重置实验
+                    </button>
+                    <button class="action-btn hint-btn" id="hintBtn">
+                        <span>💡</span> 显示原理提示
+                    </button>
+                </div>
+                
+                <div class="hint-box" id="hintBox">
+                    <div class="hint-step">
+                        <div class="hint-step-title">🔍 观察要点</div>
+                        <div class="hint-step-content" id="hintObservation">在动生电动势实验中，观察导体运动时自由电子如何受洛伦兹力作用而定向移动。</div>
+                    </div>
+                    <div class="hint-step">
+                        <div class="hint-step-title">⚡ 产生机理</div>
+                        <div class="hint-step-content" id="hintMechanism">动生电动势由导体在恒定磁场中运动产生，其微观机理是洛伦兹力驱动电荷定向移动。</div>
+                    </div>
+                    <div class="hint-step">
+                        <div class="hint-step-title">📐 计算公式</div>
+                        <div class="hint-step-content" id="hintFormula">ε = B·L·v·sinθ，其中θ是速度方向与磁场方向的夹角。</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>教学动画设计：电磁感应中的动生电动势与感生电动势 | 交互式物理学习工具</p>
+            <p>提示：通过调整参数和切换场景，观察两种电动势的产生机理与区别</p>
+        </footer>
+    </div>
+
+    <script>
+        // 全局变量
+        let canvas, ctx;
+        let currentScene = 'motional'; // 'motional', 'induced', 'combined'
+        let animationId;
+        
+        // 物理参数
+        let velocity = 2.0; // m/s
+        let fieldChangeRate = 0.0; // T/s
+        let fieldStrength = 0.5; // T
+        let conductorLength = 1.0; // m
+        let emf = 0.0; // V
+        let fluxChangeRate = 0.0; // Wb/s
+        
+        // 可视化选项
+        let showFieldLines = true;
+        let showCharges = true;
+        let showForce = true;
+        let showElectricField = false;
+        let showVelocity = true;
+        
+        // 动画状态
+        let time = 0;
+        let conductorX = 200;
+        let conductorY = 250;
+        let fieldCenterX = 500;
+        let fieldCenterY = 250;
+        let fieldRadius = 120;
+        let currentFieldStrength = fieldStrength;
+        let charges = [];
+        let electricFieldLines = [];
+        
+        // 初始化
+        function init() {
+            canvas = document.getElementById('simulationCanvas');
+            ctx = canvas.getContext('2d');
+            
+            // 设置事件监听器
+            setupEventListeners();
+            
+            // 初始化电荷粒子
+            initCharges();
+            
+            // 初始化电场线
+            initElectricFieldLines();
+            
+            // 开始动画循环
+            animate();
+        }
+        
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 场景切换按钮
+            document.querySelectorAll('.scene-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.scene-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentScene = this.getAttribute('data-scene');
+                    resetExperiment();
+                    updateFormula();
+                    updateHints();
+                    
+                    // 根据场景显示/隐藏控制项
+                    const velocityControl = document.getElementById('velocityControl');
+                    const fieldChangeControl = document.getElementById('fieldChangeControl');
+                    
+                    if (currentScene === 'motional') {
+                        velocityControl.style.display = 'block';
+                        fieldChangeControl.style.display = 'none';
+                    } else if (currentScene === 'induced') {
+                        velocityControl.style.display = 'none';
+                        fieldChangeControl.style.display = 'block';
+                    } else {
+                        velocityControl.style.display = 'block';
+                        fieldChangeControl.style.display = 'block';
+                    }
+                });
+            });
+            
+            // 滑块控制
+            document.getElementById('velocitySlider').addEventListener('input', function() {
+                velocity = parseFloat(this.value);
+                document.getElementById('velocityValue').textContent = velocity.toFixed(1) + ' m/s';
+            });
+            
+            document.getElementById('fieldChangeSlider').addEventListener('input', function() {
+                fieldChangeRate = parseFloat(this.value);
+                document.getElementById('fieldChangeValue').textContent = fieldChangeRate.toFixed(1) + ' T/s';
+            });
+            
+            document.getElementById('fieldStrengthSlider').addEventListener('input', function() {
+                fieldStrength = parseFloat(this.value);
+                document.getElementById('fieldStrengthValue').textContent = fieldStrength.toFixed(1) + ' T';
+            });
+            
+            // 复选框控制
+            document.getElementById('showFieldLines').addEventListener('change', function() {
+                showFieldLines = this.checked;
+            });
+            
+            document.getElementById('showCharges').addEventListener('change', function() {
+                showCharges = this.checked;
+            });
+            
+            document.getElementById('showForce').addEventListener('change', function() {
+                showForce = this.checked;
+            });
+            
+            document.getElementById('showElectricField').addEventListener('change', function() {
+                showElectricField = this.checked;
+            });
+            
+            document.getElementById('showVelocity').addEventListener('change', function() {
+                showVelocity = this.checked;
+            });
+            
+            // 动作按钮
+            document.getElementById('resetBtn').addEventListener('click', resetExperiment);
+            document.getElementById('hintBtn').addEventListener('click', toggleHintBox);
+        }
+        
+        // 初始化电荷粒子
+        function initCharges() {
+            charges = [];
+            const numCharges = 30;
+            
+            for (let i = 0; i < numCharges; i++) {
+                charges.push({
+                    x: conductorX + Math.random() * 200,
+                    y: conductorY + (Math.random() - 0.5) * 40,
+                    vx: 0,
+                    vy: 0,
+                    radius: 3,
+                    color: '#fbbf24'
+                });
+            }
+        }
+        
+        // 初始化电场线
+        function initElectricFieldLines() {
+            electricFieldLines = [];
+            const numLines = 8;
+            
+            for (let i = 0; i < numLines; i++) {
+                const angle = (i / numLines) * 2 * Math.PI;
+                electricFieldLines.push({
+                    angle: angle,
+                    radius: fieldRadius * 1.5
+                });
+            }
+        }
+        
+        // 重置实验
+        function resetExperiment() {
+            time = 0;
+            conductorX = 200;
+            currentFieldStrength = fieldStrength;
+            emf = 0;
+            fluxChangeRate = 0;
+            
+            // 更新数据显示
+            updateDataDisplay();
+            
+            // 重新初始化电荷
+            initCharges();
+        }
+        
+        // 更新公式显示
+        function updateFormula() {
+            const formulaElement = document.getElementById('currentFormula');
+            
+            switch(currentScene) {
+                case 'motional':
+                    formulaElement.textContent = 'ε = B·L·v·sinθ';
+                    break;
+                case 'induced':
+                    formulaElement.textContent = 'ε = -dΦ/dt = -A·dB/dt';
+                    break;
+                case 'combined':
+                    formulaElement.textContent = 'ε = -dΦ/dt = B·L·v + A·dB/dt';
+                    break;
+            }
+        }
+        
+        // 更新提示内容
+        function updateHints() {
+            const observationElement = document.getElementById('hintObservation');
+            const mechanismElement = document.getElementById('hintMechanism');
+            const formulaElement = document.getElementById('hintFormula');
+            
+            switch(currentScene) {
+                case 'motional':
+                    observationElement.textContent = '在动生电动势实验中，观察导体运动时自由电子如何受洛伦兹力作用而定向移动。';
+                    mechanismElement.textContent = '动生电动势由导体在恒定磁场中运动产生，其微观机理是洛伦兹力驱动电荷定向移动。';
+                    formulaElement.textContent = 'ε = B·L·v·sinθ，其中θ是速度方向与磁场方向的夹角。';
+                    break;
+                case 'induced':
+                    observationElement.textContent = '在感生电动势实验中，观察磁场变化时如何激发涡旋电场，进而驱动电荷运动。';
+                    mechanismElement.textContent = '感生电动势由磁场随时间变化产生，其微观机理是变化的磁场激发涡旋电场，电场力驱动电荷。';
+                    formulaElement.textContent = 'ε = -dΦ/dt = -A·dB/dt，其中A是回路面积，dB/dt是磁场变化率。';
+                    break;
+                case 'combined':
+                    observationElement.textContent = '在综合实验中，同时观察导体运动和磁场变化对感应电动势的贡献。';
+                    mechanismElement.textContent = '综合电动势包含动生和感生两部分，分别由导体运动和磁场变化引起。';
+                    formulaElement.textContent = 'ε = -dΦ/dt = B·L·v + A·dB/dt（假设导体运动方向与磁场垂直）。';
+                    break;
+            }
+        }
+        
+        // 切换提示框显示
+        function toggleHintBox() {
+            const hintBox = document.getElementById('hintBox');
+            hintBox.classList.toggle('active');
+            
+            const hintBtn = document.getElementById('hintBtn');
+            if (hintBox.classList.contains('active')) {
+                hintBtn.innerHTML = '<span>💡</span> 隐藏原理提示';
+            } else {
+                hintBtn.innerHTML = '<span>💡</span> 显示原理提示';
+            }
+        }
+        
+        // 更新数据显示
+        function updateDataDisplay() {
+            document.getElementById('emfValue').innerHTML = emf.toFixed(2) + '<span class="data-unit">V</span>';
+            document.getElementById('fluxChangeValue').innerHTML = fluxChangeRate.toFixed(2) + '<span class="data-unit">Wb/s</span>';
+        }
+        
+        // 计算物理量
+        function calculatePhysics() {
+            time += 0.016; // 假设60fps
+            
+            // 更新导体位置（仅动生和综合场景）
+            if (currentScene !== 'induced') {
+                conductorX += velocity * 30; // 缩放因子使动画更明显
+                if (conductorX > 800) conductorX = 200;
+                if (conductorX < 200) conductorX = 800;
+            }
+            
+            // 更新磁场强度（仅感生和综合场景）
+            if (currentScene !== 'motional') {
+                currentFieldStrength = fieldStrength + fieldChangeRate * time;
+                if (currentFieldStrength < 0.1) currentFieldStrength = 0.1;
+                if (currentFieldStrength > 1.5) currentFieldStrength = 1.5;
+            }
+            
+            // 计算电动势
+            let motionalEMF = 0;
+            let inducedEMF = 0;
+            
+            // 动生电动势部分
+            if (currentScene !== 'induced') {
+                // 假设导体运动方向与磁场垂直
+                motionalEMF = currentFieldStrength * conductorLength * velocity;
+            }
+            
+            // 感生电动势部分
+            if (currentScene !== 'motional') {
+                // 假设回路面积不变
+                const area = Math.PI * fieldRadius * fieldRadius / 10000; // 转换为平方米
+                inducedEMF = -area * fieldChangeRate;
+            }
+            
+            // 总电动势
+            emf = motionalEMF + inducedEMF;
+            
+            // 计算磁通量变化率
+            let motionalFluxChange = 0;
+            let inducedFluxChange = 0;
+            
+            if (currentScene !== 'induced') {
+                // 导体运动导致的磁通量变化
+                motionalFluxChange = currentFieldStrength * conductorLength * velocity;
+            }
+            
+            if (currentScene !== 'motional') {
+                // 磁场变化导致的磁通量变化
+                const area = Math.PI * fieldRadius * fieldRadius / 10000;
+                inducedFluxChange = area * fieldChangeRate;
+            }
+            
+            fluxChangeRate = motionalFluxChange + inducedFluxChange;
+            
+            // 更新数据显示
+            updateDataDisplay();
+        }
+        
+        // 更新电荷粒子
+        function updateCharges() {
+            // 计算电荷受力
+            const forceMagnitude = Math.abs(emf) * 0.5; // 缩放因子
+            
+            for (let charge of charges) {
+                // 限制电荷在导体范围内
+                if (charge.x < conductorX) charge.x = conductorX;
+                if (charge.x > conductorX + 200) charge.x = conductorX + 200;
+                if (charge.y < conductorY - 20) charge.y = conductorY - 20;
+                if (charge.y > conductorY + 20) charge.y = conductorY + 20;
+                
+                // 根据电动势方向设置电荷速度
+                if (emf > 0) {
+                    charge.vx = forceMagnitude * 2;
+                } else if (emf < 0) {
+                    charge.vx = -forceMagnitude * 2;
+                } else {
+                    charge.vx *= 0.9; // 阻尼
+                }
+                
+                // 添加随机运动
+                charge.vx += (Math.random() - 0.5) * 0.5;
+                charge.vy += (Math.random() - 0.5) * 0.5;
+                
+                // 更新位置
+                charge.x += charge.vx;
+                charge.y += charge.vy;
+                
+                // 边界处理
+                if (charge.x < conductorX) {
+                    charge.x = conductorX;
+                    charge.vx = Math.abs(charge.vx) * 0.5;
+                }
+                if (charge.x > conductorX + 200) {
+                    charge.x = conductorX + 200;
+                    charge.vx = -Math.abs(charge.vx) * 0.5;
+                }
+                if (charge.y < conductorY - 20) {
+                    charge.y = conductorY - 20;
+                    charge.vy = Math.abs(charge.vy) * 0.5;
+                }
+                if (charge.y > conductorY + 20) {
+                    charge.y = conductorY + 20;
+                    charge.vy = -Math.abs(charge.vy) * 0.5;
+                }
+            }
+        }
+        
+        // 绘制函数
+        function draw() {
+            // 清除画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制背景网格
+            drawGrid();
+            
+            // 根据场景绘制
+            switch(currentScene) {
+                case 'motional':
+                    drawMotionalScene();
+                    break;
+                case 'induced':
+                    drawInducedScene();
+                    break;
+                case 'combined':
+                    drawCombinedScene();
+                    break;
+            }
+            
+            // 绘制电荷粒子
+            if (showCharges) {
+                drawCharges();
+            }
+            
+            // 绘制电场线
+            if (showElectricField && (currentScene === 'induced' || currentScene === 'combined')) {
+                drawElectricField();
+            }
+            
+            // 绘制数据标签
+            drawLabels();
+        }
+        
+        // 绘制网格
+        function drawGrid() {
+            ctx.strokeStyle = 'rgba(100, 116, 139, 0.2)';
+            ctx.lineWidth = 1;
+            
+            // 垂直线
+            for (let x = 50; x < canvas.width; x += 50) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+            
+            // 水平线
+            for (let y = 50; y < canvas.height; y += 50) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+        }
+        
+        // 绘制动生电动势场景
+        function drawMotionalScene() {
+            // 绘制磁场线
+            if (showFieldLines) {
+                drawUniformMagneticField();
+            }
+            
+            // 绘制导体
+            drawConductor();
+            
+            // 绘制速度箭头
+            if (showVelocity) {
+                drawVelocityArrow();
+            }
+            
+            // 绘制受力箭头
+            if (showForce && emf !== 0) {
+                drawForceArrow();
+            }
+        }
+        
+        // 绘制感生电动势场景
+        function drawInducedScene() {
+            // 绘制变化磁场区域
+            drawChangingMagneticField();
+            
+            // 绘制静止导体回路
+            drawStationaryLoop();
+            
+            // 绘制磁场变化指示器
+            drawFieldChangeIndicator();
+        }
+        
+        // 绘制综合场景
+        function drawCombinedScene() {
+            // 绘制变化磁场区域
+            drawChangingMagneticField();
+            
+            // 绘制导体
+            drawConductor();
+            
+            // 绘制速度箭头
+            if (showVelocity) {
+                drawVelocityArrow();
+            }
+            
+            // 绘制受力箭头
+            if (showForce && emf !== 0) {
+                drawForceArrow();
+            }
+            
+            // 绘制磁场变化指示器
+            drawFieldChangeIndicator();
+        }
+        
+        // 绘制均匀磁场线
+        function drawUniformMagneticField() {
+            ctx.strokeStyle = 'rgba(59, 130, 246, 0.6)';
+            ctx.lineWidth = 1;
+            
+            // 绘制磁场线（从左到右）
+            for (let y = 100; y < canvas.height - 100; y += 30) {
+                // 磁场线
+                for (let x = 100; x < canvas.width - 100; x += 15) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                    ctx.lineTo(x + 10, y);
+                    ctx.stroke();
+                    
+                    // 箭头
+                    ctx.beginPath();
+                    ctx.moveTo(x + 10, y);
+                    ctx.lineTo(x + 5, y - 3);
+                    ctx.lineTo(x + 5, y + 3);
+                    ctx.closePath();
+                    ctx.fillStyle = 'rgba(59, 130, 246, 0.8)';
+                    ctx.fill();
+                }
+            }
+            
+            // 绘制磁场方向标签
+            ctx.fillStyle = 'rgba(59, 130, 246, 0.9)';
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText('B', canvas.width - 80, 150);
+            ctx.fillText('磁场方向', canvas.width - 120, 180);
+        }
+        
+        // 绘制变化磁场区域
+        function drawChangingMagneticField() {
+            // 绘制磁场区域
+            const gradient = ctx.createRadialGradient(
+                fieldCenterX, fieldCenterY, 0,
+                fieldCenterX, fieldCenterY, fieldRadius
+            );
+            
+            // 根据磁场变化率设置颜色
+            let colorIntensity = Math.abs(fieldChangeRate) * 0.5 + 0.3;
+            colorIntensity = Math.min(colorIntensity, 0.8);
+            
+            if (fieldChangeRate > 0) {
+                // 磁场增强 - 蓝色
+                gradient.addColorStop(0, `rgba(59, 130, 246, ${colorIntensity})`);
+                gradient.addColorStop(1, `rgba(59, 130, 246, ${colorIntensity * 0.3})`);
+            } else if (fieldChangeRate < 0) {
+                // 磁场减弱 - 紫色
+                gradient.addColorStop(0, `rgba(139, 92, 246, ${colorIntensity})`);
+                gradient.addColorStop(1, `rgba(139, 92, 246, ${colorIntensity * 0.3})`);
+            } else {
+                // 恒定磁场 - 固定蓝色
+                gradient.addColorStop(0, 'rgba(59, 130, 246, 0.4)');
+                gradient.addColorStop(1, 'rgba(59, 130, 246, 0.1)');
+            }
+            
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(fieldCenterX, fieldCenterY, fieldRadius, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 绘制磁场线（圆形）
+            if (showFieldLines) {
+                ctx.strokeStyle = 'rgba(59, 130, 246, 0.7)';
+                ctx.lineWidth = 1;
+                
+                const numLines = 12;
+                for (let i = 0; i < numLines; i++) {
+                    const angle = (i / numLines) * Math.PI * 2;
+                    const startX = fieldCenterX + Math.cos(angle) * 20;
+                    const startY = fieldCenterY + Math.sin(angle) * 20;
+                    const endX = fieldCenterX + Math.cos(angle) * (fieldRadius - 10);
+                    const endY = fieldCenterY + Math.sin(angle) * (fieldRadius - 10);
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(startX, startY);
+                    ctx.lineTo(endX, endY);
+                    ctx.stroke();
+                    
+                    // 箭头
+                    ctx.beginPath();
+                    ctx.moveTo(endX, endY);
+                    ctx.lineTo(endX - Math.cos(angle) * 8 + Math.sin(angle) * 3, 
+                              endY - Math.sin(angle) * 
+<!--检测到代码截断，自动续写中...-->
+ctx.lineTo(endX - Math.cos(angle) * 8 - Math.sin(angle) * 3,
+                              endY - Math.sin(angle) * 8 + Math.cos(angle) * 3);
+                    ctx.closePath();
+                    ctx.fillStyle = 'rgba(59, 130, 246, 0.8)';
+                    ctx.fill();
+                }
+            }
+            
+            // 绘制磁场强度标签
+            ctx.fillStyle = 'rgba(59, 130, 246, 0.9)';
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText(`B = ${currentFieldStrength.toFixed(1)} T`, fieldCenterX - 30, fieldCenterY - fieldRadius - 20);
+            
+            if (fieldChangeRate !== 0) {
+                ctx.fillStyle = fieldChangeRate > 0 ? '#22c55e' : '#ef4444';
+                ctx.fillText(`dB/dt = ${fieldChangeRate.toFixed(1)} T/s`, fieldCenterX - 40, fieldCenterY - fieldRadius - 40);
+            }
+        }
+        
+        // 绘制导体
+        function drawConductor() {
+            // 导体主体
+            ctx.fillStyle = 'rgba(203, 213, 225, 0.9)';
+            ctx.fillRect(conductorX, conductorY - 20, 200, 40);
+            
+            // 导体边框
+            ctx.strokeStyle = 'rgba(148, 163, 184, 0.8)';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(conductorX, conductorY - 20, 200, 40);
+            
+            // 导体标签
+            ctx.fillStyle = '#e2e8f0';
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText('导体', conductorX + 80, conductorY + 5);
+            ctx.fillText(`L = ${conductorLength.toFixed(1)} m`, conductorX + 70, conductorY + 25);
+        }
+        
+        // 绘制静止导体回路
+        function drawStationaryLoop() {
+            const loopX = fieldCenterX;
+            const loopY = fieldCenterY;
+            const loopRadius = fieldRadius * 0.8;
+            
+            // 绘制回路
+            ctx.strokeStyle = 'rgba(203, 213, 225, 0.9)';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(loopX, loopY, loopRadius, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            // 回路标签
+            ctx.fillStyle = '#e2e8f0';
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText('静止导体回路', loopX - 50, loopY - loopRadius - 20);
+        }
+        
+        // 绘制速度箭头
+        function drawVelocityArrow() {
+            const arrowX = conductorX + 100;
+            const arrowY = conductorY - 50;
+            
+            // 箭头线
+            ctx.strokeStyle = '#06b6d4';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(arrowX - 40, arrowY);
+            ctx.lineTo(arrowX + 40, arrowY);
+            ctx.stroke();
+            
+            // 箭头头部
+            ctx.fillStyle = '#06b6d4';
+            ctx.beginPath();
+            ctx.moveTo(arrowX + 40, arrowY);
+            ctx.lineTo(arrowX + 25, arrowY - 8);
+            ctx.lineTo(arrowX + 25, arrowY + 8);
+            ctx.closePath();
+            ctx.fill();
+            
+            // 速度标签
+            ctx.fillStyle = '#06b6d4';
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText(`v = ${velocity.toFixed(1)} m/s`, arrowX - 30, arrowY - 15);
+            
+            if (velocity === 0) {
+                ctx.fillStyle = '#94a3b8';
+                ctx.fillText('(静止)', arrowX - 20, arrowY - 35);
+            }
+        }
+        
+        // 绘制受力箭头
+        function drawForceArrow() {
+            const forceX = conductorX + 100;
+            const forceY = conductorY + 60;
+            const forceDirection = emf > 0 ? 1 : -1;
+            const forceLength = Math.min(Math.abs(emf) * 15, 60);
+            
+            // 箭头线
+            ctx.strokeStyle = '#ef4444';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(forceX, forceY);
+            ctx.lineTo(forceX + forceLength * forceDirection, forceY);
+            ctx.stroke();
+            
+            // 箭头头部
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath();
+            if (forceDirection > 0) {
+                ctx.moveTo(forceX + forceLength, forceY);
+                ctx.lineTo(forceX + forceLength - 12, forceY - 8);
+                ctx.lineTo(forceX + forceLength - 12, forceY + 8);
+            } else {
+                ctx.moveTo(forceX, forceY);
+                ctx.lineTo(forceX + 12, forceY - 8);
+                ctx.lineTo(forceX + 12, forceY + 8);
+            }
+            ctx.closePath();
+            ctx.fill();
+            
+            // 力标签
+            ctx.fillStyle = '#ef4444';
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText('洛伦兹力 F', forceX - 30, forceY + 25);
+        }
+        
+        // 绘制磁场变化指示器
+        function drawFieldChangeIndicator() {
+            const indicatorX = fieldCenterX;
+            const indicatorY = fieldCenterY + fieldRadius + 50;
+            
+            // 指示器背景
+            ctx.fillStyle = 'rgba(30, 41, 59, 0.7)';
+            ctx.fillRect(indicatorX - 60, indicatorY - 20, 120, 40);
+            
+            // 指示器箭头
+            ctx.strokeStyle = fieldChangeRate > 0 ? '#22c55e' : '#ef4444';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            
+            if (fieldChangeRate > 0) {
+                // 向上箭头表示磁场增强
+                ctx.moveTo(indicatorX, indicatorY + 10);
+                ctx.lineTo(indicatorX, indicatorY - 10);
+                ctx.moveTo(indicatorX, indicatorY - 10);
+                ctx.lineTo(indicatorX - 8, indicatorY - 2);
+                ctx.moveTo(indicatorX, indicatorY - 10);
+                ctx.lineTo(indicatorX + 8, indicatorY - 2);
+            } else if (fieldChangeRate < 0) {
+                // 向下箭头表示磁场减弱
+                ctx.moveTo(indicatorX, indicatorY - 10);
+                ctx.lineTo(indicatorX, indicatorY + 10);
+                ctx.moveTo(indicatorX, indicatorY + 10);
+                ctx.lineTo(indicatorX - 8, indicatorY + 2);
+                ctx.moveTo(indicatorX, indicatorY + 10);
+                ctx.lineTo(indicatorX + 8, indicatorY + 2);
+            } else {
+                // 水平线表示磁场不变
+                ctx.moveTo(indicatorX - 20, indicatorY);
+                ctx.lineTo(indicatorX + 20, indicatorY);
+            }
+            ctx.stroke();
+            
+            // 指示器标签
+            ctx.fillStyle = '#e2e8f0';
+            ctx.font = '14px Arial';
+            ctx.fillText('磁场变化', indicatorX - 30, indicatorY + 35);
+        }
+        
+        // 绘制电荷粒子
+        function drawCharges() {
+            for (let charge of charges) {
+                // 电荷粒子
+                ctx.beginPath();
+                ctx.arc(charge.x, charge.y, charge.radius, 0, Math.PI * 2);
+                
+                // 发光效果
+                const gradient = ctx.createRadialGradient(
+                    charge.x, charge.y, 0,
+                    charge.x, charge.y, charge.radius * 2
+                );
+                gradient.addColorStop(0, charge.color);
+                gradient.addColorStop(1, 'rgba(251, 191, 36, 0.1)');
+                
+                ctx.fillStyle = gradient;
+                ctx.fill();
+                
+                // 电荷符号
+                ctx.fillStyle = '#0f172a';
+                ctx.font = 'bold 10px Arial';
+                ctx.fillText('-', charge.x - 3, charge.y + 3);
+            }
+        }
+        
+        // 绘制电场线
+        function drawElectricField() {
+            if (fieldChangeRate === 0) return;
+            
+            ctx.strokeStyle = fieldChangeRate > 0 ? 'rgba(34, 197, 94, 0.7)' : 'rgba(139, 92, 246, 0.7)';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            
+            for (let line of electricFieldLines) {
+                const startAngle = line.angle;
+                const radius = line.radius;
+                
+                // 根据磁场变化方向确定电场线方向
+                const direction = fieldChangeRate > 0 ? -1 : 1;
+                
+                ctx.beginPath();
+                for (let r = 20; r < radius; r += 2) {
+                    const angle = startAngle + direction * (r / radius) * 0.5;
+                    const x = fieldCenterX + Math.cos(angle) * r;
+                    const y = fieldCenterY + Math.sin(angle) * r;
+                    
+                    if (r === 20) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                ctx.stroke();
+                
+                // 电场方向箭头
+                const arrowRadius = radius - 15;
+                const arrowAngle = startAngle + direction * (arrowRadius / radius) * 0.5;
+                const arrowX = fieldCenterX + Math.cos(arrowAngle) * arrowRadius;
+                const arrowY = fieldCenterY + Math.sin(arrowAngle) * arrowRadius;
+                
+                ctx.fillStyle = fieldChangeRate > 0 ? 'rgba(34, 197, 94, 0.9)' : 'rgba(139, 92, 246, 0.9)';
+                ctx.beginPath();
+                ctx.moveTo(arrowX, arrowY);
+                ctx.lineTo(arrowX - Math.cos(arrowAngle) * 8 + Math.sin(arrowAngle) * 5 * direction,
+                          arrowY - Math.sin(arrowAngle) * 8 - Math.cos(arrowAngle) * 5 * direction);
+                ctx.lineTo(arrowX - Math.cos(arrowAngle) * 8 - Math.sin(arrowAngle) * 5 * direction,
+                          arrowY - Math.sin(arrowAngle) * 8 + Math.cos(arrowAngle) * 5 * direction);
+                ctx.closePath();
+                ctx.fill();
+            }
+            
+            ctx.setLineDash([]);
+            
+            // 电场标签
+            ctx.fillStyle = fieldChangeRate > 0 ? '#22c55e' : '#8b5cf6';
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText('涡旋电场 E', fieldCenterX + fieldRadius + 20, fieldCenterY);
+        }
+        
+        // 绘制标签
+        function drawLabels() {
+            // 场景标题
+            ctx.fillStyle = '#60a5fa';
+            ctx.font = 'bold 20px Arial';
+            
+            let sceneTitle = '';
+            switch(currentScene) {
+                case 'motional': sceneTitle = '动生电动势实验'; break;
+                case 'induced': sceneTitle = '感生电动势实验'; break;
+                case 'combined': sceneTitle = '综合实验'; break;
+            }
+            
+            ctx.fillText(sceneTitle, 50, 40);
+            
+            // 图例
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '14px Arial';
+            ctx.fillText('图例:', 50, canvas.height - 80);
+            
+            // 磁场图例
+            ctx.fillStyle = 'rgba(59, 130, 246, 0.8)';
+            ctx.fillRect(50, canvas.height - 60, 15, 15);
+            ctx.fillStyle = '#e2e8f0';
+            ctx.fillText('磁场 (B)', 70, canvas.height - 50);
+            
+            // 速度图例
+            ctx.fillStyle = '#06b6d4';
+            ctx.fillRect(150, canvas.height - 60, 15, 15);
+            ctx.fillStyle = '#e2e8f0';
+            ctx.fillText('速度 (v)', 170, canvas.height - 50);
+            
+            // 力图例
+            ctx.fillStyle = '#ef4444';
+            ctx.fillRect(250, canvas.height - 60, 15, 15);
+            ctx.fillStyle = '#e2e8f0';
+            ctx.fillText('洛伦兹力 (F)', 270, canvas.height - 50);
+            
+            // 电荷图例
+            ctx.beginPath();
+            ctx.arc(370, canvas.height - 52, 7, 0, Math.PI * 2);
+            ctx.fillStyle = '#fbbf24';
+            ctx.fill();
+            ctx.fillStyle = '#0f172a';
+            ctx.font = 'bold 10px Arial';
+            ctx.fillText('-', 367, canvas.height - 49);
+            ctx.fillStyle = '#e2e8f0';
+            ctx.font = '14px Arial';
+            ctx.fillText('自由电子', 385, canvas.height - 50);
+        }
+        
+        // 动画循环
+        function animate() {
+            calculatePhysics();
+            updateCharges();
+            draw();
+            animationId = requestAnimationFrame(animate);
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('load', init);
+        
+        // 页面卸载时停止动画
+        window.addEventListener('beforeunload', function() {
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+        });
+    </script>
+</body>
+</html>

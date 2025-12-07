@@ -1,0 +1,1479 @@
+# 需求：激素调节八大腺体（下丘脑-垂体-靶腺轴动态反馈）
+
+### 1. 专业思考
+
+### 1. 专业思考
+
+#### 用户需求分析
+1.  **目标用户**：主要为高中或大学低年级的生物学、医学预科学生。他们已具备基础的人体生理学知识，但需要直观、动态地理解复杂的激素调节机制。
+2.  **核心痛点**：
+    *   **抽象性**：下丘脑-垂体-靶腺轴（如甲状腺轴、性腺轴）是一个多层级、动态的反馈系统，传统静态图表难以展示其“动态”和“反馈”本质。
+    *   **复杂性**：正反馈、负反馈、分级调节等概念交织，学生容易混淆各腺体的角色和激素间的因果关系。
+    *   **记忆负担**：需要记忆多个腺体、多种激素名称及其作用，缺乏一个连贯的、故事化的理解框架。
+3.  **学习目标**：通过动画，学生应能：
+    *   清晰识别下丘脑、垂体、靶腺（以甲状腺为例）的解剖位置和层级关系。
+    *   理解“促激素释放激素(TRH) -> 促甲状腺激素(TSH) -> 甲状腺激素(T3/T4)”这一核心指令链。
+    *   掌握“负反馈”调节的动态过程：当甲状腺激素水平升高时，如何抑制上两级腺体的活动，维持稳态。
+    *   能够将甲状腺轴的模型迁移理解到其他靶腺轴（如肾上腺轴、性腺轴）。
+
+#### 教学设计思路（核心概念、认知规律、交互设计、视觉呈现）
+1.  **核心概念聚焦**：
+    *   **主线**：以下丘脑-垂体-甲状腺轴为经典案例进行深度可视化。
+    *   **核心机制**：**分级调节**（自上而下的指令）与**负反馈调节**（自下而上的抑制）的动态平衡。
+    *   **关键抽象概念具象化**：将“激素水平”可视化为“液体高度”或“颜色浓度”；将“刺激/抑制”可视化为“箭头（绿色加粗/红色变细或闪烁停止）”。
+
+2.  **遵循认知规律**：
+    *   **从整体到局部**：先展示完整的人体轮廓和三大腺体的位置，再聚焦到轴系细节。
+    *   **从静态到动态**：先展示静态的层级结构，再通过动画演示一次完整的调节循环（如寒冷刺激启动甲状腺轴），最后通过交互允许用户改变变量（如甲状腺激素水平），观察系统的反馈响应。
+    *   **工作记忆减负**：同一激素始终使用同一颜色和图标，并在屏幕上保持标签。重要事件（如反馈抑制发生）配合简洁的文字提示和音效。
+
+3.  **交互设计**：
+    *   **引导式探索**：设计“故事模式”，由系统自动播放一个完整调节周期，用户作为观察者。
+    *   **探究式实验**：在“实验模式”下，提供控制面板，允许用户直接“注射”或“减少”某种激素（如T3/T4），观察系统其他部分如何反应，从而自主发现反馈规律。
+    *   **渐进式揭示**：初始时只显示腺体和主要激素名称。在动画进行中或鼠标悬停时，才显示激素的详细功能注释。
+
+4.  **视觉呈现**：
+    *   **场景构图**：左侧为简化的人体侧面轮廓图，突出显示位于脑部的下丘脑、垂体及颈部的甲状腺。右侧为一个放大的、示意图式的“轴系动态图”，这是动画的核心区域。
+    *   **角色化设计**：
+        *   **下丘脑**：设计为“总司令指挥部”（形状如堡垒或控制室）。
+        *   **垂体**：设计为“中央调度站”（形状如枢纽或中转站）。
+        *   **甲状腺**：设计为“生产工厂”（形状如蝴蝶状的工厂）。
+        *   **激素**：设计为带有颜色和表情（兴奋/平静）的“信使小球”或“指令波”，沿着管道或路径移动。
+    *   **动态表达**：
+        *   **分泌**：腺体“脉动”并释放出激素小球。
+        *   **运输**：小球沿特定路径运动。
+        *   **作用**：小球到达靶器官后，靶器官状态改变（如甲状腺工厂“开工”灯光亮起）。
+        *   **反馈**：从靶器官发出的反馈信号（红色箭头或波）逆向传回上级，使上级腺体的“脉动”减弱或停止。
+
+#### 配色方案选择
+*   **主色调**：采用偏科技感、医学插画风格的蓝紫色系，营造清晰、冷静的科学氛围。
+*   **腺体颜色**：
+    *   下丘脑：深紫色（象征高级中枢、神秘）。
+    *   垂体：蓝色（象征枢纽、控制）。
+    *   甲状腺：暖橙色（象征能量代谢、工厂）。
+*   **激素颜色**：
+    *   TRH（下丘脑激素）：紫色系（与下丘脑同系）。
+    *   TSH（垂体激素）：蓝色系（与垂体同系）。
+    *   T3/T4（甲状腺激素）：橙色/黄色（与甲状腺同系，代表热量）。
+*   **信号与反馈**：
+    *   **刺激信号/正向箭头**：绿色、渐亮效果。
+    *   **抑制信号/负反馈箭头**：红色、渐暗效果。
+*   **背景与界面**：浅灰色或极浅的蓝灰色背景，确保前景元素突出。文字使用深灰色，提高可读性。
+
+#### 交互功能列表
+1.  **模式切换器**：
+    *   “学习模式”：自动播放动画，配有旁白解说和分步文字提示。
+    *   “实验模式”：手动交互模式，隐藏旁白，突出控制面板。
+2.  **动画控制面板**（通用）：
+    *   播放/暂停/重启按钮。
+    *   进度条（可跳转）。
+3.  **实验控制面板**（仅在“实验模式”下突出显示）：
+    *   **外部刺激模拟**：“施加寒冷刺激”按钮（触发整个轴启动）。
+    *   **激素水平调节器**：三个滑块，分别用于手动设置“下丘脑TRH活性”、“垂体TSH活性”、“甲状腺T3/T4水平”。拖动滑块，实时观察其他部分的变化。
+    *   **“注射器”工具**：点击图标后，再点击某个腺体，可模拟“额外注射”该腺体激素，观察反馈。
+    *   **重置**：将系统状态恢复到基础稳态。
+4.  **信息提示交互**：
+    *   **鼠标悬停**：悬停在腺体、激素、箭头上时，显示其名称和简要功能。
+    *   **点击锁定**：点击某个元素（如甲状腺），其标签和关键信息会固定在侧边栏显示。
+    *   **动态图例**：动画进行时，屏幕一侧的图例会高亮当前正在活跃的元素。
+5.  **迁移学习模块**（可选，作为扩展）：
+    *   一个选项卡切换器，允许用户将核心的“轴”可视化模型，切换到“下丘脑-垂体-肾上腺轴”或“下丘脑-垂体-性腺轴”，通过类比加深理解。
+
+### 2. HTML_CODE
+
+### 2. HTML_CODE
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>激素调节：下丘脑-垂体-靶腺轴动态反馈</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            padding: 25px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #eaeaea;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #3498db, #9b59b6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.2rem;
+            font-weight: normal;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .animation-panel {
+            flex: 1;
+            min-width: 700px;
+            background-color: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .control-panel {
+            flex: 0 0 350px;
+            background-color: #fff;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid #eaeaea;
+        }
+        
+        .panel-title {
+            color: #2c3e50;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .panel-title i {
+            color: #3498db;
+        }
+        
+        .mode-selector {
+            display: flex;
+            margin-bottom: 25px;
+            background-color: #f1f2f6;
+            border-radius: 10px;
+            padding: 5px;
+        }
+        
+        .mode-btn {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            background: none;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #7f8c8d;
+        }
+        
+        .mode-btn.active {
+            background-color: #3498db;
+            color: white;
+            box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+        }
+        
+        .animation-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .control-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .play-btn {
+            background-color: #2ecc71;
+            color: white;
+            flex: 2;
+            justify-content: center;
+        }
+        
+        .reset-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 14px rgba(0, 0, 0, 0.1);
+        }
+        
+        .control-btn:active {
+            transform: translateY(-1px);
+        }
+        
+        .slider-container {
+            margin-bottom: 25px;
+        }
+        
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .slider-value {
+            color: #3498db;
+            font-weight: bold;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 10px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #dfe6e9;
+            border-radius: 5px;
+            outline: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+        
+        #trhSlider::-webkit-slider-thumb {
+            background: #8e44ad;
+        }
+        
+        #tshSlider::-webkit-slider-thumb {
+            background: #3498db;
+        }
+        
+        #thyroidSlider::-webkit-slider-thumb {
+            background: #e67e22;
+        }
+        
+        .stimulus-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: #9b59b6;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .stimulus-btn:hover {
+            background-color: #8e44ad;
+            transform: translateY(-3px);
+            box-shadow: 0 7px 14px rgba(155, 89, 182, 0.3);
+        }
+        
+        .info-panel {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 5px solid #3498db;
+        }
+        
+        .info-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .info-content {
+            color: #555;
+            font-size: 0.95rem;
+        }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eaeaea;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        
+        .status-bar {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid #eaeaea;
+            font-weight: 600;
+            color: #2c3e50;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        
+        #canvas {
+            display: block;
+            margin: 0 auto;
+            cursor: pointer;
+        }
+        
+        .hormone-levels {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .level-item {
+            text-align: center;
+        }
+        
+        .level-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .level-label {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+        
+        .trh-level {
+            color: #8e44ad;
+        }
+        
+        .tsh-level {
+            color: #3498db;
+        }
+        
+        .thyroid-level {
+            color: #e67e22;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eaeaea;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 1200px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .animation-panel, .control-panel {
+                min-width: 100%;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>激素调节：下丘脑-垂体-靶腺轴</h1>
+            <p class="subtitle">动态反馈机制可视化教学动画（以下丘脑-垂体-甲状腺轴为例）</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="animation-panel">
+                <canvas id="canvas" width="1000" height="600"></canvas>
+                <div class="status-bar" id="statusBar">
+                    点击"开始学习"按钮或选择"实验模式"进行交互
+                </div>
+            </div>
+            
+            <div class="control-panel">
+                <div class="panel-title">
+                    <i class="fas fa-sliders-h"></i> 控制面板
+                </div>
+                
+                <div class="mode-selector">
+                    <button class="mode-btn active" id="learnModeBtn">
+                        <i class="fas fa-graduation-cap"></i> 学习模式
+                    </button>
+                    <button class="mode-btn" id="experimentModeBtn">
+                        <i class="fas fa-flask"></i> 实验模式
+                    </button>
+                </div>
+                
+                <div class="animation-controls">
+                    <button class="control-btn play-btn" id="playBtn">
+                        <i class="fas fa-play"></i> 开始学习
+                    </button>
+                    <button class="control-btn reset-btn" id="resetBtn">
+                        <i class="fas fa-redo"></i> 重置
+                    </button>
+                </div>
+                
+                <button class="stimulus-btn" id="coldStimulusBtn">
+                    <i class="fas fa-snowflake"></i> 模拟寒冷刺激
+                </button>
+                
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>下丘脑 TRH 活性</span>
+                        <span class="slider-value" id="trhValue">50%</span>
+                    </div>
+                    <input type="range" min="0" max="100" value="50" class="slider" id="trhSlider">
+                </div>
+                
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>垂体 TSH 活性</span>
+                        <span class="slider-value" id="tshValue">50%</span>
+                    </div>
+                    <input type="range" min="0" max="100" value="50" class="slider" id="tshSlider">
+                </div>
+                
+                <div class="slider-container">
+                    <div class="slider-label">
+                        <span>甲状腺激素水平</span>
+                        <span class="slider-value" id="thyroidValue">50%</span>
+                    </div>
+                    <input type="range" min="0" max="100" value="50" class="slider" id="thyroidSlider">
+                </div>
+                
+                <div class="hormone-levels">
+                    <div class="level-item">
+                        <div class="level-value trh-level" id="trhLevel">50</div>
+                        <div class="level-label">TRH</div>
+                    </div>
+                    <div class="level-item">
+                        <div class="level-value tsh-level" id="tshLevel">50</div>
+                        <div class="level-label">TSH</div>
+                    </div>
+                    <div class="level-item">
+                        <div class="level-value thyroid-level" id="thyroidLevel">50</div>
+                        <div class="level-label">T3/T4</div>
+                    </div>
+                </div>
+                
+                <div class="info-panel">
+                    <div class="info-title" id="infoTitle">系统处于稳态</div>
+                    <div class="info-content" id="infoContent">
+                        下丘脑-垂体-甲状腺轴通过负反馈机制维持甲状腺激素水平的稳定。当前所有激素水平处于正常范围。
+                    </div>
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #8e44ad;"></div>
+                        <span>下丘脑 & TRH</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #3498db;"></div>
+                        <span>垂体 & TSH</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #e67e22;"></div>
+                        <span>甲状腺 & T3/T4</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #2ecc71;"></div>
+                        <span>刺激信号</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #e74c3c;"></div>
+                        <span>抑制信号</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>教学动画设计：激素调节八大腺体 | 下丘脑-垂体-靶腺轴动态反馈机制</p>
+            <p>提示：在学习模式下观看完整调节过程，在实验模式下通过调节滑块观察负反馈机制</p>
+        </footer>
+    </div>
+
+    <script>
+        // 获取Canvas元素和上下文
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 获取UI元素
+        const playBtn = document.getElementById('playBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const coldStimulusBtn = document.getElementById('coldStimulusBtn');
+        const learnModeBtn = document.getElementById('learnModeBtn');
+        const experimentModeBtn = document.getElementById('experimentModeBtn');
+        const statusBar = document.getElementById('statusBar');
+        const infoTitle = document.getElementById('infoTitle');
+        const infoContent = document.getElementById('infoContent');
+        
+        // 滑块和显示元素
+        const trhSlider = document.getElementById('trhSlider');
+        const tshSlider = document.getElementById('tshSlider');
+        const thyroidSlider = document.getElementById('thyroidSlider');
+        const trhValue = document.getElementById('trhValue');
+        const tshValue = document.getElementById('tshValue');
+        const thyroidValue = document.getElementById('thyroidValue');
+        const trhLevel = document.getElementById('trhLevel');
+        const tshLevel = document.getElementById('tshLevel');
+        const thyroidLevel = document.getElementById('thyroidLevel');
+        
+        // 系统状态变量
+        let systemState = {
+            mode: 'learn', // 'learn' 或 'experiment'
+            isPlaying: false,
+            isColdStimulusActive: false,
+            trhActivity: 50,
+            tshActivity: 50,
+            thyroidHormoneLevel: 50,
+            animationPhase: 0, // 0: 稳态, 1: 寒冷刺激, 2: TRH分泌, 3: TSH分泌, 4: 甲状腺激素分泌, 5: 负反馈
+            animationTime: 0,
+            selectedElement: null
+        };
+        
+        // 腺体定义
+        const glands = {
+            hypothalamus: {
+                x: 200,
+                y: 150,
+                width: 120,
+                height: 80,
+                color: '#8e44ad',
+                name: '下丘脑',
+                hormone: 'TRH',
+                description: '神经内分泌高级中枢，分泌促甲状腺激素释放激素(TRH)',
+                isPulsing: false,
+                pulsePhase: 0
+            },
+            pituitary: {
+                x: 400,
+                y: 200,
+                width: 100,
+                height: 100,
+                color: '#3498db',
+                name: '垂体',
+                hormone: 'TSH',
+                description: '内分泌中枢，分泌促甲状腺激素(TSH)',
+                isPulsing: false,
+                pulsePhase: 0
+            },
+            thyroid: {
+                x: 700,
+                y: 300,
+                width: 140,
+                height: 80,
+                color: '#e67e22',
+                name: '甲状腺',
+                hormone: 'T3/T4',
+                description: '靶腺，分泌甲状腺激素(T3/T4)，调节新陈代谢',
+                isPulsing: false,
+                pulsePhase: 0
+            }
+        };
+        
+        // 激素粒子
+        let hormoneParticles = [];
+        
+        // 初始化
+        function init() {
+            // 设置滑块事件监听
+            trhSlider.addEventListener('input', function() {
+                if (systemState.mode === 'experiment') {
+                    systemState.trhActivity = parseInt(this.value);
+                    trhValue.textContent = systemState.trhActivity + '%';
+                    trhLevel.textContent = systemState.trhActivity;
+                    updateSystemFromSliders();
+                }
+            });
+            
+            tshSlider.addEventListener('input', function() {
+                if (systemState.mode === 'experiment') {
+                    systemState.tshActivity = parseInt(this.value);
+                    tshValue.textContent = systemState.tshActivity + '%';
+                    tshLevel.textContent = systemState.tshActivity;
+                    updateSystemFromSliders();
+                }
+            });
+            
+            thyroidSlider.addEventListener('input', function() {
+                if (systemState.mode === 'experiment') {
+                    systemState.thyroidHormoneLevel = parseInt(this.value);
+                    thyroidValue.textContent = systemState.thyroidHormoneLevel + '%';
+                    thyroidLevel.textContent = systemState.thyroidHormoneLevel;
+                    updateSystemFromSliders();
+                }
+            });
+            
+            // 按钮事件监听
+            playBtn.addEventListener('click', togglePlay);
+            resetBtn.addEventListener('click', resetSystem);
+            coldStimulusBtn.addEventListener('click', applyColdStimulus);
+            
+            // 模式切换
+            learnModeBtn.addEventListener('click', function() {
+                setMode('learn');
+            });
+            
+            experimentModeBtn.addEventListener('click', function() {
+                setMode('experiment');
+            });
+            
+            // Canvas点击事件
+            canvas.addEventListener('click', handleCanvasClick);
+            
+            // 初始绘制
+            draw();
+            
+            // 初始状态更新
+            updateStatusBar();
+        }
+        
+        // 设置模式
+        function setMode(mode) {
+            systemState.mode = mode;
+            
+            if (mode === 'learn') {
+                learnModeBtn.classList.add('active');
+                experimentModeBtn.classList.remove('active');
+                playBtn.innerHTML = '<i class="fas fa-play"></i> 开始学习';
+                playBtn.style.backgroundColor = '#2ecc71';
+                statusBar.textContent = "学习模式：点击'开始学习'观看完整的激素调节过程";
+                infoTitle.textContent = "学习模式";
+                infoContent.textContent = "在此模式下，系统将自动演示从寒冷刺激到负反馈调节的完整过程。";
+                
+                // 重置滑块为不可交互状态
+                trhSlider.disabled = true;
+                tshSlider.disabled = true;
+                thyroidSlider.disabled = true;
+                
+                // 重置系统状态
+                resetSystem();
+            } else {
+                learnModeBtn.classList.remove('active');
+                experimentModeBtn.classList.add('active');
+                playBtn.innerHTML = '<i class="fas fa-pause"></i> 暂停';
+                playBtn.style.backgroundColor = '#f39c12';
+                statusBar.textContent = "实验模式：拖动滑块调节激素水平，观察系统的反馈调节";
+                infoTitle.textContent = "实验模式";
+                infoContent.textContent = "在此模式下，您可以手动调节激素水平，观察负反馈机制如何维持系统稳态。";
+                
+                // 启用滑块
+                trhSlider.disabled = false;
+                tshSlider.disabled = false;
+                thyroidSlider.disabled = false;
+                
+                // 停止自动动画
+                systemState.isPlaying = false;
+            }
+            
+            draw();
+        }
+        
+        // 切换播放状态
+        function togglePlay() {
+            if (systemState.mode === 'learn') {
+                systemState.isPlaying = !systemState.isPlaying;
+                
+                if (systemState.isPlaying) {
+                    playBtn.innerHTML = '<i class="fas fa-pause"></i> 暂停';
+                    playBtn.style.backgroundColor = '#f39c12';
+                    statusBar.textContent = "学习模式运行中：演示从寒冷刺激到负反馈的完整过程";
+                    systemState.animationPhase = 1; // 从寒冷刺激开始
+                    systemState.animationTime = 0;
+                } else {
+                    playBtn.innerHTML = '<i class="fas fa-play"></i> 继续';
+                    playBtn.style.backgroundColor = '#2ecc71';
+                    statusBar.textContent = "学习模式已暂停";
+                }
+            }
+        }
+        
+        // 应用寒冷刺激
+        function applyColdStimulus() {
+            if (systemState.mode === 'learn') {
+                systemState.isPlaying = true;
+                systemState.animationPhase = 1;
+                systemState.animationTime = 0;
+                playBtn.innerHTML = '<i class="fas fa-pause"></i> 暂停';
+                playBtn.style.backgroundColor = '#f39c12';
+                statusBar.textContent = "寒冷刺激已应用：下丘脑检测到温度降低，开始启动调节轴";
+            } else {
+                // 实验模式下的寒冷刺激
+                systemState.isColdStimulusActive = true;
+                systemState.trhActivity = 80;
+                systemState.tshActivity = 70;
+                systemState.thyroidHormoneLevel = 60;
+                
+                // 更新滑块和显示
+                trhSlider.value = systemState.trhActivity;
+                tshSlider.value = systemState.tshActivity;
+                thyroidSlider.value = systemState.thyroidHormoneLevel;
+                trhValue.textContent = systemState.trhActivity + '%';
+                tshValue.textContent = systemState.tshActivity + '%';
+                thyroidValue.textContent = systemState.thyroidHormoneLevel + '%';
+                trhLevel.textContent = systemState.trhActivity;
+                tshLevel.textContent = systemState.tshActivity;
+                thyroidLevel.textContent = systemState.thyroidHormoneLevel;
+                
+                statusBar.textContent = "寒冷刺激已应用：下丘脑活性增加，启动甲状腺轴";
+                infoTitle.textContent = "寒冷刺激响应";
+                infoContent.textContent = "下丘脑检测到寒冷刺激，增加TRH分泌，从而激活垂体分泌TSH，最终增加甲状腺激素产生以提高代谢产热。";
+                
+                // 触发腺体脉动
+                glands.hypothalamus.isPulsing = true;
+                setTimeout(() => { glands.pituitary.isPulsing = true; }, 500);
+                setTimeout(() => { glands.thyroid.isPulsing = true; }, 1000);
+                
+                // 创建激素粒子
+                createHormoneParticles();
+            }
+        }
+        
+        // 重置系统
+        function resetSystem() {
+            systemState.isPlaying = false;
+            systemState.isColdStimulusActive = false;
+            systemState.trhActivity = 50;
+            systemState.tshActivity = 50;
+            systemState.thyroidHormoneLevel = 50;
+            systemState.animationPhase = 0;
+            systemState.animationTime = 0;
+            systemState.selectedElement = null;
+            
+            // 重置腺体脉动
+            glands.hypothalamus.isPulsing = false;
+            glands.pituitary.isPulsing = false;
+            glands.thyroid.isPulsing = false;
+            
+            // 清空激素粒子
+            hormoneParticles = [];
+            
+            // 更新滑块和显示
+            trhSlider.value = systemState.trhActivity;
+            tshSlider.value = systemState.tshActivity;
+            thyroidSlider.value = systemState.thyroidHormoneLevel;
+            trhValue.textContent = systemState.trhActivity + '%';
+            tshValue.textContent = systemState.tshActivity + '%';
+            thyroidValue.textContent = systemState.thyroidHormoneLevel + '%';
+            trhLevel.textContent = systemState.trhActivity;
+            tshLevel.textContent = systemState.tshActivity;
+            thyroidLevel.textContent = systemState.thyroidHormoneLevel;
+            
+            // 更新按钮
+            playBtn.innerHTML = '<i class="fas fa-play"></i> 开始学习';
+            playBtn.style.backgroundColor = '#2ecc71';
+            
+            // 更新状态栏
+            updateStatusBar();
+            
+            // 重绘
+            draw();
+        }
+        
+        // 根据滑块更新系统
+        function updateSystemFromSliders() {
+            // 在实验模式下，模拟负反馈机制
+            if (systemState.mode === 'experiment') {
+                // 如果甲状腺激素水平高，抑制上两级
+                if (systemState.thyroidHormoneLevel > 70) {
+                    systemState.trhActivity = Math.max(20, systemState.trhActivity - 5);
+                    systemState.tshActivity = Math.max(30, systemState.tshActivity - 3);
+                    
+                    trhSlider.value = systemState.trhActivity;
+                    tshSlider.value = systemState.tshActivity;
+                    trhValue.textContent = systemState.trhActivity + '%';
+                    tshValue.textContent = systemState.tshActivity + '%';
+                    trhLevel.textContent = systemState.trhActivity;
+                    tshLevel.textContent = systemState.tshActivity;
+                    
+                    infoTitle.textContent = "负反馈机制激活";
+                    infoContent.textContent = "甲状腺激素水平过高，通过负反馈抑制下丘脑TRH和垂体TSH的分泌，降低甲状腺激素产生。";
+                }
+                // 如果甲状腺激素水平低，刺激上两级
+                else if (systemState.thyroidHormoneLevel < 30) {
+                    systemState.trhActivity = Math.min(80, systemState.trhActivity + 5);
+                    systemState.tshActivity = Math.min(70, systemState.tshActivity + 3);
+                    
+                    trhSlider.value = systemState.trhActivity;
+                    tshSlider.value = systemState.tshActivity;
+                    trhValue.textContent = systemState.trhActivity + '%';
+                    tshValue.textContent = systemState.tshActivity + '%';
+                    trhLevel.textContent = systemState.trhActivity;
+                    tshLevel.textContent = systemState.tshActivity;
+                    
+                    infoTitle.textContent = "正刺激机制激活";
+                    infoContent.textContent = "甲状腺激素水平过低，下丘脑增加TRH分泌，垂体增加TSH分泌，促进甲状腺激素产生。";
+                }
+                // 正常范围
+                else {
+                    infoTitle.textContent = "系统处于稳态";
+                    infoContent.textContent = "甲状腺激素水平处于正常范围，负反馈机制维持系统平衡。";
+                }
+                
+                // 根据激素水平设置腺体脉动
+                glands.hypothalamus.isPulsing = systemState.trhActivity > 60;
+                glands.pituitary.isPulsing = systemState.tshActivity > 60;
+                glands.thyroid.isPulsing = systemState.thyroidHormoneLevel > 60;
+                
+                // 创建激素粒子（如果活性高）
+                if (systemState.trhActivity > 60 || systemState.tshActivity > 60 || systemState.thyroidHormoneLevel > 60) {
+                    createHormoneParticles();
+                }
+                
+                updateStatusBar();
+                draw();
+            }
+        }
+        
+        // 创建激素粒子
+        function createHormoneParticles() {
+            // 限制粒子数量
+            if (hormoneParticles.length > 50) return;
+            
+            // 根据激素活性创建粒子
+            if (systemState.trhActivity > 60 && Math.random() > 0.7) {
+                hormoneParticles.push({
+                    x: glands.hypothalamus.x + glands.hypothalamus.width/2,
+                    y: glands.hypothalamus.y + glands.hypothalamus.height/2,
+                    targetX: glands.pituitary.x,
+                    targetY: glands.pituitary.y,
+                    color: '#8e44ad',
+                    size: 6,
+                    progress: 0,
+                    speed: 0.02,
+                    type: 'trh'
+                });
+            }
+            
+            if (systemState.tshActivity > 60 && Math.random() > 0.7) {
+                hormoneParticles.push({
+                    x: glands.pituitary.x + glands.pituitary.width/2,
+                    y: glands.pituitary.y + glands.pituitary.height/2,
+                    targetX: glands.thyroid.x,
+                    targetY: glands.thyroid.y,
+                    color: '#3498db',
+                    size: 8,
+                    progress: 0,
+                    speed: 0.015,
+                    type: 'tsh'
+                });
+            }
+            
+            if (systemState.thyroidHormoneLevel > 60 && Math.random() > 0.7) {
+                // 甲状腺激素粒子向全身扩散（也向上反馈）
+                hormoneParticles.push({
+                    x: glands.thyroid.x + glands.thyroid.width/2,
+                    y: glands.thyroid.y + glands.thyroid.height/2,
+                    targetX: glands.pituitary.x,
+                    targetY: glands.pituitary.y,
+                    color: '#e67e22',
+                    size: 10,
+                    progress: 0,
+                    speed: 0.01,
+                    type: 't3t4'
+                });
+            }
+        }
+        
+        // 更新状态栏
+        function updateStatusBar() {
+            if (systemState.mode === 'learn') {
+                if (systemState.isPlaying) {
+                    const phases = [
+                        "系统处于稳态",
+                        "寒冷刺激：下丘脑检测到温度降低",
+                        "下丘脑分泌TRH，刺激垂体",
+                        "垂体分泌TSH，刺激甲状腺",
+                        "甲状腺分泌T3/T4，提高新陈代谢",
+                        "负反馈：T3/T4水平升高，抑制下丘脑和垂体"
+                    ];
+                    statusBar.textContent = phases[systemState.animationPhase] || "学习模式运行中";
+                } else {
+                    statusBar.textContent = "点击'开始学习'观看完整的激素调节过程";
+                }
+            } else {
+                statusBar.textContent = "实验模式：拖动滑块调节激素水平，观察系统的反馈调节";
+            }
+        }
+        
+        // 处理Canvas点击
+        function handleCanvasClick(event) {
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            
+            // 检查点击了哪个腺体
+            for (const glandKey in glands) {
+                const gland = glands[glandKey];
+                if (x >= gland.x && x <= gland.x + gland.width &&
+                    y >= gland.y && y <= gland.y + gland.height) {
+                    
+                    systemState.selectedElement = glandKey;
+                    
+                    // 更新信息面板
+                    infoTitle.textContent = gland.name;
+                    infoContent.textContent = gland.description;
+                    
+                    // 重绘以显示选中效果
+                    draw();
+                    return;
+                }
+            }
+            
+            // 点击空白处取消选择
+            systemState.selectedElement = null;
+            if (systemState.mode === 'learn') {
+                infoTitle.textContent = "学习模式";
+                infoContent.textContent = "在此模式下，系统将自动演示从寒冷刺激到负反馈调节的完整过程。";
+            } else {
+                infoTitle.textContent = "实验模式";
+                infoContent.textContent = "在此模式下，您可以手动调节激素水平，观察负反馈机制如何维持系统稳态。";
+            }
+            draw();
+        }
+        
+        // 绘制函数
+        function draw() {
+            // 清除画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制背景网格
+            drawGrid();
+            
+            // 绘制连接线
+            drawConnections();
+            
+            // 绘制腺体
+            drawGland(glands.hypothalamus, 'hypothalamus');
+            drawGland(glands.pituitary, 'pituitary');
+            drawGland(glands.thyroid, 'thyroid');
+            
+            // 绘制激素粒子
+            drawHormoneParticles();
+            
+            // 绘制标签
+            drawLabels();
+            
+            // 绘制反馈箭头
+            drawFeedbackArrows();
+        }
+        
+        // 绘制背景网格
+        function drawGrid() {
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.lineWidth = 1;
+            
+            // 垂直线
+            for (let x = 0; x <= canvas.width; x += 50) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+            
+            // 水平线
+            for (let y = 0; y <= canvas.height; y += 50) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+        }
+        
+        // 绘制腺体之间的连接线
+        function drawConnections() {
+            // 下丘脑到垂体
+            ctx.beginPath();
+            ctx.moveTo(glands.hypothalamus.x + glands.hypothalamus.width, glands.hypothalamus.y + glands.hypothalamus.height/2);
+            ctx.lineTo(glands.pituitary.x, glands.pituitary.y + glands.pituitary.height/2);
+            ctx.strokeStyle = systemState.trhActivity > 50 ? '#2ecc71' : '#95a5a6';
+            ctx.lineWidth = systemState.trhActivity > 50 ? 4 : 2;
+            ctx.stroke();
+            
+            // 垂体到甲状腺
+            ctx.beginPath();
+            ctx.moveTo(glands.pituitary.x + glands.pituitary.width, glands.pituitary.y + glands.pituitary.height/2);
+            ctx.lineTo(glands.thyroid.x, glands.thyroid.y + glands.thyroid.height/2);
+            ctx.strokeStyle = systemState.tshActivity > 50 ? '#2ecc71' : '#95a5a6';
+            ctx.lineWidth = systemState.tshActivity > 50 ? 4 : 2;
+            ctx.stroke();
+        }
+        
+        // 绘制反馈箭头（甲状腺激素对上级的抑制）
+        function drawFeedbackArrows() {
+            // 只有当甲状腺激素水平高时才显示抑制箭头
+            if (systemState.thyroidHormoneLevel > 70) {
+                // 甲状腺到垂体的抑制箭头
+                ctx.beginPath();
+                ctx.moveTo(glands.thyroid.x, glands.thyroid.y + glands.thyroid.height/2);
+                ctx.lineTo(glands.pituitary
+<!--检测到代码截断，自动续写中...-->
+.x + glands.pituitary.width, glands.pituitary.y + glands.pituitary.height/2);
+                ctx.strokeStyle = '#e74c3c';
+                ctx.lineWidth = 4;
+                ctx.setLineDash([5, 5]);
+                ctx.stroke();
+                
+                // 绘制箭头头部
+                const arrowX = glands.pituitary.x + glands.pituitary.width;
+                const arrowY = glands.pituitary.y + glands.pituitary.height/2;
+                drawArrowHead(arrowX, arrowY, Math.PI, '#e74c3c');
+                
+                // 垂体到下丘脑的抑制箭头
+                ctx.beginPath();
+                ctx.moveTo(glands.pituitary.x, glands.pituitary.y + glands.pituitary.height/2);
+                ctx.lineTo(glands.hypothalamus.x + glands.hypothalamus.width, glands.hypothalamus.y + glands.hypothalamus.height/2);
+                ctx.stroke();
+                
+                // 绘制箭头头部
+                const arrowX2 = glands.hypothalamus.x + glands.hypothalamus.width;
+                const arrowY2 = glands.hypothalamus.y + glands.hypothalamus.height/2;
+                drawArrowHead(arrowX2, arrowY2, Math.PI, '#e74c3c');
+                
+                ctx.setLineDash([]);
+            }
+        }
+        
+        // 绘制箭头头部
+        function drawArrowHead(x, y, angle, color) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle);
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(-10, -5);
+            ctx.lineTo(-10, 5);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+        }
+        
+        // 绘制腺体
+        function drawGland(gland, key) {
+            // 绘制腺体外框
+            ctx.fillStyle = gland.color;
+            
+            // 如果被选中，添加发光效果
+            if (systemState.selectedElement === key) {
+                ctx.shadowColor = gland.color;
+                ctx.shadowBlur = 20;
+            }
+            
+            // 如果腺体在脉动，计算脉动大小
+            let pulseScale = 1;
+            if (gland.isPulsing) {
+                gland.pulsePhase += 0.1;
+                pulseScale = 1 + 0.1 * Math.sin(gland.pulsePhase);
+            }
+            
+            const width = gland.width * pulseScale;
+            const height = gland.height * pulseScale;
+            const x = gland.x - (width - gland.width) / 2;
+            const y = gland.y - (height - gland.height) / 2;
+            
+            // 绘制圆角矩形
+            const radius = 10;
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width - radius, y);
+            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+            ctx.lineTo(x + width, y + height - radius);
+            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            ctx.lineTo(x + radius, y + height);
+            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
+            ctx.fill();
+            
+            // 重置阴影
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+            
+            // 绘制腺体名称
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(gland.name, gland.x + gland.width/2, gland.y + gland.height/2);
+            
+            // 绘制激素名称
+            ctx.fillStyle = '#fff';
+            ctx.font = '14px Arial';
+            ctx.fillText(gland.hormone, gland.x + gland.width/2, gland.y + gland.height/2 + 25);
+        }
+        
+        // 绘制激素粒子
+        function drawHormoneParticles() {
+            // 更新和绘制粒子
+            for (let i = hormoneParticles.length - 1; i >= 0; i--) {
+                const particle = hormoneParticles[i];
+                
+                // 更新粒子位置
+                particle.progress += particle.speed;
+                if (particle.progress >= 1) {
+                    // 粒子到达目标，移除
+                    hormoneParticles.splice(i, 1);
+                    continue;
+                }
+                
+                // 计算当前位置
+                const currentX = particle.x + (particle.targetX - particle.x) * particle.progress;
+                const currentY = particle.y + (particle.targetY - particle.y) * particle.progress;
+                
+                // 绘制粒子
+                ctx.fillStyle = particle.color;
+                ctx.beginPath();
+                ctx.arc(currentX, currentY, particle.size, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 添加发光效果
+                ctx.shadowColor = particle.color;
+                ctx.shadowBlur = 10;
+                ctx.fill();
+                ctx.shadowColor = 'transparent';
+                ctx.shadowBlur = 0;
+            }
+        }
+        
+        // 绘制标签
+        function drawLabels() {
+            // 绘制轴标签
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = 'bold 20px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('下丘脑-垂体-甲状腺轴', canvas.width/2, 50);
+            
+            // 绘制指令方向标签
+            ctx.fillStyle = '#2ecc71';
+            ctx.font = '14px Arial';
+            ctx.fillText('指令方向', 300, 180);
+            
+            // 绘制反馈方向标签（如果需要）
+            if (systemState.thyroidHormoneLevel > 70) {
+                ctx.fillStyle = '#e74c3c';
+                ctx.font = '14px Arial';
+                ctx.fillText('负反馈抑制', 550, 350);
+            }
+        }
+        
+        // 动画循环
+        function animate() {
+            // 更新动画时间
+            if (systemState.isPlaying && systemState.mode === 'learn') {
+                systemState.animationTime += 0.016; // 大约60fps
+                
+                // 根据动画阶段更新系统状态
+                switch(systemState.animationPhase) {
+                    case 0: // 稳态
+                        systemState.trhActivity = 50;
+                        systemState.tshActivity = 50;
+                        systemState.thyroidHormoneLevel = 50;
+                        break;
+                        
+                    case 1: // 寒冷刺激
+                        if (systemState.animationTime > 1) {
+                            systemState.animationPhase = 2;
+                            systemState.animationTime = 0;
+                            glands.hypothalamus.isPulsing = true;
+                            statusBar.textContent = "下丘脑检测到寒冷刺激，开始分泌TRH";
+                        }
+                        break;
+                        
+                    case 2: // TRH分泌
+                        systemState.trhActivity = 70 + 10 * Math.sin(systemState.animationTime * 2);
+                        if (systemState.animationTime > 2) {
+                            systemState.animationPhase = 3;
+                            systemState.animationTime = 0;
+                            glands.pituitary.isPulsing = true;
+                            statusBar.textContent = "TRH刺激垂体，垂体开始分泌TSH";
+                        }
+                        break;
+                        
+                    case 3: // TSH分泌
+                        systemState.tshActivity = 70 + 10 * Math.sin(systemState.animationTime * 2);
+                        if (systemState.animationTime > 2) {
+                            systemState.animationPhase = 4;
+                            systemState.animationTime = 0;
+                            glands.thyroid.isPulsing = true;
+                            statusBar.textContent = "TSH刺激甲状腺，甲状腺开始分泌T3/T4";
+                        }
+                        break;
+                        
+                    case 4: // 甲状腺激素分泌
+                        systemState.thyroidHormoneLevel = Math.min(100, 50 + systemState.animationTime * 15);
+                        if (systemState.animationTime > 3) {
+                            systemState.animationPhase = 5;
+                            systemState.animationTime = 0;
+                            statusBar.textContent = "T3/T4水平升高，通过负反馈抑制下丘脑和垂体";
+                        }
+                        break;
+                        
+                    case 5: // 负反馈
+                        systemState.trhActivity = Math.max(30, 70 - systemState.animationTime * 10);
+                        systemState.tshActivity = Math.max(40, 70 - systemState.animationTime * 8);
+                        systemState.thyroidHormoneLevel = Math.max(50, 95 - systemState.animationTime * 5);
+                        
+                        if (systemState.animationTime > 3) {
+                            systemState.animationPhase = 0;
+                            systemState.animationTime = 0;
+                            systemState.isPlaying = false;
+                            glands.hypothalamus.isPulsing = false;
+                            glands.pituitary.isPulsing = false;
+                            glands.thyroid.isPulsing = false;
+                            playBtn.innerHTML = '<i class="fas fa-play"></i> 重新开始';
+                            statusBar.textContent = "调节完成：系统恢复稳态。点击'重新开始'再次观看";
+                        }
+                        break;
+                }
+                
+                // 更新显示
+                trhLevel.textContent = Math.round(systemState.trhActivity);
+                tshLevel.textContent = Math.round(systemState.tshActivity);
+                thyroidLevel.textContent = Math.round(systemState.thyroidHormoneLevel);
+                
+                // 创建激素粒子
+                if (systemState.animationPhase >= 2 && systemState.animationPhase <= 5) {
+                    createHormoneParticles();
+                }
+            }
+            
+            // 更新腺体脉动相位
+            for (const glandKey in glands) {
+                const gland = glands[glandKey];
+                if (gland.isPulsing) {
+                    gland.pulsePhase += 0.1;
+                }
+            }
+            
+            // 更新激素粒子
+            for (let i = hormoneParticles.length - 1; i >= 0; i--) {
+                const particle = hormoneParticles[i];
+                particle.progress += particle.speed;
+                if (particle.progress >= 1) {
+                    hormoneParticles.splice(i, 1);
+                }
+            }
+            
+            // 重绘
+            draw();
+            
+            // 继续动画循环
+            requestAnimationFrame(animate);
+        }
+        
+        // 启动动画循环
+        init();
+        animate();
+    </script>
+</body>
+</html>
+
+### 3. 过程输出
+
+### 3. 过程输出
+
+## 交互式教学动画使用指南
+
+欢迎使用《激素调节：下丘脑-垂体-靶腺轴动态反馈》交互式教学动画！本指南将帮助您充分利用这一创新教学工具，深入理解人体内分泌调节的核心机制。
+
+### 一、功能说明
+
+本动画以**下丘脑-垂体-甲状腺轴**为经典案例，通过可视化方式动态展示了内分泌系统的**分级调节**与**负反馈调节**机制。系统包含两种学习模式：
+
+1. **学习模式**：自动演示从寒冷刺激到负反馈调节的完整生理过程
+2. **实验模式**：允许您手动调节激素水平，自主探索系统的反馈机制
+
+### 二、主要功能
+
+#### 1. 可视化动态展示
+- **腺体可视化**：下丘脑、垂体、甲状腺以不同颜色和形态清晰呈现
+- **激素流动**：TRH、TSH、T3/T4等激素以彩色粒子形式在腺体间移动
+- **信号传递**：绿色箭头表示刺激信号，红色虚线箭头表示抑制信号
+- **实时状态**：右侧面板实时显示三种激素的当前水平
+
+#### 2. 双模式学习系统
+- **学习模式（自动演示）**：
+  - 点击“开始学习”观看完整调节循环
+  - 系统自动演示：寒冷刺激→TRH分泌→TSH分泌→T3/T4分泌→负反馈抑制
+  - 配有分步状态提示，帮助理解每个阶段的变化
+
+- **实验模式（自主探索）**：
+  - 通过三个滑块手动调节激素活性
+  - 观察系统如何通过负反馈维持稳态
+  - 点击“模拟寒冷刺激”按钮观察系统响应
+
+#### 3. 交互式探索功能
+- **点击探索**：点击画布上的任一腺体，查看其详细功能介绍
+- **实时反馈**：调节滑块时，系统即时显示负反馈机制的运作
+- **状态提示**：底部状态栏和右侧信息面板提供实时学习指导
+
+### 三、设计特色
+
+#### 1. 科学可视化设计
+- **色彩编码系统**：
+  - 紫色（#8e44ad）：下丘脑及TRH
+  - 蓝色（#3498db）：垂体及TSH
+  - 橙色（#e67e22）：甲状腺及T3/T4
+  - 绿色（#2ecc71）：刺激信号
+  - 红色（#e74c3c）：抑制信号
+
+- **动态效果**：
+  - 腺体脉动表示活跃状态
+  - 激素粒子沿特定路径移动
+  - 连接线粗细和颜色随激素活性变化
+
+#### 2. 认知友好的界面设计
+- **渐进式信息呈现**：避免信息过载，按需显示详细信息
+- **工作记忆支持**：关键信息（激素名称、水平）始终可见
+- **多通道反馈**：视觉变化配合文字提示，强化学习效果
+
+#### 3. 教学适应性
+- **从观察到实验**：先观看完整过程，再自主探索
+- **从具体到抽象**：通过具体案例理解抽象反馈机制
+- **迁移学习支持**：掌握甲状腺轴模型后，可类比理解其他靶腺轴
+
+### 四、教学要点
+
+#### 核心概念解析
+1. **分级调节**：
+   - 下丘脑（高级中枢）→ 垂体（枢纽）→ 甲状腺（效应器）
+   - 指令链：TRH → TSH → T3/T4
+
+2. **负反馈调节**：
+   - 当T3/T4水平过高时，抑制TRH和TSH分泌
+   - 维持激素水平的动态平衡（稳态）
+   - 反馈路径：甲状腺 → 垂体 → 下丘脑
+
+3. **生理意义**：
+   - 应对环境变化（如寒冷刺激）
+   - 维持代谢稳定
+   - 体现神经-内分泌整合
+
+#### 学习路径建议
+1. **初次接触**：在学习模式下完整观看2-3次动画，关注：
+   - 各腺体的空间位置关系
+   - 激素的流动方向
+   - 负反馈何时启动、如何表现
+
+2. **深入理解**：切换到实验模式，尝试：
+   - 将甲状腺激素滑块调至高位（>70%），观察负反馈
+   - 将甲状腺激素滑块调至低位（<30%），观察正刺激
+   - 点击“模拟寒冷刺激”，观察系统如何响应
+
+3. **知识整合**：
+   - 总结“刺激-反应-反馈”的完整循环
+   - 思考：如果负反馈失灵会怎样？（联系甲亢、甲减病理）
+   - 迁移：如何将此模型应用于肾上腺轴或性腺轴？
+
+### 五、使用建议
+
+#### 1. 课堂教学应用
+- **导入环节**：播放学习模式动画，引出内分泌调节主题
+- **讲解环节**：分步暂停，讲解每个阶段的变化
+- **探究环节**：学生分组操作实验模式，完成探索任务
+- **总结环节**：结合动画总结反馈调节的核心原理
+
+#### 2. 自主学习策略
+- **预习阶段**：观看动画建立初步印象
+- **学习阶段**：结合教材，用动画验证文字描述
+- **复习阶段**：操作实验模式，自我测试理解程度
+- **拓展阶段**：尝试用纸笔绘制调节流程图，与动画对比
+
+#### 3. 常见问题引导
+- **为什么寒冷刺激会启动甲状腺轴？**
+- **负反馈与正反馈有何区别？**
+- **如果垂体受损，对甲状腺功能有何影响？**
+- **甲状腺激素除了产热，还有哪些生理作用？**
+
+#### 4. 技术提示
+- **最佳观看**：使用Chrome或Edge浏览器，确保Canvas支持
+- **屏幕尺寸**：建议在1024×768以上分辨率使用
+- **交互提示**：鼠标悬停在腺体上可查看简要信息，点击查看详细信息
+- **进度控制**：学习模式下可使用暂停按钮仔细观察关键帧
+
+---
+
+### 教学价值总结
+
+本动画将抽象的内分泌调节机制转化为直观、动态的可视化模型，有效解决了传统教学中“看不见、想不出”的认知障碍。通过双模式设计，既保证了知识的系统性传授，又支持了探究性学习，符合“观察-理解-应用”的认知规律。
+
+我们建议教师将本动画作为传统教学的**补充与强化工具**，而非替代。动画展示的“理想模型”可与实际生理变异、病理案例相结合，构建更完整的知识体系。
+
+祝您教学愉快，探索成功！如有改进建议或技术问题，欢迎反馈。
+
+---
+**设计理念**：让复杂变得简单，让抽象变得具体，让学习变得有趣。

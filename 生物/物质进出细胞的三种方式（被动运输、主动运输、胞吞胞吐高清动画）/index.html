@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>物质进出细胞的三种方式 - 交互式教学动画</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 150, 0.1);
+            overflow: hidden;
+            padding: 25px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e9ff;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.2rem;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .control-panel {
+            background: #f8fafd;
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid #e0e9ff;
+        }
+
+        .mode-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+            justify-content: center;
+        }
+
+        .mode-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(135deg, #e0e9ff, #c8d8f0);
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        .mode-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .experiment-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .control-group {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #e0e9ff;
+        }
+
+        .control-group h3 {
+            color: #3498db;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .slider-container label {
+            min-width: 80px;
+            color: #555;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            height: 8px;
+            border-radius: 4px;
+            background: #e0e9ff;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3498db;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            background: #2ecc71;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+        }
+
+        .action-btn.secondary {
+            background: #e74c3c;
+        }
+
+        .action-btn.secondary:hover {
+            background: #c0392b;
+        }
+
+        .animation-area {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid #e0e9ff;
+            min-height: 500px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #animationCanvas {
+            width: 100%;
+            height: 460px;
+            display: block;
+            background: linear-gradient(180deg, #f0f8ff 0%, #e6f2ff 100%);
+            border-radius: 10px;
+        }
+
+        .info-panel {
+            background: #f8fafd;
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid #e0e9ff;
+        }
+
+        .info-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .info-header h2 {
+            color: #2c3e50;
+            font-size: 1.5rem;
+        }
+
+        .info-content {
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .comparison-table th {
+            background: #3498db;
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+
+        .comparison-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e9ff;
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: #f8fafd;
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #2c3e50;
+            color: white;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-value {
+            font-weight: 600;
+            color: #2ecc71;
+        }
+
+        .quiz-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8fafd;
+            border-radius: 15px;
+            border: 2px solid #e0e9ff;
+        }
+
+        .quiz-question {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border-left: 5px solid #3498db;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .quiz-option {
+            padding: 12px;
+            background: #f0f8ff;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quiz-option:hover {
+            background: #e0e9ff;
+        }
+
+        .quiz-option.correct {
+            background: #d4edda;
+            border-left: 5px solid #28a745;
+        }
+
+        .quiz-option.incorrect {
+            background: #f8d7da;
+            border-left: 5px solid #dc3545;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .mode-selector {
+                flex-direction: column;
+            }
+            
+            .experiment-controls {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>物质进出细胞的三种方式</h1>
+            <p class="subtitle">交互式教学动画 - 探索被动运输、主动运输与胞吞胞吐</p>
+        </header>
+
+        <div class="main-content">
+            <div class="control-panel">
+                <div class="mode-selector">
+                    <button class="mode-btn active" data-mode="passive">被动运输</button>
+                    <button class="mode-btn" data-mode="facilitated">协助扩散</button>
+                    <button class="mode-btn" data-mode="active">主动运输</button>
+                    <button class="mode-btn" data-mode="endocytosis">胞吞胞吐</button>
+                    <button class="mode-btn" data-mode="compare">对比模式</button>
+                    <button class="mode-btn" data-mode="quiz">知识测验</button>
+                </div>
+
+                <div class="experiment-controls">
+                    <div class="control-group">
+                        <h3>浓度控制</h3>
+                        <div class="slider-container">
+                            <label>膜外浓度:</label>
+                            <input type="range" id="outsideConc" min="0" max="100" value="70">
+                            <span id="outsideValue">70%</span>
+                        </div>
+                        <div class="slider-container">
+                            <label>膜内浓度:</label>
+                            <input type="range" id="insideConc" min="0" max="100" value="30">
+                            <span id="insideValue">30%</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <h3>物质选择</h3>
+                        <div class="button-group">
+                            <button class="action-btn" data-particle="oxygen">氧气(O₂)</button>
+                            <button class="action-btn" data-particle="glucose">葡萄糖</button>
+                            <button class="action-btn" data-particle="ion">钾离子(K⁺)</button>
+                            <button class="action-btn" data-particle="protein">蛋白质</button>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <h3>实验控制</h3>
+                        <div class="button-group">
+                            <button class="action-btn" id="startBtn">开始运输</button>
+                            <button class="action-btn secondary" id="resetBtn">重置实验</button>
+                            <button class="action-btn" id="atpBtn">提供ATP</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animation-area">
+                <canvas id="animationCanvas"></canvas>
+            </div>
+
+            <div class="info-panel">
+                <div class="info-header">
+                    <h2 id="infoTitle">被动运输 - 自由扩散</h2>
+                    <div class="status-bar">
+                        <div class="status-item">
+                            <span>ATP数量:</span>
+                            <span class="status-value" id="atpCount">10</span>
+                        </div>
+                        <div class="status-item">
+                            <span>运输速度:</span>
+                            <span class="status-value" id="speedValue">中等</span>
+                        </div>
+                        <div class="status-item">
+                            <span>当前模式:</span>
+                            <span class="status-value" id="currentMode">被动运输</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-content" id="infoContent">
+                    <p><span class="highlight">被动运输</span>是指物质顺浓度梯度，从高浓度向低浓度方向的跨膜运输方式，不需要消耗细胞代谢产生的能量。</p>
+                    <p><span class="highlight">自由扩散</span>是其中最简单的一种形式，小分子或脂溶性物质（如O₂、CO₂）可以直接通过磷脂双分子层。</p>
+                    <p>特点：不消耗ATP，不需要载体蛋白，运输速度取决于浓度差。</p>
+                    
+                    <table class="comparison-table" id="comparisonTable">
+                        <thead>
+                            <tr>
+                                <th>运输方式</th>
+                                <th>浓度梯度</th>
+                                <th>能量需求</th>
+                                <th>载体蛋白</th>
+                                <th>示例物质</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>自由扩散</td>
+                                <td>顺浓度梯度</td>
+                                <td>不消耗ATP</td>
+                                <td>不需要</td>
+                                <td>O₂、CO₂、甘油</td>
+                            </tr>
+                            <tr>
+                                <td>协助扩散</td>
+                                <td>顺浓度梯度</td>
+                                <td>不消耗ATP</td>
+                                <td>需要</td>
+                                <td>葡萄糖、氨基酸</td>
+                            </tr>
+                            <tr>
+                                <td>主动运输</td>
+                                <td>逆浓度梯度</td>
+                                <td>消耗ATP</td>
+                                <td>需要</td>
+                                <td>K⁺、Na⁺、碘离子</td>
+                            </tr>
+                            <tr>
+                                <td>胞吞胞吐</td>
+                                <td>-</td>
+                                <td>消耗ATP</td>
+                                <td>-</td>
+                                <td>蛋白质、细菌</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="quiz-section" id="quizSection" style="display: none;">
+                    <div class="quiz-question">
+                        <h3>问题1: 下列哪种运输方式需要消耗ATP？</h3>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-answer="A">A. 自由扩散</div>
+                            <div class="quiz-option" data-answer="B">B. 协助扩散</div>
+                            <div class="quiz-option correct" data-answer="C">C. 主动运输</div>
+                            <div class="quiz-option" data-answer="D">D. 以上都不需要</div>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-question">
+                        <h3>问题2: 葡萄糖进入红细胞的方式是？</h3>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-answer="A">A. 自由扩散</div>
+                            <div class="quiz-option correct" data-answer="B">B. 协助扩散</div>
+                            <div class="quiz-option" data-answer="C">C. 主动运输</div>
+                            <div class="quiz-option" data-answer="D">D. 胞吞作用</div>
+                        </div>
+                    </div>
+                    
+                    <div class="quiz-question">
+                        <h3>问题3: 大分子蛋白质进出细胞的主要方式是？</h3>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-answer="A">A. 自由扩散</div>
+                            <div class="quiz-option" data-answer="B">B. 协助扩散</div>
+                            <div class="quiz-option" data-answer="C">C. 主动运输</div>
+                            <div class="quiz-option correct" data-answer="D">D. 胞吞胞吐</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let canvas, ctx;
+        let currentMode = 'passive';
+        let currentParticle = 'oxygen';
+        let animationId = null;
+        let isAnimating = false;
+        let atpCount = 10;
+        let outsideConc = 70;
+        let insideConc = 30;
+
+        // 粒子系统
+        const particles = {
+            oxygen: { color: '#e74c3c', size: 4, speed: 2, type: 'small' },
+            glucose: { color: '#3498db', size: 6, speed: 1.5, type: 'medium' },
+            ion: { color: '#9b59b6', size: 5, speed: 1, type: 'small' },
+            protein: { color: '#e67e22', size: 12, speed: 0.5, type: 'large' }
+        };
+
+        // 细胞膜和粒子数据
+        let membrane = {
+            x: 400,
+            y: 230,
+            width: 600,
+            height: 40,
+            phospholipids: []
+        };
+
+        let outsideParticles = [];
+        let insideParticles = [];
+        let carrierProteins = [];
+        let channelProteins = [];
+        let vesicles = [];
+        let atpParticles = [];
+
+        // 初始化
+        function init() {
+            canvas = document.getElementById('animationCanvas');
+            ctx = canvas.getContext('2d');
+            
+            // 设置Canvas实际大小
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            
+            initMembrane();
+            resetExperiment();
+            setupEventListeners();
+            updateInfo();
+            draw();
+        }
+
+        // 初始化细胞膜结构
+        function initMembrane() {
+            membrane.phospholipids = [];
+            const headRadius = 8;
+            const tailLength = 20;
+            
+            for (let i = 0; i < 30; i++) {
+                membrane.phospholipids.push({
+                    x: membrane.x - membrane.width/2 + i * 20,
+                    y: membrane.y,
+                    rotation: Math.PI / 2
+                });
+            }
+            
+            // 初始化载体蛋白
+            carrierProteins = [
+                { x: membrane.x - 100, y: membrane.y, width: 30, height: 40, state: 'idle', boundParticle: null },
+                { x: membrane.x + 50, y: membrane.y, width: 30, height: 40, state: 'idle', boundParticle: null }
+            ];
+            
+            // 初始化通道蛋白
+            channelProteins = [
+                { x: membrane.x - 200, y: membrane.y, width: 20, height: 40, open: true },
+                { x: membrane.x + 150, y: membrane.y, width: 20, height: 40, open: true }
+            ];
+        }
+
+        // 重置实验
+        function resetExperiment() {
+            outsideParticles = [];
+            insideParticles = [];
+            vesicles = [];
+            atpParticles = [];
+            atpCount = 10;
+            isAnimating = false;
+            
+            // 根据浓度创建外部粒子
+            const outsideCount = Math.floor(outsideConc / 100 * 50);
+            for (let i = 0; i < outsideCount; i++) {
+                outsideParticles.push(createParticle('outside'));
+            }
+            
+            // 根据浓度创建内部粒子
+            const insideCount = Math.floor(insideConc / 100 * 50);
+            for (let i = 0; i < insideCount; i++) {
+                insideParticles.push(createParticle('inside'));
+            }
+            
+            // 创建ATP粒子
+            for (let i = 0; i < atpCount; i++) {
+                atpParticles.push({
+                    x: 50 + i * 30,
+                    y: 50,
+                    active: true
+                });
+            }
+            
+            updateStatus();
+        }
+
+        // 创建粒子
+        function createParticle(location) {
+            const config = particles[currentParticle];
+            const isOutside = location === 'outside';
+            
+            return {
+                x: isOutside ? 
+                    Math.random() * (membrane.x - membrane.width/2 - 100) + 50 :
+                    Math.random() * (membrane.x - membrane.width/2 - 100) + membrane.x + membrane.width/2 + 50,
+                y: Math.random() * (canvas.height - 100) + 50,
+                vx: (Math.random() - 0.5) * config.speed,
+                vy: (Math.random() - 0.5) * config.speed,
+                color: config.color,
+                size: config.size,
+                type: config.type,
+                boundToProtein: false,
+                inVesicle: false
+            };
+        }
+
+        // 绘制函数
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制背景
+            drawBackground();
+            
+            // 绘制细胞膜
+            drawMembrane();
+            
+            // 绘制蛋白质
+            drawProteins();
+            
+            // 绘制粒子
+            drawParticles();
+            
+            // 绘制囊泡
+            drawVesicles();
+            
+            // 绘制ATP
+            drawATP();
+            
+            // 绘制标签和指示器
+            drawLabels();
+            
+            if (isAnimating) {
+                updateAnimation();
+            }
+            
+            animationId = requestAnimationFrame(draw);
+        }
+
+        // 绘制背景
+        function drawBackground() {
+            // 外部区域
+            ctx.fillStyle = 'rgba(255, 240, 240, 0.3)';
+            ctx.fillRect(0, 0, membrane.x - membrane.width/2, canvas.height);
+            
+            // 内部区域
+            ctx.fillStyle = 'rgba(240, 255, 240, 0.3)';
+            ctx.fillRect(membrane.x + membrane.width/2, 0, canvas.width - (membrane.x + membrane.width/2), canvas.height);
+            
+            // 标签
+            ctx.fillStyle = '#e74c3c';
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText('细胞外', 50, 30);
+            
+            ctx.fillStyle = '#2ecc71';
+            ctx.fillText('细胞内', canvas.width - 100, 30);
+        }
+
+        // 绘制细胞膜
+        function drawMembrane() {
+            // 磷脂双分子层
+            membrane.phospholipids.forEach(phos => {
+                // 绘制头部
+                ctx.save();
+                ctx.translate(phos.x, phos.y);
+                ctx.rotate(phos.rotation);
+                
+                // 磷脂头部
+                ctx.fillStyle = '#ecf0f1';
+                ctx.beginPath();
+                ctx.arc(0, 0, 8, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 磷脂尾部
+                ctx.fillStyle = '#f1c40f';
+                ctx.fillRect(-2, -20, 4, 40);
+                
+                ctx.restore();
+            });
+            
+            // 膜背景
+            ctx.fillStyle = 'rgba(241, 196, 15, 0.1)';
+            ctx.fillRect(membrane.x - membrane.width/2, membrane.y - 20, membrane.width, 40);
+        }
+
+        // 绘制蛋白质
+        function drawProteins() {
+            // 载体蛋白
+            carrierProteins.forEach(protein => {
+                ctx.fillStyle = protein.state === 'active' ? '#2980b9' : '#3498db';
+                ctx.fillRect(protein.x - protein.width/2, protein.y - protein.height/2, protein.width, protein.height);
+                
+                // 结合位点
+                ctx.fillStyle = '#e74c3c';
+                ctx.beginPath();
+                ctx.arc(protein.x, protein.y, 5, 0, Math.PI * 2);
+                ctx.fill();
+                
+                if (protein.boundParticle) {
+                    ctx.fillStyle = particles[currentParticle].color;
+                    ctx.beginPath();
+                    ctx.arc(protein.x, protein.y, 8, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            });
+            
+            // 通道蛋白
+            channelProteins.forEach(channel => {
+                ctx.fillStyle = channel.open ? '#27ae60' : '#95a5a6';
+                ctx.fillRect(channel.x - channel.width/2, channel.y - channel.height/2, channel.width, channel.height);
+                
+                // 通道
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                ctx.fillRect(channel.x - 3, channel.y - channel.height/2, 6, channel.height);
+            });
+        }
+
+        // 绘制粒子
+        function drawParticles() {
+            // 外部粒子
+            outsideParticles.forEach(particle => {
+                if (!particle.inVesicle) {
+                    ctx.fillStyle = particle.color;
+                    ctx.beginPath();
+                    ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            });
+            
+            // 内部粒子
+            insideParticles.forEach(particle => {
+                if (!particle.inVesicle) {
+                    ctx.fillStyle = particle.color;
+                    ctx.beginPath();
+                    ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            });
+        }
+
+        // 绘制囊泡
+        function drawVesicles() {
+            vesicles.forEach(vesicle => {
+                // 囊泡膜
+                ctx.strokeStyle = '#e67e22';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(vesicle.x, vesicle.y, vesicle.radius, 0, Math.PI * 2);
+                ctx.stroke();
+                
+                // 内部粒子
+                ctx.fillStyle = particles[currentParticle].color;
+                ctx.beginPath();
+                ctx.arc(vesicle.x, vesicle.y, particles[currentParticle].size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+
+        // 绘制ATP
+        function drawATP() {
+            atpParticles.forEach(atp => {
+                if (atp.active) {
+                    ctx.fillStyle = '#f1c40f';
+                    ctx.font = 'bold 14px Arial';
+                    ctx.fillText('ATP', atp.x, atp.y);
+                }
+            });
+        }
+
+        // 绘制标签和指示器
+        function drawLabels() {
+            // 浓度梯度箭头
+            if (outsideConc > insideConc) {
+                drawArrow(membrane.x - membrane.width/2 - 50, canvas.height/2, 
+                         membrane.x - membrane.width/2 - 150, canvas.height/2, '#e74c3c');
+                ctx.fillStyle = '#e74c3c';
+                ctx.fillText('高浓度', membrane.x - membrane.width/2 - 180, canvas.height/2 - 10);
+            }
+            
+            // 当前模式指示
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = 'bold 18px Arial';
+            ctx.fillText(getModeName(currentMode), canvas.width/2 - 50, 50);
+        }
+
+        // 绘制箭头
+        function drawArrow(fromX, fromY, toX, toY, color) {
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(fromX, fromY);
+            ctx.lineTo(toX, toY);
+            ctx.stroke();
+            
+            // 箭头头部
+            const angle = Math.atan2(toY - fromY, toX - fromX);
+            ctx.beginPath();
+            ctx.moveTo(toX, toY);
+            ctx.lineTo(toX - 10 * Math.cos(angle - Math.PI/6), toY - 10 * Math.sin(angle - Math.PI/6));
+            ctx.lineTo(toX - 10 * Math.cos(angle + Math.PI/6), toY - 10 * Math.sin(angle + Math.PI/6));
+            ctx.closePath();
+            ctx.fillStyle = color;
+            ctx.fill();
+        }
+
+        // 更新动画
+        function updateAnimation() {
+            switch(currentMode) {
+                case 'passive':
+                    updatePassiveTransport();
+                    break;
+                case 'facilitated':
+                    updateFacilitatedDiffusion();
+                    break;
+                case 'active':
+                    updateActiveTransport();
+                    break;
+                case 'endocytosis':
+                    updateEndocytosis();
+                    break;
+                case 'compare':
+                    updateCompareMode();
+                    break;
+            }
+        }
+
+        // 被动运输更新
+        function updatePassiveTransport() {
+            const config = particles[currentParticle];
+            
+            // 外部粒子运动
+            outsideParticles.forEach(particle => {
+                if (!particle.boundToProtein && !particle.inVesicle) {
+                    // 布朗运动
+                    particle.x += particle.vx;
+                    particle.y += particle.vy;
+                    
+                    // 边界检查
+                    if (particle.x < 0 || particle.x > membrane.x - membrane.width/2) particle.vx *= -1;
+                    if (particle.y < 50 || particle.y > canvas.height - 50) particle.vy *= -1;
+                    
+                    // 跨膜扩散（小分子可以直接通过）
+                    if (config.type === 'small' && 
+                        particle.x > membrane.x - membrane.width/2 - 10 && 
+                        particle.x < membrane.x - membrane.width/2 + 10 &&
+                        Math.random() < 0.02) {
+                        // 移动到内部
+                        particle.x = membrane.x + membrane.width/2 + 10;
+                        insideParticles.push(particle);
+                        outsideParticles = outsideParticles.filter(p => p !== particle);
+                    }
+                }
+            });
+        }
+
+        // 协助扩散更新
+        function updateFacilitatedDiffusion() {
+            // 通过通道蛋白运输
+            channelProteins.forEach(channel => {
+                if (channel.open) {
+                    // 寻找附近的粒子
+                    outsideParticles.forEach(particle => {
+                        const distance = Math.sqrt(
+                            Math.pow(particle.x - channel.x, 2) + 
+                            Math.pow(particle.y - channel.y, 2)
+                        );
+                        
+                        if (distance < 30 && Math.random() < 0.05) {
+                            // 通过通道
+                            particle.x = membrane.x + membrane.width/2 + 10;
+                            insideParticles.push(particle);
+                            outsideParticles = outsideParticles.filter(p => p !== particle);
+                        }
+                    });
+                }
+            });
+        }
+
+        // 主动运输更新
+        function updateActiveTransport() {
+            if (atpCount <= 0) return;
+            
+            carrierProteins.forEach(protein => {
+                if (protein.state === 'idle' && Math.random() < 0.01) {
+                    // 寻找外部粒子
+                    const nearbyParticle = outsideParticles.find(p => 
+                        Math.abs(p.x - protein.x) < 30 && 
+                        Math.abs(p.y - protein.y) < 30
+                    );
+                    
+                    if (nearbyParticle) {
+                        protein.boundParticle = nearbyParticle;
+                        protein.state = 'active';
+                        nearbyParticle.boundToProtein = true;
+                        
+                        // 消耗ATP
+                        if (atpCount > 0) {
+                            atpCount--;
+                            const activeATP = atpParticles.find(atp => atp.active);
+                            if (activeATP) activeATP.active = false;
+                            updateStatus();
+                        }
+                    }
+                }
+                
+                // 运输过程
+                if (protein.state === 'active') {
+                    if (protein.boundParticle) {
+                        // 移动粒子到内部
+                        protein.boundParticle.x = protein.x;
+                        protein.boundParticle.y = protein.y;
+                        
+                        if (Math.random() < 0.05) {
+                            // 释放粒子
+                            protein.boundParticle.x = membrane.x + membrane.width/2 + 30;
+                            protein.boundParticle.y = protein.y;
+                            protein.boundParticle.boundToProtein = false;
+                            insideParticles.push(protein.boundParticle);
+                            outsideParticles = outsideParticles.filter(p => p !== protein.boundParticle);
+                            protein.boundParticle = null;
+                            protein.state = 'idle';
+                        }
+                    }
+                }
+            });
+        }
+
+        // 胞吞胞吐更新
+        function updateEndocytosis() {
+            if (currentParticle !== 'protein') return;
+            
+            // 胞吞过程
+            if (outsideParticles.length > 0 && vesicles.length < 3 && Math.random() < 0.01) {
+                const particle = outsideParticles[0];
+                vesicles.push({
+                    x: particle.x,
+                    y: particle.y,
+                    radius: 20,
+                    vx: 0,
+                    vy: 1,
+                    type: 'endocytosis',
+                    particle: particle
+                });
+                particle.inVesicle = true;
+            }
+            
+            // 更新囊泡位置
+            vesicles.forEach(vesicle => {
+                if (vesicle.type === 'endocytosis') {
+                    vesicle.y += vesicle.vy;
+                    if (vesicle.y > membrane.y + 50) {
+                        // 进入细胞
+                        vesicle.particle.inVesicle = false;
+                        vesicle.particle.x = membrane.x + membrane.width/2 + 50;
+                        insideParticles.push(vesicle.particle);
+                        vesicles = vesicles.filter(v => v !== vesicle);
+                    }
+                }
+            });
+        }
+
+        // 对比模式更新
+        function updateCompareMode() {
+            // 简化的对比演示
+            updatePassiveTransport();
+            updateFacilitatedDiffusion();
+            updateActiveTransport();
+        }
+
+        // 更新信息显示
+        function updateInfo() {
+            const modeNames = {
+                'passive': '被动运输 - 自由扩散',
+                'facilitated': '被动运输 - 协助扩散',
+                'active': '主动运输',
+                'endocytosis': '胞吞胞吐',
+                'compare': '对比模式',
+                'quiz': '知识测验'
+            };
+            
+            const modeDescriptions = {
+                'passive': '物质顺浓度梯度，不消耗能量，不需要载体蛋白。小分子或脂溶性物质（如O₂、CO₂）直接通过磷脂双分子层。',
+                'facilitated': '物质顺浓度梯度，不消耗能量，但需要载体蛋白或通道蛋白协助。如葡萄糖通过载体蛋白进入红细胞。',
+                'active': '物质逆浓度梯度，需要载体蛋白并消耗ATP。如钠钾泵维持细胞内外离子浓度差。',
+                'endocytosis': '大分子或颗粒物质通过膜包裹形成囊泡进出细胞，消耗能量。如白细胞吞噬细菌。',
+                'compare': '同时展示三种主要运输方式的差异，注意观察浓度梯度方向、能量消耗和载体蛋白需求。'
+            };
+            
+            document.getElementById('infoTitle').textContent = modeNames[currentMode];
+            document.getElementById('currentMode').textContent = modeNames[currentMode].split(' - ')[0];
+            
+            const infoContent = document.getElementById('infoContent');
+            if (currentMode !== 'quiz') {
+                infoContent.style.display = 'block';
+                document.getElementById('quizSection').style.display = 'none';
+                
+                let html = `<p><span class="highlight">${modeNames[currentMode].split(' - ')[0]}</span>`;
+                if (modeNames[currentMode].includes('-')) {
+                    html += ` - <span class="highlight">${modeNames[currentMode].split(' - ')[1]}</span>`;
+                }
+                html += `: ${modeDescriptions[currentMode]}</p>`;
+                
+                if (currentMode !== 'compare') {
+                    html += `<p>特点：${getModeCharacteristics(currentMode)}</p>`;
+                }
+                
+                infoContent.innerHTML = html + infoContent
+<!--检测到代码截断，自动续写中...-->
+.querySelector('.comparison-table').outerHTML;
+            } else {
+                infoContent.style.display = 'none';
+                document.getElementById('quizSection').style.display = 'block';
+            }
+        }
+
+        // 获取模式特点
+        function getModeCharacteristics(mode) {
+            const characteristics = {
+                'passive': '不消耗ATP，不需要载体蛋白，运输速度取决于浓度差',
+                'facilitated': '不消耗ATP，需要特异性载体蛋白，具有饱和性',
+                'active': '消耗ATP，需要载体蛋白，可以逆浓度梯度运输',
+                'endocytosis': '消耗ATP，形成囊泡，用于大分子和颗粒物质运输'
+            };
+            return characteristics[mode] || '';
+        }
+
+        // 更新状态栏
+        function updateStatus() {
+            document.getElementById('atpCount').textContent = atpCount;
+            document.getElementById('outsideValue').textContent = outsideConc + '%';
+            document.getElementById('insideValue').textContent = insideConc + '%';
+            
+            // 更新运输速度显示
+            let speed = '停止';
+            if (isAnimating) {
+                if (currentMode === 'passive') speed = '中等';
+                else if (currentMode === 'facilitated') speed = '较慢';
+                else if (currentMode === 'active') speed = atpCount > 0 ? '慢' : '停止';
+                else if (currentMode === 'endocytosis') speed = '很慢';
+            }
+            document.getElementById('speedValue').textContent = speed;
+        }
+
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 模式选择按钮
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentMode = btn.dataset.mode;
+                    resetExperiment();
+                    updateInfo();
+                });
+            });
+
+            // 物质选择按钮
+            document.querySelectorAll('.action-btn[data-particle]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.action-btn[data-particle]').forEach(b => {
+                        b.style.background = '#2ecc71';
+                    });
+                    btn.style.background = '#27ae60';
+                    currentParticle = btn.dataset.particle;
+                    resetExperiment();
+                });
+            });
+
+            // 浓度滑块
+            document.getElementById('outsideConc').addEventListener('input', (e) => {
+                outsideConc = parseInt(e.target.value);
+                document.getElementById('outsideValue').textContent = outsideConc + '%';
+                resetExperiment();
+            });
+
+            document.getElementById('insideConc').addEventListener('input', (e) => {
+                insideConc = parseInt(e.target.value);
+                document.getElementById('insideValue').textContent = insideConc + '%';
+                resetExperiment();
+            });
+
+            // 控制按钮
+            document.getElementById('startBtn').addEventListener('click', () => {
+                isAnimating = !isAnimating;
+                document.getElementById('startBtn').textContent = isAnimating ? '暂停运输' : '开始运输';
+                updateStatus();
+            });
+
+            document.getElementById('resetBtn').addEventListener('click', () => {
+                resetExperiment();
+                updateStatus();
+            });
+
+            document.getElementById('atpBtn').addEventListener('click', () => {
+                atpCount = 10;
+                atpParticles = [];
+                for (let i = 0; i < atpCount; i++) {
+                    atpParticles.push({
+                        x: 50 + i * 30,
+                        y: 50,
+                        active: true
+                    });
+                }
+                updateStatus();
+            });
+
+            // 测验选项
+            document.querySelectorAll('.quiz-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const isCorrect = this.classList.contains('correct');
+                    
+                    // 移除所有现有状态
+                    this.parentElement.querySelectorAll('.quiz-option').forEach(opt => {
+                        opt.classList.remove('correct', 'incorrect');
+                    });
+                    
+                    // 显示正确/错误状态
+                    if (isCorrect) {
+                        this.classList.add('correct');
+                    } else {
+                        this.classList.add('incorrect');
+                        // 显示正确答案
+                        const correctOption = this.parentElement.querySelector('.correct');
+                        correctOption.classList.add('correct');
+                    }
+                });
+            });
+
+            // 窗口大小调整
+            window.addEventListener('resize', () => {
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                resetExperiment();
+            });
+        }
+
+        // 获取模式名称
+        function getModeName(mode) {
+            const names = {
+                'passive': '自由扩散',
+                'facilitated': '协助扩散',
+                'active': '主动运输',
+                'endocytosis': '胞吞胞吐',
+                'compare': '对比模式'
+            };
+            return names[mode] || '';
+        }
+
+        // 页面加载完成后初始化
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

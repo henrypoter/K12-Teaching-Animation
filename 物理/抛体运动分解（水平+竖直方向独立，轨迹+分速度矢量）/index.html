@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>抛体运动分解教学动画</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #424242;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #2E5A88 0%, #4A7BB5 100%);
+            color: white;
+            padding: 24px 32px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            font-weight: normal;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 0;
+        }
+        
+        .animation-section {
+            flex: 1;
+            min-width: 600px;
+            padding: 24px;
+            border-right: 1px solid #e0e0e0;
+        }
+        
+        .control-section {
+            flex: 0 0 400px;
+            padding: 24px;
+            background-color: #fafafa;
+        }
+        
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            background-color: #eef2f5;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+        }
+        
+        #motionCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-top: 16px;
+            padding: 12px;
+            background-color: #f9f9f9;
+            border-radius: 6px;
+            border-left: 4px solid #2E5A88;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-right: 20px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 8px;
+            margin-right: 8px;
+            border-radius: 2px;
+        }
+        
+        .controls-group {
+            margin-bottom: 28px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        h2 {
+            font-size: 20px;
+            margin-bottom: 16px;
+            color: #2E5A88;
+            display: flex;
+            align-items: center;
+        }
+        
+        h2 i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+        
+        .control-row {
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+        }
+        
+        label {
+            display: inline-block;
+            width: 160px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        input[type="range"] {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #2E5A88;
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .value-display {
+            display: inline-block;
+            width: 60px;
+            text-align: right;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #2E5A88;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            width: calc(50% - 6px);
+        }
+        
+        .checkbox-item input {
+            margin-right: 8px;
+            width: 18px;
+            height: 18px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+        }
+        
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+        }
+        
+        button i {
+            margin-right: 8px;
+        }
+        
+        .btn-play {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .btn-play:hover {
+            background-color: #3d8b40;
+        }
+        
+        .btn-pause {
+            background-color: #FF9800;
+            color: white;
+        }
+        
+        .btn-pause:hover {
+            background-color: #e68900;
+        }
+        
+        .btn-step {
+            background-color: #2196F3;
+            color: white;
+        }
+        
+        .btn-step:hover {
+            background-color: #0b7dda;
+        }
+        
+        .btn-reset {
+            background-color: #607D8B;
+            color: white;
+        }
+        
+        .btn-reset:hover {
+            background-color: #546E7A;
+        }
+        
+        .data-panel {
+            background-color: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 20px;
+            border: 1px solid #e0e0e0;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed #eee;
+        }
+        
+        .data-label {
+            color: #666;
+        }
+        
+        .data-value {
+            font-weight: bold;
+            color: #2E5A88;
+        }
+        
+        .mode-selector {
+            display: flex;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .mode-btn {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            background-color: #f1f1f1;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            border-radius: 0;
+            font-weight: 500;
+        }
+        
+        .mode-btn.active {
+            background-color: #2E5A88;
+            color: white;
+        }
+        
+        .explanation {
+            margin-top: 24px;
+            padding: 16px;
+            background-color: #f0f7ff;
+            border-radius: 8px;
+            border-left: 4px solid #2196F3;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 1000px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .animation-section, .control-section {
+                min-width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+            }
+            
+            .canvas-container {
+                height: 400px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-project-diagram"></i> 抛体运动分解教学动画</h1>
+            <p class="subtitle">水平与竖直方向独立运动 · 轨迹与分速度矢量合成 · 交互式探究</p>
+        </header>
+        
+        <div class="main-content">
+            <section class="animation-section">
+                <div class="canvas-container">
+                    <canvas id="motionCanvas"></canvas>
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #2E5A88;"></div>
+                        <span>合运动（轨迹与小球）</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #FF8C00;"></div>
+                        <span>水平分运动（匀速）</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #F44336;"></div>
+                        <span>竖直分运动（匀加速）</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #333333;"></div>
+                        <span>合速度矢量</span>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="control-section">
+                <div class="mode-selector">
+                    <button class="mode-btn active" id="modeProjectile">斜抛运动</button>
+                    <button class="mode-btn" id="modeHorizontal">平抛运动</button>
+                </div>
+                
+                <div class="controls-group">
+                    <h2><i class="fas fa-sliders-h"></i> 运动参数</h2>
+                    
+                    <div class="control-row">
+                        <label for="initialSpeed">初速度 v₀ (m/s):</label>
+                        <input type="range" id="initialSpeed" min="5" max="50" value="30" step="1">
+                        <span class="value-display" id="initialSpeedValue">30</span>
+                    </div>
+                    
+                    <div class="control-row" id="angleControl">
+                        <label for="launchAngle">抛射角 θ (°):</label>
+                        <input type="range" id="launchAngle" min="10" max="80" value="45" step="1">
+                        <span class="value-display" id="launchAngleValue">45</span>
+                    </div>
+                    
+                    <div class="control-row">
+                        <label for="gravity">重力加速度 g (m/s²):</label>
+                        <input type="range" id="gravity" min="1" max="20" value="9.8" step="0.1">
+                        <span class="value-display" id="gravityValue">9.8</span>
+                    </div>
+                    
+                    <div class="control-row">
+                        <label for="animationSpeed">动画速度:</label>
+                        <input type="range" id="animationSpeed" min="0.1" max="3" value="1" step="0.1">
+                        <span class="value-display" id="animationSpeedValue">1.0</span>
+                    </div>
+                </div>
+                
+                <div class="controls-group">
+                    <h2><i class="fas fa-eye"></i> 显示控制</h2>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="showTrajectory" checked>
+                            <label for="showTrajectory">合运动轨迹</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="showHorizontal" checked>
+                            <label for="showHorizontal">水平分运动</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="showVertical" checked>
+                            <label for="showVertical">竖直分运动</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="showVectors" checked>
+                            <label for="showVectors">速度矢量</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="showGrid" checked>
+                            <label for="showGrid">坐标网格</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="showData" checked>
+                            <label for="showData">实时数据</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="controls-group">
+                    <h2><i class="fas fa-play-circle"></i> 动画控制</h2>
+                    <div class="button-group">
+                        <button class="btn-play" id="playBtn">
+                            <i class="fas fa-play"></i> 播放
+                        </button>
+                        <button class="btn-pause" id="pauseBtn">
+                            <i class="fas fa-pause"></i> 暂停
+                        </button>
+                        <button class="btn-step" id="stepBtn">
+                            <i class="fas fa-step-forward"></i> 步进
+                        </button>
+                        <button class="btn-reset" id="resetBtn">
+                            <i class="fas fa-redo"></i> 重置
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="data-panel">
+                    <h2><i class="fas fa-chart-line"></i> 实时数据</h2>
+                    <div class="data-row">
+                        <span class="data-label">时间 t (s):</span>
+                        <span class="data-value" id="timeValue">0.00</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">位置 (x, y) (m):</span>
+                        <span class="data-value" id="positionValue">0.00, 0.00</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">水平速度 vₓ (m/s):</span>
+                        <span class="data-value" id="vxValue">21.21</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">竖直速度 vᵧ (m/s):</span>
+                        <span class="data-value" id="vyValue">21.21</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">合速度 v (m/s):</span>
+                        <span class="data-value" id="vValue">30.00</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">速度方向 θ (°):</span>
+                        <span class="data-value" id="angleValue">45.00</span>
+                    </div>
+                </div>
+                
+                <div class="explanation">
+                    <p><strong>教学提示：</strong> 观察抛体运动如何分解为水平方向的匀速直线运动和竖直方向的匀加速直线运动。注意合速度矢量始终沿轨迹切线方向，且由水平分速度（恒定）和竖直分速度（随时间变化）合成得到。</p>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        // 获取Canvas和上下文
+        const canvas = document.getElementById('motionCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 设置Canvas尺寸
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+        }
+        
+        // 初始调整尺寸
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // 物理参数
+        let params = {
+            v0: 30,          // 初速度 (m/s)
+            angle: 45,       // 抛射角 (度)
+            g: 9.8,          // 重力加速度 (m/s²)
+            isProjectile: true, // true=斜抛, false=平抛
+            time: 0,         // 当前时间 (s)
+            maxTime: 10,     // 最大模拟时间 (s)
+            dt: 0.02,        // 时间步长 (s)
+            animationSpeed: 1.0, // 动画速度因子
+            isPlaying: false, // 动画是否正在播放
+            scale: 5,        // 像素/米 的比例尺
+            originX: 100,    // 坐标系原点X (像素)
+            originY: 400     // 坐标系原点Y (像素)
+        };
+        
+        // 显示控制参数
+        let display = {
+            trajectory: true,
+            horizontal: true,
+            vertical: true,
+            vectors: true,
+            grid: true,
+            data: true
+        };
+        
+        // 运动状态
+        let state = {
+            x: 0,
+            y: 0,
+            vx: 0,
+            vy: 0,
+            v: 0,
+            trajectory: []
+        };
+        
+        // 颜色定义
+        const colors = {
+            combined: '#2E5A88',     // 合运动 - 深蓝色
+            horizontal: '#FF8C00',   // 水平分运动 - 橙色
+            vertical: '#F44336',     // 竖直分运动 - 红色
+            vector: '#333333',       // 合速度矢量 - 黑色
+            grid: '#CCCCCC',         // 网格线 - 浅灰色
+            axis: '#424242',         // 坐标轴 - 深灰色
+            text: '#424242'          // 文本 - 深灰色
+        };
+        
+        // 初始化运动状态
+        function initState() {
+            params.time = 0;
+            state.trajectory = [];
+            
+            // 计算初始速度分量
+            const angleRad = params.angle * Math.PI / 180;
+            
+            if (params.isProjectile) {
+                // 斜抛运动
+                state.vx = params.v0 * Math.cos(angleRad);
+                state.vy = params.v0 * Math.sin(angleRad);
+            } else {
+                // 平抛运动
+                state.vx = params.v0;
+                state.vy = 0;
+            }
+            
+            state.x = 0;
+            state.y = 0;
+            state.v = Math.sqrt(state.vx * state.vx + state.vy * state.vy);
+            
+            // 记录初始位置
+            state.trajectory.push({x: state.x, y: state.y});
+        }
+        
+        // 更新运动状态
+        function updateState() {
+            if (!params.isPlaying) return;
+            
+            params.time += params.dt * params.animationSpeed;
+            
+            // 计算新位置
+            state.x = state.vx * params.time;
+            state.y = state.vy * params.time - 0.5 * params.g * params.time * params.time;
+            
+            // 计算新速度
+            const newVy = state.vy - params.g * params.time;
+            state.v = Math.sqrt(state.vx * state.vx + newVy * newVy);
+            
+            // 如果小球落地，停止动画
+            if (state.y < 0) {
+                params.isPlaying = false;
+                document.getElementById('playBtn').innerHTML = '<i class="fas fa-play"></i> 播放';
+                return;
+            }
+            
+            // 记录轨迹点
+            state.trajectory.push({x: state.x, y: state.y});
+            
+            // 更新数据显示
+            updateDataDisplay();
+        }
+        
+        // 绘制坐标系和网格
+        function drawGrid() {
+            if (!display.grid) return;
+            
+            ctx.strokeStyle = colors.grid;
+            ctx.lineWidth = 0.5;
+            ctx.setLineDash([2, 2]);
+            
+            // 绘制垂直网格线
+            for (let x = -20; x <= 100; x += 5) {
+                const px = params.originX + x * params.scale;
+                ctx.beginPath();
+                ctx.moveTo(px, 0);
+                ctx.lineTo(px, canvas.height);
+                ctx.stroke();
+            }
+            
+            // 绘制水平网格线
+            for (let y = -80; y <= 20; y += 5) {
+                const py = params.originY - y * params.scale;
+                ctx.beginPath();
+                ctx.moveTo(0, py);
+                ctx.lineTo(canvas.width, py);
+                ctx.stroke();
+            }
+            
+            ctx.setLineDash([]);
+            
+            // 绘制坐标轴
+            ctx.strokeStyle = colors.axis;
+            ctx.lineWidth = 2;
+            
+            // X轴
+            ctx.beginPath();
+            ctx.moveTo(0, params.originY);
+            ctx.lineTo(canvas.width, params.originY);
+            ctx.stroke();
+            
+            // Y轴
+            ctx.beginPath();
+            ctx.moveTo(params.originX, canvas.height);
+            ctx.lineTo(params.originX, 0);
+            ctx.stroke();
+            
+            // 坐标轴箭头
+            ctx.fillStyle = colors.axis;
+            
+            // X轴箭头
+            ctx.beginPath();
+            ctx.moveTo(canvas.width - 10, params.originY - 5);
+            ctx.lineTo(canvas.width, params.originY);
+            ctx.lineTo(canvas.width - 10, params.originY + 5);
+            ctx.fill();
+            
+            // Y轴箭头
+            ctx.beginPath();
+            ctx.moveTo(params.originX - 5, 10);
+            ctx.lineTo(params.originX, 0);
+            ctx.lineTo(params.originX + 5, 10);
+            ctx.fill();
+            
+            // 坐标轴标签
+            ctx.fillStyle = colors.text;
+            ctx.font = '14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('x (m)', canvas.width - 20, params.originY + 20);
+            ctx.textAlign = 'left';
+            ctx.fillText('y (m)', params.originX + 10, 20);
+            
+            // 刻度标签
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            
+            // X轴刻度
+            for (let x = 0; x <= 80; x += 10) {
+                const px = params.originX + x * params.scale;
+                ctx.beginPath();
+                ctx.moveTo(px, params.originY - 5);
+                ctx.lineTo(px, params.originY + 5);
+                ctx.stroke();
+                ctx.fillText(x.toString(), px, params.originY + 18);
+            }
+            
+            // Y轴刻度
+            ctx.textAlign = 'right';
+            for (let y = 0; y <= 60; y += 10) {
+                const py = params.originY - y * params.scale;
+                ctx.beginPath();
+                ctx.moveTo(params.originX - 5, py);
+                ctx.lineTo(params.originX + 5, py);
+                ctx.stroke();
+                ctx.fillText(y.toString(), params.originX - 10, py + 4);
+            }
+        }
+        
+        // 绘制轨迹
+        function drawTrajectory() {
+            if (!display.trajectory || state.trajectory.length < 2) return;
+            
+            ctx.strokeStyle = colors.combined;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            // 绘制轨迹线
+            for (let i = 0; i < state.trajectory.length; i++) {
+                const point = state.trajectory[i];
+                const px = params.originX + point.x * params.scale;
+                const py = params.originY - point.y * params.scale;
+                
+                if (i === 0) {
+                    ctx.moveTo(px, py);
+                } else {
+                    ctx.lineTo(px, py);
+                }
+            }
+            
+            ctx.stroke();
+        }
+        
+        // 绘制分运动
+        function drawComponents() {
+            const px = params.originX + state.x * params.scale;
+            const py = params.originY - state.y * params.scale;
+            
+            // 绘制水平分运动点
+            if (display.horizontal) {
+                const hx = params.originX + state.x * params.scale;
+                const hy = params.originY;
+                
+                ctx.fillStyle = colors.horizontal;
+                ctx.beginPath();
+                ctx.arc(hx, hy, 6, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 从水平分运动点到合运动点的连线
+                ctx.strokeStyle = colors.horizontal;
+                ctx.lineWidth = 1;
+                ctx.setLineDash([3, 3]);
+                ctx.beginPath();
+                ctx.moveTo(hx, hy);
+                ctx.lineTo(px, py);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+            
+            // 绘制竖直分运动点
+            if (display.vertical) {
+                const vx = params.originX;
+                const vy = params.originY - state.y * params.scale;
+                
+                ctx.fillStyle = colors.vertical;
+                ctx.beginPath();
+                ctx.arc(vx, vy, 6, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 从竖直分运动点到合运动点的连线
+                ctx.strokeStyle = colors.vertical;
+                ctx.lineWidth = 1;
+                ctx.setLineDash([3, 3]);
+                ctx.beginPath();
+                ctx.moveTo(vx, vy);
+                ctx.lineTo(px, py);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+        }
+        
+        // 绘制速度矢量
+        function drawVectors() {
+            if (!display.vectors) return;
+            
+            const px = params.originX + state.x * params.scale;
+            const py = params.originY - state.y * params.scale;
+            
+            // 计算当前竖直速度（考虑重力影响）
+            const currentVy = state.vy - params.g * params.time;
+            
+            // 绘制水平速度矢量
+            ctx.strokeStyle = colors.horizontal;
+            ctx.fillStyle = colors.horizontal;
+            ctx.lineWidth = 2;
+            
+            const vxScale = 0.5; // 速度矢量缩放因子
+            const vxEndX = px + state.vx * vxScale;
+            const vxEndY = py;
+            
+            drawArrow(px, py, vxEndX, vxEndY, 8);
+            
+            // 绘制竖直速度矢量
+            ctx.strokeStyle = colors.vertical;
+            ctx.fillStyle = colors.vertical;
+            
+            const vyEndX = px;
+            const vyEndY = py - currentVy * vxScale;
+            
+            drawArrow(px, py, vyEndX, vyEndY, 8);
+            
+            // 绘制合速度矢量（平行四边形对角线）
+            ctx.strokeStyle = colors.vector;
+            ctx.fillStyle = colors.vector;
+            ctx.lineWidth = 3;
+            
+            const vEndX = px + state.vx * vxScale;
+            const vEndY = py - currentVy * vxScale;
+            
+            drawArrow(px, py, vEndX, vEndY, 10);
+            
+            // 绘制速度矢量平行四边形（虚线）
+            ctx.strokeStyle = colors.vector;
+            ctx.lineWidth = 1;
+            ctx.setLineDash([2, 2]);
+            ctx.beginPath();
+            ctx.moveTo(vxEndX, vxEndY);
+            ctx.lineTo(vEndX, vEndY);
+            ctx.lineTo(vyEndX, vyEndY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+        
+        // 绘制箭头函数
+        function drawArrow(fromX, fromY, toX, toY, headLength) {
+            const angle = Math.atan2(toY - fromY, toX - fromX);
+            
+            // 绘制线
+            ctx.beginPath();
+            ctx.moveTo(fromX, fromY);
+            ctx.lineTo(toX, toY);
+            ctx.stroke();
+            
+            // 绘制箭头头部
+            ctx.beginPath();
+            ctx.moveTo(toX, toY);
+            ctx.lineTo(
+                toX - headLength * Math.cos(angle - Math.PI / 6),
+                toY - headLength * Math.sin(angle - Math.PI / 6)
+            );
+            ctx.lineTo(
+                toX - headLength * Math.cos(angle + Math.PI / 6),
+                toY - headLength * Math.sin(angle + Math.PI / 6)
+            );
+            ctx.closePath();
+            ctx.fill();
+        }
+        
+        // 绘制合运动小球
+        function drawBall() {
+            const px = params.originX + state.x * params.scale;
+            const py = params.originY - state.y * params.scale;
+            
+            // 绘制小球
+            ctx.fillStyle = colors.combined;
+            ctx.beginPath();
+            ctx.arc(px, py, 10, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 小球高光
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            ctx.beginPath();
+            ctx.arc(px - 4, py - 4, 4, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        // 更新数据显示
+        function updateDataDisplay() {
+            if (!display.data) return;
+            
+            const currentVy = state.vy - params.g * params.time;
+            const velocityAngle = Math.atan2(currentVy, state.vx) * 180 / Math.PI;
+            
+            document.getElementById('timeValue').textContent = params.time.toFixed(2);
+            document.getElementById('positionValue').textContent = `${state.x.toFixed(2)}, ${state.y.toFixed(2)}`;
+            document.getElementById('vxValue').textContent = state.vx.toFixed(2);
+            document.getElementById('vyValue').textContent = currentVy.toFixed(2);
+            document.getElementById('vValue').textContent = state.v.toFixed(2);
+            document.getElementById('angleValue').textContent = velocityAngle.toFixed(2);
+        }
+        
+        // 主绘制函数
+        function draw() {
+            // 清除画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制各个组件
+            drawGrid();
+            drawTrajectory();
+            drawComponents();
+            drawVectors();
+            drawBall();
+        }
+        
+        // 动画循环
+        function animate() {
+            updateState();
+            draw();
+            requestAnimationFrame(animate);
+        }
+        
+        // 初始化UI事件监听
+        function initUI() {
+            // 模式切换
+            document.getElementById('modeProjectile').addEventListener('click', function() {
+                params.isProjectile = true;
+                document.getElementById('modeProjectile').classList.add('active');
+                document.getElementById('modeHorizontal').classList.remove('active');
+                document.getElementById('angleControl').style.display = 'flex';
+                initState();
+            });
+            
+            document.getElementById('modeHorizontal').addEventListener('click', function() {
+                params.isProjectile = false;
+                document.getElementById('modeHorizontal').classList.add('active');
+                document.getElementById('modeProjectile').classList.remove('active');
+                document.getElementById('angleControl').style.display = 'none';
+                initState();
+            });
+            
+            // 滑块控制
+            const sliders = ['initialSpeed', 'launchAngle', 'gravity', 'animationSpeed'];
+            sliders.forEach(sliderId => {
+                const slider = document.getElementById(sliderId);
+                const valueDisplay = document.getElementById(sliderId + 'Value');
+                
+                slider.addEventListener('input', function() {
+                    const value = parseFloat(this.value);
+                    valueDisplay.textContent = value.toFixed(sliderId === 'animationSpeed' ? 1 : sliderId === 'gravity' ? 1 : 0);
+                    
+                    if (sliderId === 'initialSpeed') params.v0 = value;
+                    if (sliderId === 'launchAngle') params.angle = value;
+                    if (sliderId === 'gravity') params.g = value;
+                    if (sliderId === 'animationSpeed') params.animationSpeed = value;
+                    
+                    initState();
+                });
+            });
+            
+            // 显示控制复选框
+            const checkboxes = ['showTrajectory', 'showHorizontal', 'showVertical', 'showVectors', 'showGrid', 'showData'];
+            checkboxes.forEach(checkboxId => {
+                const checkbox = document.getElementById(checkboxId);
+                const displayKey = checkboxId.replace('show', '').toLowerCase();
+                
+                checkbox.addEventListener('change', function() {
+                    display[displayKey] = this.checked;
+                });
+            });
+            
+            // 动画控制按钮
+            document.getElementById('playBtn').addEventListener('click', function() {
+                params.isPlaying = !params.isPlaying;
+                if (params.isPlaying) {
+                    this.innerHTML = '<i class="fas fa-pause"></i> 暂停';
+                } else {
+                    this.innerHTML = '<i class="fas fa-play"></i> 播放';
+                }
+            });
+            
+            document.getElementById('pauseBtn').addEventListener('click', function() {
+                params.isPlaying = false;
+                document.getElementById('playBtn').innerHTML = '<i class="fas fa-play"></i> 播放';
+            });
+            
+            document.getElementById('stepBtn').addEventListener('click', function() {
+                params.isPlaying = false;
+                document.getElementById('playBtn').innerHTML = '<i class="fas fa-play"></i> 播放';
+                params.time += params.dt;
+                updateState();
+                draw();
+            });
+            
+            document.getElementById('resetBtn').addEventListener('click', function() {
+                params.isPlaying = false;
+                document.getElementById('playBtn').innerHTML = '<i class="fas fa-play"></i> 播放';
+                initState();
+                draw();
+                updateDataDisplay();
+            });
+        }
+        
+        // 初始化函数
+        function init() {
+            resizeCanvas();
+            initState();
+            initUI();
+            updateDataDisplay();
+            draw();
+            animate();
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

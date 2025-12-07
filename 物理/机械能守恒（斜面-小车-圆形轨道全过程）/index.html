@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>机械能守恒：斜面-小车-圆形轨道全过程</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #2c3e50, #4a6491);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .left-panel {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .right-panel {
+            flex: 2;
+            min-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .control-panel, .data-panel, .visualization-panel {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .panel-title {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #eaeaea;
+            display: flex;
+            align-items: center;
+        }
+        
+        .panel-title i {
+            margin-right: 10px;
+            color: #3498db;
+        }
+        
+        .control-group {
+            margin-bottom: 15px;
+        }
+        
+        .control-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+        }
+        
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        input[type="range"] {
+            flex: 1;
+            height: 8px;
+            border-radius: 4px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3498db;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .value-display {
+            min-width: 60px;
+            text-align: center;
+            padding: 5px 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .primary-btn {
+            background-color: #3498db;
+            color: white;
+            flex: 1;
+        }
+        
+        .primary-btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .secondary-btn {
+            background-color: #ecf0f1;
+            color: #2c3e50;
+            flex: 1;
+        }
+        
+        .secondary-btn:hover {
+            background-color: #d5dbdb;
+        }
+        
+        .toggle-btn {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .toggle-btn:hover {
+            background-color: #27ae60;
+        }
+        
+        .toggle-btn.off {
+            background-color: #e74c3c;
+        }
+        
+        .toggle-btn.off:hover {
+            background-color: #c0392b;
+        }
+        
+        .canvas-container {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            position: relative;
+        }
+        
+        #mainCanvas {
+            display: block;
+            width: 100%;
+            background-color: #f8f9fa;
+        }
+        
+        .data-display {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .data-item {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .data-label {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-bottom: 5px;
+        }
+        
+        .data-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        
+        .data-unit {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-left: 3px;
+        }
+        
+        .energy-bar-container {
+            margin-top: 15px;
+        }
+        
+        .energy-bar-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #444;
+        }
+        
+        .energy-bar {
+            height: 25px;
+            background-color: #ecf0f1;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 5px;
+        }
+        
+        .kinetic-bar {
+            height: 100%;
+            background-color: #e67e22;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .potential-bar {
+            height: 100%;
+            background-color: #3498db;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .total-energy-line {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background-color: #2ecc71;
+            left: 0%;
+            transition: left 0.3s ease;
+        }
+        
+        .energy-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #7f8c8d;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+        }
+        
+        .kinetic-color {
+            background-color: #e67e22;
+        }
+        
+        .potential-color {
+            background-color: #3498db;
+        }
+        
+        .total-color {
+            background-color: #2ecc71;
+        }
+        
+        .status-panel {
+            background-color: #fff8e1;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 10px;
+            border-left: 4px solid #f39c12;
+        }
+        
+        .status-title {
+            font-weight: 600;
+            color: #d35400;
+            margin-bottom: 5px;
+        }
+        
+        .status-text {
+            color: #7d6608;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 15px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+        
+        @media (max-width: 900px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .left-panel, .right-panel {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>机械能守恒定律</h1>
+            <div class="subtitle">斜面-小车-圆形轨道全过程模拟</div>
+        </header>
+        
+        <div class="main-content">
+            <div class="left-panel">
+                <div class="control-panel">
+                    <div class="panel-title">
+                        <i>⚙️</i> 参数控制
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">初始高度 H: <span id="heightValue">2.5</span> m</label>
+                        <div class="slider-container">
+                            <input type="range" id="heightSlider" min="1.5" max="5" step="0.1" value="2.5">
+                            <div class="value-display" id="heightDisplay">2.5 m</div>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">圆形轨道半径 R: <span id="radiusValue">1.0</span> m</label>
+                        <div class="slider-container">
+                            <input type="range" id="radiusSlider" min="0.5" max="2.0" step="0.1" value="1.0">
+                            <div class="value-display" id="radiusDisplay">1.0 m</div>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">重力加速度 g: <span id="gravityValue">9.8</span> m/s²</label>
+                        <div class="slider-container">
+                            <input type="range" id="gravitySlider" min="5" max="15" step="0.1" value="9.8">
+                            <div class="value-display" id="gravityDisplay">9.8 m/s²</div>
+                        </div>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button id="applyBtn" class="primary-btn">
+                            <span>🚀</span> 应用参数并重置
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="control-panel">
+                    <div class="panel-title">
+                        <i>🎮</i> 动画控制
+                    </div>
+                    
+                    <div class="button-group">
+                        <button id="startPauseBtn" class="primary-btn">
+                            <span>▶️</span> 开始
+                        </button>
+                        <button id="resetBtn" class="secondary-btn">
+                            <span>🔄</span> 重置
+                        </button>
+                        <button id="stepBtn" class="secondary-btn">
+                            <span>⏭️</span> 单步
+                        </button>
+                    </div>
+                    
+                    <div class="control-group" style="margin-top: 15px;">
+                        <label class="control-label">动画速度: <span id="speedValue">1.0</span>x</label>
+                        <div class="slider-container">
+                            <input type="range" id="speedSlider" min="0.1" max="3" step="0.1" value="1.0">
+                            <div class="value-display" id="speedDisplay">1.0x</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="data-panel">
+                    <div class="panel-title">
+                        <i>📊</i> 实时数据
+                    </div>
+                    
+                    <div class="data-display">
+                        <div class="data-item">
+                            <div class="data-label">高度 h</div>
+                            <div class="data-value">2.50<span class="data-unit">m</span></div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">速度 v</div>
+                            <div class="data-value">0.00<span class="data-unit">m/s</span></div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">动能 Ek</div>
+                            <div class="data-value">0.00<span class="data-unit">J</span></div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">势能 Ep</div>
+                            <div class="data-value">24.50<span class="data-unit">J</span></div>
+                        </div>
+                    </div>
+                    
+                    <div class="energy-bar-container">
+                        <div class="energy-bar-title">能量分布 (总机械能: <span id="totalEnergyValue">24.50</span> J)</div>
+                        <div class="energy-bar">
+                            <div class="kinetic-bar" id="kineticBar"></div>
+                            <div class="potential-bar" id="potentialBar"></div>
+                            <div class="total-energy-line" id="totalEnergyLine"></div>
+                        </div>
+                        <div class="energy-labels">
+                            <div>0 J</div>
+                            <div id="maxEnergyLabel">24.5 J</div>
+                        </div>
+                    </div>
+                    
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color kinetic-color"></div>
+                            <div>动能 Ek</div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color potential-color"></div>
+                            <div>势能 Ep</div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color total-color"></div>
+                            <div>总机械能 E</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="right-panel">
+                <div class="canvas-container">
+                    <canvas id="mainCanvas" width="800" height="500"></canvas>
+                </div>
+                
+                <div class="visualization-panel">
+                    <div class="panel-title">
+                        <i>📈</i> 可视化选项
+                    </div>
+                    
+                    <div class="button-group">
+                        <button id="toggleDataBtn" class="toggle-btn">
+                            <span>✅</span> 实时数据
+                        </button>
+                        <button id="toggleBarsBtn" class="toggle-btn">
+                            <span>✅</span> 能量柱状图
+                        </button>
+                        <button id="toggleTrajectoryBtn" class="toggle-btn off">
+                            <span>❌</span> 运动轨迹
+                        </button>
+                        <button id="toggleVectorsBtn" class="toggle-btn off">
+                            <span>❌</span> 速度矢量
+                        </button>
+                    </div>
+                    
+                    <div class="status-panel" id="statusPanel">
+                        <div class="status-title">系统状态</div>
+                        <div class="status-text" id="statusText">准备就绪。点击"开始"按钮观察机械能守恒过程。</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>物理教学动画 | 机械能守恒定律：E = Ek + Ep = 常数 | 设计：教育技术专家</p>
+        </footer>
+    </div>
+
+    <script>
+        // 获取Canvas和上下文
+        const canvas = document.getElementById('mainCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 物理参数
+        let H = 2.5;      // 初始高度 (m)
+        let R = 1.0;      // 圆形轨道半径 (m)
+        let g = 9.8;      // 重力加速度 (m/s²)
+        let m = 1.0;      // 小车质量 (kg) - 固定为1简化计算
+        
+        // 动画状态
+        let animationId = null;
+        let isPlaying = false;
+        let animationSpeed = 1.0;
+        let time = 0;
+        
+        // 小车状态
+        let car = {
+            x: 0,
+            y: 0,
+            vx: 0,
+            vy: 0,
+            angle: 0, // 在圆形轨道上的角度
+            onIncline: true, // 是否在斜面上
+            onCircle: false, // 是否在圆形轨道上
+            finished: false, // 是否完成运动
+            trajectory: [] // 运动轨迹点
+        };
+        
+        // 可视化选项
+        let showData = true;
+        let showBars = true;
+        let showTrajectory = false;
+        let showVectors = false;
+        
+        // 斜面参数
+        const inclineLength = 300;
+        const inclineAngle = Math.PI / 6; // 30度
+        const carSize = 20;
+        
+        // 计算初始位置
+        function initializeCar() {
+            // 斜面起点
+            const startX = 100;
+            const startY = canvas.height - 100;
+            
+            // 根据高度H计算斜面长度
+            const inclineHeight = H * 50; // 缩放因子：1m = 50像素
+            const actualInclineLength = inclineHeight / Math.sin(inclineAngle);
+            
+            // 小车初始位置（斜面顶端）
+            car.x = startX;
+            car.y = startY - inclineHeight;
+            car.vx = 0;
+            car.vy = 0;
+            car.angle = 0;
+            car.onIncline = true;
+            car.onCircle = false;
+            car.finished = false;
+            car.trajectory = [{x: car.x, y: car.y}];
+            
+            time = 0;
+            
+            // 更新数据显示
+            updateDataDisplay();
+        }
+        
+        // 更新数据显示
+        function updateDataDisplay() {
+            // 计算当前高度（相对于参考平面）
+            let currentHeight;
+            if (car.onIncline) {
+                // 在斜面上
+                const startY = canvas.height - 100;
+                currentHeight = (startY - car.y) / 50; // 转换为米
+            } else if (car.onCircle) {
+                // 在圆形轨道上
+                const circleCenterY = canvas.height - 100 - R * 50;
+                currentHeight = (circleCenterY + R * 50 * Math.cos(car.angle)) / 50;
+            } else {
+                // 已完成或脱轨
+                currentHeight = car.y / 50;
+            }
+            
+            // 计算速度大小
+            const speed = Math.sqrt(car.vx * car.vx + car.vy * car.vy);
+            
+            // 计算动能和势能
+            const Ek = 0.5 * m * speed * speed;
+            const Ep = m * g * currentHeight;
+            const E = Ek + Ep;
+            
+            // 更新数据面板
+            document.querySelector('.data-item:nth-child(1) .data-value').innerHTML = 
+                currentHeight.toFixed(2) + '<span class="data-unit">m</span>';
+            document.querySelector('.data-item:nth-child(2) .data-value').innerHTML = 
+                speed.toFixed(2) + '<span class="data-unit">m/s</span>';
+            document.querySelector('.data-item:nth-child(3) .data-value').innerHTML = 
+                Ek.toFixed(2) + '<span class="data-unit">J</span>';
+            document.querySelector('.data-item:nth-child(4) .data-value').innerHTML = 
+                Ep.toFixed(2) + '<span class="data-unit">J</span>';
+            
+            // 更新能量柱状图
+            const totalEnergy = m * g * H; // 初始总机械能
+            document.getElementById('totalEnergyValue').textContent = totalEnergy.toFixed(2);
+            document.getElementById('maxEnergyLabel').textContent = totalEnergy.toFixed(1) + ' J';
+            
+            const kineticPercent = (Ek / totalEnergy) * 100;
+            const potentialPercent = (Ep / totalEnergy) * 100;
+            
+            document.getElementById('kineticBar').style.width = kineticPercent + '%';
+            document.getElementById('potentialBar').style.width = potentialPercent + '%';
+            document.getElementById('totalEnergyLine').style.left = '100%';
+            
+            // 更新状态面板
+            updateStatusPanel(speed, currentHeight, Ek, Ep, E);
+        }
+        
+        // 更新状态面板
+        function updateStatusPanel(speed, height, Ek, Ep, E) {
+            const statusPanel = document.getElementById('statusPanel');
+            const statusText = document.getElementById('statusText');
+            
+            if (car.finished) {
+                statusPanel.style.backgroundColor = '#e8f5e9';
+                statusPanel.style.borderLeftColor = '#2ecc71';
+                statusText.innerHTML = `✅ 运动完成！最终速度: ${speed.toFixed(2)} m/s<br>
+                                        机械能守恒验证: 初始E = ${(m*g*H).toFixed(2)} J, 最终E = ${E.toFixed(2)} J`;
+                return;
+            }
+            
+            if (car.onIncline) {
+                statusPanel.style.backgroundColor = '#fff8e1';
+                statusPanel.style.borderLeftColor = '#f39c12';
+                statusText.innerHTML = `📉 斜面下滑阶段: 势能转化为动能<br>
+                                        当前: Ek = ${Ek.toFixed(2)} J, Ep = ${Ep.toFixed(2)} J, E = ${E.toFixed(2)} J`;
+            } else if (car.onCircle) {
+                // 检查是否能通过最高点
+                const criticalSpeed = Math.sqrt(g * R);
+                const currentSpeed = speed;
+                
+                if (car.angle > Math.PI/2 && car.angle < 3*Math.PI/2) {
+                    // 在上半圆
+                    if (currentSpeed < criticalSpeed * 0.8) {
+                        statusPanel.style.backgroundColor = '#ffebee';
+                        statusPanel.style.borderLeftColor = '#e74c3c';
+                        statusText.innerHTML = `⚠️ 圆形轨道上半部分: 速度较低 (${currentSpeed.toFixed(2)} m/s)<br>
+                                                临界速度: ${criticalSpeed.toFixed(2)} m/s | 可能需要外力才能通过最高点`;
+                    } else if (currentSpeed < criticalSpeed) {
+                        statusPanel.style.backgroundColor = '#fff3e0';
+                        statusPanel.style.borderLeftColor = '#f39c12';
+                        statusText.innerHTML = `⚠️ 圆形轨道上半部分: 接近临界速度 (${currentSpeed.toFixed(2)} m/s)<br>
+                                                临界速度: ${criticalSpeed.toFixed(2)} m/s | 恰好通过最高点时速度为临界值`;
+                    } else {
+                        statusPanel.style.backgroundColor = '#e8f5e9';
+                        statusPanel.style.borderLeftColor = '#2ecc71';
+                        statusText.innerHTML = `✅ 圆形轨道上半部分: 速度足够 (${currentSpeed.toFixed(2)} m/s)<br>
+                                                临界速度: ${criticalSpeed.toFixed(2)} m/s | 可以顺利通过最高点`;
+                    }
+                } else {
+                    // 在下半圆
+                    statusPanel.style.backgroundColor = '#e3f2fd';
+                    statusPanel.style.borderLeftColor = '#3498db';
+                    statusText.innerHTML = `🔄 圆形轨道下半部分: 动能与势能相互转化<br>
+                                            当前: Ek = ${Ek.toFixed(2)} J, Ep = ${Ep.toFixed(2)} J`;
+                }
+            }
+        }
+        
+        // 绘制场景
+        function drawScene() {
+            // 清除画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制参考平面（地面）
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height - 100);
+            ctx.lineTo(canvas.width, canvas.height - 100);
+            ctx.strokeStyle = '#95a5a6';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 绘制斜面
+            const startX = 100;
+            const startY = canvas.height - 100;
+            const inclineHeight = H * 50; // 缩放因子
+            const actualInclineLength = inclineHeight / Math.sin(inclineAngle);
+            
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(startX + actualInclineLength * Math.cos(inclineAngle), startY - inclineHeight);
+            ctx.strokeStyle = '#34495e';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+            
+            // 绘制圆形轨道
+            const circleCenterX = startX + actualInclineLength * Math.cos(inclineAngle);
+            const circleCenterY = startY - inclineHeight;
+            
+            ctx.beginPath();
+            ctx.arc(circleCenterX, circleCenterY, R * 50, Math.PI, 2 * Math.PI);
+            ctx.strokeStyle = '#8e44ad';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+            
+            // 标记圆形轨道最高点和最低点
+            ctx.fillStyle = '#8e44ad';
+            ctx.beginPath();
+            ctx.arc(circleCenterX, circleCenterY - R * 50, 5, 0, 2 * Math.PI); // 最高点
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.arc(circleCenterX, circleCenterY, 5, 0, 2 * Math.PI); // 最低点
+            ctx.fill();
+            
+            // 绘制高度标记
+            ctx.strokeStyle = '#7f8c8d';
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(startX, startY - inclineHeight);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // 绘制高度标签
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = '14px Arial';
+            ctx.fillText(`H = ${H.toFixed(1)} m`, startX - 40, startY - inclineHeight / 2);
+            
+            // 绘制半径标记
+            ctx.strokeStyle = '#7f8c8d';
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(circleCenterX, circleCenterY);
+            ctx.lineTo(circleCenterX, circleCenterY - R * 50);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // 绘制半径标签
+            ctx.fillText(`R = ${R.toFixed(1)} m`, circleCenterX + 10, circleCenterY - R * 25);
+            
+            // 绘制运动轨迹（如果启用）
+            if (showTrajectory && car.trajectory.length > 1) {
+                ctx.beginPath();
+                ctx.moveTo(car.trajectory[0].x, car.trajectory[0].y);
+                
+                for (let i = 1; i < car.trajectory.length; i++) {
+                    ctx.lineTo(car.trajectory[i].x, car.trajectory[i].y);
+                }
+                
+                ctx.strokeStyle = 'rgba(231, 76, 60, 0.6)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+            
+            // 绘制小车
+            drawCar();
+            
+            // 绘制速度矢量（如果启用）
+            if (showVectors && (car.vx !== 0 || car.vy !== 0)) {
+                const speed = Math.sqrt(car.vx * car.vx + car.vy * car.vy);
+                const scale = 10; // 矢量缩放因子
+                
+                ctx.beginPath();
+                ctx.moveTo(car.x, car.y);
+                ctx.lineTo(car.x + car.vx * scale, car.y + car.vy * scale);
+                ctx.strokeStyle = '#e74c3c';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // 绘制箭头
+                const angle = Math.atan2(car.vy, car.vx);
+                const arrowLength = 8;
+                
+                ctx.beginPath();
+                ctx.moveTo(car.x + car.vx * scale, car.y + car.vy * scale);
+                ctx.lineTo(
+                    car.x + car.vx * scale - arrowLength * Math.cos(angle - Math.PI/6),
+                    car.y + car.vy * scale - arrowLength * Math.sin(angle - Math.PI/6)
+                );
+                ctx.moveTo(car.x + car.vx * scale, car.y + car.vy * scale);
+                ctx.lineTo(
+                    car.x + car.vx * scale - arrowLength * Math.cos(angle + Math.PI/6),
+                    car.y + car.vy * scale - arrowLength * Math.sin(angle + Math.PI/6)
+                );
+                ctx.stroke();
+                
+                // 速度值标签
+                ctx.fillStyle = '#e74c3c';
+                ctx.font = '12px Arial';
+                ctx.fillText(`v = ${speed.toFixed(2)} m/s`, car.x + car.vx * scale + 10, car.y + car.vy * scale - 10);
+            }
+            
+            // 绘制能量标签
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText('机械能守恒: E = Ek + Ep = 常数', canvas.width / 2 - 150, 30);
+            
+            // 绘制图例
+            ctx.font = '14px Arial';
+            ctx.fillStyle = '#e67e22';
+            ctx.fillRect(canvas.width - 200, 50, 15, 15);
+            ctx.fillStyle = '#2c3e50';
+            ctx.fillText('动能 Ek', canvas.width - 180, 62);
+            
+            ctx.fillStyle = '#3498db';
+            ctx.fillRect(canvas.width - 200, 75, 15, 15);
+            ctx.fillStyle = '#2c3e50';
+            ctx.fillText('势能 Ep', canvas.width - 180, 87);
+            
+            ctx.fillStyle = '#2ecc71';
+            ctx.fillRect(canvas.width - 200, 100, 15, 15);
+            ctx.fillStyle = '#2c3e50';
+            ctx.fillText('总机械能 E', canvas.width - 180, 112);
+        }
+        
+        // 绘制小车
+        function drawCar() {
+            // 根据速度改变小车颜色（速度越快越红）
+            const speed = Math.sqrt(car.vx * car.vx + car.vy * car.vy);
+            const maxSpeed = Math.sqrt(2 * g * H); // 最大可能速度
+            const colorIntensity = Math.min(255, Math.floor(150 + (speed / maxSpeed) * 105));
+            
+            ctx.fillStyle = `rgb(231, ${Math.max(50, 255 - colorIntensity)}, 60)`;
+            
+            // 绘制小车主体
+            ctx.beginPath();
+            ctx.rect(car.x - carSize/2, car.y - carSize/2, carSize, carSize);
+            ctx.fill();
+            
+            // 绘制小车轮廓
+            ctx.strokeStyle = '#2c3e50';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 绘制小车方向指示器
+            ctx.fillStyle = '#2c3e50';
+            ctx.beginPath();
+            ctx.moveTo(car.x + carSize/4, car.y);
+            ctx.lineTo(car.x + carSize/2, car.y - carSize/4);
+            ctx.lineTo(car.x + carSize/2, car.y + carSize/4);
+            ctx.closePath();
+            ctx.fill();
+            
+            // 绘制车轮
+            ctx.fillStyle = '#2c3e50';
+            ctx.beginPath();
+            ctx.arc(car.x - carSize/4, car.y - carSize/2, 4, 0, 2 * Math.PI);
+            ctx.arc(car.x + carSize/4, car.y - carSize/2, 4, 0, 2 * Math.PI);
+            ctx.arc(car.x - carSize/4, car.y + carSize/2, 4, 0, 2 * Math.PI);
+            ctx.arc(car.x + carSize/4, car.y + carSize/2, 4, 0, 2 * Math.PI);
+            ctx.fill();
+        }
+        
+        // 更新物理状态
+        function updatePhysics(deltaTime) {
+            if (car.finished) return;
+            
+            // 应用动画速度
+            deltaTime *= animationSpeed;
+            time += deltaTime;
+            
+            // 记录轨迹点（每0.1秒记录一次）
+            if (time % 0.1 < deltaTime) {
+                car.trajectory.push({x: car.x, y: car.y});
+                
+                // 限制轨迹点数量
+                if (car.trajectory.length > 100) {
+                    car.trajectory.shift();
+                }
+            }
+            
+            // 斜面起点和圆形轨道中心
+            const startX = 100;
+            const startY = canvas.height - 100;
+            const inclineHeight = H * 50;
+            const actualInclineLength = inclineHeight / Math.sin(inclineAngle);
+            const circleCenterX = startX + actualInclineLength * Math.cos(inclineAngle);
+            const circleCenterY = startY - inclineHeight;
+            
+            if (car.onIncline) {
+                // 在斜面上运动
+                const distanceOnIncline = 0.5 * g * time * time * 50; // 转换为像素
+                
+                if (distanceOnIncline < actualInclineLength) {
+                    // 仍在斜面上
+                    car.x = startX + distanceOnIncline * Math.cos(inclineAngle);
+                    car.y = startY - distanceOnIncline * Math.sin(inclineAngle);
+                    
+                    const velocity = g * time * 50; // 转换为像素/秒
+                    car.vx = velocity * Math.cos(inclineAngle);
+                    car.vy = -velocity * Math.sin(inclineAngle);
+                } else {
+                    // 到达斜面底端，进入圆形轨道
+                    car.onIncline = false;
+                    car.onCircle = true;
+                    car.angle = Math.PI; // 从圆形轨道最左侧开始（π弧度）
+                    time = 0; // 重置圆形轨道运动时间
+                }
+            } else if (car.onCircle) {
+                // 在圆形轨道上运动
+                // 计算进入圆形轨道时的速度
+                const entrySpeed = Math.sqrt(2 * g * H) * 50; // 转换为像素/秒
+                
+                // 计算角速度
+                const omega = entrySpeed / (R * 50);
+                
+                // 更新角度
+                car.angle = Math.PI + omega * time;
+                
+                // 计算位置
+                car.x = circleCenterX + R * 50 * Math.cos(car.angle);
+                car.y = circleCenterY + R * 50 * Math.sin(car.angle);
+                
+                // 计算速度分量
+                const tangentialSpeed = entrySpeed; // 在无能量损失的情况下，速度大小不变？
+                // 实际上，在圆形轨道上速度会变化，但这里简化处理
+                // 更精确的模拟需要考虑向心力和重力分量
+                
+                // 简化模型：速度方向沿切线方向，大小根据能量守恒计算
+                const currentHeight = (circleCenterY + R * 50 * Math.cos(car.angle)) / 50;
+                const currentSpeed = Math.sqrt(2 * g * (H - currentHeight +
+<!--检测到代码截断，自动续写中...-->
+R)) * 50; // 根据能量守恒计算当前速度
+                
+                // 速度方向沿切线方向（垂直于半径方向）
+                const tangentAngle = car.angle + Math.PI/2;
+                car.vx = currentSpeed * Math.cos(tangentAngle);
+                car.vy = currentSpeed * Math.sin(tangentAngle);
+                
+                // 检查是否完成圆形轨道（角度超过2π）
+                if (car.angle >= 2 * Math.PI) {
+                    car.onCircle = false;
+                    car.finished = true;
+                    
+                    // 计算最终水平速度
+                    const finalSpeed = Math.sqrt(2 * g * H) * 50;
+                    car.vx = finalSpeed;
+                    car.vy = 0;
+                }
+                
+                // 检查是否从轨道脱落（如果高度不足）
+                const criticalHeight = 2.5 * R; // 恰好通过最高点所需的最小高度
+                if (H < criticalHeight && car.angle > Math.PI/2 && car.angle < 3*Math.PI/2) {
+                    // 从轨道脱落，做抛体运动
+                    car.onCircle = false;
+                    car.finished = false;
+                    
+                    // 记录脱落时的状态
+                    const fallTime = 0;
+                    const fallX = car.x;
+                    const fallY = car.y;
+                    const fallVx = car.vx;
+                    const fallVy = car.vy;
+                    
+                    // 更新状态为抛体运动
+                    setTimeout(() => {
+                        car.x = fallX + fallVx * fallTime;
+                        car.y = fallY + fallVy * fallTime + 0.5 * g * 50 * fallTime * fallTime;
+                        car.vx = fallVx;
+                        car.vy = fallVy + g * 50 * fallTime;
+                    }, 0);
+                }
+            } else if (!car.finished) {
+                // 抛体运动（如果从轨道脱落）
+                car.x += car.vx * deltaTime;
+                car.y += car.vy * deltaTime + 0.5 * g * 50 * deltaTime * deltaTime;
+                car.vy += g * 50 * deltaTime;
+                
+                // 检查是否落地
+                if (car.y > canvas.height - 100 - carSize/2) {
+                    car.y = canvas.height - 100 - carSize/2;
+                    car.finished = true;
+                    car.vx = 0;
+                    car.vy = 0;
+                }
+            }
+            
+            // 更新数据显示
+            updateDataDisplay();
+        }
+        
+        // 动画循环
+        function animate() {
+            const currentTime = Date.now();
+            if (!lastTime) lastTime = currentTime;
+            const deltaTime = (currentTime - lastTime) / 1000; // 转换为秒
+            lastTime = currentTime;
+            
+            updatePhysics(deltaTime);
+            drawScene();
+            
+            if (isPlaying) {
+                animationId = requestAnimationFrame(animate);
+            }
+        }
+        
+        let lastTime = null;
+        
+        // 初始化
+        function init() {
+            initializeCar();
+            drawScene();
+            
+            // 设置事件监听器
+            setupEventListeners();
+        }
+        
+        // 设置事件监听器
+        function setupEventListeners() {
+            // 高度滑块
+            const heightSlider = document.getElementById('heightSlider');
+            const heightValue = document.getElementById('heightValue');
+            const heightDisplay = document.getElementById('heightDisplay');
+            
+            heightSlider.addEventListener('input', function() {
+                H = parseFloat(this.value);
+                heightValue.textContent = H.toFixed(1);
+                heightDisplay.textContent = H.toFixed(1) + ' m';
+            });
+            
+            // 半径滑块
+            const radiusSlider = document.getElementById('radiusSlider');
+            const radiusValue = document.getElementById('radiusValue');
+            const radiusDisplay = document.getElementById('radiusDisplay');
+            
+            radiusSlider.addEventListener('input', function() {
+                R = parseFloat(this.value);
+                radiusValue.textContent = R.toFixed(1);
+                radiusDisplay.textContent = R.toFixed(1) + ' m';
+            });
+            
+            // 重力滑块
+            const gravitySlider = document.getElementById('gravitySlider');
+            const gravityValue = document.getElementById('gravityValue');
+            const gravityDisplay = document.getElementById('gravityDisplay');
+            
+            gravitySlider.addEventListener('input', function() {
+                g = parseFloat(this.value);
+                gravityValue.textContent = g.toFixed(1);
+                gravityDisplay.textContent = g.toFixed(1) + ' m/s²';
+            });
+            
+            // 速度滑块
+            const speedSlider = document.getElementById('speedSlider');
+            const speedValue = document.getElementById('speedValue');
+            const speedDisplay = document.getElementById('speedDisplay');
+            
+            speedSlider.addEventListener('input', function() {
+                animationSpeed = parseFloat(this.value);
+                speedValue.textContent = animationSpeed.toFixed(1);
+                speedDisplay.textContent = animationSpeed.toFixed(1) + 'x';
+            });
+            
+            // 应用参数按钮
+            document.getElementById('applyBtn').addEventListener('click', function() {
+                if (isPlaying) {
+                    toggleAnimation();
+                }
+                initializeCar();
+                drawScene();
+            });
+            
+            // 开始/暂停按钮
+            document.getElementById('startPauseBtn').addEventListener('click', toggleAnimation);
+            
+            // 重置按钮
+            document.getElementById('resetBtn').addEventListener('click', function() {
+                if (isPlaying) {
+                    toggleAnimation();
+                }
+                initializeCar();
+                drawScene();
+            });
+            
+            // 单步按钮
+            document.getElementById('stepBtn').addEventListener('click', function() {
+                if (isPlaying) {
+                    toggleAnimation();
+                }
+                updatePhysics(0.05); // 单步前进0.05秒
+                drawScene();
+            });
+            
+            // 切换按钮
+            document.getElementById('toggleDataBtn').addEventListener('click', function() {
+                showData = !showData;
+                const dataPanel = document.querySelector('.data-panel');
+                dataPanel.style.display = showData ? 'block' : 'none';
+                this.classList.toggle('off', !showData);
+                this.innerHTML = showData ? '<span>✅</span> 实时数据' : '<span>❌</span> 实时数据';
+            });
+            
+            document.getElementById('toggleBarsBtn').addEventListener('click', function() {
+                showBars = !showBars;
+                const barsContainer = document.querySelector('.energy-bar-container');
+                barsContainer.style.display = showBars ? 'block' : 'none';
+                this.classList.toggle('off', !showBars);
+                this.innerHTML = showBars ? '<span>✅</span> 能量柱状图' : '<span>❌</span> 能量柱状图';
+            });
+            
+            document.getElementById('toggleTrajectoryBtn').addEventListener('click', function() {
+                showTrajectory = !showTrajectory;
+                this.classList.toggle('off', !showTrajectory);
+                this.innerHTML = showTrajectory ? '<span>✅</span> 运动轨迹' : '<span>❌</span> 运动轨迹';
+                drawScene();
+            });
+            
+            document.getElementById('toggleVectorsBtn').addEventListener('click', function() {
+                showVectors = !showVectors;
+                this.classList.toggle('off', !showVectors);
+                this.innerHTML = showVectors ? '<span>✅</span> 速度矢量' : '<span>❌</span> 速度矢量';
+                drawScene();
+            });
+        }
+        
+        // 切换动画状态
+        function toggleAnimation() {
+            isPlaying = !isPlaying;
+            const btn = document.getElementById('startPauseBtn');
+            
+            if (isPlaying) {
+                btn.innerHTML = '<span>⏸️</span> 暂停';
+                lastTime = Date.now();
+                animationId = requestAnimationFrame(animate);
+            } else {
+                btn.innerHTML = '<span>▶️</span> 继续';
+                if (animationId) {
+                    cancelAnimationFrame(animationId);
+                }
+            }
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('load', init);
+        
+        // 窗口大小调整时重新调整Canvas大小
+        window.addEventListener('resize', function() {
+            const container = document.querySelector('.canvas-container');
+            canvas.width = container.clientWidth;
+            canvas.height = 500;
+            drawScene();
+        });
+    </script>
+</body>
+</html>

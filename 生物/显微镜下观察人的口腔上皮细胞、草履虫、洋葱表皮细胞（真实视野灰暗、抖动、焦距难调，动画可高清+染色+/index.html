@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>微观世界探索：显微镜下的细胞观察</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            max-width: 800px;
+        }
+
+        h1 {
+            color: #4fc3f7;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .subtitle {
+            color: #b0bec5;
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            max-width: 1200px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .main-panel {
+            flex: 1;
+            min-width: 300px;
+            max-width: 700px;
+            background: rgba(30, 30, 46, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(76, 175, 80, 0.1);
+        }
+
+        .control-panel {
+            flex: 0 0 300px;
+            background: rgba(30, 30, 46, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(33, 150, 243, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .panel-title {
+            color: #4fc3f7;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid rgba(79, 195, 247, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel-title i {
+            font-size: 1.2rem;
+        }
+
+        .microscope-view {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background-color: #0a0a15;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            border: 2px solid #333;
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.8);
+        }
+
+        #microscopeCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .sample-selector {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .sample-btn {
+            flex: 1;
+            padding: 12px 5px;
+            background: rgba(40, 40, 60, 0.8);
+            border: 2px solid #444;
+            border-radius: 8px;
+            color: #ccc;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .sample-btn:hover {
+            background: rgba(60, 60, 90, 0.9);
+            transform: translateY(-2px);
+        }
+
+        .sample-btn.active {
+            background: rgba(33, 150, 243, 0.25);
+            border-color: #2196f3;
+            color: #90caf9;
+            box-shadow: 0 0 15px rgba(33, 150, 243, 0.3);
+        }
+
+        .control-section {
+            background: rgba(40, 40, 60, 0.5);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .section-title {
+            color: #81c784;
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .focus-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .focus-knob {
+            position: relative;
+            width: 70px;
+            height: 70px;
+            cursor: pointer;
+        }
+
+        .knob-label {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #aaa;
+            margin-top: 5px;
+        }
+
+        .enhancement-controls {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .enhance-btn {
+            padding: 12px 10px;
+            background: rgba(50, 50, 70, 0.8);
+            border: 1px solid #555;
+            border-radius: 8px;
+            color: #ddd;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .enhance-btn:hover {
+            background: rgba(70, 70, 100, 0.9);
+            transform: translateY(-2px);
+        }
+
+        .enhance-btn.active {
+            background: rgba(76, 175, 80, 0.25);
+            border-color: #4caf50;
+            color: #a5d6a7;
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+        }
+
+        .comparison-panel {
+            margin-top: 10px;
+            background: rgba(40, 40, 60, 0.5);
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .comparison-btn {
+            width: 100%;
+            padding: 14px;
+            background: rgba(103, 58, 183, 0.7);
+            border: none;
+            border-radius: 8px;
+            color: #e1bee7;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .comparison-btn:hover {
+            background: rgba(123, 78, 203, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(103, 58, 183, 0.4);
+        }
+
+        .comparison-view {
+            display: none;
+            margin-top: 20px;
+            background: rgba(20, 20, 35, 0.9);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid #673ab7;
+        }
+
+        .comparison-view.active {
+            display: block;
+        }
+
+        .comparison-title {
+            color: #ba68c8;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .comparison-cell {
+            background: rgba(30, 30, 45, 0.8);
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .comparison-canvas {
+            width: 100%;
+            height: 120px;
+            background: #0a0a15;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .cell-name {
+            color: #4fc3f7;
+            font-weight: 600;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .comparison-table th {
+            background: rgba(103, 58, 183, 0.3);
+            color: #d1c4e9;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .comparison-table td {
+            padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .hint {
+            color: #ffb74d;
+            font-size: 0.9rem;
+            margin-top: 20px;
+            padding: 12px;
+            background: rgba(255, 183, 77, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid #ffb74d;
+            line-height: 1.5;
+        }
+
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #78909c;
+            font-size: 0.9rem;
+            max-width: 800px;
+            padding: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .control-panel {
+                width: 100%;
+            }
+            
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔬 微观世界探索：显微镜下的细胞</h1>
+        <p class="subtitle">模拟真实显微镜观察体验，探索人口腔上皮细胞、草履虫和洋葱表皮细胞的微观结构。体验从模糊到清晰，从灰暗到染色的完整观察过程。</p>
+    </div>
+
+    <div class="container">
+        <div class="main-panel">
+            <div class="panel-title">
+                <span>🔭 显微镜视野</span>
+            </div>
+            
+            <div class="microscope-view">
+                <canvas id="microscopeCanvas"></canvas>
+            </div>
+            
+            <div class="sample-selector">
+                <button class="sample-btn active" data-sample="cheek">🧬 人口腔上皮细胞</button>
+                <button class="sample-btn" data-sample="paramecium">🦠 草履虫</button>
+                <button class="sample-btn" data-sample="onion">🧅 洋葱表皮细胞</button>
+            </div>
+            
+            <div class="hint">
+                💡 提示：先使用调焦旋钮使图像变清晰，然后尝试使用染色、稳定视野等增强功能来观察细胞细节结构。
+            </div>
+        </div>
+        
+        <div class="control-panel">
+            <div class="panel-title">
+                <span>⚙️ 显微镜控制</span>
+            </div>
+            
+            <div class="control-section">
+                <div class="section-title">
+                    <span>🎛️ 调焦控制</span>
+                </div>
+                <div class="focus-controls">
+                    <div>
+                        <div class="focus-knob" id="coarseKnob">
+                            <svg width="70" height="70" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="45" fill="#333" stroke="#555" stroke-width="3"/>
+                                <circle cx="50" cy="50" r="35" fill="#444" stroke="#666" stroke-width="2"/>
+                                <line x1="50" y1="10" x2="50" y2="30" stroke="#4fc3f7" stroke-width="4"/>
+                                <circle cx="50" cy="50" r="5" fill="#4fc3f7"/>
+                                <text x="50" y="85" text-anchor="middle" fill="#aaa" font-size="12">粗准焦</text>
+                            </svg>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="focus-knob" id="fineKnob">
+                            <svg width="70" height="70" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="45" fill="#333" stroke="#555" stroke-width="3"/>
+                                <circle cx="50" cy="50" r="35" fill="#444" stroke="#666" stroke-width="2"/>
+                                <line x1="50" y1="15" x2="50" y2="35" stroke="#81c784" stroke-width="3"/>
+                                <circle cx="50" cy="50" r="5" fill="#81c784"/>
+                                <text x="50" y="85" text-anchor="middle" fill="#aaa" font-size="12">细准焦</text>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="control-section">
+                <div class="section-title">
+                    <span>✨ 视野增强功能</span>
+                </div>
+                <div class="enhancement-controls">
+                    <button class="enhance-btn" id="stainBtn">
+                        <span>🎨 染色</span>
+                    </button>
+                    <button class="enhance-btn" id="stabilizeBtn">
+                        <span>📷 稳定视野</span>
+                    </button>
+                    <button class="enhance-btn" id="brightnessBtn">
+                        <span>💡 增强亮度</span>
+                    </button>
+                    <button class="enhance-btn" id="labelsBtn">
+                        <span>🏷️ 显示标注</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="control-section">
+                <div class="section-title">
+                    <span>🔄 重置与对比</span>
+                </div>
+                <button class="enhance-btn" id="resetBtn" style="grid-column: span 2;">
+                    <span>🔄 重置当前样本</span>
+                </button>
+            </div>
+            
+            <div class="comparison-panel">
+                <button class="comparison-btn" id="compareBtn">
+                    <span>🔍 并排对比三种细胞</span>
+                </button>
+                
+                <div class="comparison-view" id="comparisonView">
+                    <div class="comparison-title">三种细胞结构对比</div>
+                    
+                    <div class="comparison-grid">
+                        <div class="comparison-cell">
+                            <canvas class="comparison-canvas" id="compareCheek"></canvas>
+                            <div class="cell-name">人口腔上皮细胞</div>
+                        </div>
+                        <div class="comparison-cell">
+                            <canvas class="comparison-canvas" id="compareParamecium"></canvas>
+                            <div class="cell-name">草履虫</div>
+                        </div>
+                        <div class="comparison-cell">
+                            <canvas class="comparison-canvas" id="compareOnion"></canvas>
+                            <div class="cell-name">洋葱表皮细胞</div>
+                        </div>
+                    </div>
+                    
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>结构特征</th>
+                                <th>人口腔上皮细胞</th>
+                                <th>草履虫</th>
+                                <th>洋葱表皮细胞</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>细胞壁</td>
+                                <td>❌ 无</td>
+                                <td>❌ 无</td>
+                                <td>✅ 有</td>
+                            </tr>
+                            <tr>
+                                <td>细胞膜</td>
+                                <td>✅ 有</td>
+                                <td>✅ 有</td>
+                                <td>✅ 有</td>
+                            </tr>
+                            <tr>
+                                <td>细胞核</td>
+                                <td>✅ 有</td>
+                                <td>✅ 有（大核+小核）</td>
+                                <td>✅ 有</td>
+                            </tr>
+                            <tr>
+                                <td>细胞质</td>
+                                <td>✅ 有</td>
+                                <td>✅ 有</td>
+                                <td>✅ 有</td>
+                            </tr>
+                            <tr>
+                                <td>叶绿体</td>
+                                <td>❌ 无</td>
+                                <td>❌ 无</td>
+                                <td>❌ 无（表皮细胞）</td>
+                            </tr>
+                            <tr>
+                                <td>液泡</td>
+                                <td>❌ 无</td>
+                                <td>✅ 有（食物泡、伸缩泡）</td>
+                                <td>✅ 有（中央大液泡）</td>
+                            </tr>
+                            <tr>
+                                <td>运动结构</td>
+                                <td>❌ 无</td>
+                                <td>✅ 纤毛</td>
+                                <td>❌ 无</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>教学动画设计说明：本动画模拟真实显微镜观察体验，初始状态为灰暗、模糊、抖动的视野，通过调焦和增强功能可逐步获得清晰、稳定、染色的高清图像，便于学习三种典型细胞的微观结构。</p>
+        <p>© 微观世界探索 - 教育技术交互动画</p>
+    </div>
+
+    <script>
+        // 主Canvas和上下文
+        const canvas = document.getElementById('microscopeCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 对比视图Canvas
+        const compareCanvases = {
+            cheek: document.getElementById('compareCheek'),
+            paramecium: document.getElementById('compareParamecium'),
+            onion: document.getElementById('compareOnion')
+        };
+        
+        // 设置Canvas尺寸
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            
+            // 同时设置对比Canvas的尺寸
+            Object.values(compareCanvases).forEach(compareCanvas => {
+                compareCanvas.width = compareCanvas.clientWidth;
+                compareCanvas.height = compareCanvas.clientHeight;
+            });
+        }
+        
+        // 初始状态
+        let currentSample = 'cheek'; // cheek, paramecium, onion
+        let focusLevel = 0; // 0-100, 0表示完全失焦
+        let isStained = false;
+        let isStabilized = false;
+        let isBright = false;
+        let showLabels = false;
+        
+        // 抖动参数
+        let shakeX = 0;
+        let shakeY = 0;
+        let shakeTime = 0;
+        
+        // 动画帧ID
+        let animationId = null;
+        
+        // 样本数据
+        const samples = {
+            cheek: {
+                name: '人口腔上皮细胞',
+                color: '#e8f4f8',
+                nucleusColor: '#8a2be2',
+                stainedColor: '#f0e6d2',
+                stainedNucleusColor: '#6a0dad',
+                cellCount: 8,
+                label: '动物细胞（无细胞壁）'
+            },
+            paramecium: {
+                name: '草履虫',
+                color: '#d4e6d4',
+                nucleusColor: '#8b0000',
+                stainedColor: '#c8e6c9',
+                stainedNucleusColor: '#a52a2a',
+                cellCount: 1,
+                label: '单细胞生物'
+            },
+            onion: {
+                name: '洋葱表皮细胞',
+                color: '#f0f8e8',
+                nucleusColor: '#4b0082',
+                cellWallColor: '#32cd32',
+                stainedColor: '#f5f5dc',
+                stainedNucleusColor: '#800080',
+                stainedCellWallColor: '#228b22',
+                cellCount: 12,
+                label: '植物细胞（有细胞壁）'
+            }
+        };
+        
+        // 初始化
+        function init() {
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            // 样本选择按钮事件
+            document.querySelectorAll('.sample-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.sample-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentSample = this.dataset.sample;
+                    
+                    // 重置增强状态
+                    resetEnhancements();
+                    
+                    // 更新对比视图
+                    updateComparisonView();
+                });
+            });
+            
+            // 调焦旋钮事件
+            document.getElementById('coarseKnob').addEventListener('mousedown', startKnobDrag);
+            document.getElementById('fineKnob').addEventListener('mousedown', startKnobDrag);
+            
+            // 增强按钮事件
+            document.getElementById('stainBtn').addEventListener('click', function() {
+                isStained = !isStained;
+                this.classList.toggle('active', isStained);
+                this.innerHTML = isStained ? '<span>🎨 取消染色</span>' : '<span>🎨 染色</span>';
+            });
+            
+            document.getElementById('stabilizeBtn').addEventListener('click', function() {
+                isStabilized = !isStabilized;
+                this.classList.toggle('active', isStabilized);
+                this.innerHTML = isStabilized ? '<span>📷 取消稳定</span>' : '<span>📷 稳定视野</span>';
+            });
+            
+            document.getElementById('brightnessBtn').addEventListener('click', function() {
+                isBright = !isBright;
+                this.classList.toggle('active', isBright);
+                this.innerHTML = isBright ? '<span>💡 降低亮度</span>' : '<span>💡 增强亮度</span>';
+            });
+            
+            document.getElementById('labelsBtn').addEventListener('click', function() {
+                showLabels = !showLabels;
+                this.classList.toggle('active', showLabels);
+                this.innerHTML = showLabels ? '<span>🏷️ 隐藏标注</span>' : '<span>🏷️ 显示标注</span>';
+            });
+            
+            document.getElementById('resetBtn').addEventListener('click', resetEnhancements);
+            
+            // 对比按钮事件
+            document.getElementById('compareBtn').addEventListener('click', function() {
+                const comparisonView = document.getElementById('comparisonView');
+                comparisonView.classList.toggle('active');
+                this.innerHTML = comparisonView.classList.contains('active') 
+                    ? '<span>🔍 隐藏对比视图</span>' 
+                    : '<span>🔍 并排对比三种细胞</span>';
+                
+                if (comparisonView.classList.contains('active')) {
+                    updateComparisonView();
+                }
+            });
+            
+            // 开始动画循环
+            animate();
+        }
+        
+        // 重置增强功能
+        function resetEnhancements() {
+            focusLevel = 0;
+            isStained = false;
+            isStabilized = false;
+            isBright = false;
+            showLabels = false;
+            
+            // 更新按钮状态
+            document.getElementById('stainBtn').classList.remove('active');
+            document.getElementById('stainBtn').innerHTML = '<span>🎨 染色</span>';
+            document.getElementById('stabilizeBtn').classList.remove('active');
+            document.getElementById('stabilizeBtn').innerHTML = '<span>📷 稳定视野</span>';
+            document.getElementById('brightnessBtn').classList.remove('active');
+            document.getElementById('brightnessBtn').innerHTML = '<span>💡 增强亮度</span>';
+            document.getElementById('labelsBtn').classList.remove('active');
+            document.getElementById('labelsBtn').innerHTML = '<span>🏷️ 显示标注</span>';
+        }
+        
+        // 旋钮拖动控制
+        function startKnobDrag(e) {
+            e.preventDefault();
+            const knob = e.currentTarget;
+            const isCoarse = knob.id === 'coarseKnob';
+            let startY = e.clientY || e.touches[0].clientY;
+            let startFocus = focusLevel;
+            
+            function onMouseMove(moveEvent) {
+                const currentY = moveEvent.clientY || moveEvent.touches[0].clientY;
+                const deltaY = startY - currentY;
+                const change = isCoarse ? deltaY * 0.5 : deltaY * 0.2;
+                
+                focusLevel = Math.max(0, Math.min(100, startFocus + change));
+                
+                // 旋转旋钮视觉效果
+                const knobSvg = knob.querySelector('svg');
+                const rotation = (focusLevel / 100) * 360;
+                knobSvg.style.transform = `rotate(${rotation}deg)`;
+            }
+            
+            function onMouseUp() {
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+                document.removeEventListener('touchmove', onMouseMove);
+                document.removeEventListener('touchend', onMouseUp);
+            }
+            
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+            document.addEventListener('touchmove', onMouseMove);
+            document.addEventListener('touchend', onMouseUp);
+        }
+        
+        // 绘制主显微镜视野
+        function drawMicroscopeView() {
+            const width = canvas.width;
+            const height = canvas.height;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const radius = Math.min(width, height) * 0.45;
+            
+            // 清空画布
+            ctx.clearRect(0, 0, width, height);
+            
+            // 绘制圆形视野（模拟显微镜圆形视野）
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            ctx.clip();
+            
+            // 根据亮度设置背景
+            let bgColor = isBright ? '#3a3a3a' : '#1a1a1a';
+            ctx.fillStyle = bgColor;
+            ctx.fillRect(0, 0, width, height);
+            
+            // 添加噪点效果（模拟真实显微镜）
+            if (!isBright) {
+                addNoiseEffect();
+            }
+            
+            // 应用抖动效果（如果未稳定）
+            if (!isStabilized) {
+                shakeTime += 0.05;
+                shakeX = Math.sin(shakeTime * 1.3) * (3 - focusLevel / 50);
+                shakeY = Math.cos(shakeTime * 0.9) * (3 - focusLevel / 50);
+                ctx.translate(shakeX, shakeY);
+            }
+            
+            // 根据对焦级别应用模糊效果
+            const blurAmount = 10 - (focusLevel / 100) * 9.5;
+            ctx.filter = `blur(${blurAmount}px)`;
+            
+            // 绘制样本
+            drawSample();
+            
+            // 恢复上下文状态
+            ctx.restore();
+            
+            // 绘制圆形边框
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            ctx.strokeStyle = '#555';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            // 绘制标注（如果启用）
+            if (showLabels && focusLevel > 30) {
+                drawLabels();
+            }
+        }
+        
+        // 添加噪点效果
+        function addNoiseEffect() {
+            const width = canvas.width;
+            const height = canvas.height;
+            const imageData = ctx.getImageData(0, 0, width, height);
+            const data = imageData.data;
+            
+            // 添加随机噪点
+            for (let i = 0; i < data.length; i += 4) {
+                if (Math.random() > 0.95) {
+                    const noise = Math.random() * 50;
+                    data[i] += noise;     // R
+                    data[i + 1] += noise; // G
+                    data[i + 2] += noise; // B
+                }
+            }
+            
+            ctx.putImageData(imageData, 0, 0);
+        }
+        
+        // 绘制当前样本
+        function drawSample() {
+            const width = canvas.width;
+            const height = canvas.height;
+            const sample = samples[currentSample];
+            
+            // 根据对焦级别调整透明度
+            const alpha = focusLevel / 100;
+            
+            // 根据样本类型绘制不同的细胞
+            if (currentSample === 'cheek') {
+                drawCheekCells(alpha);
+            } else if (currentSample === 'paramecium') {
+                drawParamecium(alpha);
+            } else if (currentSample === 'onion') {
+                drawOnionCells(alpha);
+            }
+        }
+        
+        // 绘制口腔上皮细胞
+        function drawCheekCells(alpha) {
+            const width = canvas.width;
+            const height = canvas.height;
+            const sample = samples.cheek;
+            const cellCount = sample.cellCount;
+            
+            // 细胞颜色（根据染色状态）
+            const cellColor = isStained ? sample.stainedColor : sample.color;
+            const nucleusColor = isStained ? sample.stainedNucleusColor : sample.nucleusColor;
+            
+            for (let i = 0; i < cellCount; i++) {
+                // 随机位置（但保持在视野内）
+                const x = width * 0.2 + Math.random() * width * 0.6;
+                const y = height * 0.2 + Math.random() * height * 0.6;
+                const size = 20 + Math.random() * 30;
+                
+                // 绘制细胞质（不规则形状模拟上皮细胞）
+                ctx.beginPath();
+                ctx.ellipse(x, y, size, size * 0.7, 0, 0, Math.PI * 2);
+                ctx.fillStyle = cellColor;
+                ctx.globalAlpha = alpha * 0.8;
+                ctx.fill();
+                
+                // 绘制细胞核
+                ctx.beginPath();
+                ctx.arc(x, y, size * 0.3, 0, Math.PI * 2);
+                ctx.fillStyle = nucleusColor;
+                ctx.globalAlpha = alpha;
+                ctx.fill();
+                
+                // 绘制细胞膜（轮廓）
+                ctx.beginPath();
+                ctx.ellipse(x, y, size, size * 0.7, 0, 0, Math.PI * 2);
+                ctx.strokeStyle = isStained ? '#666' : '#888';
+                ctx.lineWidth = 1;
+                ctx.globalAlpha = alpha * 0.7;
+                ctx.stroke();
+            }
+            
+            ctx.globalAlpha = 1;
+        }
+        
+        // 绘制草履虫
+        function drawParamecium(alpha) {
+            const width = canvas.width;
+            const height = canvas.height;
+            const sample = samples.paramecium;
+            
+            // 细胞颜色（根据染色状态）
+            const cellColor = isStained ? sample.stainedColor : sample.color;
+            const nucleusColor = isStained ? sample.stainedNucleusColor : sample.nucleusColor;
+            
+            // 草履虫位置（居中）
+            const x = width / 2;
+            const y = height / 2;
+            const length = 80;
+            const widthSize = 30;
+            
+            // 绘制草履虫身体（鞋底形状）
+            ctx.beginPath();
+            ctx.ellipse(x, y, length, widthSize, 0, 0, Math.PI * 2);
+            ctx.fillStyle = cellColor;
+            ctx.globalAlpha = alpha * 0.8;
+            ctx.fill();
+            
+            // 绘制细胞核（大核和小核）
+            ctx.beginPath();
+            ctx.ellipse(x - 10, y, 15, 10, 0, 0, Math.PI * 2); // 大核
+            ctx.fillStyle = nucleusColor;
+            ctx.globalAlpha = alpha;
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.arc(x + 20, y - 5, 4, 0, Math.PI * 2); // 小核
+            ctx.fillStyle = '#000';
+            ctx.globalAlpha = alpha;
+            ctx.fill();
+            
+            // 绘制纤毛（如果对焦足够清晰）
+            if (focusLevel > 50) {
+                ctx.strokeStyle = isStained ? '#aaa' : '#ccc';
+                ctx.lineWidth = 0.5;
+                ctx.globalAlpha = alpha * 0.7;
+                
+                for (let i = 0; i < 30; i++) {
+                    const angle = (i / 30) * Math.PI * 2;
+                    const ciliaX = x + Math.cos(angle) * (length - 5);
+                    const ciliaY = y + Math.sin(angle) * (widthSize - 5);
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(ciliaX, ciliaY);
+                    ctx.lineTo(
+                        ciliaX + Math.cos(angle) * 10,
+                        ciliaY + Math.sin(angle) * 10
+                    );
+                    ctx.stroke();
+                }
+            }
+            
+            // 绘制食物泡（如果染色）
+            if (isStained && focusLevel > 40) {
+                ctx.fillStyle = '#8bc34a';
+                ctx.globalAlpha = alpha * 0.6;
+                
+                // 几个食物泡
+                ctx.beginPath();
+                ctx.arc(x - 30, y + 10, 8, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.beginPath();
+                ctx.arc(x + 10, y - 15, 6, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // 绘制细胞膜轮廓
+            ctx.beginPath();
+            ctx.ellipse(x, y, length, widthSize, 0, 0, Math.PI * 2);
+            ctx.strokeStyle = isStained ? '#666' : '#888';
+            ctx.lineWidth = 1;
+            ctx.globalAlpha = alpha * 0.7;
+            ctx.stroke();
+            
+            ctx.globalAlpha = 1;
+        }
+        
+        // 绘制洋葱表皮细胞
+        function drawOnionCells(alpha) {
+            const width = canvas.width;
+            const height = canvas.height;
+            const sample = samples.onion;
+            const cellCount = sample.cellCount;
+            
+            // 细胞颜色（根据染色状态）
+            const cellColor = isStained ? sample.stainedColor : sample.color;
+            const nucleusColor = isStained ? sample.stainedNucleusColor : sample.nucleusColor;
+            const cellWallColor = isStained ? sample.stainedCellWallColor : sample.cellWallColor;
+            
+            // 绘制网格状排列的细胞
+            const cols = 4;
+            const rows = 3;
+            const cellWidth = width * 0.8 / cols;
+            const cellHeight = height * 0.8 / rows;
+            const startX = width * 0.1;
+            const startY = height * 0.1;
+            
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    const x = startX + col * cellWidth + cellWidth / 2;
+                    const y = startY + row * cellHeight + cellHeight / 2;
+                    
+                    // 绘制细胞壁（矩形）
+                    ctx.fillStyle = cellWallColor;
+                    ctx.globalAlpha = alpha * 0.3;
+                    ctx.fillRect(x - cellWidth / 2, y - cellHeight / 2, cell
+<!--检测到代码截断，自动续写中...-->
+Width / 2, cellHeight / 2);
+                    
+                    // 绘制细胞壁边框
+                    ctx.strokeStyle = cellWallColor;
+                    ctx.lineWidth = 2;
+                    ctx.globalAlpha = alpha * 0.8;
+                    ctx.strokeRect(x - cellWidth / 2, y - cellHeight / 2, cellWidth, cellHeight);
+                    
+                    // 绘制细胞质（填充大部分细胞）
+                    ctx.fillStyle = cellColor;
+                    ctx.globalAlpha = alpha * 0.5;
+                    ctx.fillRect(
+                        x - cellWidth / 2 + 5, 
+                        y - cellHeight / 2 + 5, 
+                        cellWidth - 10, 
+                        cellHeight - 10
+                    );
+                    
+                    // 绘制细胞核（靠近细胞壁）
+                    const nucleusX = x - cellWidth / 4;
+                    const nucleusY = y;
+                    const nucleusSize = Math.min(cellWidth, cellHeight) * 0.2;
+                    
+                    ctx.beginPath();
+                    ctx.arc(nucleusX, nucleusY, nucleusSize, 0, Math.PI * 2);
+                    ctx.fillStyle = nucleusColor;
+                    ctx.globalAlpha = alpha;
+                    ctx.fill();
+                    
+                    // 绘制液泡（中央大液泡）
+                    ctx.fillStyle = isStained ? '#e8f4f8' : '#f0f8ff';
+                    ctx.globalAlpha = alpha * 0.4;
+                    ctx.fillRect(
+                        x + cellWidth / 6, 
+                        y - cellHeight / 3, 
+                        cellWidth / 3, 
+                        cellHeight * 0.6
+                    );
+                }
+            }
+            
+            ctx.globalAlpha = 1;
+        }
+        
+        // 绘制标注
+        function drawLabels() {
+            const width = canvas.width;
+            const height = canvas.height;
+            const sample = samples[currentSample];
+            
+            ctx.font = '14px Arial, sans-serif';
+            ctx.fillStyle = '#ffffff';
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 3;
+            ctx.textAlign = 'center';
+            ctx.globalAlpha = 0.9;
+            
+            if (currentSample === 'cheek') {
+                // 口腔上皮细胞标注
+                ctx.fillText('细胞膜', width * 0.5, height * 0.3);
+                ctx.fillText('细胞质', width * 0.5, height * 0.5);
+                ctx.fillText('细胞核', width * 0.5, height * 0.7);
+                
+                // 绘制引线
+                drawLabelLine(width * 0.5, height * 0.25, width * 0.3, height * 0.35);
+                drawLabelLine(width * 0.5, height * 0.45, width * 0.7, height * 0.55);
+                drawLabelLine(width * 0.5, height * 0.65, width * 0.4, height * 0.75);
+                
+            } else if (currentSample === 'paramecium') {
+                // 草履虫标注
+                ctx.fillText('纤毛', width * 0.3, height * 0.2);
+                ctx.fillText('细胞膜', width * 0.7, height * 0.3);
+                ctx.fillText('大核', width * 0.4, height * 0.5);
+                ctx.fillText('小核', width * 0.6, height * 0.4);
+                ctx.fillText('食物泡', width * 0.3, height * 0.7);
+                
+                // 绘制引线
+                drawLabelLine(width * 0.25, height * 0.15, width * 0.2, height * 0.25);
+                drawLabelLine(width * 0.75, height * 0.25, width * 0.8, height * 0.35);
+                drawLabelLine(width * 0.35, height * 0.45, width * 0.45, height * 0.55);
+                drawLabelLine(width * 0.65, height * 0.35, width * 0.7, height * 0.45);
+                drawLabelLine(width * 0.25, height * 0.65, width * 0.2, height * 0.75);
+                
+            } else if (currentSample === 'onion') {
+                // 洋葱表皮细胞标注
+                ctx.fillText('细胞壁', width * 0.3, height * 0.2);
+                ctx.fillText('细胞膜', width * 0.7, height * 0.3);
+                ctx.fillText('细胞核', width * 0.4, height * 0.5);
+                ctx.fillText('液泡', width * 0.7, height * 0.7);
+                ctx.fillText('细胞质', width * 0.5, height * 0.6);
+                
+                // 绘制引线
+                drawLabelLine(width * 0.25, height * 0.15, width * 0.15, height * 0.25);
+                drawLabelLine(width * 0.75, height * 0.25, width * 0.85, height * 0.35);
+                drawLabelLine(width * 0.35, height * 0.45, width * 0.25, height * 0.55);
+                drawLabelLine(width * 0.75, height * 0.65, width * 0.85, height * 0.75);
+                drawLabelLine(width * 0.55, height * 0.55, width * 0.65, height * 0.65);
+            }
+            
+            ctx.globalAlpha = 1;
+        }
+        
+        // 绘制标注引线
+        function drawLabelLine(textX, textY, targetX, targetY) {
+            ctx.beginPath();
+            ctx.moveTo(textX, textY);
+            ctx.lineTo(targetX, targetY);
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([5, 3]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+        
+        // 更新对比视图
+        function updateComparisonView() {
+            // 保存当前状态
+            const originalSample = currentSample;
+            const originalFocus = focusLevel;
+            const originalStained = isStained;
+            const originalStabilized = isStabilized;
+            const originalBright = isBright;
+            const originalLabels = showLabels;
+            
+            // 绘制口腔上皮细胞对比图
+            currentSample = 'cheek';
+            focusLevel = 100;
+            isStained = true;
+            isStabilized = true;
+            isBright = true;
+            showLabels = false;
+            
+            const cheekCtx = compareCanvases.cheek.getContext('2d');
+            cheekCtx.clearRect(0, 0, compareCanvases.cheek.width, compareCanvases.cheek.height);
+            drawComparisonCell(cheekCtx, 'cheek');
+            
+            // 绘制草履虫对比图
+            currentSample = 'paramecium';
+            const parameciumCtx = compareCanvases.paramecium.getContext('2d');
+            parameciumCtx.clearRect(0, 0, compareCanvases.paramecium.width, compareCanvases.paramecium.height);
+            drawComparisonCell(parameciumCtx, 'paramecium');
+            
+            // 绘制洋葱表皮细胞对比图
+            currentSample = 'onion';
+            const onionCtx = compareCanvases.onion.getContext('2d');
+            onionCtx.clearRect(0, 0, compareCanvases.onion.width, compareCanvases.onion.height);
+            drawComparisonCell(onionCtx, 'onion');
+            
+            // 恢复原始状态
+            currentSample = originalSample;
+            focusLevel = originalFocus;
+            isStained = originalStained;
+            isStabilized = originalStabilized;
+            isBright = originalBright;
+            showLabels = originalLabels;
+        }
+        
+        // 绘制对比视图中的细胞
+        function drawComparisonCell(ctx, sampleType) {
+            const width = ctx.canvas.width;
+            const height = ctx.canvas.height;
+            
+            // 设置背景
+            ctx.fillStyle = '#2a2a3a';
+            ctx.fillRect(0, 0, width, height);
+            
+            // 根据样本类型绘制
+            if (sampleType === 'cheek') {
+                // 绘制口腔上皮细胞
+                ctx.fillStyle = samples.cheek.stainedColor;
+                ctx.fillRect(width * 0.2, height * 0.2, width * 0.6, height * 0.4);
+                
+                ctx.fillStyle = samples.cheek.stainedNucleusColor;
+                ctx.beginPath();
+                ctx.arc(width * 0.5, height * 0.4, width * 0.1, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.strokeStyle = '#666';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(width * 0.2, height * 0.2, width * 0.6, height * 0.4);
+                
+            } else if (sampleType === 'paramecium') {
+                // 绘制草履虫
+                ctx.fillStyle = samples.paramecium.stainedColor;
+                ctx.beginPath();
+                ctx.ellipse(width * 0.5, height * 0.5, width * 0.3, height * 0.2, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = samples.paramecium.stainedNucleusColor;
+                ctx.beginPath();
+                ctx.ellipse(width * 0.4, height * 0.5, width * 0.08, height * 0.05, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = '#000';
+                ctx.beginPath();
+                ctx.arc(width * 0.6, height * 0.45, width * 0.02, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = '#8bc34a';
+                ctx.beginPath();
+                ctx.arc(width * 0.3, height * 0.6, width * 0.05, 0, Math.PI * 2);
+                ctx.fill();
+                
+            } else if (sampleType === 'onion') {
+                // 绘制洋葱表皮细胞
+                ctx.fillStyle = samples.onion.stainedCellWallColor;
+                ctx.lineWidth = 2;
+                ctx.strokeRect(width * 0.2, height * 0.2, width * 0.6, height * 0.6);
+                
+                ctx.fillStyle = samples.onion.stainedColor;
+                ctx.fillRect(width * 0.25, height * 0.25, width * 0.5, height * 0.5);
+                
+                ctx.fillStyle = samples.onion.stainedNucleusColor;
+                ctx.beginPath();
+                ctx.arc(width * 0.3, height * 0.5, width * 0.08, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = '#e8f4f8';
+                ctx.fillRect(width * 0.5, height * 0.3, width * 0.2, height * 0.4);
+            }
+        }
+        
+        // 动画循环
+        function animate() {
+            drawMicroscopeView();
+            animationId = requestAnimationFrame(animate);
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('DOMContentLoaded', init);
+        
+        // 清理动画帧
+        window.addEventListener('beforeunload', () => {
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+        });
+    </script>
+</body>
+</html>

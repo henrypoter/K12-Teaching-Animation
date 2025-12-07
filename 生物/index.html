@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生物教学动画 - K12 Teaching Animation</title>
+    <meta name="description" content="生命活动规律与微观机制的可视化教学动画">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --success-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --dark-bg: #0f0f23;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-hover: rgba(255, 255, 255, 0.08);
+            --text-primary: #ffffff;
+            --text-secondary: #b4b4c5;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(45deg, #0f0f23 0%, #1a1a3e 50%, #0f0f23 100%);
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveBackground 20s linear infinite;
+        }
+
+        @keyframes moveBackground {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            100% {
+                transform: translate(50px, 50px);
+            }
+        }
+
+        /* Header */
+        header {
+            padding: 3rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: var(--success-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .breadcrumb {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--card-bg);
+            border-radius: 50px;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.8s ease-out 0.4s both;
+            transition: all 0.3s ease;
+        }
+
+        .breadcrumb:hover {
+            background: var(--card-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .breadcrumb a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--text-primary);
+        }
+
+        .breadcrumb span {
+            color: var(--text-secondary);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Category Section */
+        .category-section {
+            margin-bottom: 4rem;
+        }
+
+        .category-title {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            padding-left: 1rem;
+            border-left: 4px solid;
+            border-image: var(--success-gradient) 1;
+            animation: slideInLeft 0.6s ease-out;
+        }
+
+        /* Grid Layout */
+        .animation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        /* Card Styles */
+        .animation-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .animation-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--success-gradient);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: 0;
+        }
+
+        .animation-card:hover::before {
+            opacity: 0.1;
+        }
+
+        .animation-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+            border-color: rgba(102, 126, 234, 0.5); /* This might need adjustment based on theme */
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            background: var(--success-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            transition: transform 0.4s ease;
+        }
+
+        .animation-card:hover .card-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+            line-height: 1.4;
+        }
+
+        .card-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tag {
+            padding: 0.25rem 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .animation-card:hover .tag {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+            color: var(--text-primary);
+        }
+
+        /* Stats Section */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+            padding: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--success-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border-color);
+            margin-top: 4rem;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            .animation-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .category-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-animation"></div>
+
+    <header>
+        <div class="header-content">
+            <h1>🧬 生物教学动画</h1>
+            <p class="subtitle">生命活动规律与微观机制的可视化教学动画</p>
+            <div class="breadcrumb">
+                <a href="../index.html">🏠 首页</a>
+                <span>/</span>
+                <span>生物</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Stats Section -->
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number">41</div>
+                <div class="stat-label">教学动画</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">5</div>
+                <div class="stat-label">主题分类</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">可视化</div>
+            </div>
+        </div>
+
+        
+        <section class="category-section">
+            <h2 class="category-title">🔬 分子与细胞</h2>
+            <div class="animation-grid">
+        
+                <a href="./DNA分子双螺旋结构与半保留复制（拉链式打开→新链合成）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">DNA分子双螺旋结构与半保留复制</h3>
+                        <p class="card-description">拉链式打开→新链合成</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./DNA半保留复制叉的实时动画/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">DNA半保留复制叉的实时动画</h3>
+                        <p class="card-description">DNA半保留复制叉的实时动画</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./人体的呼吸全过程（肺泡气体交换+氧气运输+组织细胞内呼吸）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">人体的呼吸全过程</h3>
+                        <p class="card-description">肺泡气体交换+氧气运输+组织细胞内呼吸</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./体液免疫与细胞免疫的双系统协同动画/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">体液免疫与细胞免疫的双系统协同动画</h3>
+                        <p class="card-description">体液免疫与细胞免疫的双系统协同动画</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./光合作用与细胞呼吸的完整电子传递链对比/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">光合作用与细胞呼吸的完整电子传递链对比</h3>
+                        <p class="card-description">光合作用与细胞呼吸的完整电子传递链对比</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./光合作用光反应阶段的电子传递链与光合磷酸化（Z型图+化学渗透）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">光合作用光反应阶段的电子传递链与光合磷酸化</h3>
+                        <p class="card-description">Z型图+化学渗透</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./光合作用全过程（叶绿体双层膜+光反应在类囊体薄膜、暗反应在基质）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">光合作用全过程</h3>
+                        <p class="card-description">叶绿体双层膜+光反应在类囊体薄膜、暗反应在基质</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./免疫应答全过程（T细胞活化、B细胞分化、抗原提呈、记忆细胞）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">免疫应答全过程</h3>
+                        <p class="card-description">T细胞活化、B细胞分化、抗原提呈、记忆细胞</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./呼吸运动（胸廓+膈肌协同运动三维动画）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">呼吸运动</h3>
+                        <p class="card-description">胸廓+膈肌协同运动三维动画</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./影响光合作用的三因素实验（光照、CO₂、水分实时曲线+微观解释）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">影响光合作用的三因素实验</h3>
+                        <p class="card-description">光照、CO₂、水分实时曲线+微观解释</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./显微镜下观察人的口腔上皮细胞、草履虫、洋葱表皮细胞（真实视野灰暗、抖动、焦距难调，动画可高清+染色+/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">显微镜下观察人的口腔上皮细胞、草履虫、洋葱表皮细胞</h3>
+                        <p class="card-description">真实视野灰暗、抖动、焦距难调，动画可高清+染色+</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./植物细胞的有丝分裂全过程（染色体复制→纺锤丝牵引→着丝点分裂）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">植物细胞的有丝分裂全过程</h3>
+                        <p class="card-description">染色体复制→纺锤丝牵引→着丝点分裂</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./物质进出细胞的三种方式（被动运输、主动运输、胞吞胞吐高清动画）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">物质进出细胞的三种方式</h3>
+                        <p class="card-description">被动运输、主动运输、胞吞胞吐高清动画</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./生态系统的物质循环与能量流动（碳循环、氮循环全局动态图）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">生态系统的物质循环与能量流动</h3>
+                        <p class="card-description">碳循环、氮循环全局动态图</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./细胞呼吸的有氧呼吸三阶段（糖酵解→丙酮酸氧化→电子传递链36ATP）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">细胞呼吸的有氧呼吸三阶段</h3>
+                        <p class="card-description">糖酵解→丙酮酸氧化→电子传递链36ATP</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./细胞呼吸的电子传递与氧化磷酸化（内膜褶→ATP合酶旋转合成ATP）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">细胞呼吸的电子传递与氧化磷酸化</h3>
+                        <p class="card-description">内膜褶→ATP合酶旋转合成ATP</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./细胞膜的流动镶嵌模型（磷脂双层+蛋白质漂浮+实时翻转）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">细胞膜的流动镶嵌模型</h3>
+                        <p class="card-description">磷脂双层+蛋白质漂浮+实时翻转</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./绿叶在光下制造淀粉（叶片部分遮光实验）→ 动画显示光合作用只在见光部分进行/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">绿叶在光下制造淀粉</h3>
+                        <p class="card-description">叶片部分遮光实验→ 动画显示光合作用只在见光部分进行</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./肧胎干细胞分化成三胚层及器官形成/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">肧胎干细胞分化成三胚层及器官形成</h3>
+                        <p class="card-description">肧胎干细胞分化成三胚层及器官形成</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+            </div>
+        </section>
+        
+        <section class="category-section">
+            <h2 class="category-title">🧬 遗传与变异</h2>
+            <div class="animation-grid">
+        
+                <a href="./中心法则完整流程（复制→转录→剪接→翻译→蛋白质折叠）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">中心法则完整流程</h3>
+                        <p class="card-description">复制→转录→剪接→翻译→蛋白质折叠</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./从DNA到蛋白质的中心法则（转录+剪接+mRNA→核糖体→tRNA运氨基酸）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">从DNA到蛋白质的中心法则</h3>
+                        <p class="card-description">转录+剪接+mRNA→核糖体→tRNA运氨基酸</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./伴性遗传的家系图动态演化（红绿色盲、血友病）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">伴性遗传的家系图动态演化</h3>
+                        <p class="card-description">红绿色盲、血友病</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./减数分裂与受精作用（配子形成+染色体重组+23条恢复46条）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">减数分裂与受精作用</h3>
+                        <p class="card-description">配子形成+染色体重组+23条恢复46条</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./减数分裂全过程（尤其是第一次分裂的联会、四分体、同源染色体分离）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">减数分裂全过程</h3>
+                        <p class="card-description">尤其是第一次分裂的联会、四分体、同源染色体分离</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./基因工程全过程（限制酶剪切→载体+目的基因→重组→转化→表达）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">基因工程全过程</h3>
+                        <p class="card-description">限制酶剪切→载体+目的基因→重组→转化→表达</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./基因工程的四大步骤（剪、连、转、检测）全三维/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">基因工程的四大步骤</h3>
+                        <p class="card-description">剪、连、转、检测全三维</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./孟德尔踝豆杂交实验（基因分离定律、自由组合定律动态模拟几千颗踝豆）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">孟德尔踝豆杂交实验</h3>
+                        <p class="card-description">基因分离定律、自由组合定律动态模拟几千颗踝豆</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+            </div>
+        </section>
+        
+        <section class="category-section">
+            <h2 class="category-title">🧠 稳态与调节</h2>
+            <div class="animation-grid">
+        
+                <a href="./人体内环境与稳态（血糖、水平衡、体温调节负反馈动画）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">人体内环境与稳态</h3>
+                        <p class="card-description">血糖、水平衡、体温调节负反馈动画</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./兴奋在神经纤维上的传导（动作电位去极化-复极化-盐跃动画）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">兴奋在神经纤维上的传导</h3>
+                        <p class="card-description">动作电位去极化-复极化-盐跃动画</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./激素调节八大腺体（下丘脑-垂体-靶腺轴动态反馈）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">激素调节八大腺体</h3>
+                        <p class="card-description">下丘脑-垂体-靶腺轴动态反馈</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./神经元动作电位与突触传递（钠钾泵、电压门控通道、神经递质释放）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">神经元动作电位与突触传递</h3>
+                        <p class="card-description">钠钾泵、电压门控通道、神经递质释放</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./神经调节的基本反射弧（受容→传入→中枢→传出→效应器，毫秒级动画）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">神经调节的基本反射弧</h3>
+                        <p class="card-description">受容→传入→中枢→传出→效应器，毫秒级动画</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./血糖调节的双激素负反馈（胰岛素vs胰高血糖素）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">血糖调节的双激素负反馈</h3>
+                        <p class="card-description">胰岛素vs胰高血糖素</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+            </div>
+        </section>
+        
+        <section class="category-section">
+            <h2 class="category-title">🌿 生态与环境</h2>
+            <div class="animation-grid">
+        
+                <a href="./生态系统碳循环与全球碳失衡（含人类活动干扰）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">生态系统碳循环与全球碳失衡</h3>
+                        <p class="card-description">含人类活动干扰</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./种群增长的J型与S型曲线（实时模拟几百代）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">种群增长的J型与S型曲线</h3>
+                        <p class="card-description">实时模拟几百代</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./群落演替过程（裸地→草本→灌木→森林百年动画）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">群落演替过程</h3>
+                        <p class="card-description">裸地→草本→灌木→森林百年动画</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./食物链与能量金字塔的动态流动（动画显示10%法则逐级递减）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">食物链与能量金字塔的动态流动</h3>
+                        <p class="card-description">动画显示10%法则逐级递减</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+            </div>
+        </section>
+        
+        <section class="category-section">
+            <h2 class="category-title">🐣 生长与发育</h2>
+            <div class="animation-grid">
+        
+                <a href="./种子萌发过程的全时程（0-15天，真实实验等不起）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">种子萌发过程的全时程</h3>
+                        <p class="card-description">0-15天，真实实验等不起</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./胚胎发育的原肠胚形成与三胚层分化（海胆、蛙、鸡胚同步对比）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">胚胎发育的原肠胚形成与三胚层分化</h3>
+                        <p class="card-description">海胆、蛙、鸡胚同步对比</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./蚕的一生（卵→幼虫→蛹→成虫，完整生命周期30-40天）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">蚕的一生</h3>
+                        <p class="card-description">卵→幼虫→蛹→成虫，完整生命周期30-40天</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./蝌蚪变青蛙的完全变态过程（30-90天全记录）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">🧬</div>
+                        <h3 class="card-title">蝌蚪变青蛙的完全变态过程</h3>
+                        <p class="card-description">30-90天全记录</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+            </div>
+        </section>
+        
+
+        <footer>
+            <div class="footer-content">
+                <p>&copy; 2024 K12 Teaching Animation. All rights reserved.</p>
+                <p style="margin-top: 0.5rem; font-size: 0.85rem;">让教育更生动，让学习更简单 ✨</p>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
+    

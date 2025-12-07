@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>电磁波的产生与传播 - 振荡电偶极子辐射</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0c0e2a 0%, #1a1d3c 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(30, 33, 64, 0.7);
+            border-radius: 12px;
+            border: 1px solid rgba(76, 195, 247, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            color: #4FC3F7;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+            text-shadow: 0 0 10px rgba(79, 195, 247, 0.5);
+        }
+        
+        .subtitle {
+            color: #69F0AE;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .canvas-container {
+            flex: 1;
+            min-width: 600px;
+            background: rgba(20, 22, 45, 0.8);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid rgba(76, 195, 247, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #animationCanvas {
+            width: 100%;
+            height: 500px;
+            display: block;
+            background: transparent;
+        }
+        
+        .controls-panel {
+            flex: 0 0 300px;
+            background: rgba(30, 33, 64, 0.7);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(105, 240, 174, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .control-section {
+            background: rgba(40, 44, 80, 0.6);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #4FC3F7;
+        }
+        
+        .control-section.magnetic {
+            border-left-color: #69F0AE;
+        }
+        
+        .control-section.other {
+            border-left-color: #FFEB3B;
+        }
+        
+        h2 {
+            color: #4FC3F7;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        h2.magnetic {
+            color: #69F0AE;
+        }
+        
+        h2.other {
+            color: #FFEB3B;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 6px;
+            background: rgba(76, 195, 247, 0.2);
+            color: #e0e0e0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            flex: 1;
+        }
+        
+        button:hover {
+            background: rgba(76, 195, 247, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        button.active {
+            background: rgba(76, 195, 247, 0.7);
+            color: white;
+            box-shadow: 0 0 10px rgba(76, 195, 247, 0.5);
+        }
+        
+        .magnetic-btn {
+            background: rgba(105, 240, 174, 0.2);
+        }
+        
+        .magnetic-btn:hover {
+            background: rgba(105, 240, 174, 0.4);
+        }
+        
+        .magnetic-btn.active {
+            background: rgba(105, 240, 174, 0.7);
+            box-shadow: 0 0 10px rgba(105, 240, 174, 0.5);
+        }
+        
+        .slider-container {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #b0b0b0;
+            font-size: 0.95rem;
+        }
+        
+        .slider-value {
+            color: #FFEB3B;
+            font-weight: bold;
+            float: right;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(100, 100, 120, 0.5);
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4FC3F7;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(79, 195, 247, 0.8);
+        }
+        
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+        
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 10px;
+            border-radius: 2px;
+        }
+        
+        .legend-color.electric {
+            background: #4FC3F7;
+        }
+        
+        .legend-color.magnetic {
+            background: #69F0AE;
+        }
+        
+        .legend-color.positive {
+            background: #FF5252;
+        }
+        
+        .legend-color.negative {
+            background: #FFAB40;
+        }
+        
+        .legend-color.grid {
+            background: #CCCCCC;
+        }
+        
+        .instructions {
+            background: rgba(30, 33, 64, 0.7);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid rgba(255, 235, 59, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .instructions h2 {
+            color: #FFEB3B;
+            margin-bottom: 10px;
+        }
+        
+        .instructions p {
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        
+        .key-point {
+            color: #FFEB3B;
+            font-weight: bold;
+        }
+        
+        .detector-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 235, 59, 0.3);
+            max-width: 250px;
+            display: none;
+        }
+        
+        .detector-info.active {
+            display: block;
+        }
+        
+        @media (max-width: 1000px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .canvas-container, .controls-panel {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>电磁波的产生与传播</h1>
+            <div class="subtitle">振荡电偶极子辐射电磁波 - 交互式教学动画</div>
+        </header>
+        
+        <div class="main-content">
+            <div class="canvas-container">
+                <canvas id="animationCanvas"></canvas>
+                <div class="detector-info" id="detectorInfo">
+                    <div>探测器位置: (<span id="detectorX">0</span>, <span id="detectorY">0</span>)</div>
+                    <div>电场强度 E: <span id="detectorE">0.00</span></div>
+                    <div>磁场强度 B: <span id="detectorB">0.00</span></div>
+                    <div>相位差: <span id="detectorPhase">0.00</span> π</div>
+                </div>
+            </div>
+            
+            <div class="controls-panel">
+                <div class="control-section">
+                    <h2>📊 动画控制</h2>
+                    <div class="button-group">
+                        <button id="playBtn">▶ 播放</button>
+                        <button id="pauseBtn">⏸ 暂停</button>
+                        <button id="resetBtn">↺ 重置</button>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <label>动画速度: <span class="slider-value" id="speedValue">1.0x</span></label>
+                        <input type="range" id="speedSlider" min="0.1" max="3" step="0.1" value="1">
+                    </div>
+                </div>
+                
+                <div class="control-section">
+                    <h2>👁️ 视图选择</h2>
+                    <div class="button-group">
+                        <button id="viewElectric" class="active">仅电场</button>
+                        <button id="viewMagnetic" class="magnetic-btn">仅磁场</button>
+                        <button id="viewBoth">电磁波</button>
+                    </div>
+                </div>
+                
+                <div class="control-section">
+                    <h2>⚙️ 参数调节</h2>
+                    <div class="slider-container">
+                        <label>振荡频率 (f): <span class="slider-value" id="freqValue">1.0 Hz</span></label>
+                        <input type="range" id="freqSlider" min="0.5" max="3" step="0.1" value="1">
+                    </div>
+                    
+                    <div class="slider-container">
+                        <label>偶极矩大小: <span class="slider-value" id="dipoleValue">1.0</span></label>
+                        <input type="range" id="dipoleSlider" min="0.5" max="2" step="0.1" value="1">
+                    </div>
+                </div>
+                
+                <div class="control-section other">
+                    <h2 class="other">🔧 显示选项</h2>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="showGrid" checked>
+                            <label for="showGrid">空间网格</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="showArrows" checked>
+                            <label for="showArrows">场线箭头</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="showWavefront">
+                            <label for="showWavefront">波前标记</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="showLabels" checked>
+                            <label for="showLabels">物理量标签</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color electric"></div>
+                        <span>电场 (E)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color magnetic"></div>
+                        <span>磁场 (B)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color positive"></div>
+                        <span>正电荷 (+)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color negative"></div>
+                        <span>负电荷 (-)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color grid"></div>
+                        <span>参考网格</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h2>📚 教学说明</h2>
+            <p>本动画展示了振荡电偶极子如何产生并辐射电磁波的过程：</p>
+            <ul>
+                <li><span class="key-point">红色和橙色球体</span>分别代表正负电荷，它们以简谐运动方式振荡，形成振荡电偶极子。</li>
+                <li><span class="key-point">蓝色线条/波面</span>表示电场线，其疏密代表电场强度大小。</li>
+                <li><span class="key-point">绿色圆圈/环状面</span>表示磁感线，环绕在电场周围。</li>
+                <li>在近场区（靠近偶极子），电场和磁场分布复杂；在远场区，形成稳定的<span class="key-point">横电磁波</span>。</li>
+                <li>电磁波传播方向、电场方向、磁场方向三者<span class="key-point">两两垂直</span>，符合右手螺旋定则。</li>
+                <li>调节频率可观察波长变化：频率越高，波长越短（λ = c/f）。</li>
+            </ul>
+            <p><span class="key-point">交互提示：</span>点击画布任意位置可放置虚拟探测器，显示该点的电场和磁场实时数值。</p>
+        </div>
+    </div>
+
+    <script>
+        // 获取Canvas和上下文
+        const canvas = document.getElementById('animationCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 设置Canvas尺寸
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = 500;
+        }
+        
+        // 初始调整尺寸
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // 动画状态
+        let animationId = null;
+        let isPlaying = true;
+        let time = 0;
+        let speed = 1.0;
+        
+        // 视图模式：0=仅电场，1=仅磁场，2=电磁波
+        let viewMode = 0;
+        
+        // 物理参数
+        let frequency = 1.0; // Hz
+        let dipoleMoment = 1.0;
+        
+        // 显示选项
+        let showGrid = true;
+        let showArrows = true;
+        let showWavefront = false;
+        let showLabels = true;
+        
+        // 探测器位置
+        let detector = null;
+        
+        // 颜色定义
+        const colors = {
+            background: '#0c0e2a',
+            electric: '#4FC3F7',
+            magnetic: '#69F0AE',
+            positive: '#FF5252',
+            negative: '#FFAB40',
+            grid: 'rgba(204, 204, 204, 0.3)',
+            wavefront: 'rgba(255, 235, 59, 0.6)',
+            text: '#e0e0e0',
+            highlight: '#FFEB3B'
+        };
+        
+        // 初始化UI控件
+        document.getElementById('playBtn').addEventListener('click', () => {
+            isPlaying = true;
+            if (!animationId) animate();
+        });
+        
+        document.getElementById('pauseBtn').addEventListener('click', () => {
+            isPlaying = false;
+        });
+        
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            time = 0;
+            detector = null;
+            document.getElementById('detectorInfo').classList.remove('active');
+        });
+        
+        document.getElementById('speedSlider').addEventListener('input', (e) => {
+            speed = parseFloat(e.target.value);
+            document.getElementById('speedValue').textContent = speed.toFixed(1) + 'x';
+        });
+        
+        document.getElementById('viewElectric').addEventListener('click', () => {
+            viewMode = 0;
+            updateViewButtons();
+        });
+        
+        document.getElementById('viewMagnetic').addEventListener('click', () => {
+            viewMode = 1;
+            updateViewButtons();
+        });
+        
+        document.getElementById('viewBoth').addEventListener('click', () => {
+            viewMode = 2;
+            updateViewButtons();
+        });
+        
+        document.getElementById('freqSlider').addEventListener('input', (e) => {
+            frequency = parseFloat(e.target.value);
+            document.getElementById('freqValue').textContent = frequency.toFixed(1) + ' Hz';
+        });
+        
+        document.getElementById('dipoleSlider').addEventListener('input', (e) => {
+            dipoleMoment = parseFloat(e.target.value);
+            document.getElementById('dipoleValue').textContent = dipoleMoment.toFixed(1);
+        });
+        
+        document.getElementById('showGrid').addEventListener('change', (e) => {
+            showGrid = e.target.checked;
+        });
+        
+        document.getElementById('showArrows').addEventListener('change', (e) => {
+            showArrows = e.target.checked;
+        });
+        
+        document.getElementById('showWavefront').addEventListener('change', (e) => {
+            showWavefront = e.target.checked;
+        });
+        
+        document.getElementById('showLabels').addEventListener('change', (e) => {
+            showLabels = e.target.checked;
+        });
+        
+        // 点击Canvas放置探测器
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // 转换为物理坐标（原点在画布中心）
+            const physX = (x - canvas.width/2) / 50;
+            const physY = (canvas.height/2 - y) / 50;
+            
+            detector = {x: physX, y: physY};
+            
+            // 更新探测器信息显示
+            const detectorInfo = document.getElementById('detectorInfo');
+            detectorInfo.classList.add('active');
+            document.getElementById('detectorX').textContent = physX.toFixed(2);
+            document.getElementById('detectorY').textContent = physY.toFixed(2);
+        });
+        
+        // 更新视图按钮状态
+        function updateViewButtons() {
+            const electricBtn = document.getElementById('viewElectric');
+            const magneticBtn = document.getElementById('viewMagnetic');
+            const bothBtn = document.getElementById('viewBoth');
+            
+            electricBtn.classList.toggle('active', viewMode === 0);
+            magneticBtn.classList.toggle('active', viewMode === 1);
+            bothBtn.classList.toggle('active', viewMode === 2);
+        }
+        
+        // 计算电场和磁场
+        function calculateFields(x, y, t) {
+            // 简化模型：振荡电偶极子位于原点，沿y轴方向振荡
+            const r = Math.sqrt(x*x + y*y);
+            if (r < 0.1) return {E: 0, B: 0, Ex: 0, Ey: 0, Bz: 0};
+            
+            const theta = Math.atan2(y, x);
+            const k = 2 * Math.PI * frequency / 3; // 波数（简化，光速c=3单位）
+            const omega = 2 * Math.PI * frequency;
+            
+            // 振荡偶极矩 p = p0 * cos(ωt)
+            const p = dipoleMoment * Math.cos(omega * t);
+            
+            // 远场近似下的电场和磁场（简化模型）
+            const E0 = p * Math.sin(theta) / (r * r);
+            const B0 = p * Math.sin(theta) / (r * r);
+            
+            // 考虑波动性：cos(kr - ωt) / r
+            const waveFactor = Math.cos(k * r - omega * t) / Math.max(r, 1);
+            
+            // 电场分量（在xy平面内，垂直于传播方向）
+            const Ex = -E0 * Math.sin(theta) * waveFactor;
+            const Ey = E0 * Math.cos(theta) * waveFactor;
+            
+            // 磁场分量（垂直于屏幕，z方向）
+            const Bz = B0 * waveFactor;
+            
+            // 总场强（用于显示）
+            const E = Math.sqrt(Ex*Ex + Ey*Ey);
+            const B = Math.abs(Bz);
+            
+            return {E, B, Ex, Ey, Bz, r, theta};
+        }
+        
+        // 绘制网格
+        function drawGrid() {
+            if (!showGrid) return;
+            
+            ctx.strokeStyle = colors.grid;
+            ctx.lineWidth = 0.5;
+            ctx.setLineDash([2, 2]);
+            
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const gridSize = 50; // 像素/单位
+            
+            // 垂直线
+            for (let x = -5; x <= 5; x++) {
+                ctx.beginPath();
+                ctx.moveTo(centerX + x * gridSize, 0);
+                ctx.lineTo(centerX + x * gridSize, canvas.height);
+                ctx.stroke();
+            }
+            
+            // 水平线
+            for (let y = -5; y <= 5; y++) {
+                ctx.beginPath();
+                ctx.moveTo(0, centerY + y * gridSize);
+                ctx.lineTo(canvas.width, centerY + y * gridSize);
+                ctx.stroke();
+            }
+            
+            ctx.setLineDash([]);
+            
+            // 坐标轴
+            ctx.strokeStyle = colors.text;
+            ctx.lineWidth = 1.5;
+            
+            // X轴
+            ctx.beginPath();
+            ctx.moveTo(0, centerY);
+            ctx.lineTo(canvas.width, centerY);
+            ctx.stroke();
+            
+            // Y轴
+            ctx.beginPath();
+            ctx.moveTo(centerX, 0);
+            ctx.lineTo(centerX, canvas.height);
+            ctx.stroke();
+            
+            // 坐标轴标签
+            if (showLabels) {
+                ctx.fillStyle = colors.text;
+                ctx.font = '12px Arial';
+                ctx.fillText('x (传播方向)', canvas.width - 60, centerY - 10);
+                ctx.fillText('y', centerX + 10, 20);
+            }
+        }
+        
+        // 绘制电偶极子
+        function drawDipole(t) {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const gridSize = 50;
+            
+            // 计算电荷位置（沿y轴振荡）
+            const amplitude = 0.8 * dipoleMoment;
+            const omega = 2 * Math.PI * frequency;
+            const dy = amplitude * Math.cos(omega * t);
+            
+            // 正电荷（红色）
+            const posY = centerY - dy * gridSize;
+            ctx.fillStyle = colors.positive;
+            ctx.beginPath();
+            ctx.arc(centerX, posY, 10, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 12px Arial';
+            ctx.fillText('+', centerX - 4, posY + 4);
+            
+            // 负电荷（橙色）
+            const negY = centerY + dy * gridSize;
+            ctx.fillStyle = colors.negative;
+            ctx.beginPath();
+            ctx.arc(centerX, negY, 10, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 12px Arial';
+            ctx.fillText('-', centerX - 4, negY + 4);
+            
+            // 连接线
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(centerX, posY);
+            ctx.lineTo(centerX, negY);
+            ctx.stroke();
+            
+            // 标签
+            if (showLabels) {
+                ctx.fillStyle = colors.highlight;
+                ctx.font = '14px Arial';
+                ctx.fillText('振荡电偶极子', centerX - 50, Math.min(posY, negY) - 15);
+            }
+        }
+        
+        // 绘制电场
+        function drawElectricField(t) {
+            if (viewMode === 1) return; // 仅磁场视图时不绘制
+            
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const gridSize = 50;
+            
+            ctx.strokeStyle = colors.electric;
+            ctx.lineWidth = 1.5;
+            ctx.globalAlpha = 0.7;
+            
+            // 绘制电场线/波面
+            for (let r = 1; r <= 4; r += 0.5) {
+                for (let theta = 0; theta < Math.PI * 2; theta += Math.PI / 8) {
+                    const x = r * Math.cos(theta);
+                    const y = r * Math.sin(theta);
+                    
+                    const fields = calculateFields(x, y, t);
+                    if (fields.E < 0.01) continue;
+                    
+                    // 转换为画布坐标
+                    const canvasX = centerX + x * gridSize;
+                    const canvasY = centerY - y * gridSize;
+                    
+                    // 电场方向
+                    const angle = Math.atan2(fields.Ey, fields.Ex);
+                    const length = 15 * fields.E;
+                    
+                    // 绘制电场线片段
+                    ctx.beginPath();
+                    ctx.moveTo(canvasX, canvasY);
+                    ctx.lineTo(
+                        canvasX + length * Math.cos(angle),
+                        canvasY - length * Math.sin(angle)
+                    );
+                    ctx.stroke();
+                    
+                    // 绘制箭头
+                    if (showArrows && fields.E > 0.05) {
+                        drawArrow(canvasX, canvasY, angle, length, colors.electric);
+                    }
+                }
+            }
+            
+            // 绘制波前（等相位面）
+            if (showWavefront && (viewMode === 0 || viewMode === 2)) {
+                ctx.strokeStyle = colors.wavefront;
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                
+                const omega = 2 * Math.PI * frequency;
+                const phase = omega * t;
+                
+                for (let r = 1; r <= 4; r += 1) {
+                    ctx.beginPath();
+                    for (let theta = 0; theta < Math.PI * 2; theta += 0.1) {
+                        const x = r * Math.cos(theta);
+                        const y = r * Math.sin(theta);
+                        
+                        const canvasX = centerX + x * gridSize;
+                        const canvasY = centerY - y * gridSize;
+                        
+                        if (theta === 0) {
+                            ctx.moveTo(canvasX, canvasY);
+                        } else {
+                            ctx.lineTo(canvasX, canvasY);
+                        }
+                    }
+                    ctx.closePath();
+                    ctx.stroke();
+                }
+                
+                ctx.setLineDash([]);
+            }
+            
+            ctx.globalAlpha = 1.0;
+        }
+        
+        // 绘制磁场
+        function drawMagneticField(t) {
+            if (viewMode === 0) return; // 仅电场视图时不绘制
+            
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const gridSize = 50;
+            
+            ctx.strokeStyle = colors.magnetic;
+            ctx.lineWidth = 1.5;
+            ctx.globalAlpha = 0.7;
+            
+            // 绘制磁感线环
+            for (let r = 1; r <= 4; r += 0.5) {
+                for (let theta = 0; theta < Math.PI * 2; theta += Math.PI / 8) {
+                    const x = r * Math.cos(theta);
+                    const y = r * Math.sin(theta);
+                    
+                    const fields = calculateFields(x, y, t);
+                    if (fields.B < 0.01) continue;
+                    
+                    // 转换为画布坐标
+                    const canvasX = centerX + x * gridSize;
+                    const canvasY = centerY - y * gridSize;
+                    
+                    // 磁场环半径与磁场强度成正比
+                    const ringRadius = 8 * fields.B;
+                    
+                    // 绘制磁场环
+                    ctx.beginPath();
+                    ctx.arc(canvasX, canvasY, ringRadius, 0, Math.PI * 2);
+                    ctx.stroke();
+                    
+                    // 绘制磁场方向箭头（垂直于屏幕，用环上的箭头表示）
+                    if (showArrows && fields.B > 0.05) {
+                        // 根据Bz的正负决定箭头方向
+                        const direction = fields.Bz > 0 ? 1 : -1;
+                        const arrowAngle = theta + direction * Math.PI / 2;
+                        
+                        drawArrow(
+                            canvasX + ringRadius * Math.cos(arrowAngle),
+                            canvasY - ringRadius * Math.sin(arrowAngle),
+                            arrowAngle + Math.PI / 2,
+                            6,
+                            colors.magnetic
+                        );
+                    }
+                }
+            }
+            
+            ctx.globalAlpha = 1.0;
+        }
+        
+        // 绘制箭头
+        function drawArrow(x, y, angle, length, color) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(-angle); // 注意：Canvas的y轴向下，所以需要调整
+            
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(length, 0);
+            ctx.lineTo(length - 6, -4);
+            ctx.lineTo(length - 6, 4);
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.restore();
+        }
+        
+        // 绘制探测器
+        function drawDetector() {
+            if (!detector) return;
+            
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const gridSize = 50;
+            
+            // 转换为画布坐标
+            const canvasX = centerX + detector.x * gridSize;
+            const canvasY = centerY - detector.y * gridSize;
+            
+            // 绘制探测器图标
+            ctx.fillStyle = colors.highlight;
+            ctx.beginPath();
+            ctx.arc(canvasX, canvasY, 8, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.strokeStyle = colors.highlight;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(canvasX - 12, canvasY);
+            ctx.lineTo(canvasX + 12, canvasY);
+            ctx.moveTo(canvasX, canvasY - 12);
+            ctx.lineTo(canvasX, canvasY + 12);
+            ctx.stroke();
+            
+            // 计算并显示探测器处的场值
+            const fields = calculateFields(detector.x, detector.y, time);
+            
+            // 更新探测器信息显示
+            document.getElementById('detectorE').textContent = fields.E.toFixed(2);
+            document.getElementById('detectorB').textContent = fields.B.toFixed(2);
+            
+            // 计算相位差（理想情况下应为0）
+            const phaseDiff = 0; // 简化模型中同相
+            document.getElementById('detectorPhase').textContent = phaseDiff.toFixed(2);
+        }
+        
+        // 绘制物理量标签
+        function drawLabels() {
+            if (!showLabels) return;
+            
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            ctx.fillStyle = colors.text;
+            ctx.font = '14px Arial';
+            
+            // 波长标签
+            const wavelength = 3 / frequency; // λ = c/f，c=3单位
+            ctx.fillText(`波长 λ = ${wavelength.toFixed(2)} 单位`, 20, 30);
+            
+            // 频率标签
+            ctx.fillText(`频率 f = ${frequency.toFixed(2)} Hz`, 20, 55);
+            
+            // 传播方向指示
+            ctx.fillStyle = colors.highlight;
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText('→ 电磁波传播方向', centerX + 100, centerY - 20);
+            
+            // 右手螺旋定则提示
+            ctx.fillStyle = colors.text;
+            ctx.font = '12px Arial';
+            ctx.fillText('E ⊥ B ⊥ k (右手螺旋定则)', centerX - 100, 30);
+        }
+        
+        // 绘制函数
+        function draw() {
+            // 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制背景
+            ctx.fillStyle = colors.background;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制各个组件
+            drawGrid();
+            drawDipole(time);
+            
+            if (viewMode === 0 || viewMode === 2) {
+                drawElectricField(time);
+            }
+            
+            if (viewMode === 1 || viewMode === 2) {
+                drawMagneticField(time);
+            }
+            
+            drawDetector();
+            drawLabels();
+            
+            // 绘制时间指示
+            ctx.fillStyle = colors.text;
+            ctx.font = '14px Arial';
+            ctx.fillText(`时间 t = ${time.toFixed(2)} s`, canvas.width - 150, 30);
+        }
+        
+        // 动画循环
+        function animate() {
+            if (isPlaying) {
+                time += 0.02 * speed;
+            }
+            
+            draw();
+            
+            animationId = requestAnimationFrame(animate);
+        }
+        
+        // 启动动画
+        animate();
+        
+        // 初始更新视图按钮状态
+        updateViewButtons();
+    </script>
+</body>
+</html>

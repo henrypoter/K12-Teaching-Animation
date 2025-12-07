@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>力的分解与合成 - 交互式教学动画</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 900px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 900px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+        
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .controls {
+            padding: 25px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .control-group label {
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 0.95rem;
+        }
+        
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        input[type="range"] {
+            flex: 1;
+            height: 8px;
+            border-radius: 4px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #3498db;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .value-display {
+            min-width: 50px;
+            text-align: center;
+            font-weight: bold;
+            color: #2980b9;
+            background: #ecf0f1;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.95rem;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        #resetBtn {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        #resetBtn:hover {
+            background-color: #c0392b;
+        }
+        
+        #toggleBtn {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        #toggleBtn:hover {
+            background-color: #27ae60;
+        }
+        
+        #autoBtn {
+            background-color: #9b59b6;
+            color: white;
+        }
+        
+        #autoBtn:hover {
+            background-color: #8e44ad;
+        }
+        
+        .info-panel {
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-top: 1px solid #eaeaea;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        .info-panel h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .info-panel p {
+            margin-bottom: 10px;
+        }
+        
+        .formula {
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+            background-color: #fff;
+            padding: 10px 15px;
+            border-radius: 5px;
+            border-left: 4px solid #3498db;
+            margin: 10px 0;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+        }
+        
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .control-group {
+                min-width: 100%;
+            }
+            
+            .buttons {
+                justify-content: center;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>力的分解与合成 - 平行四边形法则</h1>
+        <p class="subtitle">通过交互式动画理解力的分解与合成原理</p>
+    </div>
+    
+    <div class="container">
+        <div class="canvas-container">
+            <canvas id="physicsCanvas"></canvas>
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="forceSlider">合力大小 (F): <span id="forceValue">100</span> N</label>
+                <div class="slider-container">
+                    <input type="range" id="forceSlider" min="50" max="200" value="100" step="1">
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label for="angleSlider">合力方向 (θ): <span id="angleValue">30</span>°</label>
+                <div class="slider-container">
+                    <input type="range" id="angleSlider" min="0" max="90" value="30" step="1">
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label for="axisAngleSlider">坐标轴夹角 (α): <span id="axisAngleValue">60</span>°</label>
+                <div class="slider-container">
+                    <input type="range" id="axisAngleSlider" min="30" max="150" value="60" step="1">
+                </div>
+            </div>
+            
+            <div class="buttons">
+                <button id="resetBtn">重置</button>
+                <button id="toggleBtn">切换分解/合成</button>
+                <button id="autoBtn">自动演示</button>
+            </div>
+        </div>
+        
+        <div class="info-panel">
+            <h3>力的分解与合成原理</h3>
+            <p>根据平行四边形法则，一个力可以分解为两个不同方向的分力，这两个分力共同作用的效果与原力相同。</p>
+            
+            <div class="formula">
+                分力计算公式：<br>
+                F₁ = F × sin(β) / sin(α+β)<br>
+                F₂ = F × sin(α) / sin(α+β)<br>
+                其中 α 为坐标轴夹角，β 为合力与 F₁ 方向的夹角
+            </div>
+            
+            <p>当前模式：<span id="modeText">力的分解</span> | 当前合力：<span id="currentForce">100</span> N | 分力 F₁：<span id="f1Value">86.6</span> N | 分力 F₂：<span id="f2Value">50.0</span> N</p>
+            
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #e74c3c;"></div>
+                    <span>合力 (F)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #3498db;"></div>
+                    <span>分力 F₁</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #2ecc71;"></div>
+                    <span>分力 F₂</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background-color: #f39c12;"></div>
+                    <span>平行四边形</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>力的分解与合成交互式教学动画 | 使用平行四边形法则可视化力的分解过程</p>
+    </div>
+
+    <script>
+        // 获取Canvas和上下文
+        const canvas = document.getElementById('physicsCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 设置Canvas尺寸
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            draw();
+        }
+        
+        // 初始变量
+        let force = 100; // 合力大小 (N)
+        let angle = 30;  // 合力方向 (度)
+        let axisAngle = 60; // 坐标轴夹角 (度)
+        let isDecomposition = true; // true: 分解模式, false: 合成模式
+        let isAutoMode = false;
+        let autoAnimationId = null;
+        
+        // 获取DOM元素
+        const forceSlider = document.getElementById('forceSlider');
+        const angleSlider = document.getElementById('angleSlider');
+        const axisAngleSlider = document.getElementById('axisAngleSlider');
+        const forceValue = document.getElementById('forceValue');
+        const angleValue = document.getElementById('angleValue');
+        const axisAngleValue = document.getElementById('axisAngleValue');
+        const resetBtn = document.getElementById('resetBtn');
+        const toggleBtn = document.getElementById('toggleBtn');
+        const autoBtn = document.getElementById('autoBtn');
+        const modeText = document.getElementById('modeText');
+        const currentForce = document.getElementById('currentForce');
+        const f1Value = document.getElementById('f1Value');
+        const f2Value = document.getElementById('f2Value');
+        
+        // 初始化滑块值显示
+        forceValue.textContent = force;
+        angleValue.textContent = angle;
+        axisAngleValue.textContent = axisAngle;
+        
+        // 事件监听器
+        forceSlider.addEventListener('input', function() {
+            force = parseInt(this.value);
+            forceValue.textContent = force;
+            updateInfo();
+            draw();
+        });
+        
+        angleSlider.addEventListener('input', function() {
+            angle = parseInt(this.value);
+            angleValue.textContent = angle;
+            updateInfo();
+            draw();
+        });
+        
+        axisAngleSlider.addEventListener('input', function() {
+            axisAngle = parseInt(this.value);
+            axisAngleValue.textContent = axisAngle;
+            updateInfo();
+            draw();
+        });
+        
+        resetBtn.addEventListener('click', function() {
+            force = 100;
+            angle = 30;
+            axisAngle = 60;
+            
+            forceSlider.value = force;
+            angleSlider.value = angle;
+            axisAngleSlider.value = axisAngle;
+            
+            forceValue.textContent = force;
+            angleValue.textContent = angle;
+            axisAngleValue.textContent = axisAngle;
+            
+            if (isAutoMode) {
+                toggleAutoMode();
+            }
+            
+            updateInfo();
+            draw();
+        });
+        
+        toggleBtn.addEventListener('click', function() {
+            isDecomposition = !isDecomposition;
+            modeText.textContent = isDecomposition ? "力的分解" : "力的合成";
+            draw();
+        });
+        
+        autoBtn.addEventListener('click', function() {
+            toggleAutoMode();
+        });
+        
+        // 切换自动演示模式
+        function toggleAutoMode() {
+            isAutoMode = !isAutoMode;
+            
+            if (isAutoMode) {
+                autoBtn.textContent = "停止演示";
+                startAutoAnimation();
+            } else {
+                autoBtn.textContent = "自动演示";
+                if (autoAnimationId) {
+                    cancelAnimationFrame(autoAnimationId);
+                    autoAnimationId = null;
+                }
+            }
+        }
+        
+        // 开始自动动画
+        function startAutoAnimation() {
+            let time = 0;
+            
+            function animate() {
+                if (!isAutoMode) return;
+                
+                time += 0.02;
+                
+                // 动态改变参数
+                force = 80 + Math.sin(time * 0.5) * 40;
+                angle = 45 + Math.sin(time * 0.7) * 30;
+                axisAngle = 60 + Math.sin(time * 0.3) * 30;
+                
+                // 更新滑块和显示
+                forceSlider.value = force;
+                angleSlider.value = angle;
+                axisAngleSlider.value = axisAngle;
+                
+                forceValue.textContent = Math.round(force);
+                angleValue.textContent = Math.round(angle);
+                axisAngleValue.textContent = Math.round(axisAngle);
+                
+                updateInfo();
+                draw();
+                
+                autoAnimationId = requestAnimationFrame(animate);
+            }
+            
+            animate();
+        }
+        
+        // 更新信息面板
+        function updateInfo() {
+            currentForce.textContent = Math.round(force);
+            
+            // 计算分力
+            const alpha = axisAngle * Math.PI / 180;
+            const beta = angle * Math.PI / 180;
+            const gamma = Math.PI - alpha - beta;
+            
+            // 使用正弦定理计算分力
+            const f1 = force * Math.sin(gamma) / Math.sin(alpha);
+            const f2 = force * Math.sin(beta) / Math.sin(alpha);
+            
+            f1Value.textContent = f1.toFixed(1);
+            f2Value.textContent = f2.toFixed(1);
+        }
+        
+        // 绘制函数
+        function draw() {
+            // 清除画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 计算中心点
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            // 计算缩放比例
+            const scale = Math.min(canvas.width, canvas.height) / 400;
+            
+            // 绘制坐标轴
+            drawAxes(centerX, centerY, scale);
+            
+            // 绘制力
+            drawForces(centerX, centerY, scale);
+            
+            // 绘制平行四边形
+            drawParallelogram(centerX, centerY, scale);
+            
+            // 绘制标签
+            drawLabels(centerX, centerY, scale);
+        }
+        
+        // 绘制坐标轴
+        function drawAxes(centerX, centerY, scale) {
+            const axisLength = 150 * scale;
+            
+            ctx.save();
+            ctx.strokeStyle = '#bdc3c7';
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([5, 5]);
+            
+            // X轴 (F₁方向)
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(centerX + axisLength, centerY);
+            ctx.stroke();
+            
+            // Y轴 (F₂方向)
+            const angleRad = axisAngle * Math.PI / 180;
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(
+                centerX + axisLength * Math.cos(angleRad),
+                centerY - axisLength * Math.sin(angleRad)
+            );
+            ctx.stroke();
+            
+            ctx.restore();
+            
+            // 绘制坐标轴标签
+            ctx.fillStyle = '#7f8c8d';
+            ctx.font = `${14 * scale}px Arial`;
+            ctx.fillText("F₁", centerX + axisLength + 10, centerY + 5);
+            ctx.fillText("F₂", 
+                centerX + axisLength * Math.cos(angleRad) + 10,
+                centerY - axisLength * Math.sin(angleRad) - 5
+            );
+        }
+        
+        // 绘制力
+        function drawForces(centerX, centerY, scale) {
+            const forceLength = force * scale;
+            const angleRad = angle * Math.PI / 180;
+            const axisAngleRad = axisAngle * Math.PI / 180;
+            
+            // 计算分力
+            const alpha = axisAngleRad;
+            const beta = angleRad;
+            const gamma = Math.PI - alpha - beta;
+            
+            // 使用正弦定理计算分力
+            const f1 = force * Math.sin(gamma) / Math.sin(alpha);
+            const f2 = force * Math.sin(beta) / Math.sin(alpha);
+            
+            const f1Length = f1 * scale;
+            const f2Length = f2 * scale;
+            
+            // 绘制合力 (红色)
+            ctx.save();
+            ctx.strokeStyle = '#e74c3c';
+            ctx.lineWidth = 4 * scale;
+            ctx.lineCap = 'round';
+            
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(
+                centerX + forceLength * Math.cos(angleRad),
+                centerY - forceLength * Math.sin(angleRad)
+            );
+            ctx.stroke();
+            
+            // 绘制合力箭头
+            drawArrow(
+                centerX, centerY,
+                centerX + forceLength * Math.cos(angleRad),
+                centerY - forceLength * Math.sin(angleRad),
+                '#e74c3c',
+                8 * scale
+            );
+            
+            ctx.restore();
+            
+            // 绘制分力 (如果处于分解模式)
+            if (isDecomposition) {
+                // 分力 F₁ (蓝色)
+                ctx.save();
+                ctx.strokeStyle = '#3498db';
+                ctx.lineWidth = 3 * scale;
+                ctx.lineCap = 'round';
+                
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.lineTo(centerX + f1Length, centerY);
+                ctx.stroke();
+                
+                // 分力 F₁ 箭头
+                drawArrow(
+                    centerX, centerY,
+                    centerX + f1Length, centerY,
+                    '#3498db',
+                    6 * scale
+                );
+                
+                ctx.restore();
+                
+                // 分力 F₂ (绿色)
+                ctx.save();
+                ctx.strokeStyle = '#2ecc71';
+                ctx.lineWidth = 3 * scale;
+                ctx.lineCap = 'round';
+                
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.lineTo(
+                    centerX + f2Length * Math.cos(axisAngleRad),
+                    centerY - f2Length * Math.sin(axisAngleRad)
+                );
+                ctx.stroke();
+                
+                // 分力 F₂ 箭头
+                drawArrow(
+                    centerX, centerY,
+                    centerX + f2Length * Math.cos(axisAngleRad),
+                    centerY - f2Length * Math.sin(axisAngleRad),
+                    '#2ecc71',
+                    6 * scale
+                );
+                
+                ctx.restore();
+            }
+        }
+        
+        // 绘制平行四边形
+        function drawParallelogram(centerX, centerY, scale) {
+            const forceLength = force * scale;
+            const angleRad = angle * Math.PI / 180;
+            const axisAngleRad = axisAngle * Math.PI / 180;
+            
+            // 计算分力
+            const alpha = axisAngleRad;
+            const beta = angleRad;
+            const gamma = Math.PI - alpha - beta;
+            
+            // 使用正弦定理计算分力
+            const f1 = force * Math.sin(gamma) / Math.sin(alpha);
+            const f2 = force * Math.sin(beta) / Math.sin(alpha);
+            
+            const f1Length = f1 * scale;
+            const f2Length = f2 * scale;
+            
+            // 平行四边形顶点
+            const p1 = {x: centerX, y: centerY};
+            const p2 = {x: centerX + f1Length, y: centerY};
+            const p3 = {x: centerX + forceLength * Math.cos(angleRad), y: centerY - forceLength * Math.sin(angleRad)};
+            const p4 = {x: centerX + f2Length * Math.cos(axisAngleRad), y: centerY - f2Length * Math.sin(axisAngleRad)};
+            
+            // 绘制平行四边形
+            ctx.save();
+            ctx.strokeStyle = '#f39c12';
+            ctx.lineWidth = 2 * scale;
+            ctx.setLineDash([5, 3]);
+            ctx.globalAlpha = 0.7;
+            
+            ctx.beginPath();
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.lineTo(p3.x, p3.y);
+            ctx.lineTo(p4.x, p4.y);
+            ctx.closePath();
+            ctx.stroke();
+            
+            ctx.restore();
+            
+            // 绘制辅助虚线
+            if (isDecomposition) {
+                ctx.save();
+                ctx.strokeStyle = '#95a5a6';
+                ctx.lineWidth = 1 * scale;
+                ctx.setLineDash([3, 3]);
+                ctx.globalAlpha = 0.5;
+                
+                // 从分力F₁末端到合力末端
+                ctx.beginPath();
+                ctx.moveTo(p2.x, p2.y);
+                ctx.lineTo(p3.x, p3.y);
+                ctx.stroke();
+                
+                // 从分力F₂末端到合力末端
+                ctx.beginPath();
+                ctx.moveTo(p4.x, p4.y);
+                ctx.lineTo(p3.x, p3.y);
+                ctx.stroke();
+                
+                ctx.restore();
+            }
+        }
+        
+        // 绘制标签
+        function drawLabels(centerX, centerY, scale) {
+            const forceLength = force * scale;
+            const angleRad = angle * Math.PI / 180;
+            const axisAngleRad = axisAngle * Math.PI / 180;
+            
+            // 计算分力
+            const alpha = axisAngleRad;
+            const beta = angleRad;
+            const gamma = Math.PI - alpha - beta;
+            
+            // 使用正弦定理计算分力
+            const f1 = force * Math.sin(gamma) / Math.sin(alpha);
+            const f2 = force * Math.sin(beta) / Math.sin(alpha);
+            
+            const f1Length = f1 * scale;
+            const f2Length = f2 * scale;
+            
+            // 设置字体
+            ctx.font = `bold ${14 * scale}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // 合力标签
+            const forceX = centerX + forceLength * Math.cos(angleRad) / 2;
+            const forceY = centerY - forceLength * Math.sin(angleRad) / 2;
+            
+            ctx.save();
+            ctx.fillStyle = '#e74c3c';
+            ctx.fillText(`F = ${force}N`, forceX, forceY - 15 * scale);
+            
+            // 角度标签
+            ctx.fillStyle = '#9b59b6';
+            ctx.font = `italic ${12 * scale}px Arial`;
+            
+            // 绘制角度弧线
+            const arcRadius = 40 * scale;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, arcRadius, -axisAngleRad, -angleRad, true);
+            ctx.strokeStyle = '#9b59b6';
+            ctx.lineWidth = 1.5 * scale;
+            ctx.stroke();
+            
+            // 角度文本
+            const labelAngle = (angleRad + axisAngleRad) / 2;
+            const labelX = centerX + (arcRadius + 15) * Math.cos(labelAngle);
+            const labelY = centerY - (arcRadius + 15) * Math.sin(labelAngle);
+            ctx.fillText(`θ = ${angle}°`, labelX, labelY);
+            
+            ctx.restore();
+            
+            // 分力标签 (如果处于分解模式)
+            if (isDecomposition) {
+                ctx.save();
+                
+                // 分力F₁标签
+                ctx.fillStyle = '#3498db';
+                ctx.font = `bold ${14 * scale}px Arial`;
+                ctx.fillText(`F₁ = ${f1.toFixed(1)}N`, centerX + f1Length/2, centerY + 20 * scale);
+                
+                // 分力F₂标签
+                ctx.fillStyle = '#2ecc71';
+                const f2X = centerX + f2Length * Math.cos(axisAngleRad) / 2;
+                const f2Y = centerY - f2Length * Math.sin(axisAngleRad) / 2;
+                
+                // 调整标签位置以避免重叠
+                const offsetX = 15 * Math.cos(axisAngleRad + Math.PI/2);
+                const offsetY = -15 * Math.sin(axisAngleRad + Math.PI/2);
+                
+                ctx.fillText(`F₂ = ${f2.toFixed(1)}N`, f2X + offsetX, f2Y + offsetY);
+                
+                ctx.restore();
+            }
+            
+            // 坐标轴夹角标签
+            ctx.save();
+            ctx.fillStyle = '#e67e22';
+            ctx.font = `italic ${12 * scale}px Arial`;
+            
+            // 绘制角度弧线
+            const axisArcRadius = 30 * scale;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, axisArcRadius, 0, -axisAngleRad, true);
+            ctx.strokeStyle = '#e67e22';
+            ctx.lineWidth = 1.5 * scale;
+            ctx.stroke();
+            
+            // 角度文本
+            const axisLabelAngle = -axisAngleRad / 2;
+            const axisLabelX = centerX + (axisArcRadius + 15) * Math.cos(axisLabelAngle);
+            const axisLabelY = centerY - (axisArcRadius + 15) * Math.sin(axisLabelAngle);
+            ctx.fillText(`α = ${axisAngle}°`, axisLabelX, axisLabelY);
+            
+            ctx.restore();
+        }
+        
+        // 绘制箭头函数
+        function drawArrow(fromX, fromY, toX, toY, color, arrowSize) {
+            const angle = Math.atan2(toY - fromY, toX - fromX);
+            
+            ctx.save();
+            ctx.fillStyle = color;
+            
+            ctx.beginPath();
+            ctx.moveTo(toX, toY);
+            ctx.lineTo(
+                toX - arrowSize * Math.cos(angle - Math.PI/6),
+                toY - arrowSize * Math.sin(angle - Math.PI/6)
+            );
+            ctx.lineTo(
+                toX - arrowSize * Math.cos(angle + Math.PI/6),
+                toY - arrowSize * Math.sin(angle + Math.PI/6)
+            );
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.restore();
+        }
+        
+        // 初始绘制
+        window.addEventListener('load', function() {
+            resizeCanvas();
+            updateInfo();
+        });
+        
+        window.addEventListener('resize', resizeCanvas);
+    </script>
+</body>
+</html>

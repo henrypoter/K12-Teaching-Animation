@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分子运动论教学动画</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0d1b2a 0%, #1a237e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: rgba(30, 30, 46, 0.8);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        header {
+            background: linear-gradient(to right, #1a237e, #283593);
+            padding: 24px 32px;
+            text-align: center;
+            border-bottom: 2px solid #00e5ff;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            color: #81d4fa;
+        }
+        
+        .scene-tabs {
+            display: flex;
+            background-color: rgba(25, 25, 35, 0.9);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 18px 20px;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #b0b0b0;
+            border-bottom: 4px solid transparent;
+        }
+        
+        .tab:hover {
+            background-color: rgba(66, 66, 66, 0.3);
+            color: #ffffff;
+        }
+        
+        .tab.active {
+            color: #00e5ff;
+            border-bottom: 4px solid #00e5ff;
+            background-color: rgba(0, 229, 255, 0.05);
+        }
+        
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            gap: 24px;
+        }
+        
+        @media (min-width: 900px) {
+            .main-content {
+                flex-direction: row;
+            }
+        }
+        
+        .animation-area {
+            flex: 3;
+            background-color: rgba(10, 15, 30, 0.9);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            min-height: 500px;
+        }
+        
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .control-panel {
+            flex: 1;
+            background-color: rgba(40, 40, 60, 0.8);
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            min-width: 280px;
+        }
+        
+        .scene-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #81d4fa;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(129, 212, 250, 0.3);
+        }
+        
+        .scene-description {
+            margin-bottom: 24px;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #cccccc;
+        }
+        
+        .control-group {
+            margin-bottom: 24px;
+        }
+        
+        .control-title {
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            color: #ffeb3b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .control-title i {
+            font-size: 1.2rem;
+        }
+        
+        .slider-container {
+            margin-bottom: 16px;
+        }
+        
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+        }
+        
+        .slider-value {
+            color: #00e5ff;
+            font-weight: bold;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            -webkit-appearance: none;
+            background: rgba(100, 100, 120, 0.5);
+            border-radius: 4px;
+            outline: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #00e5ff;
+            cursor: pointer;
+            box-shadow: 0 0 8px rgba(0, 229, 255, 0.7);
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 12px 18px;
+            border: none;
+            border-radius: 8px;
+            background-color: #37474f;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        button.primary {
+            background-color: #1a237e;
+        }
+        
+        button.primary:hover {
+            background-color: #283593;
+        }
+        
+        button.secondary {
+            background-color: #ff9800;
+            color: #1a1a1a;
+        }
+        
+        button.secondary:hover {
+            background-color: #ffb74d;
+        }
+        
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .toggle-label {
+            margin-left: 10px;
+            font-size: 0.95rem;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #37474f;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: #00e5ff;
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+        }
+        
+        .info-box {
+            background-color: rgba(0, 229, 255, 0.1);
+            border-left: 4px solid #00e5ff;
+            padding: 12px 16px;
+            margin-top: 20px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.9rem;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .stats {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #ffeb3b;
+            z-index: 10;
+            border: 1px solid rgba(255, 235, 59, 0.3);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 0.9rem;
+            color: #81d4fa;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>分子运动论教学动画</h1>
+            <p class="subtitle">探索微观世界：布朗运动、扩散现象与物态变化的微观解释</p>
+        </header>
+        
+        <div class="scene-tabs">
+            <div class="tab active" data-scene="1">分子运动模型</div>
+            <div class="tab" data-scene="2">布朗运动与扩散</div>
+            <div class="tab" data-scene="3">汽化与液化</div>
+        </div>
+        
+        <div class="main-content">
+            <div class="animation-area">
+                <div class="stats" id="stats">分子数: 50 | 温度: 25°C</div>
+                <canvas id="animationCanvas"></canvas>
+            </div>
+            
+            <div class="control-panel">
+                <div id="scene1-controls">
+                    <h2 class="scene-title">分子运动模型</h2>
+                    <p class="scene-description">观察分子在容器内的无规则运动。分子间存在间隙，永不停息地运动，相互碰撞并与容器壁碰撞。</p>
+                    
+                    <div class="control-group">
+                        <div class="control-title">温度控制</div>
+                        <div class="slider-container">
+                            <div class="slider-label">
+                                <span>温度</span>
+                                <span class="slider-value" id="tempValue1">25°C</span>
+                            </div>
+                            <input type="range" id="temperature1" min="0" max="50" value="25" step="1">
+                        </div>
+                        <div class="slider-container">
+                            <div class="slider-label">
+                                <span>分子密度</span>
+                                <span class="slider-value" id="densityValue1">50</span>
+                            </div>
+                            <input type="range" id="density1" min="10" max="100" value="50" step="5">
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <div class="control-title">显示选项</div>
+                        <div class="toggle-container">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="showForces1">
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <span class="toggle-label">显示分子间作用力</span>
+                        </div>
+                        <div class="toggle-container">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="showVelocity1">
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <span class="toggle-label">显示速度箭头</span>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <div class="button-group">
+                            <button class="primary" id="playPause1">暂停动画</button>
+                            <button id="reset1">重置</button>
+                        </div>
+                    </div>
+                    
+                    <div class="info-box">
+                        <strong>观察要点：</strong> 提高温度会使分子运动更剧烈；增加密度会使分子间隙变小，碰撞更频繁。
+                    </div>
+                </div>
+                
+                <div id="scene2-controls" class="hidden">
+                    <h2 class="scene-title">布朗运动与扩散</h2>
+                    <p class="scene-description">左侧：布朗颗粒在分子撞击下的无规则运动。右侧：两种不同颜色的分子相互混合的扩散现象。</p>
+                    
+                    <div class="control-group">
+                        <div class="control-title">实验控制</div>
+                        <div class="slider-container">
+                            <div class="slider-label">
+                                <span>温度</span>
+                                <span class="slider-value" id="tempValue2">25°C</span>
+                            </div>
+                            <input type="range" id="temperature2" min="0" max="50" value="25" step="1">
+                        </div>
+                        <div class="button-group">
+                            <button class="secondary" id="addBrownian">添加布朗颗粒</button>
+                            <button id="removeBrownian">移除颗粒</button>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <div class="control-title">显示选项</div>
+                        <div class="toggle-container">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="showTrajectory" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <span class="toggle-label">显示布朗运动轨迹</span>
+                        </div>
+                        <div class="toggle-container">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="startDiffusion">
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <span class="toggle-label">开始扩散实验</span>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <div class="button-group">
+                            <button class="primary" id="playPause2">暂停动画</button>
+                            <button id="reset2">重置</button>
+                        </div>
+                    </div>
+                    
+                    <div class="info-box">
+                        <strong>观察要点：</strong> 布朗颗粒越小，运动越明显；温度越高，扩散速度越快。
+                    </div>
+                </div>
+                
+                <div id="scene3-controls" class="hidden">
+                    <h2 class="scene-title">汽化与液化</h2>
+                    <p class="scene-description">左侧：液体蒸发 - 动能大的分子克服分子间引力逸出液面。右侧：气体液化 - 冷却使分子动能减小，在引力作用下聚集为液体。</p>
+                    
+                    <div class="control-group">
+                        <div class="control-title">能量控制</div>
+                        <div class="slider-container">
+                            <div class="slider-label">
+                                <span>系统能量</span>
+                                <span class="slider-value" id="energyValue">50%</span>
+                            </div>
+                            <input type="range" id="energy" min="0" max="100" value="50" step="1">
+                        </div>
+                        <div class="button-group">
+                            <button class="secondary" id="heatBtn">加热</button>
+                            <button class="secondary" id="coolBtn">冷却</button>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <div class="control-title">显示选项</div>
+                        <div class="toggle-container">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="showEvaporation">
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <span class="toggle-label">高亮逸出分子</span>
+                        </div>
+                        <div class="toggle-container">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="showCondensation">
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <span class="toggle-label">显示液化过程</span>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <div class="button-group">
+                            <button class="primary" id="playPause3">暂停动画</button>
+                            <button id="reset3">重置</button>
+                        </div>
+                    </div>
+                    
+                    <div class="info-box">
+                        <strong>观察要点：</strong> 加热增加分子动能，促进蒸发；冷却减少分子动能，促进液化。
+                    </div>
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #81d4fa;"></div>
+                        <span>空气/水分子</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #ff9800;"></div>
+                        <span>另一种分子</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #f44336;"></div>
+                        <span>布朗颗粒</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #00e5ff;"></div>
+                        <span>高能分子</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>分子运动论教学动画 | 设计原理：分子永不停息地做无规则运动，分子间存在间隙，分子间存在相互作用力</p>
+        </footer>
+    </div>
+
+    <script>
+        // 获取Canvas和上下文
+        const canvas = document.getElementById('animationCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 设置Canvas尺寸
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+        }
+        
+        // 初始调整尺寸
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // 场景管理
+        let currentScene = 1;
+        const tabs = document.querySelectorAll('.tab');
+        const sceneControls = [
+            document.getElementById('scene1-controls'),
+            document.getElementById('scene2-controls'),
+            document.getElementById('scene3-controls')
+        ];
+        
+        // 切换场景
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const sceneNum = parseInt(tab.dataset.scene);
+                switchScene(sceneNum);
+            });
+        });
+        
+        function switchScene(sceneNum) {
+            currentScene = sceneNum;
+            
+            // 更新标签状态
+            tabs.forEach(tab => {
+                if (parseInt(tab.dataset.scene) === sceneNum) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+            
+            // 更新控制面板
+            sceneControls.forEach((control, index) => {
+                if (index + 1 === sceneNum) {
+                    control.classList.remove('hidden');
+                } else {
+                    control.classList.add('hidden');
+                }
+            });
+            
+            // 重置动画状态
+            resetAllScenes();
+            initScene(sceneNum);
+        }
+        
+        // 全局动画状态
+        let animationId = null;
+        let isPlaying = true;
+        
+        // 场景1：分子运动模型
+        let molecules1 = [];
+        const moleculeCount1 = 50;
+        let temperature1 = 25;
+        let showForces1 = false;
+        let showVelocity1 = false;
+        
+        // 场景2：布朗运动与扩散
+        let molecules2a = []; // 左侧分子
+        let molecules2b = []; // 右侧分子（不同颜色）
+        let brownianParticles = [];
+        let showTrajectory = true;
+        let diffusionStarted = false;
+        let temperature2 = 25;
+        
+        // 场景3：汽化与液化
+        let liquidMolecules = [];
+        let gasMolecules = [];
+        let energyLevel = 50;
+        let showEvaporation = true;
+        let showCondensation = true;
+        
+        // 分子类
+        class Molecule {
+            constructor(x, y, radius, color, isBrownian = false) {
+                this.x = x;
+                this.y = y;
+                this.radius = radius;
+                this.color = color;
+                this.isBrownian = isBrownian;
+                
+                // 布朗颗粒速度较慢
+                const speedFactor = isBrownian ? 0.3 : 1;
+                const baseSpeed = 1 + temperature1 / 50;
+                
+                this.vx = (Math.random() - 0.5) * baseSpeed * speedFactor;
+                this.vy = (Math.random() - 0.5) * baseSpeed * speedFactor;
+                
+                // 布朗颗粒轨迹
+                this.trail = [];
+                this.maxTrailLength = 20;
+            }
+            
+            update(containerWidth, containerHeight, temperature) {
+                // 根据温度调整速度
+                const speedMultiplier = 0.5 + temperature / 50;
+                
+                // 布朗颗粒受分子撞击，运动更随机
+                if (this.isBrownian) {
+                    this.vx += (Math.random() - 0.5) * 0.1;
+                    this.vy += (Math.random() - 0.5) * 0.1;
+                    
+                    // 限制布朗颗粒速度
+                    const maxSpeed = 1.5 * speedMultiplier;
+                    const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+                    if (speed > maxSpeed) {
+                        this.vx = (this.vx / speed) * maxSpeed;
+                        this.vy = (this.vy / speed) * maxSpeed;
+                    }
+                    
+                    // 记录轨迹
+                    this.trail.push({x: this.x, y: this.y});
+                    if (this.trail.length > this.maxTrailLength) {
+                        this.trail.shift();
+                    }
+                } else {
+                    this.vx *= 0.99; // 轻微阻力
+                    this.vy *= 0.99;
+                }
+                
+                // 更新位置
+                this.x += this.vx * speedMultiplier;
+                this.y += this.vy * speedMultiplier;
+                
+                // 边界碰撞
+                if (this.x - this.radius < 0) {
+                    this.x = this.radius;
+                    this.vx = Math.abs(this.vx) * 0.9;
+                }
+                if (this.x + this.radius > containerWidth) {
+                    this.x = containerWidth - this.radius;
+                    this.vx = -Math.abs(this.vx) * 0.9;
+                }
+                if (this.y - this.radius < 0) {
+                    this.y = this.radius;
+                    this.vy = Math.abs(this.vy) * 0.9;
+                }
+                if (this.y + this.radius > containerHeight) {
+                    this.y = containerHeight - this.radius;
+                    this.vy = -Math.abs(this.vy) * 0.9;
+                }
+            }
+            
+            draw(ctx) {
+                // 绘制轨迹（仅布朗颗粒）
+                if (this.isBrownian && showTrajectory && this.trail.length > 1) {
+                    ctx.beginPath();
+                    ctx.moveTo(this.trail[0].x, this.trail[0].y);
+                    
+                    for (let i = 1; i < this.trail.length; i++) {
+                        const point = this.trail[i];
+                        ctx.lineTo(point.x, point.y);
+                    }
+                    
+                    ctx.strokeStyle = 'rgba(244, 67, 54, 0.3)';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                }
+                
+                // 绘制分子
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                
+                // 创建发光效果
+                const gradient = ctx.createRadialGradient(
+                    this.x, this.y, 0,
+                    this.x, this.y, this.radius * 1.5
+                );
+                
+                if (this.isBrownian) {
+                    gradient.addColorStop(0, '#f44336');
+                    gradient.addColorStop(0.7, '#d32f2f');
+                    gradient.addColorStop(1, 'rgba(211, 47, 47, 0)');
+                } else {
+                    if (this.color === 'blue') {
+                        gradient.addColorStop(0, '#81d4fa');
+                        gradient.addColorStop(0.7, '#4fc3f7');
+                        gradient.addColorStop(1, 'rgba(79, 195, 247, 0)');
+                    } else {
+                        gradient.addColorStop(0, '#ff9800');
+                        gradient.addColorStop(0.7, '#ff8a00');
+                        gradient.addColorStop(1, 'rgba(255, 138, 0, 0)');
+                    }
+                }
+                
+                ctx.fillStyle = gradient;
+                ctx.fill();
+                
+                // 绘制高能分子边框
+                if (!this.isBrownian) {
+                    const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+                    if (speed > 2) {
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y, this.radius + 2, 0, Math.PI * 2);
+                        ctx.strokeStyle = '#00e5ff';
+                        ctx.lineWidth = 1.5;
+                        ctx.stroke();
+                    }
+                }
+                
+                // 绘制速度箭头
+                if (showVelocity1 && currentScene === 1 && !this.isBrownian) {
+                    const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+                    if (speed > 0.1) {
+                        const arrowLength = speed * 10;
+                        const angle = Math.atan2(this.vy, this.vx);
+                        
+                        ctx.beginPath();
+                        ctx.moveTo(this.x, this.y);
+                        ctx.lineTo(
+                            this.x + Math.cos(angle) * arrowLength,
+                            this.y + Math.sin(angle) * arrowLength
+                        );
+                        ctx.strokeStyle = '#ffeb3b';
+                        ctx.lineWidth = 1.5;
+                        ctx.stroke();
+                        
+                        // 绘制箭头头部
+                        ctx.beginPath();
+                        ctx.moveTo(
+                            this.x + Math.cos(angle) * arrowLength,
+                            this.y + Math.sin(angle) * arrowLength
+                        );
+                        ctx.lineTo(
+                            this.x + Math.cos(angle - Math.PI/6) * arrowLength * 0.7,
+                            this.y + Math.sin(angle - Math.PI/6) * arrowLength * 0.7
+                        );
+                        ctx.lineTo(
+                            this.x + Math.cos(angle + Math.PI/6) * arrowLength * 0.7,
+                            this.y + Math.sin(angle + Math.PI/6) * arrowLength * 0.7
+                        );
+                        ctx.closePath();
+                        ctx.fillStyle = '#ffeb3b';
+                        ctx.fill();
+                    }
+                }
+            }
+            
+            // 检查与其他分子的碰撞
+            checkCollision(other) {
+                const dx = other.x - this.x;
+                const dy = other.y - this.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                const minDistance = this.radius + other.radius;
+                
+                if (distance < minDistance && distance > 0) {
+                    // 计算碰撞角度
+                    const angle = Math.atan2(dy, dx);
+                    
+                    // 计算速度分量
+                    const speed1 = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
+                    const speed2 = Math.sqrt(other.vx * other.vx + other.vy * other.vy);
+                    
+                    // 计算方向
+                    const direction1 = Math.atan2(this.vy, this.vx);
+                    const direction2 = Math.atan2(other.vy, other.vx);
+                    
+                    // 碰撞后的速度（简化模型）
+                    const newSpeed1 = speed2 * 0.9;
+                    const newSpeed2 = speed1 * 0.9;
+                    
+                    // 更新速度
+                    this.vx = Math.cos(direction2) * newSpeed1;
+                    this.vy = Math.sin(direction2) * newSpeed1;
+                    other.vx = Math.cos(direction1) * newSpeed2;
+                    other.vy = Math.sin(direction1) * newSpeed2;
+                    
+                    // 防止重叠
+                    const overlap = minDistance - distance;
+                    this.x -= Math.cos(angle) * overlap / 2;
+                    this.y -= Math.sin(angle) * overlap / 2;
+                    other.x += Math.cos(angle) * overlap / 2;
+                    other.y += Math.sin(angle) * overlap / 2;
+                    
+                    return true;
+                }
+                return false;
+            }
+        }
+        
+        // 初始化场景
+        function initScene(sceneNum) {
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            if (sceneNum === 1) {
+                // 场景1：分子运动模型
+                molecules1 = [];
+                const count = parseInt(document.getElementById('density1').value);
+                
+                for (let i = 0; i < count; i++) {
+                    const radius = 6 + Math.random() * 4;
+                    const x = radius + Math.random() * (width - radius * 2);
+                    const y = radius + Math.random() * (height - radius * 2);
+                    
+                    molecules1.push(new Molecule(x, y, radius, 'blue'));
+                }
+                
+                updateStats();
+            } 
+            else if (sceneNum === 2) {
+                // 场景2：布朗运动与扩散
+                molecules2a = [];
+                molecules2b = [];
+                brownianParticles = [];
+                
+                // 左侧分子（蓝色）
+                for (let i = 0; i < 40; i++) {
+                    const radius = 5 + Math.random() * 3;
+                    const x = radius + Math.random() * (width/2 - radius * 2);
+                    const y = radius + Math.random() * (height - radius * 2);
+                    
+                    molecules2a.push(new Molecule(x, y, radius, 'blue'));
+                }
+                
+                // 右侧分子（橙色）
+                for (let i = 0; i < 40; i++) {
+                    const radius = 5 + Math.random() * 3;
+                    const x = width/2 + radius + Math.random() * (width/2 - radius * 2);
+                    const y = radius + Math.random() * (height - radius * 2);
+                    
+                    molecules2b.push(new Molecule(x, y, radius, 'orange'));
+                }
+                
+                // 添加几个布朗颗粒
+                for (let i = 0; i < 3; i++) {
+                    const radius = 10 + Math.random() * 5;
+                    const x = radius + Math.random() * (width/2 - radius * 2);
+                    const y = radius + Math.random() * (height - radius * 2);
+                    
+                    brownianParticles.push(new Molecule(x, y, radius, 'red', true));
+                }
+            }
+            else if (sceneNum === 3) {
+                // 场景3：汽化与液化
+                liquidMolecules = [];
+                gasMolecules = [];
+                
+                // 创建液体分子（底部）
+                const liquidHeight = height * 0.6;
+                for (let i = 0; i < 60; i++) {
+                    const radius = 5 + Math.random() * 3;
+                    const x = radius + Math.random() * (width/2 - radius * 2);
+                    const y = height - liquidHeight + radius + Math.random() * (liquidHeight - radius * 2);
+                    
+                    const molecule = new Molecule(x, y, radius, 'blue');
+                    // 液体分子运动较慢
+                    molecule.vx *= 0.5;
+                    molecule.vy *= 0.5;
+                    liquidMolecules.push(molecule);
+                }
+                
+                // 创建气体分子（右侧）
+                for (let i = 0; i < 30; i++) {
+                    const radius = 4 + Math.random() * 2;
+                    const x = width/2 + radius + Math.random() * (width/2 - radius * 2);
+                    const y = radius + Math.random() * (height - radius * 2);
+                    
+                    gasMolecules.push(new Molecule(x, y, radius, 'blue'));
+                }
+            }
+        }
+        
+        // 重置所有场景
+        function resetAllScenes() {
+            molecules1 = [];
+            molecules2a = [];
+            molecules2b = [];
+            brownianParticles = [];
+            liquidMolecules = [];
+            gasMolecules = [];
+        }
+        
+        // 更新统计信息
+        function updateStats() {
+            const stats = document.getElementById('stats');
+            if (currentScene === 1) {
+                stats.textContent = `分子数: ${molecules1.length} | 温度: ${temperature1}°C`;
+            } else if (currentScene === 2) {
+                stats.textContent = `布朗颗粒: ${brownianParticles.length} | 温度: ${temperature2}°C`;
+            } else if (currentScene === 3) {
+                const evaporationRate = gasMolecules.length;
+                stats.textContent = `液体分子: ${liquidMolecules.length} | 气体分子: ${evaporationRate} | 能量: ${energyLevel}%`;
+            }
+        }
+        
+        // 绘制场景1
+        function drawScene1() {
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // 清空画布
+            ctx.clearRect(0, 0, width, height);
+            
+            // 绘制容器
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(10, 10, width - 20, height - 20);
+            
+            // 更新并绘制分子
+            for (let i = 0; i < molecules1.length; i++) {
+                molecules1[i].update(width - 20, height - 20, temperature1);
+                molecules1[i].draw(ctx);
+                
+                // 检查碰撞
+                for (let j = i + 1; j < molecules1.length; j++) {
+                    molecules1[i].checkCollision(molecules1[j]);
+                }
+                
+                // 绘制分子间作用力（示意）
+                if (showForces1) {
+                    for (let j = i + 1; j < molecules1.length; j++) {
+                        const dx = molecules1[j].x - molecules1[i].x;
+                        const dy = molecules1[j].y - molecules1[i].y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < 80) {
+                            const force = 80 - distance; // 距离越近，力越大
+                            const angle = Math.atan2(dy, dx);
+                            
+                            // 绘制力箭头
+                            const arrowX = molecules1[i].x + dx / 2;
+                            const arrowY = molecules1[i].y + dy / 2;
+                            const arrowLength = Math.min(force / 5, 15);
+                            
+                            ctx.beginPath();
+                            ctx.moveTo(arrowX, arrowY);
+                            ctx.lineTo(
+                                arrowX - Math.cos(angle) * arrowLength,
+                                arrowY - Math.sin(angle) * arrowLength
+                            );
+                            ctx.strokeStyle = distance < 40 ? '#ff5252' : '#4caf50';
+                            ctx.lineWidth = 1.5;
+                            ctx.stroke();
+                            
+                            // 绘制箭头头部
+                            ctx.beginPath();
+                            ctx.moveTo(
+                                arrowX - Math.cos(angle) * arrow
+<!--检测到代码截断，自动续写中...-->

@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>原子核衰变与半衰期 - 蒙特卡洛模拟</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%);
+            color: #e0e1dd;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h1 {
+            color: #4cc9f0;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(76, 201, 240, 0.3);
+        }
+
+        .subtitle {
+            color: #90be6d;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .simulation-area {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .view-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .view-title {
+            color: #ffd166;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .view-title::before {
+            content: "●";
+            color: #ffd166;
+            font-size: 0.8rem;
+        }
+
+        #atomCanvas {
+            background: rgba(13, 27, 42, 0.8);
+            border-radius: 10px;
+            width: 100%;
+            height: 400px;
+            display: block;
+        }
+
+        #chartCanvas {
+            background: rgba(13, 27, 42, 0.8);
+            border-radius: 10px;
+            width: 100%;
+            height: 400px;
+            display: block;
+        }
+
+        .controls-panel {
+            flex: 0 0 320px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .panel-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .section-title {
+            color: #4cc9f0;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title::before {
+            content: "▶";
+            font-size: 0.8rem;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.95rem;
+        }
+
+        .value-display {
+            color: #ffd166;
+            font-weight: bold;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #4cc9f0;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(76, 201, 240, 0.8);
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        button {
+            padding: 12px 15px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #4cc9f0 0%, #3a86ff 100%);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 201, 240, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button.secondary {
+            background: linear-gradient(135deg, #90be6d 0%, #43aa8b 100%);
+        }
+
+        button.secondary:hover {
+            box-shadow: 0 5px 15px rgba(144, 190, 109, 0.4);
+        }
+
+        button.warning {
+            background: linear-gradient(135deg, #f72585 0%, #b5179e 100%);
+        }
+
+        button.warning:hover {
+            box-shadow: 0 5px 15px rgba(247, 37, 133, 0.4);
+        }
+
+        .stats-display {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ffd166;
+            margin: 5px 0;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #adb5bd;
+        }
+
+        .view-toggle {
+            display: flex;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 5px;
+            margin-top: 10px;
+        }
+
+        .view-toggle button {
+            flex: 1;
+            padding: 8px;
+            background: transparent;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .view-toggle button.active {
+            background: rgba(76, 201, 240, 0.2);
+            color: #4cc9f0;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #4cc9f0;
+        }
+
+        .legend {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .info-panel {
+            background: rgba(239, 71, 111, 0.1);
+            border-left: 4px solid #ef476f;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .info-panel strong {
+            color: #ef476f;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+            font-size: 0.9rem;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .controls-panel {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>原子核衰变与半衰期</h1>
+            <p class="subtitle">蒙特卡洛模拟 - 探索微观随机性与宏观统计规律</p>
+        </header>
+
+        <div class="main-content">
+            <div class="simulation-area">
+                <div class="view-container">
+                    <div class="view-title">微观视图：原子衰变过程</div>
+                    <canvas id="atomCanvas"></canvas>
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #4cc9f0;"></div>
+                            <span>未衰变原子</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #90be6d;"></div>
+                            <span>已衰变原子</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="view-container">
+                    <div class="view-title">宏观视图：衰变统计曲线</div>
+                    <canvas id="chartCanvas"></canvas>
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #ffd166;"></div>
+                            <span>模拟数据曲线</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #ffffff;"></div>
+                            <span>理论预测曲线</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #ef476f;"></div>
+                            <span>半衰期标记</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls-panel">
+                <div class="panel-section">
+                    <div class="section-title">模拟参数设置</div>
+                    
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>初始原子数量</span>
+                            <span class="value-display" id="atomCountValue">500</span>
+                        </div>
+                        <input type="range" id="atomCount" min="100" max="1000" step="50" value="500">
+                    </div>
+
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>半衰期 (T½)</span>
+                            <span class="value-display" id="halfLifeValue">20</span>
+                        </div>
+                        <input type="range" id="halfLife" min="5" max="50" step="1" value="20">
+                    </div>
+
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>时间步长 (Δt)</span>
+                            <span class="value-display" id="timeStepValue">0.5</span>
+                        </div>
+                        <input type="range" id="timeStep" min="0.1" max="2" step="0.1" value="0.5">
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <div class="section-title">模拟控制</div>
+                    <div class="button-group">
+                        <button id="startBtn">
+                            <span>▶</span> 开始
+                        </button>
+                        <button id="stepBtn" class="secondary">
+                            <span>⏯</span> 单步执行
+                        </button>
+                        <button id="resetBtn" class="secondary">
+                            <span>↻</span> 重置
+                        </button>
+                        <button id="randomBtn" class="warning">
+                            <span>🎲</span> 新随机种子
+                        </button>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <div class="section-title">视图控制</div>
+                    <div class="view-toggle">
+                        <button id="viewAtom" class="active">原子视图</button>
+                        <button id="viewChart">图表视图</button>
+                        <button id="viewBoth">并排视图</button>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="showTheory" checked>
+                        <label for="showTheory">显示理论预测曲线</label>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <div class="section-title">实时数据</div>
+                    <div class="stats-display">
+                        <div class="stat-item">
+                            <div class="stat-value" id="currentTime">0.0</div>
+                            <div class="stat-label">当前时间</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="remainingAtoms">500</div>
+                            <div class="stat-label">剩余原子数</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="decayedAtoms">0</div>
+                            <div class="stat-label">已衰变原子数</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="decayPercent">0%</div>
+                            <div class="stat-label">衰变比例</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-panel">
+                    <strong>教学提示：</strong> 观察单个原子的随机衰变如何产生整体的指数衰减规律。调整半衰期参数，观察曲线变化。注意第一个半衰期标记（红色线）出现时，剩余原子数正好减半。
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>蒙特卡洛模拟 | 原子核衰变与半衰期 | 教育技术演示</p>
+        </footer>
+    </div>
+
+    <script>
+        // 全局变量
+        let simulation = {
+            atoms: [],
+            decayedAtoms: [],
+            time: 0,
+            isRunning: false,
+            animationId: null,
+            halfLife: 20,
+            timeStep: 0.5,
+            atomCount: 500,
+            decayConstant: 0,
+            dataPoints: [],
+            randomSeed: Math.random(),
+            firstHalfLifeMarked: false
+        };
+
+        // DOM 元素
+        const atomCanvas = document.getElementById('atomCanvas');
+        const chartCanvas = document.getElementById('chartCanvas');
+        const atomCtx = atomCanvas.getContext('2d');
+        const chartCtx = chartCanvas.getContext('2d');
+
+        // 控制元素
+        const atomCountSlider = document.getElementById('atomCount');
+        const halfLifeSlider = document.getElementById('halfLife');
+        const timeStepSlider = document.getElementById('timeStep');
+        const startBtn = document.getElementById('startBtn');
+        const stepBtn = document.getElementById('stepBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const randomBtn = document.getElementById('randomBtn');
+        const showTheoryCheckbox = document.getElementById('showTheory');
+        const viewAtomBtn = document.getElementById('viewAtom');
+        const viewChartBtn = document.getElementById('viewChart');
+        const viewBothBtn = document.getElementById('viewBoth');
+
+        // 数据显示元素
+        const atomCountValue = document.getElementById('atomCountValue');
+        const halfLifeValue = document.getElementById('halfLifeValue');
+        const timeStepValue = document.getElementById('timeStepValue');
+        const currentTimeDisplay = document.getElementById('currentTime');
+        const remainingAtomsDisplay = document.getElementById('remainingAtoms');
+        const decayedAtomsDisplay = document.getElementById('decayedAtoms');
+        const decayPercentDisplay = document.getElementById('decayPercent');
+
+        // 初始化 Canvas 尺寸
+        function initCanvasSize() {
+            const container = atomCanvas.parentElement;
+            const width = container.clientWidth - 30;
+            
+            atomCanvas.width = width;
+            atomCanvas.height = 400;
+            
+            chartCanvas.width = width;
+            chartCanvas.height = 400;
+        }
+
+        // 初始化原子
+        function initAtoms() {
+            simulation.atoms = [];
+            simulation.decayedAtoms = [];
+            simulation.dataPoints = [];
+            simulation.time = 0;
+            simulation.firstHalfLifeMarked = false;
+            
+            // 计算衰变常数 λ = ln(2) / T½
+            simulation.decayConstant = Math.log(2) / simulation.halfLife;
+            
+            const width = atomCanvas.width;
+            const height = atomCanvas.height;
+            const padding = 20;
+            
+            // 创建未衰变原子
+            for (let i = 0; i < simulation.atomCount; i++) {
+                simulation.atoms.push({
+                    x: padding + Math.random() * (width - 2 * padding),
+                    y: padding + Math.random() * (height - 2 * padding),
+                    radius: 4,
+                    color: '#4cc9f0',
+                    decayTime: null,
+                    isDecayed: false,
+                    id: i
+                });
+            }
+            
+            // 添加初始数据点
+            simulation.dataPoints.push({
+                time: 0,
+                count: simulation.atomCount,
+                theoretical: simulation.atomCount
+            });
+            
+            updateDisplays();
+        }
+
+        // 执行一个时间步长的模拟
+        function simulateStep() {
+            if (simulation.atoms.length === 0) return;
+            
+            simulation.time += simulation.timeStep;
+            
+            // 计算每个原子在这一步长内的衰变概率
+            const decayProbability = 1 - Math.exp(-simulation.decayConstant * simulation.timeStep);
+            
+            // 标记要衰变的原子
+            const atomsToDecay = [];
+            for (let i = 0; i < simulation.atoms.length; i++) {
+                if (!simulation.atoms[i].isDecayed && Math.random() < decayProbability) {
+                    atomsToDecay.push(i);
+                }
+            }
+            
+            // 处理衰变原子
+            atomsToDecay.sort((a, b) => b - a); // 从后往前删除
+            for (const index of atomsToDecay) {
+                const atom = simulation.atoms[index];
+                atom.isDecayed = true;
+                atom.decayTime = simulation.time;
+                atom.color = '#90be6d';
+                
+                // 移动到已衰变数组
+                simulation.decayedAtoms.push(atom);
+                simulation.atoms.splice(index, 1);
+            }
+            
+            // 记录数据点
+            const currentCount = simulation.atoms.length;
+            const theoreticalCount = simulation.atomCount * Math.exp(-simulation.decayConstant * simulation.time);
+            
+            simulation.dataPoints.push({
+                time: simulation.time,
+                count: currentCount,
+                theoretical: theoreticalCount
+            });
+            
+            // 检查是否达到半衰期
+            if (!simulation.firstHalfLifeMarked && currentCount <= simulation.atomCount / 2) {
+                simulation.firstHalfLifeMarked = true;
+                // 可以添加视觉反馈
+            }
+            
+            updateDisplays();
+        }
+
+        // 更新数据显示
+        function updateDisplays() {
+            currentTimeDisplay.textContent = simulation.time.toFixed(1);
+            remainingAtomsDisplay.textContent = simulation.atoms.length;
+            decayedAtomsDisplay.textContent = simulation.decayedAtoms.length;
+            
+            const decayPercent = (simulation.decayedAtoms.length / simulation.atomCount * 100).toFixed(1);
+            decayPercentDisplay.textContent = `${decayPercent}%`;
+        }
+
+        // 绘制原子视图
+        function drawAtomView() {
+            const ctx = atomCtx;
+            const width = atomCanvas.width;
+            const height = atomCanvas.height;
+            
+            // 清空画布
+            ctx.clearRect(0, 0, width, height);
+            
+            // 绘制背景
+            ctx.fillStyle = '#0d1b2a';
+            ctx.fillRect(0, 0, width, height);
+            
+            // 绘制网格
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.lineWidth = 1;
+            const gridSize = 40;
+            
+            for (let x = 0; x < width; x += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, height);
+                ctx.stroke();
+            }
+            
+            for (let y = 0; y < height; y += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
+                ctx.stroke();
+            }
+            
+            // 绘制已衰变原子
+            for (const atom of simulation.decayedAtoms) {
+                ctx.beginPath();
+                ctx.arc(atom.x, atom.y, atom.radius, 0, Math.PI * 2);
+                ctx.fillStyle = atom.color;
+                ctx.fill();
+                
+                // 添加微弱的发光效果
+                ctx.beginPath();
+                ctx.arc(atom.x, atom.y, atom.radius + 2, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(144, 190, 109, 0.2)';
+                ctx.fill();
+            }
+            
+            // 绘制未衰变原子（带发光效果）
+            for (const atom of simulation.atoms) {
+                // 发光效果
+                const gradient = ctx.createRadialGradient(
+                    atom.x, atom.y, 0,
+                    atom.x, atom.y, atom.radius + 3
+                );
+                gradient.addColorStop(0, 'rgba(76, 201, 240, 0.8)');
+                gradient.addColorStop(1, 'rgba(76, 201, 240, 0)');
+                
+                ctx.beginPath();
+                ctx.arc(atom.x, atom.y, atom.radius + 3, 0, Math.PI * 2);
+                ctx.fillStyle = gradient;
+                ctx.fill();
+                
+                // 原子核心
+                ctx.beginPath();
+                ctx.arc(atom.x, atom.y, atom.radius, 0, Math.PI * 2);
+                ctx.fillStyle = atom.color;
+                ctx.fill();
+            }
+            
+            // 绘制标题
+            ctx.fillStyle = '#ffd166';
+            ctx.font = '14px Arial';
+            ctx.fillText(`未衰变原子: ${simulation.atoms.length}`, 10, 20);
+            ctx.fillText(`时间: ${simulation.time.toFixed(1)}`, 10, 40);
+        }
+
+        // 绘制图表视图
+        function drawChartView() {
+            const ctx = chartCtx;
+            const width = chartCanvas.width;
+            const height = chartCanvas.height;
+            const padding = { top: 40, right: 20, bottom: 40, left: 60 };
+            
+            // 清空画布
+            ctx.clearRect(0, 0, width, height);
+            
+            // 绘制背景
+            ctx.fillStyle = '#0d1b2a';
+            ctx.fillRect(0, 0, width, height);
+            
+            // 计算坐标轴范围
+            const maxTime = Math.max(simulation.time, simulation.halfLife * 3);
+            const maxCount = simulation.atomCount;
+            
+            // 坐标转换函数
+            const toX = (time) => padding.left + (time / maxTime) * (width - padding.left - padding.right);
+            const toY = (count) => padding.top + (1 - count / maxCount) * (height - padding.top - padding.bottom);
+            
+            // 绘制网格
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = 1;
+            ctx.font = '12px Arial';
+            ctx.fillStyle = '#adb5bd';
+            
+            // 水平网格线（数量）
+            for (let i = 0; i <= 10; i++) {
+                const count = (maxCount * i / 10);
+                const y = toY(count);
+                
+                ctx.beginPath();
+                ctx.moveTo(padding.left, y);
+                ctx.lineTo(width - padding.right, y);
+                ctx.stroke();
+                
+                ctx.fillText(Math.round(count).toString(), 5, y + 4);
+            }
+            
+            // 垂直网格线（时间）
+            for (let i = 0; i <= 10; i++) {
+                const time = (maxTime * i / 10);
+                const x = toX(time);
+                
+                ctx.beginPath();
+                ctx.moveTo(x, padding.top);
+                ctx.lineTo(x, height - padding.bottom);
+                ctx.stroke();
+                
+                ctx.fillText(time.toFixed(1), x - 10, height - padding.bottom + 20);
+            }
+            
+            // 绘制坐标轴
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            
+            // Y轴
+            ctx.beginPath();
+            ctx.moveTo(padding.left, padding.top);
+            ctx.lineTo(padding.left, height - padding.bottom);
+            ctx.stroke();
+            
+            // X轴
+            ctx.beginPath();
+            ctx.moveTo(padding.left, height - padding.bottom);
+            ctx.lineTo(width - padding.right, height - padding.bottom);
+            ctx.stroke();
+            
+            // 轴标签
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '14px Arial';
+            ctx.fillText('原子数量', 10, padding.top - 10);
+            ctx.fillText('时间', width - padding.right, height - padding.bottom + 30);
+            
+            // 绘制理论曲线（如果启用）
+            if (showTheoryCheckbox.checked) {
+                ctx.beginPath();
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                
+                for (let t = 0; t <= maxTime; t += maxTime / 100) {
+                    const count = simulation.atomCount * Math.exp(-simulation.decayConstant * t);
+                    const x = toX(t);
+                    const y = toY(count);
+                    
+                    if (t === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+            
+            // 绘制模拟数据曲线
+            if (simulation.dataPoints.length > 0) {
+                ctx.beginPath();
+                ctx.strokeStyle = '#ffd166';
+                ctx.lineWidth = 3;
+                ctx.lineJoin = 'round';
+                
+                for (let i = 0; i < simulation.dataPoints.length; i++) {
+                    const point = simulation.dataPoints[i];
+                    const x = toX(point.time);
+                    const y = toY(point.count);
+                    
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                ctx.stroke();
+                
+                // 绘制数据点
+                for (const point of simulation.dataPoints) {
+                    const x = toX(point.time);
+                    const y = toY(point.count);
+                    
+                    ctx.beginPath();
+                    ctx.arc(x, y, 3, 0, Math.PI * 2);
+                    ctx.fillStyle = '#ffd166';
+                    ctx.fill();
+                }
+            }
+            
+            // 绘制半衰期标记
+            if (simulation.firstHalfLifeMarked) {
+                const halfLifeX = toX(simulation.halfLife);
+                
+                // 垂直线
+                ctx.beginPath();
+                ctx.strokeStyle = '#ef476f';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([3, 3]);
+                ctx.moveTo(halfLifeX, padding.top);
+                ctx.lineTo(halfLifeX, height - padding.bottom);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                // 标签
+                ctx.fillStyle = '#ef476f';
+                ctx.font = 'bold 14px Arial';
+                ctx.fillText(`T½ = ${simulation.halfLife}`, halfLifeX + 5, padding.top + 20);
+                
+                // 水平线标记一半数量
+                const halfY = toY(simulation.atomCount / 2);
+                ctx.beginPath();
+                ctx.moveTo(padding.left, halfY);
+                ctx.lineTo(halfLifeX, halfY);
+                ctx.strokeStyle = '#ef476f';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([2, 2]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
+            
+            // 绘制当前时间标记
+            if (simulation.time > 0) {
+                const currentX = toX(simulation.time);
+                const currentY = toY(simulation.atoms.length);
+                
+                // 垂直线
+                ctx.beginPath();
+                ctx.strokeStyle = '#4cc9f0';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([2, 2]);
+                ctx.moveTo(currentX, padding.top);
+                ctx.lineTo(currentX, height - padding.bottom);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                // 数据点
+                ctx.beginPath();
+                ctx.arc(currentX, currentY, 6, 0, Math.PI * 2);
+                ctx.fillStyle = '#4cc9f0';
+                ctx.fill();
+                
+                // 标签
+                ctx.fillStyle = '#4cc9f0';
+                ctx.font = '12px Arial';
+                ctx.fillText(`当前: ${simulation.atoms.length}`, currentX + 10, currentY - 10);
+            }
+        }
+
+        // 动画循环
+        function animate() {
+            if (simulation.isRunning) {
+                simulateStep();
+            }
+            
+            // 根据当前视图模式绘制
+            const atomView = document.querySelector('.view-container:nth-child(1)');
+            const chartView = document.querySelector('.view-container:nth-child(2)');
+            
+            if (viewAtomBtn.classList.contains('active')) {
+                atomView.style.display = 'block';
+                chartView.style.display = 'none';
+                drawAtomView();
+            } else if (viewChartBtn.classList.contains('active')) {
+                atomView.style.display = 'none';
+                chartView.style.display = 'block';
+                drawChartView();
+            } else {
+                atomView.style.display = 'block';
+                chartView.style.display = 'block';
+                drawAtomView();
+                drawChartView();
+            }
+            
+            simulation.animationId = requestAnimationFrame(animate);
+        }
+
+        // 事件监听器
+        atomCountSlider.addEventListener('input', function() {
+            simulation.atomCount = parseInt(this.value);
+            atomCountValue.textContent = simulation.atomCount;
+            if (!simulation.isRunning) {
+                initAtoms();
+            }
+        });
+
+        halfLifeSlider.addEventListener('input', function() {
+            simulation.halfLife = parseInt(this.value);
+            halfLifeValue.textContent = simulation.halfLife;
+            simulation.decayConstant = Math.log(2) / simulation.halfLife;
+        });
+
+        timeStepSlider.addEventListener('input', function() {
+            simulation.timeStep = parseFloat(this.value);
+            timeStepValue.textContent = simulation.timeStep.toFixed(1);
+        });
+
+        startBtn.addEventListener('click', function() {
+            simulation.isRunning = !simulation.isRunning;
+            if (simulation.isRunning) {
+                startBtn.innerHTML = '<span>⏸</span> 暂停';
+                startBtn.style.background = 'linear-gradient(135deg, #f72585 0%, #b5179e 100%)';
+            } else {
+                startBtn.innerHTML = '<span>▶</span> 继续';
+                startBtn.style.background = 'linear-gradient(135deg, #4cc9f0 0%, #3a86ff 100%)';
+            }
+        });
+
+        stepBtn.addEventListener('click', function() {
+            if (!simulation.isRunning) {
+                simulateStep();
+            }
+        });
+
+        resetBtn.addEventListener('click', function() {
+            simulation.isRunning = false;
+            startBtn.innerHTML = '<span>▶</span> 开始';
+            startBtn.style.background = 'linear-gradient(135deg, #4cc9f0 0%, #3a86ff 100%)';
+            initAtoms();
+        });
+
+        randomBtn.addEventListener('click', function() {
+            simulation.randomSeed = Math.random();
+            simulation.isRunning = false;
+            startBtn.innerHTML = '<span>▶</span> 开始';
+            startBtn.style.background = 'linear-gradient(135deg, #4cc9f0 0%, #3a86ff 100%)';
+            initAtoms();
+            
+            // 添加视觉反馈
+            randomBtn.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                randomBtn.style.transform = '';
+            }, 200);
+        });
+
+        // 视图切换
+        viewAtomBtn.addEventListener('click', function() {
+            viewAtomBtn.classList.add('active');
+            viewChartBtn.classList.remove('active');
+            viewBothBtn.classList.remove('active');
+        });
+
+        viewChartBtn.addEventListener('click', function() {
+            viewAtomBtn.classList.remove('active');
+            viewChartBtn.classList.add('active');
+            viewBothBtn.classList.remove('active');
+        });
+
+        viewBothBtn.addEventListener('click', function() {
+            viewAtomBtn.classList.remove('active');
+            viewChartBtn.classList.remove('active');
+            viewBothBtn.classList.add('active');
+        });
+
+        // 窗口大小调整
+        window.addEventListener('resize', function() {
+            initCanvasSize();
+            if (!simulation.isRunning) {
+                drawAtomView();
+                drawChartView();
+            }
+        });
+
+        // 初始化
+        function init() {
+            initCanvasSize();
+            initAtoms();
+            animate();
+            
+            // 设置初始值显示
+            atomCountValue.textContent = simulation.atomCount;
+            halfLifeValue.textContent = simulation.halfLife;
+            timeStepValue.textContent = simulation.timeStep.toFixed(1);
+        }
+
+        // 启动应用
+        init();
+    </script>
+</body>
+</html>

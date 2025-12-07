@@ -1,0 +1,1571 @@
+# 需求：凸透镜成像全过程（物距连续变化）
+
+### 1. 专业思考
+
+### 1. 专业思考
+
+#### 用户需求分析
+本动画面向初中物理（光学）或高中物理入门阶段的学生。用户的核心需求是：
+1.  **理解动态过程**：从静态的“特殊点成像”（如u>2f， u=2f， f<u<2f）记忆，升级为对“物距连续变化导致像距、像大小和性质连续变化”这一完整动态过程的理解。
+2.  **建立空间对应关系**：直观地看到物体（箭头）上每一个点发出的光线如何经过透镜会聚形成对应的像点，理解“物像共轭”关系。
+3.  **突破认知难点**：
+    *   理解“虚像”的形成过程及其观察方法。
+    *   明确“焦点”是实像与虚像、放大与缩小的转折点。
+    *   理清物距、像距、焦距三者之间的动态数量关系。
+4.  **自主探究与验证**：提供交互工具，允许学生自行设置参数并观察结果，将动画从“演示工具”变为“探究实验室”。
+
+#### 教学设计思路
+*   **核心概念**：凸透镜成像规律（物距u、像距v、焦距f的关系）、光线传播的可逆性、实像与虚像的本质区别、放大率。
+*   **认知规律**：遵循“具体 → 抽象 → 应用”的路径。先通过高度可视化的光线动画建立感性认识，再通过动态图表和数据抽象出规律，最后通过交互操作进行巩固和应用。
+*   **交互设计**：
+    *   **直接操纵**：允许用户用鼠标直接拖拽“物体”沿主光轴左右移动，这是最核心、最直观的交互。拖拽时，像的位置、大小、光线路径实时更新。
+    *   **参数控制**：提供输入框或滑块，允许用户精确设置**焦距f**和**物体高度**，探究不同透镜或物体对成像的影响。
+    *   **视图切换**：提供“光线追踪视图”（显示三条特殊光线）和“简化视图”（只显示物体和像，用于聚焦于整体变化）的切换按钮。
+    *   **标记与辅助线**：可开关显示“焦点(F， F‘)”、“二倍焦距点(2F， 2F‘)”、“主光轴”、“测量标尺”等辅助元素。
+    *   **过程录制与回放**：用户可记录一段自己拖拽物体的过程，并回放观察，便于复盘和分享发现。
+*   **视觉呈现**：
+    *   **主场景布局**：采用横向布局，左侧为**透镜成像模拟区**（占约70%宽度），右侧为**数据图表与控件区**（占约30%宽度）。
+    *   **模拟区**：中央绘制凸透镜（立体感图示），明确标出光心O。水平的主光轴贯穿左右。物体（一个彩色向上的箭头）置于透镜左侧。像（一个箭头）根据计算实时绘制在透镜右侧（实像）或左侧（虚像，用虚线表示）。光线绘制清晰，实线表示实际光线，虚线表示反向延长线（用于虚像）。
+    *   **动态图表**：右侧区域同步绘制两个动态曲线图：1) **像距(v) vs 物距(u)** 曲线；2) **像高(放大率) vs 物距(u)** 曲线。当用户拖拽物体时，图表上有一个动点随之移动，直观展示函数关系。
+    *   **数据面板**：实时显示当前的 u， v， 像高， 放大率， 以及像的性质（实像/虚像， 放大/缩小/等大， 正立/倒立）。
+
+#### 配色方案选择
+*   **主色调**：采用深蓝色（`#1a237e`）或深灰色（`#37474f`）作为背景，模拟“暗室”环境，凸显光线和彩色元素。
+*   **核心元素**：
+    *   **透镜**：浅灰色半透明填充，深灰色边框。
+    *   **物体**：明快的**绿色**（`#4caf50`），代表“源”。
+    *   **实像**：**红色**（`#f44336`），代表“倒立、实像”，与物体形成鲜明对比。
+    *   **虚像**：**橙色**虚线（`#ff9800`），代表“正立、虚像”，与实像区分。
+    *   **光线**：
+        *   平行于主光轴的光线：**蓝色**（`#2196f3`）。
+        *   过光心的光线：**黄色**（`#ffeb3b`）。
+        *   过焦点的光线：**紫色**（`#9c27b0`）。
+        *   光线颜色柔和且带有一定透明度，交汇处亮度增强。
+*   **界面与控件**：控件区使用浅色背景（`#f5f5f5`或`#ffffff`），文字和图表线使用深灰色（`#212121`），确保可读性。按钮使用主色调的变体，交互状态（悬停、点击）有颜色变化反馈。
+*   **图表**：曲线使用与对应元素关联的颜色（如v-u曲线用红色，放大率曲线用橙色），坐标轴为深灰色。
+
+#### 交互功能列表
+1.  **物体拖拽**：鼠标拖拽绿色物体箭头沿主光轴水平移动。
+2.  **焦距调节**：滑块或输入框，调节范围（例如 50px - 200px）。
+3.  **物体高度调节**：滑块或输入框，调节物体大小。
+4.  **视图切换按钮**：“详细光线图” / “简化示意图”。
+5.  **辅助线开关**：复选框控制“焦点标记”、“2倍焦距标记”、“主光轴标尺”的显示/隐藏。
+6.  **数据跟踪开关**：复选框控制是否在图表上实时显示跟踪点。
+7.  **重置按钮**：将物体位置、焦距等参数恢复至默认初始状态。
+8.  **过程录制/回放控件**：“开始录制”、“停止录制”、“播放录制”按钮。
+9.  **数据面板**：实时数字显示区（只读）。
+10. **图表区域**：可交互的图表，鼠标悬停可显示精确坐标值。
+
+### 2. HTML_CODE
+
+### 2. HTML_CODE
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>凸透镜成像全过程动态演示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #1a237e;
+            color: #f5f5f5;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #3949ab;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+            color: #bbdefb;
+        }
+        
+        .header p {
+            font-size: 16px;
+            color: #90caf9;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+        
+        .container {
+            display: flex;
+            flex: 1;
+            gap: 20px;
+            max-height: calc(100vh - 150px);
+        }
+        
+        .simulation-area {
+            flex: 7;
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .canvas-container {
+            flex: 1;
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: rgba(13, 19, 33, 0.9);
+            border: 1px solid #3949ab;
+        }
+        
+        #simulationCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .controls-area {
+            flex: 3;
+            background-color: #f5f5f5;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+            color: #212121;
+        }
+        
+        .control-section {
+            background-color: white;
+            border-radius: 8px;
+            padding: 18px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #3949ab;
+        }
+        
+        .control-section h3 {
+            color: #1a237e;
+            margin-bottom: 15px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .control-section h3 i {
+            font-size: 20px;
+        }
+        
+        .control-group {
+            margin-bottom: 16px;
+        }
+        
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+        
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 14px;
+            color: #555;
+        }
+        
+        .control-value {
+            font-weight: bold;
+            color: #1a237e;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3949ab;
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #3949ab;
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+        }
+        
+        input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #3949ab;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            background-color: #3949ab;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex: 1;
+            font-size: 14px;
+        }
+        
+        button:hover {
+            background-color: #303f9f;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button.reset {
+            background-color: #d32f2f;
+        }
+        
+        button.reset:hover {
+            background-color: #c62828;
+        }
+        
+        .data-panel {
+            background-color: white;
+            border-radius: 8px;
+            padding: 18px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #4caf50;
+        }
+        
+        .data-panel h3 {
+            color: #1a237e;
+            margin-bottom: 15px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .data-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        .data-item {
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 6px;
+            border-left: 3px solid #3949ab;
+        }
+        
+        .data-label {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        
+        .data-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1a237e;
+        }
+        
+        .image-property {
+            grid-column: span 2;
+            padding: 12px;
+            background-color: #f0f7ff;
+            border-radius: 6px;
+            border-left: 3px solid #f44336;
+            text-align: center;
+        }
+        
+        .chart-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 18px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #ff9800;
+        }
+        
+        .chart-container h3 {
+            color: #1a237e;
+            margin-bottom: 15px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        #chartCanvas {
+            width: 100%;
+            height: 200px;
+            display: block;
+        }
+        
+        .instructions {
+            margin-top: 15px;
+            font-size: 13px;
+            color: #777;
+            line-height: 1.5;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 6px;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #3949ab;
+            color: #90caf9;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+                max-height: none;
+            }
+            
+            .simulation-area, .controls-area {
+                width: 100%;
+            }
+            
+            .canvas-container {
+                min-height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>凸透镜成像全过程动态演示</h1>
+        <p>拖拽物体观察成像变化 | 调节焦距探索不同透镜 | 实时查看数据与图表</p>
+    </div>
+    
+    <div class="container">
+        <div class="simulation-area">
+            <div class="canvas-container">
+                <canvas id="simulationCanvas"></canvas>
+            </div>
+        </div>
+        
+        <div class="controls-area">
+            <div class="control-section">
+                <h3>📐 参数控制</h3>
+                
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>物距 (u)</span>
+                        <span class="control-value" id="uValue">300 px</span>
+                    </div>
+                    <input type="range" id="uSlider" min="50" max="800" value="300" step="1">
+                    <div class="control-label" style="font-size: 12px; margin-top: 4px;">
+                        <span>← 拖拽物体或使用滑块</span>
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>焦距 (f)</span>
+                        <span class="control-value" id="fValue">150 px</span>
+                    </div>
+                    <input type="range" id="fSlider" min="50" max="300" value="150" step="1">
+                </div>
+                
+                <div class="control-group">
+                    <div class="control-label">
+                        <span>物体高度</span>
+                        <span class="control-value" id="hValue">80 px</span>
+                    </div>
+                    <input type="range" id="hSlider" min="20" max="150" value="80" step="1">
+                </div>
+            </div>
+            
+            <div class="control-section">
+                <h3>👁️ 显示选项</h3>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="showRays" checked>
+                        <label for="showRays">显示光线</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="showFocus" checked>
+                        <label for="showFocus">显示焦点</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="show2F" checked>
+                        <label for="show2F">显示2F点</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="showRuler" checked>
+                        <label for="showRuler">显示标尺</label>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button id="resetBtn">重置</button>
+                    <button id="simplifyViewBtn">简化视图</button>
+                </div>
+            </div>
+            
+            <div class="data-panel">
+                <h3>📊 实时数据</h3>
+                <div class="data-grid">
+                    <div class="data-item">
+                        <div class="data-label">物距 (u)</div>
+                        <div class="data-value" id="dataU">300 px</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">像距 (v)</div>
+                        <div class="data-value" id="dataV">300 px</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">焦距 (f)</div>
+                        <div class="data-value" id="dataF">150 px</div>
+                    </div>
+                    <div class="data-item">
+                        <div class="data-label">放大率 (m)</div>
+                        <div class="data-value" id="dataM">1.00</div>
+                    </div>
+                    <div class="image-property">
+                        <div class="data-label">像的性质</div>
+                        <div class="data-value" id="imageProperty">倒立、等大、实像</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <h3>📈 像距与放大率曲线</h3>
+                <canvas id="chartCanvas"></canvas>
+                <div class="instructions">
+                    <p>• 红色曲线：像距(v)随物距(u)变化关系</p>
+                    <p>• 橙色曲线：放大率(m)随物距(u)变化关系</p>
+                    <p>• 虚线：u=f (焦点) 和 u=2f (二倍焦距) 位置</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>凸透镜成像规律教学动画 | 当 u>2f 时成倒立缩小实像 | 当 u=2f 时成倒立等大实像 | 当 f<u<2f 时成倒立放大实像 | 当 u<f 时成正立放大虚像</p>
+    </div>
+
+    <script>
+        // 获取Canvas元素和上下文
+        const simCanvas = document.getElementById('simulationCanvas');
+        const chartCanvas = document.getElementById('chartCanvas');
+        const simCtx = simCanvas.getContext('2d');
+        const chartCtx = chartCanvas.getContext('2d');
+        
+        // 获取控制元素
+        const uSlider = document.getElementById('uSlider');
+        const fSlider = document.getElementById('fSlider');
+        const hSlider = document.getElementById('hSlider');
+        const resetBtn = document.getElementById('resetBtn');
+        const simplifyViewBtn = document.getElementById('simplifyViewBtn');
+        
+        // 获取显示选项
+        const showRays = document.getElementById('showRays');
+        const showFocus = document.getElementById('showFocus');
+        const show2F = document.getElementById('show2F');
+        const showRuler = document.getElementById('showRuler');
+        
+        // 获取数据显示元素
+        const uValue = document.getElementById('uValue');
+        const fValue = document.getElementById('fValue');
+        const hValue = document.getElementById('hValue');
+        const dataU = document.getElementById('dataU');
+        const dataV = document.getElementById('dataV');
+        const dataF = document.getElementById('dataF');
+        const dataM = document.getElementById('dataM');
+        const imageProperty = document.getElementById('imageProperty');
+        
+        // 初始化变量
+        let u = 300; // 物距
+        let f = 150; // 焦距
+        let objectHeight = 80; // 物体高度
+        let isDragging = false;
+        let simplifyView = false;
+        
+        // 透镜位置和尺寸
+        const lensX = 400;
+        const lensWidth = 20;
+        const lensHeight = 200;
+        
+        // 图表数据
+        let chartData = [];
+        
+        // 初始化Canvas尺寸
+        function initCanvasSize() {
+            const container = simCanvas.parentElement;
+            simCanvas.width = container.clientWidth;
+            simCanvas.height = container.clientHeight;
+            
+            chartCanvas.width = chartCanvas.parentElement.clientWidth;
+            chartCanvas.height = 200;
+            
+            // 生成图表数据
+            generateChartData();
+            
+            // 绘制初始状态
+            drawSimulation();
+            drawChart();
+        }
+        
+        // 生成图表数据
+        function generateChartData() {
+            chartData = [];
+            const step = 5;
+            
+            for (let uVal = 50; uVal <= 800; uVal += step) {
+                let v, m;
+                
+                if (uVal > f) {
+                    // 实像区域
+                    v = 1 / (1/f - 1/uVal);
+                    m = v / uVal;
+                } else if (uVal < f) {
+                    // 虚像区域
+                    v = 1 / (1/f - 1/uVal);
+                    m = Math.abs(v / uVal);
+                } else {
+                    // u = f，像在无穷远处
+                    v = Infinity;
+                    m = Infinity;
+                }
+                
+                chartData.push({
+                    u: uVal,
+                    v: v,
+                    m: m
+                });
+            }
+        }
+        
+        // 计算像距和放大率
+        function calculateImage() {
+            let v, m, imageHeight, imageType, imagePropertyText;
+            
+            if (u > f) {
+                // 实像
+                v = 1 / (1/f - 1/u);
+                m = v / u;
+                imageHeight = objectHeight * m;
+                imageType = 'real';
+                
+                if (u > 2*f) {
+                    imagePropertyText = "倒立、缩小、实像";
+                } else if (Math.abs(u - 2*f) < 1) {
+                    imagePropertyText = "倒立、等大、实像";
+                } else {
+                    imagePropertyText = "倒立、放大、实像";
+                }
+            } else if (u < f) {
+                // 虚像
+                v = 1 / (1/f - 1/u);
+                m = Math.abs(v / u);
+                imageHeight = objectHeight * m;
+                imageType = 'virtual';
+                imagePropertyText = "正立、放大、虚像";
+            } else {
+                // u = f，平行光，不成像
+                v = Infinity;
+                m = Infinity;
+                imageHeight = Infinity;
+                imageType = 'none';
+                imagePropertyText = "不成像（平行光）";
+            }
+            
+            return { v, m, imageHeight, imageType, imagePropertyText };
+        }
+        
+        // 绘制主模拟区域
+        function drawSimulation() {
+            // 清除画布
+            simCtx.clearRect(0, 0, simCanvas.width, simCanvas.height);
+            
+            // 计算像的位置和属性
+            const image = calculateImage();
+            
+            // 绘制背景网格（暗室效果）
+            drawDarkRoomBackground();
+            
+            // 绘制主光轴
+            drawPrincipalAxis();
+            
+            // 绘制标尺
+            if (showRuler.checked) {
+                drawRuler();
+            }
+            
+            // 绘制透镜
+            drawLens();
+            
+            // 绘制焦点和2F点
+            if (showFocus.checked) {
+                drawFocusPoints();
+            }
+            
+            if (show2F.checked) {
+                draw2FPoints();
+            }
+            
+            // 绘制物体
+            drawObject();
+            
+            // 绘制像
+            if (image.imageType !== 'none') {
+                drawImage(image);
+            }
+            
+            // 绘制光线
+            if (showRays.checked && !simplifyView) {
+                drawRays(image);
+            }
+            
+            // 更新数据显示
+            updateDataDisplay(image);
+        }
+        
+        // 绘制暗室背景
+        function drawDarkRoomBackground() {
+            // 暗室背景色
+            simCtx.fillStyle = 'rgba(13, 19, 33, 1)';
+            simCtx.fillRect(0, 0, simCanvas.width, simCanvas.height);
+            
+            // 添加微弱的网格
+            simCtx.strokeStyle = 'rgba(30, 40, 70, 0.3)';
+            simCtx.lineWidth = 0.5;
+            const gridSize = 50;
+            
+            // 垂直线
+            for (let x = 0; x < simCanvas.width; x += gridSize) {
+                simCtx.beginPath();
+                simCtx.moveTo(x, 0);
+                simCtx.lineTo(x, simCanvas.height);
+                simCtx.stroke();
+            }
+            
+            // 水平线
+            for (let y = 0; y < simCanvas.height; y += gridSize) {
+                simCtx.beginPath();
+                simCtx.moveTo(0, y);
+                simCtx.lineTo(simCanvas.width, y);
+                simCtx.stroke();
+            }
+        }
+        
+        // 绘制主光轴
+        function drawPrincipalAxis() {
+            const centerY = simCanvas.height / 2;
+            
+            simCtx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+            simCtx.lineWidth = 1.5;
+            simCtx.setLineDash([]);
+            
+            simCtx.beginPath();
+            simCtx.moveTo(50, centerY);
+            simCtx.lineTo(simCanvas.width - 50, centerY);
+            simCtx.stroke();
+        }
+        
+        // 绘制标尺
+        function drawRuler() {
+            const centerY = simCanvas.height / 2;
+            const startX = 50;
+            const endX = simCanvas.width - 50;
+            
+            simCtx.strokeStyle = 'rgba(200, 200, 255, 0.5)';
+            simCtx.lineWidth = 1;
+            simCtx.font = '12px Arial';
+            simCtx.fillStyle = 'rgba(200, 200, 255, 0.8)';
+            simCtx.textAlign = 'center';
+            
+            // 绘制刻度
+            for (let x = startX; x <= endX; x += 50) {
+                const distanceFromLens = x - lensX;
+                
+                simCtx.beginPath();
+                simCtx.moveTo(x, centerY - 10);
+                simCtx.lineTo(x, centerY + 10);
+                simCtx.stroke();
+                
+                // 显示刻度值（相对于透镜）
+                if (Math.abs(distanceFromLens) > 20) {
+                    simCtx.fillText(distanceFromLens.toString(), x, centerY + 25);
+                }
+            }
+            
+            // 标记透镜位置
+            simCtx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            simCtx.fillText('O (光心)', lensX, centerY + 40);
+        }
+        
+        // 绘制透镜
+        function drawLens() {
+            const centerY = simCanvas.height / 2;
+            
+            // 透镜主体
+            simCtx.fillStyle = 'rgba(200, 200, 220, 0.7)';
+            simCtx.strokeStyle = 'rgba(100, 100, 150, 1)';
+            simCtx.lineWidth = 2;
+            
+            // 绘制凸透镜形状
+            simCtx.beginPath();
+            simCtx.rect(lensX - lensWidth/2, centerY - lensHeight/2, lensWidth, lensHeight);
+            simCtx.fill();
+            simCtx.stroke();
+            
+            // 添加透镜弧线效果
+            simCtx.strokeStyle = 'rgba(80, 80, 120, 0.8)';
+            simCtx.lineWidth = 1;
+            
+            // 左侧弧线
+            simCtx.beginPath();
+            simCtx.arc(lensX - lensWidth/2, centerY, lensHeight/3, -Math.PI/2, Math.PI/2);
+            simCtx.stroke();
+            
+            // 右侧弧线
+            simCtx.beginPath();
+            simCtx.arc(lensX + lensWidth/2, centerY, lensHeight/3, Math.PI/2, -Math.PI/2);
+            simCtx.stroke();
+            
+            // 标记透镜
+            simCtx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            simCtx.font = 'bold 16px Arial';
+            simCtx.textAlign = 'center';
+            simCtx.fillText('凸透镜', lensX, centerY - lensHeight/2 - 15);
+        }
+        
+        // 绘制焦点
+        function drawFocusPoints() {
+            const centerY = simCanvas.height / 2;
+            
+            // 左侧焦点F
+            const leftFocusX = lensX - f;
+            simCtx.fillStyle = '#FF9800';
+            simCtx.beginPath();
+            simCtx.arc(leftFocusX, centerY, 6, 0, Math.PI * 2);
+            simCtx.fill();
+            simCtx.strokeStyle = '#FF9800';
+            simCtx.lineWidth = 2;
+            simCtx.stroke();
+            
+            simCtx.fillStyle = '#FF9800';
+            simCtx.font = 'bold 14px Arial';
+            simCtx.textAlign = 'center';
+            simCtx.fillText('F', leftFocusX, centerY - 15);
+            
+            // 右侧焦点F'
+            const rightFocusX = lensX + f;
+            simCtx.fillStyle = '#FF9800';
+            simCtx.beginPath();
+            simCtx.arc(rightFocusX, centerY, 6, 0, Math.PI * 2);
+            simCtx.fill();
+            simCtx.strokeStyle = '#FF9800';
+            simCtx.lineWidth = 2;
+            simCtx.stroke();
+            
+            simCtx.fillText("F'", rightFocusX, centerY - 15);
+        }
+        
+        // 绘制2F点
+        function draw2FPoints() {
+            const centerY = simCanvas.height / 2;
+            
+            // 左侧2F点
+            const left2FX = lensX - 2*f;
+            simCtx.fillStyle = '#4CAF50';
+            simCtx.beginPath();
+            simCtx.arc(left2FX, centerY, 6, 0, Math.PI * 2);
+            simCtx.fill();
+            simCtx.strokeStyle = '#4CAF50';
+            simCtx.lineWidth = 2;
+            simCtx.stroke();
+            
+            simCtx.fillStyle = '#4CAF50';
+            simCtx.font = 'bold 14px Arial';
+            simCtx.textAlign = 'center';
+            simCtx.fillText('2F', left2FX, centerY - 15);
+            
+            // 右侧2F点
+            const right2FX = lensX + 2*f;
+            simCtx.fillStyle = '#4CAF50';
+            simCtx.beginPath();
+            simCtx.arc(right2FX, centerY, 6, 0, Math.PI * 2);
+            simCtx.fill();
+            simCtx.strokeStyle = '#4CAF50';
+            simCtx.lineWidth = 2;
+            simCtx.stroke();
+            
+            simCtx.fillText("2F'", right2FX, centerY - 15);
+        }
+        
+        // 绘制物体
+        function drawObject() {
+            const centerY = simCanvas.height / 2;
+            const objectX = lensX - u;
+            
+            // 物体箭头
+            simCtx.fillStyle = '#4CAF50';
+            simCtx.strokeStyle = '#2E7D32';
+            simCtx.lineWidth = 2;
+            
+            // 绘制箭头主体
+            simCtx.beginPath();
+            simCtx.moveTo(objectX, centerY);
+            simCtx.lineTo(objectX, centerY - objectHeight);
+            simCtx.lineTo(objectX - 10, centerY - objectHeight + 15);
+            simCtx.moveTo(objectX, centerY - objectHeight);
+            simCtx.lineTo(objectX + 10, centerY - objectHeight + 15);
+            simCtx.stroke();
+            
+            // 填充箭头
+            simCtx.beginPath();
+            simCtx.moveTo(objectX, centerY);
+            simCtx.lineTo(objectX, centerY - objectHeight);
+            simCtx.lineTo(objectX - 10, centerY - objectHeight + 15);
+            simCtx.lineTo(objectX + 10, centerY - objectHeight + 15);
+            simCtx.closePath();
+            simCtx.fill();
+            
+            // 标记物体
+            simCtx.fillStyle = '#4CAF50';
+            simCtx.font = 'bold 14px Arial';
+            simCtx.textAlign = 'center';
+            simCtx.fillText('物体', objectX, centerY - objectHeight - 15);
+            
+            // 绘制可拖拽区域
+            simCtx.fillStyle = 'rgba(76, 175, 80, 0.2)';
+            simCtx.beginPath();
+            simCtx.arc(objectX, centerY, 15, 0, Math.PI * 2);
+            simCtx.fill();
+            
+            simCtx.strokeStyle = '#4CAF50';
+            simCtx.lineWidth = 1;
+            simCtx.setLineDash([5, 3]);
+            simCtx.beginPath();
+            simCtx.arc(objectX, centerY, 15, 0, Math.PI * 2);
+            simCtx.stroke();
+            simCtx.setLineDash([]);
+        }
+        
+        // 绘制像
+        function drawImage(image) {
+            const centerY = simCanvas.height / 2;
+            let imageX;
+            
+            if (image.imageType === 'real') {
+                // 实像在透镜右侧
+                imageX = lensX + image.v;
+                
+                // 实像箭头（倒立）
+                simCtx.fillStyle = 'rgba(244, 67, 54, 0.9)';
+                simCtx.strokeStyle = '#C62828';
+                simCtx.lineWidth = 2;
+                
+                // 绘制箭头主体（倒立）
+                simCtx.beginPath();
+                simCtx.moveTo(imageX, centerY);
+                simCtx.lineTo(imageX, centerY + image.imageHeight);
+                simCtx.lineTo(imageX - 10, centerY + image.imageHeight - 15);
+                simCtx.moveTo(imageX, centerY + image.imageHeight);
+                simCtx.lineTo(imageX + 10, centerY + image.imageHeight - 15);
+                simCtx.stroke();
+                
+                // 填充箭头
+                simCtx.beginPath();
+                simCtx.moveTo(imageX, centerY);
+                simCtx.lineTo(imageX, centerY + image.imageHeight);
+                simCtx.lineTo(imageX - 10, centerY + image.imageHeight - 15);
+                simCtx.lineTo(imageX + 10, centerY + image.imageHeight - 15);
+                simCtx.closePath();
+                simCtx.fill();
+                
+                // 标记实像
+                simCtx.fillStyle = '#F44336';
+                simCtx.font = 'bold 14px Arial';
+                simCtx.textAlign = 'center';
+                simCtx.fillText('实像', imageX, centerY + image.imageHeight + 20);
+            } else if (image.imageType === 'virtual') {
+                // 虚像在透镜左侧（与物体同侧）
+                imageX = lensX - Math.abs(image.v);
+                
+                // 虚像箭头（正立，虚线）
+                simCtx.fillStyle = 'rgba(255, 152, 0, 0.7)';
+                simCtx.strokeStyle = '#EF6C00';
+                simCtx.lineWidth = 2;
+                simCtx.setLineDash([5, 3]);
+                
+                // 绘制箭头主体（正立）
+                simCtx.beginPath();
+                simCtx.moveTo(imageX, centerY);
+                simCtx.lineTo(imageX, centerY - image.imageHeight);
+                simCtx.lineTo(imageX - 10, centerY - image.imageHeight + 15);
+                simCtx.moveTo(imageX, centerY - image.imageHeight);
+                simCtx.lineTo(imageX + 10, centerY - image.imageHeight + 15);
+                simCtx.stroke();
+                
+                // 填充箭头（半透明）
+                simCtx.beginPath();
+                simCtx.moveTo(imageX, centerY);
+                simCtx.lineTo(imageX, centerY - image.imageHeight);
+                simCtx.lineTo(imageX - 10, centerY - image.imageHeight + 15);
+                simCtx.lineTo(imageX + 10, centerY - image.imageHeight + 15);
+                simCtx.closePath();
+                simCtx.fill();
+                
+                simCtx.setLineDash([]);
+                
+                // 标记虚像
+                simCtx.fillStyle = '#FF9800';
+                simCtx.font = 'bold 14px Arial';
+                simCtx.textAlign = 'center';
+                simCtx.fillText('虚像', imageX, centerY - image.imageHeight - 20);
+            }
+        }
+        
+        // 绘制光线
+        function drawRays(image) {
+            const centerY = simCanvas.height / 2;
+            const objectX = lensX - u;
+            const objectTopY = centerY - objectHeight;
+            
+            // 光线1：平行于主光轴的光线，经过焦点
+            simCtx.strokeStyle = '#2196F3';
+            simCtx.lineWidth = 2;
+            simCtx.setLineDash([]);
+            
+            simCtx.beginPath();
+            simCtx.moveTo(objectX, objectTopY);
+            
+            if (u > f) {
+                // 实像情况：光线通过透镜后经过右侧焦点
+                simCtx.lineTo(lensX, objectTopY);
+                simCtx.lineTo(lensX + f, centerY);
+                
+                if (image.imageType === 'real') {
+                    simCtx.lineTo(lensX + image.v, centerY + image.imageHeight);
+                }
+            } else {
+                // 虚像情况：光线通过透镜后发散，反向延长线经过左侧焦点
+                simCtx.lineTo(lensX, objectTopY);
+                
+                // 实际光线
+                const slope = (centerY - objectTopY) / f;
+                simCtx.lineTo(lensX + 100, objectTopY + slope * 100);
+                
+                // 反向延长线（虚线）
+                simCtx.setLineDash([5, 3]);
+                simCtx.beginPath();
+                simCtx.moveTo(lensX, objectTopY);
+                simCtx.lineTo(lensX - f, centerY);
+                if (image.imageType === 'virtual') {
+                    simCtx.lineTo(lensX - Math.abs(image.v), centerY - image.imageHeight);
+                }
+                simCtx.stroke();
+                simCtx.setLineDash([]);
+            }
+            simCtx.stroke();
+            
+            // 光线2：经过光心的光线，方向不变
+            simCtx.strokeStyle = '#FFEB3B';
+            simCtx.lineWidth = 2;
+            
+            simCtx.beginPath();
+            simCtx.moveTo(objectX, objectTopY);
+            simCtx.lineTo(lensX, centerY);
+            
+            if (image.imageType === 'real') {
+                simCtx.lineTo(lensX + image.v, centerY + image.imageHeight);
+            } else if (image.imageType === 'virtual') {
+                // 虚像情况：反向延长线
+                simCtx.setLineDash([5, 3]);
+                simCtx.beginPath();
+                simCtx.moveTo(lensX, centerY);
+                simCtx.lineTo(lensX - Math.abs(image.v), centerY - image.imageHeight);
+                simCtx.stroke();
+                simCtx.setLineDash([]);
+            }
+            simCtx.stroke();
+            
+            // 光线3：经过焦点的光线，平行于主光轴射出
+            simCtx.strokeStyle = '#9C27B0';
+            simCtx.lineWidth = 2;
+            
+            if (u > f) {
+                // 实像情况：光线经过左侧焦点，通过透镜后平行于主光轴
+                simCtx.beginPath();
+                simCtx.moveTo(objectX, objectTopY);
+                simCtx.lineTo(lensX - f, centerY);
+                sim
+<!--检测到代码截断，自动续写中...-->
+Ctx.lineTo(lensX, centerY);
+                simCtx.lineTo(lensX + 100, centerY);
+                
+                if (image.imageType === 'real') {
+                    simCtx.lineTo(lensX + image.v, centerY + image.imageHeight);
+                }
+                simCtx.stroke();
+            } else {
+                // 虚像情况：光线指向右侧焦点，通过透镜后平行于主光轴
+                simCtx.beginPath();
+                simCtx.moveTo(objectX, objectTopY);
+                
+                // 实际光线
+                simCtx.lineTo(lensX, objectTopY);
+                simCtx.lineTo(lensX + 100, objectTopY);
+                
+                // 反向延长线（虚线）指向右侧焦点
+                simCtx.setLineDash([5, 3]);
+                simCtx.beginPath();
+                simCtx.moveTo(lensX, objectTopY);
+                simCtx.lineTo(lensX + f, centerY);
+                if (image.imageType === 'virtual') {
+                    simCtx.lineTo(lensX - Math.abs(image.v), centerY - image.imageHeight);
+                }
+                simCtx.stroke();
+                simCtx.setLineDash([]);
+            }
+            
+            // 在光线交点处添加亮点效果
+            if (image.imageType === 'real') {
+                const imageX = lensX + image.v;
+                const imageY = centerY + image.imageHeight;
+                
+                // 光线交汇点高亮
+                const gradient = simCtx.createRadialGradient(
+                    imageX, imageY, 0,
+                    imageX, imageY, 10
+                );
+                gradient.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
+                gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+                
+                simCtx.fillStyle = gradient;
+                simCtx.beginPath();
+                simCtx.arc(imageX, imageY, 10, 0, Math.PI * 2);
+                simCtx.fill();
+            }
+        }
+        
+        // 更新数据显示
+        function updateDataDisplay(image) {
+            // 更新滑块显示值
+            uValue.textContent = `${u} px`;
+            fValue.textContent = `${f} px`;
+            hValue.textContent = `${objectHeight} px`;
+            
+            // 更新数据面板
+            dataU.textContent = `${u} px`;
+            dataF.textContent = `${f} px`;
+            
+            if (image.imageType !== 'none') {
+                if (Math.abs(image.v) > 10000) {
+                    dataV.textContent = "∞";
+                } else {
+                    dataV.textContent = `${Math.abs(image.v).toFixed(1)} px`;
+                }
+                
+                if (image.m > 100) {
+                    dataM.textContent = "∞";
+                } else {
+                    dataM.textContent = image.m.toFixed(2);
+                }
+                
+                imageProperty.textContent = image.imagePropertyText;
+            } else {
+                dataV.textContent = "∞";
+                dataM.textContent = "∞";
+                imageProperty.textContent = "不成像（平行光）";
+            }
+        }
+        
+        // 绘制图表
+        function drawChart() {
+            const width = chartCanvas.width;
+            const height = chartCanvas.height;
+            const padding = { top: 20, right: 20, bottom: 30, left: 50 };
+            const chartWidth = width - padding.left - padding.right;
+            const chartHeight = height - padding.top - padding.bottom;
+            
+            // 清除画布
+            chartCtx.clearRect(0, 0, width, height);
+            
+            // 绘制背景
+            chartCtx.fillStyle = '#f9f9f9';
+            chartCtx.fillRect(0, 0, width, height);
+            
+            // 绘制坐标轴
+            chartCtx.strokeStyle = '#aaa';
+            chartCtx.lineWidth = 1;
+            
+            // Y轴
+            chartCtx.beginPath();
+            chartCtx.moveTo(padding.left, padding.top);
+            chartCtx.lineTo(padding.left, height - padding.bottom);
+            chartCtx.stroke();
+            
+            // X轴
+            chartCtx.beginPath();
+            chartCtx.moveTo(padding.left, height - padding.bottom);
+            chartCtx.lineTo(width - padding.right, height - padding.bottom);
+            chartCtx.stroke();
+            
+            // 绘制网格线
+            chartCtx.strokeStyle = '#e0e0e0';
+            chartCtx.lineWidth = 0.5;
+            
+            // 垂直网格线
+            for (let i = 0; i <= 10; i++) {
+                const x = padding.left + (i / 10) * chartWidth;
+                chartCtx.beginPath();
+                chartCtx.moveTo(x, padding.top);
+                chartCtx.lineTo(x, height - padding.bottom);
+                chartCtx.stroke();
+            }
+            
+            // 水平网格线
+            for (let i = 0; i <= 5; i++) {
+                const y = height - padding.bottom - (i / 5) * chartHeight;
+                chartCtx.beginPath();
+                chartCtx.moveTo(padding.left, y);
+                chartCtx.lineTo(width - padding.right, y);
+                chartCtx.stroke();
+            }
+            
+            // 绘制坐标轴标签
+            chartCtx.fillStyle = '#555';
+            chartCtx.font = '12px Arial';
+            chartCtx.textAlign = 'center';
+            
+            // X轴标签
+            chartCtx.fillText('物距 u (px)', width / 2, height - 5);
+            
+            // Y轴标签（左侧）
+            chartCtx.save();
+            chartCtx.translate(15, height / 2);
+            chartCtx.rotate(-Math.PI / 2);
+            chartCtx.fillText('像距 v (px)', 0, 0);
+            chartCtx.restore();
+            
+            // Y轴标签（右侧）
+            chartCtx.save();
+            chartCtx.translate(width - 15, height / 2);
+            chartCtx.rotate(-Math.PI / 2);
+            chartCtx.fillText('放大率 m', 0, 0);
+            chartCtx.restore();
+            
+            // 绘制刻度
+            chartCtx.textAlign = 'right';
+            chartCtx.fillStyle = '#777';
+            
+            // Y轴刻度（像距）
+            for (let i = 0; i <= 5; i++) {
+                const value = i * 200;
+                const y = height - padding.bottom - (i / 5) * chartHeight;
+                chartCtx.fillText(value.toString(), padding.left - 5, y + 4);
+            }
+            
+            // Y轴刻度（放大率）
+            chartCtx.textAlign = 'left';
+            for (let i = 0; i <= 5; i++) {
+                const value = i;
+                const y = height - padding.bottom - (i / 5) * chartHeight;
+                chartCtx.fillText(value.toFixed(1), width - padding.right + 5, y + 4);
+            }
+            
+            // X轴刻度
+            chartCtx.textAlign = 'center';
+            for (let i = 0; i <= 10; i++) {
+                const value = i * 80;
+                const x = padding.left + (i / 10) * chartWidth;
+                chartCtx.fillText(value.toString(), x, height - padding.bottom + 15);
+            }
+            
+            // 绘制特殊位置线（u=f 和 u=2f）
+            chartCtx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
+            chartCtx.lineWidth = 1;
+            chartCtx.setLineDash([5, 3]);
+            
+            // u = f 线
+            const fX = padding.left + (f / 800) * chartWidth;
+            chartCtx.beginPath();
+            chartCtx.moveTo(fX, padding.top);
+            chartCtx.lineTo(fX, height - padding.bottom);
+            chartCtx.stroke();
+            
+            // u = 2f 线
+            const twoFX = padding.left + (2*f / 800) * chartWidth;
+            chartCtx.beginPath();
+            chartCtx.moveTo(twoFX, padding.top);
+            chartCtx.lineTo(twoFX, height - padding.bottom);
+            chartCtx.stroke();
+            
+            chartCtx.setLineDash([]);
+            
+            // 标记特殊位置
+            chartCtx.fillStyle = '#FF9800';
+            chartCtx.font = 'bold 10px Arial';
+            chartCtx.fillText('u=f', fX, padding.top - 5);
+            chartCtx.fillStyle = '#4CAF50';
+            chartCtx.fillText('u=2f', twoFX, padding.top - 5);
+            
+            // 绘制像距曲线 (v vs u)
+            chartCtx.strokeStyle = '#F44336';
+            chartCtx.lineWidth = 2;
+            chartCtx.beginPath();
+            
+            let firstPoint = true;
+            for (const point of chartData) {
+                if (point.v > 5000 || point.v < -5000) continue; // 跳过无穷大值
+                
+                const x = padding.left + (point.u / 800) * chartWidth;
+                const y = height - padding.bottom - (Math.min(point.v, 1000) / 1000) * chartHeight;
+                
+                if (firstPoint) {
+                    chartCtx.moveTo(x, y);
+                    firstPoint = false;
+                } else {
+                    chartCtx.lineTo(x, y);
+                }
+            }
+            chartCtx.stroke();
+            
+            // 绘制放大率曲线 (m vs u)
+            chartCtx.strokeStyle = '#FF9800';
+            chartCtx.lineWidth = 2;
+            chartCtx.beginPath();
+            
+            firstPoint = true;
+            for (const point of chartData) {
+                if (point.m > 10) continue; // 跳过过大的放大率
+                
+                const x = padding.left + (point.u / 800) * chartWidth;
+                const y = height - padding.bottom - (Math.min(point.m, 5) / 5) * chartHeight;
+                
+                if (firstPoint) {
+                    chartCtx.moveTo(x, y);
+                    firstPoint = false;
+                } else {
+                    chartCtx.lineTo(x, y);
+                }
+            }
+            chartCtx.stroke();
+            
+            // 绘制当前物距位置点
+            const currentX = padding.left + (u / 800) * chartWidth;
+            const image = calculateImage();
+            
+            // 像距点
+            if (image.v < 5000 && image.v > -5000) {
+                const vY = height - padding.bottom - (Math.min(Math.abs(image.v), 1000) / 1000) * chartHeight;
+                
+                chartCtx.fillStyle = '#F44336';
+                chartCtx.beginPath();
+                chartCtx.arc(currentX, vY, 5, 0, Math.PI * 2);
+                chartCtx.fill();
+                chartCtx.strokeStyle = '#C62828';
+                chartCtx.lineWidth = 1;
+                chartCtx.stroke();
+            }
+            
+            // 放大率点
+            if (image.m < 10) {
+                const mY = height - padding.bottom - (Math.min(image.m, 5) / 5) * chartHeight;
+                
+                chartCtx.fillStyle = '#FF9800';
+                chartCtx.beginPath();
+                chartCtx.arc(currentX, mY, 5, 0, Math.PI * 2);
+                chartCtx.fill();
+                chartCtx.strokeStyle = '#EF6C00';
+                chartCtx.lineWidth = 1;
+                chartCtx.stroke();
+            }
+            
+            // 绘制垂直线指示当前物距
+            chartCtx.strokeStyle = '#3949ab';
+            chartCtx.lineWidth = 1;
+            chartCtx.setLineDash([3, 3]);
+            chartCtx.beginPath();
+            chartCtx.moveTo(currentX, padding.top);
+            chartCtx.lineTo(currentX, height - padding.bottom);
+            chartCtx.stroke();
+            chartCtx.setLineDash([]);
+            
+            // 添加图例
+            chartCtx.fillStyle = '#333';
+            chartCtx.font = '12px Arial';
+            chartCtx.textAlign = 'left';
+            
+            // 像距图例
+            chartCtx.fillStyle = '#F44336';
+            chartCtx.fillRect(width - 120, 15, 15, 10);
+            chartCtx.fillStyle = '#333';
+            chartCtx.fillText('像距 v', width - 100, 25);
+            
+            // 放大率图例
+            chartCtx.fillStyle = '#FF9800';
+            chartCtx.fillRect(width - 120, 35, 15, 10);
+            chartCtx.fillStyle = '#333';
+            chartCtx.fillText('放大率 m', width - 100, 45);
+        }
+        
+        // 事件处理函数
+        function handleMouseDown(e) {
+            const rect = simCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const centerY = simCanvas.height / 2;
+            const objectX = lensX - u;
+            
+            // 检查是否点击在物体拖拽区域
+            const distance = Math.sqrt((x - objectX) ** 2 + (y - centerY) ** 2);
+            if (distance < 20) {
+                isDragging = true;
+                simCanvas.style.cursor = 'grabbing';
+            }
+        }
+        
+        function handleMouseMove(e) {
+            if (!isDragging) return;
+            
+            const rect = simCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            
+            // 计算新的物距（限制范围）
+            let newU = lensX - x;
+            newU = Math.max(50, Math.min(800, newU));
+            
+            // 更新物距
+            u = newU;
+            uSlider.value = u;
+            
+            // 重绘
+            drawSimulation();
+            drawChart();
+        }
+        
+        function handleMouseUp() {
+            isDragging = false;
+            simCanvas.style.cursor = 'default';
+        }
+        
+        // 初始化事件监听
+        function initEventListeners() {
+            // 鼠标事件（用于拖拽物体）
+            simCanvas.addEventListener('mousedown', handleMouseDown);
+            simCanvas.addEventListener('mousemove', handleMouseMove);
+            simCanvas.addEventListener('mouseup', handleMouseUp);
+            simCanvas.addEventListener('mouseleave', handleMouseUp);
+            
+            // 触摸事件（用于移动设备）
+            simCanvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                handleMouseDown(e.touches[0]);
+            });
+            
+            simCanvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                handleMouseMove(e.touches[0]);
+            });
+            
+            simCanvas.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                handleMouseUp();
+            });
+            
+            // 滑块事件
+            uSlider.addEventListener('input', () => {
+                u = parseInt(uSlider.value);
+                drawSimulation();
+                drawChart();
+            });
+            
+            fSlider.addEventListener('input', () => {
+                f = parseInt(fSlider.value);
+                generateChartData();
+                drawSimulation();
+                drawChart();
+            });
+            
+            hSlider.addEventListener('input', () => {
+                objectHeight = parseInt(hSlider.value);
+                drawSimulation();
+            });
+            
+            // 显示选项事件
+            showRays.addEventListener('change', drawSimulation);
+            showFocus.addEventListener('change', drawSimulation);
+            show2F.addEventListener('change', drawSimulation);
+            showRuler.addEventListener('change', drawSimulation);
+            
+            // 按钮事件
+            resetBtn.addEventListener('click', () => {
+                u = 300;
+                f = 150;
+                objectHeight = 80;
+                
+                uSlider.value = u;
+                fSlider.value = f;
+                hSlider.value = objectHeight;
+                
+                generateChartData();
+                drawSimulation();
+                drawChart();
+            });
+            
+            simplifyViewBtn.addEventListener('click', () => {
+                simplifyView = !simplifyView;
+                simplifyViewBtn.textContent = simplifyView ? "详细视图" : "简化视图";
+                drawSimulation();
+            });
+            
+            // 窗口大小变化事件
+            window.addEventListener('resize', () => {
+                initCanvasSize();
+            });
+        }
+        
+        // 初始化函数
+        function init() {
+            initCanvasSize();
+            initEventListeners();
+            
+            // 初始绘制
+            drawSimulation();
+            drawChart();
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
+
+
+### 3. 过程输出
+
+### 3. 使用指南
+
+## 交互式教学动画使用指南
+
+欢迎使用“凸透镜成像全过程动态演示”交互式教学动画！本工具专为物理光学教学而设计，旨在通过直观、动态的可视化方式，帮助您深入理解凸透镜成像的完整过程与核心规律。
+
+---
+
+### 一、 功能说明
+
+本动画模拟了一个完整的凸透镜成像光学系统。您可以通过交互操作，实时观察**物距连续变化**时，像的位置、大小、性质如何随之改变。系统集成了**物理模拟、数据追踪与动态图表**三大功能模块，将抽象的成像规律转化为可视化的探索过程。
+
+### 二、 主要功能
+
+1.  **核心交互：动态拖拽物体**
+    *   **操作**：在左侧模拟区的绿色“物体”上点击并拖拽，可沿主光轴左右移动。
+    *   **效果**：像的位置、大小、光线路径将**实时更新**，直观展示从“无限远”到“紧贴透镜”的全过程变化。
+
+2.  **参数调节：探索不同条件**
+    *   **焦距 (f)**：调节滑块，改变凸透镜的焦距，观察不同透镜（如聚光能力不同）对成像的影响。
+    *   **物体高度**：调节滑块，改变物体本身的大小。
+    *   **效果**：所有计算与绘制将基于新参数即时刷新。
+
+3.  **视图与辅助工具控制**
+    *   **显示选项**：可独立开关“光线”、“焦点(F, F‘)”、“二倍焦距点(2F, 2F‘)”和“标尺”的显示，帮助聚焦于不同学习重点。
+    *   **视图切换**：点击“简化视图”按钮，可隐藏详细光线，仅显示物体与像，便于观察整体变化趋势。
+
+4.  **实时数据与图表分析**
+    *   **数据面板**：实时显示当前物距(u)、像距(v)、焦距(f)、放大率(m)及像的性质描述。
+    *   **动态图表**：右侧图表同步绘制**像距(v)-物距(u)** 和**放大率(m)-物距(u)** 两条关系曲线，并用动态点标示当前位置，直观揭示函数关系。
+
+5.  **一键重置**
+    *   点击“重置”按钮，将所有参数恢复至初始默认状态。
+
+### 三、 设计特色
+
+1.  **符合认知的科学可视化**
+    *   **颜色编码**：物体（绿）、实像（红）、虚像（橙）、不同光线（蓝、黄、紫），帮助快速区分不同元素。
+    *   **虚实区分**：实像用实线绘制，虚像及反向延长线用虚线绘制，严格符合物理绘图规范。
+    *   **暗室环境**：深色背景模拟光学实验的暗室环境，凸显光线路径。
+
+2.  **多表征联动学习**
+    *   实现了**物理现象（模拟区）**、**数值关系（数据面板）** 和**函数图像（图表区）** 三者的实时同步与联动。改变任何一个，另外两者即时响应，帮助建立全方位的理解。
+
+3.  **聚焦关键概念点**
+    *   动画自动突出显示了 `u=f`（焦点）和 `u=2f`（二倍焦距）这两个关键位置，它们是像的性质发生质变的“临界点”。
+
+### 四、 教学要点
+
+建议引导学生按照以下探究顺序进行学习，以构建系统的知识体系：
+
+1.  **整体观察**：首先拖拽物体，从头到尾完整观察一遍成像的连续变化过程，建立整体印象。
+2.  **特殊点分析**：将物体分别放置在 `u>2f`， `u=2f`， `f<u<2f` 和 `u<f` 四个典型区域，暂停并观察：
+    *   像的**倒立/正立**、**放大/缩小**、**实像/虚像**性质。
+    *   三条特殊光线的具体路径。
+    *   数据面板上数值的变化。
+3.  **规律总结**：结合图表区的曲线，引导学生总结：
+    *   物距变小时，像距如何变化？（向右远离透镜）
+    *   实像和虚像的转换点在哪里？（`u=f` 处）
+    *   放大率为1（等大）的点在哪里？（`u=2f` 处）
+4.  **深度探究**：
+    *   **改变焦距**：固定物距，增大或减小焦距f，观察像距和放大率的变化规律。
+    *   **验证公式**：记录几组不同的(u, v, f)数据，验证透镜公式 `1/u + 1/v = 1/f` 是否成立。
+
+### 五、 使用建议
+
+*   **课堂教学**：可作为教师讲解时的动态演示工具，替代静态挂图，使成像规律的推导过程更加生动可信。
+*   **学生自学**：学生可自主操作，通过“假设-验证-总结”的探究模式，主动构建知识。鼓励他们记录观察，并提出自己的问题。
+*   **复习与巩固**：在学完凸透镜成像规律后，使用本工具进行复习，可以串联起所有零散的特殊情况，形成连贯的动态图景，深化理解。
+*   **注意事项**：在触摸屏设备（如平板电脑）上，可直接用手指拖拽物体进行操作，体验更佳。
+
+希望这个交互式动画能成为您教学或学习路上的得力助手，让探索光学的旅程充满乐趣与发现！

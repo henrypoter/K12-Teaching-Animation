@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>电磁波：电场与磁场的垂直传播</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(to bottom, #0A0A2A, #1a1a40);
+            color: #EEEEEE;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #FF00FF, #00FFFF);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .canvas-container {
+            flex: 3;
+            min-width: 300px;
+            background-color: rgba(0, 0, 0, 0.4);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        #waveCanvas {
+            display: block;
+            width: 100%;
+            height: 600px;
+            cursor: grab;
+        }
+
+        #waveCanvas:active {
+            cursor: grabbing;
+        }
+
+        .controls-panel {
+            flex: 1;
+            min-width: 300px;
+            background-color: rgba(20, 20, 40, 0.8);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .control-section {
+            background-color: rgba(30, 30, 60, 0.6);
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 4px solid #00FFFF;
+        }
+
+        .control-section:nth-child(2) {
+            border-left-color: #FF00FF;
+        }
+
+        .control-section:nth-child(3) {
+            border-left-color: #FFCC00;
+        }
+
+        h2 {
+            font-size: 1.4rem;
+            margin-bottom: 18px;
+            color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h2 i {
+            font-size: 1.2rem;
+        }
+
+        .control-group {
+            margin-bottom: 18px;
+        }
+
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .control-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #CCCCCC;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 5px 0;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .color-indicator {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+            display: inline-block;
+        }
+
+        .color-e {
+            background-color: #FF00FF;
+        }
+
+        .color-b {
+            background-color: #00FFFF;
+        }
+
+        .color-path {
+            background-color: #CCCCCC;
+        }
+
+        .color-grid {
+            background-color: #444444;
+        }
+
+        button {
+            background-color: #3399FF;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #4DA6FF;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(51, 153, 255, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        #resetBtn {
+            background-color: #6666CC;
+        }
+
+        #resetBtn:hover {
+            background-color: #7777DD;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            height: 8px;
+            -webkit-appearance: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #00FFFF;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        .slider-value {
+            min-width: 40px;
+            text-align: center;
+            font-weight: 600;
+            color: #00FFFF;
+        }
+
+        .view-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .view-btn {
+            background-color: rgba(60, 60, 100, 0.7);
+            padding: 10px;
+            font-size: 0.9rem;
+        }
+
+        .view-btn:hover {
+            background-color: rgba(80, 80, 120, 0.9);
+        }
+
+        .info-panel {
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 10px;
+            border-top: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .info-title {
+            font-weight: 600;
+            color: #FFCC00;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .info-content {
+            font-size: 0.95rem;
+            color: #DDDDDD;
+        }
+
+        .info-content p {
+            margin-bottom: 8px;
+        }
+
+        .highlight {
+            color: #FF00FF;
+            font-weight: 600;
+        }
+
+        .highlight-b {
+            color: #00FFFF;
+            font-weight: 600;
+        }
+
+        .highlight-k {
+            color: #FFFFFF;
+            font-weight: 600;
+        }
+
+        .coordinate-info {
+            position: absolute;
+            bottom: 15px;
+            left: 15px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            border-left: 3px solid #FFCC00;
+        }
+
+        .point-info {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            max-width: 250px;
+            border-left: 3px solid #3399FF;
+            display: none;
+        }
+
+        .point-info.active {
+            display: block;
+        }
+
+        .legend {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .legend-item:last-child {
+            margin-bottom: 0;
+        }
+
+        @media (max-width: 1100px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .canvas-container, .controls-panel {
+                width: 100%;
+            }
+            
+            #waveCanvas {
+                height: 500px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            #waveCanvas {
+                height: 400px;
+            }
+            
+            .controls-panel {
+                padding: 15px;
+            }
+            
+            .control-section {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>电磁波：电场与磁场的垂直传播</h1>
+            <p class="subtitle">可视化电磁波作为横波的三维特性：电场(E)、磁场(B)与传播方向(k)两两垂直，且同步振荡传播。</p>
+        </header>
+
+        <div class="main-content">
+            <div class="canvas-container">
+                <canvas id="waveCanvas"></canvas>
+                <div class="coordinate-info">
+                    <div>X轴: 传播方向 (k)</div>
+                    <div>Y轴: 电场方向 (E) <span style="color:#FF00FF;">●</span></div>
+                    <div>Z轴: 磁场方向 (B) <span style="color:#00FFFF;">●</span></div>
+                </div>
+                <div class="point-info" id="pointInfo">
+                    <div class="info-title">探测点信息</div>
+                    <div>位置: <span id="posX">0</span>, <span id="posY">0</span>, <span id="posZ">0</span></div>
+                    <div>电场 E: <span id="eValue" class="highlight">0</span> (Y方向)</div>
+                    <div>磁场 B: <span id="bValue" class="highlight-b">0</span> (Z方向)</div>
+                    <div>相位: <span id="phaseValue">0</span>°</div>
+                </div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="color-indicator color-e"></div>
+                        <span>电场 (E)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-indicator color-b"></div>
+                        <span>磁场 (B)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-indicator color-path"></div>
+                        <span>传播路径</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls-panel">
+                <div class="control-section">
+                    <h2>📊 动画控制</h2>
+                    
+                    <div class="control-group">
+                        <div class="slider-container">
+                            <span class="control-label">动画速度</span>
+                            <input type="range" id="speedSlider" min="0.1" max="3" step="0.1" value="1">
+                            <span class="slider-value" id="speedValue">1.0x</span>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <div class="slider-container">
+                            <span class="control-label">波长</span>
+                            <input type="range" id="wavelengthSlider" min="50" max="200" step="10" value="100">
+                            <span class="slider-value" id="wavelengthValue">100</span>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <button id="playPauseBtn">
+                            <span id="playIcon">⏸️</span>
+                            <span id="playText">暂停动画</span>
+                        </button>
+                    </div>
+                    
+                    <div class="control-group">
+                        <button id="resetBtn">🔄 重置视图与动画</button>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h2>👁️ 可视化选项</h2>
+                    
+                    <div class="control-group">
+                        <div class="control-label">显示/隐藏元素</div>
+                        <div class="checkbox-group">
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="showE" checked>
+                                <div class="color-indicator color-e"></div>
+                                <span>电场 (E)</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="showB" checked>
+                                <div class="color-indicator color-b"></div>
+                                <span>磁场 (B)</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="showPath" checked>
+                                <div class="color-indicator color-path"></div>
+                                <span>传播路径</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="showGrid" checked>
+                                <div class="color-indicator color-grid"></div>
+                                <span>坐标网格</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="showVectors">
+                                <span>矢量箭头</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="showSnapshot">
+                                <span>瞬时快照</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <div class="control-label">预设视图</div>
+                        <div class="view-buttons">
+                            <button class="view-btn" id="frontView">正视图 (X-Y平面)</button>
+                            <button class="view-btn" id="sideView">侧视图 (X-Z平面)</button>
+                            <button class="view-btn" id="topView">俯视图 (Y-Z平面)</button>
+                            <button class="view-btn" id="isoView">等轴视图</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h2>🎓 教学辅助</h2>
+                    
+                    <div class="control-group">
+                        <button id="stepDemoBtn">▶️ 启动分步演示</button>
+                    </div>
+                    
+                    <div class="control-group">
+                        <button id="rightHandBtn">🖐️ 显示右手定则</button>
+                    </div>
+                    
+                    <div class="control-group">
+                        <div class="control-label">探测模式</div>
+                        <div class="checkbox-group">
+                            <label class="checkbox-item">
+                                <input type="checkbox" id="probeMode">
+                                <span>启用点探测 (点击画布)</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <div class="info-title">📚 核心概念</div>
+            <div class="info-content">
+                <p>1. 电磁波是<strong>横波</strong>：电场 <span class="highlight">E</span> 和磁场 <span class="highlight-b">B</span> 的振动方向都与波的传播方向 <span class="highlight-k">k</span> 垂直。</p>
+                <p>2. <strong>正交关系</strong>：<span class="highlight">E</span> ⊥ <span class="highlight-b">B</span>，且 <span class="highlight">E</span> ⊥ <span class="highlight-k">k</span>，<span class="highlight-b">B</span> ⊥ <span class="highlight-k">k</span>，三者两两垂直。</p>
+                <p>3. <strong>同相振荡</strong>：在自由空间中，<span class="highlight">E</span> 和 <span class="highlight-b">B</span> 同时达到最大值，同时过零点，相位相同。</p>
+                <p>4. <strong>右手定则</strong>：右手四指从 <span class="highlight">E</span> 方向弯向 <span class="highlight-b">B</span> 方向，拇指指向即为波的传播方向 <span class="highlight-k">k</span>。</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 获取Canvas和上下文
+        const canvas = document.getElementById('waveCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 设置Canvas尺寸
+        function resizeCanvas() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+        }
+        
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        
+        // 动画状态
+        let animationId = null;
+        let isPlaying = true;
+        let time = 0;
+        
+        // 视图参数
+        let viewRotationX = -30 * Math.PI / 180;
+        let viewRotationY = 30 * Math.PI / 180;
+        let zoom = 1.0;
+        let offsetX = 0;
+        let offsetY = 0;
+        
+        // 波形参数
+        let wavelength = 100;
+        let amplitude = 40;
+        let speed = 1.0;
+        
+        // 显示选项
+        let showE = true;
+        let showB = true;
+        let showPath = true;
+        let showGrid = true;
+        let showVectors = false;
+        let showSnapshot = false;
+        let probeMode = false;
+        
+        // 探测点信息
+        let probePoint = null;
+        
+        // 鼠标交互
+        let isDragging = false;
+        let lastMouseX = 0;
+        let lastMouseY = 0;
+        
+        // 分步演示状态
+        let stepDemoActive = false;
+        let stepDemoPhase = 0;
+        let stepDemoTimer = null;
+        
+        // 右手定则显示
+        let showRightHandRule = false;
+        
+        // 初始化控件状态
+        document.getElementById('showE').checked = showE;
+        document.getElementById('showB').checked = showB;
+        document.getElementById('showPath').checked = showPath;
+        document.getElementById('showGrid').checked = showGrid;
+        document.getElementById('showVectors').checked = showVectors;
+        document.getElementById('showSnapshot').checked = showSnapshot;
+        document.getElementById('probeMode').checked = probeMode;
+        
+        // 更新滑块显示值
+        document.getElementById('speedValue').textContent = speed.toFixed(1) + 'x';
+        document.getElementById('wavelengthValue').textContent = wavelength;
+        
+        // 控件事件监听
+        document.getElementById('speedSlider').addEventListener('input', function() {
+            speed = parseFloat(this.value);
+            document.getElementById('speedValue').textContent = speed.toFixed(1) + 'x';
+        });
+        
+        document.getElementById('wavelengthSlider').addEventListener('input', function() {
+            wavelength = parseInt(this.value);
+            document.getElementById('wavelengthValue').textContent = wavelength;
+        });
+        
+        document.getElementById('playPauseBtn').addEventListener('click', function() {
+            isPlaying = !isPlaying;
+            document.getElementById('playText').textContent = isPlaying ? '暂停动画' : '播放动画';
+            document.getElementById('playIcon').textContent = isPlaying ? '⏸️' : '▶️';
+            
+            if (isPlaying) {
+                animate();
+            } else {
+                if (animationId) {
+                    cancelAnimationFrame(animationId);
+                }
+            }
+        });
+        
+        document.getElementById('resetBtn').addEventListener('click', function() {
+            viewRotationX = -30 * Math.PI / 180;
+            viewRotationY = 30 * Math.PI / 180;
+            zoom = 1.0;
+            offsetX = 0;
+            offsetY = 0;
+            time = 0;
+            probePoint = null;
+            document.getElementById('pointInfo').classList.remove('active');
+            showRightHandRule = false;
+            
+            if (!isPlaying) {
+                isPlaying = true;
+                document.getElementById('playText').textContent = '暂停动画';
+                document.getElementById('playIcon').textContent = '⏸️';
+                animate();
+            }
+        });
+        
+        document.getElementById('showE').addEventListener('change', function() {
+            showE = this.checked;
+        });
+        
+        document.getElementById('showB').addEventListener('change', function() {
+            showB = this.checked;
+        });
+        
+        document.getElementById('showPath').addEventListener('change', function() {
+            showPath = this.checked;
+        });
+        
+        document.getElementById('showGrid').addEventListener('change', function() {
+            showGrid = this.checked;
+        });
+        
+        document.getElementById('showVectors').addEventListener('change', function() {
+            showVectors = this.checked;
+        });
+        
+        document.getElementById('showSnapshot').addEventListener('change', function() {
+            showSnapshot = this.checked;
+        });
+        
+        document.getElementById('probeMode').addEventListener('change', function() {
+            probeMode = this.checked;
+        });
+        
+        // 视图按钮
+        document.getElementById('frontView').addEventListener('click', function() {
+            viewRotationX = 0;
+            viewRotationY = 0;
+        });
+        
+        document.getElementById('sideView').addEventListener('click', function() {
+            viewRotationX = 0;
+            viewRotationY = 90 * Math.PI / 180;
+        });
+        
+        document.getElementById('topView').addEventListener('click', function() {
+            viewRotationX = -90 * Math.PI / 180;
+            viewRotationY = 0;
+        });
+        
+        document.getElementById('isoView').addEventListener('click', function() {
+            viewRotationX = -30 * Math.PI / 180;
+            viewRotationY = 30 * Math.PI / 180;
+        });
+        
+        // 教学辅助按钮
+        document.getElementById('stepDemoBtn').addEventListener('click', function() {
+            startStepDemo();
+        });
+        
+        document.getElementById('rightHandBtn').addEventListener('click', function() {
+            showRightHandRule = !showRightHandRule;
+            this.textContent = showRightHandRule ? '🖐️ 隐藏右手定则' : '🖐️ 显示右手定则';
+        });
+        
+        // 鼠标事件
+        canvas.addEventListener('mousedown', function(e) {
+            isDragging = true;
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+            
+            // 如果探测模式开启，处理点击探测
+            if (probeMode) {
+                handleCanvasClick(e);
+            }
+        });
+        
+        canvas.addEventListener('mousemove', function(e) {
+            if (isDragging && !probeMode) {
+                const deltaX = e.clientX - lastMouseX;
+                const deltaY = e.clientY - lastMouseY;
+                
+                viewRotationY += deltaX * 0.01;
+                viewRotationX += deltaY * 0.01;
+                
+                lastMouseX = e.clientX;
+                lastMouseY = e.clientY;
+            }
+        });
+        
+        canvas.addEventListener('mouseup', function() {
+            isDragging = false;
+        });
+        
+        canvas.addEventListener('mouseleave', function() {
+            isDragging = false;
+        });
+        
+        // 鼠标滚轮缩放
+        canvas.addEventListener('wheel', function(e) {
+            e.preventDefault();
+            zoom += e.deltaY * -0.001;
+            zoom = Math.max(0.5, Math.min(3, zoom));
+        });
+        
+        // 处理画布点击（探测模式）
+        function handleCanvasClick(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // 将屏幕坐标转换为3D空间坐标（简化版）
+            // 这里我们假设点击的是传播路径上的点
+            const canvasX = (x - canvas.width/2) / zoom;
+            const canvasY = (y - canvas.height/2) / zoom;
+            
+            // 逆向旋转到3D空间（简化计算）
+            const cosX = Math.cos(viewRotationX);
+            const sinX = Math.sin(viewRotationX);
+            const cosY = Math.cos(viewRotationY);
+            const sinY = Math.sin(viewRotationY);
+            
+            // 简化：假设点击点在z=0平面上
+            let worldX = canvasX * cosY - canvasY * sinX * sinY;
+            let worldY = canvasY * cosX;
+            
+            // 限制在合理范围内
+            worldX = Math.max(-200, Math.min(200, worldX));
+            worldY = Math.max(-100, Math.min(100, worldY));
+            
+            // 设置探测点
+            probePoint = {
+                x: worldX,
+                y: worldY,
+                z: 0
+            };
+            
+            // 更新显示信息
+            updateProbeInfo();
+            document.getElementById('pointInfo').classList.add('active');
+        }
+        
+        // 更新探测点信息
+        function updateProbeInfo() {
+            if (!probePoint) return;
+            
+            const k = 2 * Math.PI / wavelength;
+            const phase = k * probePoint.x - time * 0.05 * speed;
+            
+            const eValue = amplitude * Math.sin(phase);
+            const bValue = amplitude * Math.sin(phase);
+            
+            document.getElementById('posX').textContent = probePoint.x.toFixed(1);
+            document.getElementById('posY').textContent = probePoint.y.toFixed(1);
+            document.getElementById('posZ').textContent = probePoint.z.toFixed(1);
+            document.getElementById('eValue').textContent = eValue.toFixed(1);
+            document.getElementById('bValue').textContent = bValue.toFixed(1);
+            document.getElementById('phaseValue').textContent = ((phase * 180 / Math.PI) % 360).toFixed(0);
+        }
+        
+        // 3D投影函数
+        function projectPoint(x, y, z) {
+            // 应用视图旋转
+            const cosX = Math.cos(viewRotationX);
+            const sinX = Math.sin(viewRotationX);
+            const cosY = Math.cos(viewRotationY);
+            const sinY = Math.sin(viewRotationY);
+            
+            // 绕Y轴旋转
+            let x1 = x * cosY + z * sinY;
+            let z1 = z * cosY - x * sinY;
+            
+            // 绕X轴旋转
+            let y1 = y * cosX - z1 * sinX;
+            z1 = z1 * cosX + y * sinX;
+            
+            // 应用缩放和偏移
+            const scale = 2 * zoom;
+            const screenX = canvas.width/2 + (x1 + offsetX) * scale;
+            const screenY = canvas.height/2 + (y1 + offsetY) * scale;
+            
+            return {x: screenX, y: screenY, z: z1};
+        }
+        
+        // 绘制坐标系网格
+        function drawGrid() {
+            if (!showGrid) return;
+            
+            ctx.strokeStyle = 'rgba(68, 68, 68, 0.6)';
+            ctx.lineWidth = 1;
+            
+            // 绘制X-Y平面网格
+            for (let x = -200; x <= 200; x += 50) {
+                const p1 = projectPoint(x, -100, 0);
+                const p2 = projectPoint(x, 100, 0);
+                
+                ctx.beginPath();
+                ctx.moveTo(p1.x, p1.y);
+                ctx.lineTo(p2.x, p2.y);
+                ctx.stroke();
+            }
+            
+            for (let y = -100; y <= 100; y += 50) {
+                const p1 = projectPoint(-200, y, 0);
+                const p2 = projectPoint(200, y, 0);
+                
+                ctx.beginPath();
+                ctx.moveTo(p1.x, p1.y);
+                ctx.lineTo(p2.x, p2.y);
+                ctx.stroke();
+            }
+            
+            // 绘制坐标轴
+            ctx.lineWidth = 2;
+            
+            // X轴 (红色)
+            const xStart = projectPoint(-220, 0, 0);
+            const xEnd = projectPoint(220, 0, 0);
+            ctx.strokeStyle = '#FF3333';
+            ctx.beginPath();
+            ctx.moveTo(xStart.x, xStart.y);
+            ctx.lineTo(xEnd.x, xEnd.y);
+            ctx.stroke();
+            
+            // Y轴 (绿色)
+            const yStart = projectPoint(0, -120, 0);
+            const yEnd = projectPoint(0, 120, 0);
+            ctx.strokeStyle = '#33FF33';
+            ctx.beginPath();
+            ctx.moveTo(yStart.x, yStart.y);
+            ctx.lineTo(yEnd.x, yEnd.y);
+            ctx.stroke();
+            
+            // Z轴 (蓝色)
+            const zStart = projectPoint(0, 0, -120);
+            const zEnd = projectPoint(0, 0, 120);
+            ctx.strokeStyle = '#3399FF';
+            ctx.beginPath();
+            ctx.moveTo(zStart.x, zStart.y);
+            ctx.lineTo(zEnd.x, zEnd.y);
+            ctx.stroke();
+            
+            // 坐标轴标签
+            ctx.font = '14px Arial';
+            ctx.fillStyle = '#FF3333';
+            ctx.fillText('X (传播方向 k)', xEnd.x + 5, xEnd.y + 5);
+            
+            ctx.fillStyle = '#33FF33';
+            ctx.fillText('Y (电场 E)', yEnd.x + 5, yEnd.y - 10);
+            
+            ctx.fillStyle = '#3399FF';
+            ctx.fillText('Z (磁场 B)', zEnd.x + 5, zEnd.y + 5);
+        }
+        
+        // 绘制传播路径
+        function drawPropagationPath() {
+            if (!showPath) return;
+            
+            ctx.strokeStyle = 'rgba(204, 204, 204, 0.7)';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([5, 5]);
+            
+            const points = [];
+            for (let x = -200; x <= 200; x += 5) {
+                points.push(projectPoint(x, 0, 0));
+            }
+            
+            ctx.beginPath();
+            ctx.moveTo(points[0].x, points[0].y);
+            for (let i = 1; i < points.length; i++) {
+                ctx.lineTo(points[i].x, points[i].y);
+            }
+            ctx.stroke();
+            
+            ctx.setLineDash([]);
+        }
+        
+        // 绘制电场波形
+        function drawElectricField() {
+            if (!showE) return;
+            
+            const k = 2 * Math.PI / wavelength;
+            
+            // 绘制电场波形线
+            ctx.strokeStyle = '#FF00FF';
+            ctx.lineWidth = 2;
+            
+            const points = [];
+            for (let x = -200; x <= 200; x += 2) {
+                const y = amplitude * Math.sin(k * x - time * 0.05 * speed);
+                points.push(projectPoint(x, y, 0));
+            }
+            
+            ctx.beginPath();
+            ctx.moveTo(points[0].x, points[0].y);
+            for (let i = 1; i < points.length; i++) {
+                ctx.lineTo(points[i].x, points[i].y);
+            }
+            ctx.stroke();
+            
+            // 绘制电场矢量箭头
+            if (showVectors) {
+                ctx.fillStyle = '#FF00FF';
+                for (let x = -180; x <= 180; x += 40) {
+                    const y = amplitude * Math.sin(k * x - time * 0.05 * speed);
+                    const p = projectPoint(x, 0, 0);
+                    const p2 = projectPoint(x, y, 0);
+                    
+                    drawArrow(p.x, p.y, p2.x, p2.y, '#FF00FF');
+                    
+                    // 在箭头中点绘制圆点
+                    ctx.beginPath();
+                    ctx.arc(p2.x, p2.y, 4, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+            
+            // 绘制瞬时快照
+            if (showSnapshot) {
+                ctx.strokeStyle = 'rgba(255, 0, 255, 0.4)';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([3, 3]);
+                
+                const snapshotPoints = [];
+                for (let x = -200; x <= 200; x += 2) {
+                    const y = amplitude * Math.sin(k * x - (time - 10) * 0.05 * speed);
+                    snapshotPoints.push(projectPoint(x, y, 0));
+                }
+                
+                ctx.beginPath();
+                ctx.moveTo(snapshotPoints[0].x, snapshotPoints[0].y);
+                for (let i = 1; i < snapshotPoints.length; i++) {
+                    ctx.lineTo(snapshotPoints[i].x, snapshotPoints[i].y);
+                }
+                ctx.stroke();
+                
+                ctx.setLineDash([]);
+            }
+        }
+        
+        // 绘制磁场波形
+        function drawMagneticField() {
+            if (!showB) return;
+            
+            const k = 2 * Math.PI / wavelength;
+            
+            // 绘制磁场波形线
+            ctx.strokeStyle = '#00FFFF';
+            ctx.lineWidth = 2;
+            
+            const points = [];
+            for (let x = -200; x <= 200; x += 2) {
+                const z = amplitude * Math.sin(k * x - time * 0.05 * speed);
+                points.push(projectPoint(x, 0, z));
+            }
+            
+            ctx.beginPath();
+            ctx.moveTo(points[0].x, points[0].y);
+            for (let i = 1; i < points.length; i++) {
+                ctx.lineTo(points[i].x, points[i].y);
+            }
+            ctx.stroke();
+            
+            // 绘制磁场矢量箭头
+            if (showVectors) {
+                ctx.fillStyle = '#00FFFF';
+                for (let x = -180; x <= 180; x += 40) {
+                    const z = amplitude * Math.sin(k * x - time * 0.05 * speed);
+                    const p = projectPoint(x, 0, 0);
+                    const p2 = projectPoint(x, 0, z);
+                    
+                    drawArrow(p.x, p.y, p2.x, p2.y, '#00FFFF');
+                    
+                    // 在箭头中点绘制圆点
+                    ctx.beginPath();
+                    ctx.arc(p2.x, p2.y, 4, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+            
+            // 绘制瞬时快照
+            if (showSnapshot) {
+                ctx.strokeStyle = 'rgba(0, 255, 255, 0.4)';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([3, 3]);
+                
+                const snapshotPoints = [];
+                for (let x = -200; x <= 200; x += 2) {
+                    const z = amplitude * Math.sin(k * x - (time - 10) * 0.05 * speed);
+                    snapshotPoints.push(projectPoint(x, 0, z));
+                }
+                
+                ctx.beginPath();
+                ctx.moveTo(snapshotPoints[0].x, snapshot
+<!--检测到代码截断，自动续写中...-->
+                ctx.moveTo(snapshotPoints[0].x, snapshotPoints[0].y);
+                for (let i = 1; i < snapshotPoints.length; i++) {
+                    ctx.lineTo(snapshotPoints[i].x, snapshotPoints[i].y);
+                }
+                ctx.stroke();
+                
+                ctx.setLineDash([]);
+            }
+        }
+        
+        // 绘制探测点
+        function drawProbePoint() {
+            if (!probePoint) return;
+            
+            const p = projectPoint(probePoint.x, probePoint.y, probePoint.z);
+            
+            // 绘制探测点
+            ctx.fillStyle = '#FFCC00';
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 8, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 绘制从探测点到波形的连线
+            const k = 2 * Math.PI / wavelength;
+            const phase = k * probePoint.x - time * 0.05 * speed;
+            
+            const eValue = amplitude * Math.sin(phase);
+            const bValue = amplitude * Math.sin(phase);
+            
+            // 电场连线
+            const pE = projectPoint(probePoint.x, eValue, 0);
+            ctx.strokeStyle = 'rgba(255, 0, 255, 0.6)';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([2, 2]);
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(pE.x, pE.y);
+            ctx.stroke();
+            
+            // 磁场连线
+            const pB = projectPoint(probePoint.x, 0, bValue);
+            ctx.strokeStyle = 'rgba(0, 255, 255, 0.6)';
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(pB.x, pB.y);
+            ctx.stroke();
+            
+            ctx.setLineDash([]);
+            
+            // 在探测点处绘制E和B矢量
+            drawArrow(p.x, p.y, pE.x, pE.y, '#FF00FF');
+            drawArrow(p.x, p.y, pB.x, pB.y, '#00FFFF');
+        }
+        
+        // 绘制右手定则示意图
+        function drawRightHandRule() {
+            if (!showRightHandRule) return;
+            
+            // 在画布右上角绘制示意图
+            const centerX = canvas.width - 150;
+            const centerY = 150;
+            const size = 80;
+            
+            // 绘制E矢量 (洋红色)
+            ctx.strokeStyle = '#FF00FF';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(centerX, centerY - size);
+            ctx.stroke();
+            
+            // 绘制B矢量 (青色)
+            ctx.strokeStyle = '#00FFFF';
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(centerX + size, centerY);
+            ctx.stroke();
+            
+            // 绘制k矢量 (白色)
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(centerX, centerY + size);
+            ctx.stroke();
+            
+            // 绘制右手示意图
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            // 手掌部分
+            ctx.arc(centerX, centerY, 25, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            // 拇指 (k方向)
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(centerX, centerY + 35);
+            ctx.stroke();
+            
+            // 四指 (从E弯向B)
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 20, -Math.PI/2, 0, false);
+            ctx.stroke();
+            
+            // 标签
+            ctx.font = 'bold 14px Arial';
+            ctx.fillStyle = '#FF00FF';
+            ctx.fillText('E', centerX - 10, centerY - size - 5);
+            
+            ctx.fillStyle = '#00FFFF';
+            ctx.fillText('B', centerX + size + 5, centerY + 5);
+            
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillText('k', centerX - 10, centerY + size + 15);
+            
+            ctx.fillStyle = '#FFCC00';
+            ctx.font = '12px Arial';
+            ctx.fillText('右手定则: E → B = k', centerX - 50, centerY + size + 35);
+        }
+        
+        // 绘制箭头函数
+        function drawArrow(fromX, fromY, toX, toY, color) {
+            const headlen = 10;
+            const angle = Math.atan2(toY - fromY, toX - fromX);
+            
+            ctx.strokeStyle = color;
+            ctx.fillStyle = color;
+            ctx.lineWidth = 2;
+            
+            // 绘制线
+            ctx.beginPath();
+            ctx.moveTo(fromX, fromY);
+            ctx.lineTo(toX, toY);
+            ctx.stroke();
+            
+            // 绘制箭头头部
+            ctx.beginPath();
+            ctx.moveTo(toX, toY);
+            ctx.lineTo(toX - headlen * Math.cos(angle - Math.PI/6), toY - headlen * Math.sin(angle - Math.PI/6));
+            ctx.lineTo(toX - headlen * Math.cos(angle + Math.PI/6), toY - headlen * Math.sin(angle + Math.PI/6));
+            ctx.closePath();
+            ctx.fill();
+        }
+        
+        // 开始分步演示
+        function startStepDemo() {
+            if (stepDemoActive) return;
+            
+            stepDemoActive = true;
+            stepDemoPhase = 0;
+            
+            // 重置显示选项
+            showE = false;
+            showB = false;
+            showPath = false;
+            showVectors = false;
+            showSnapshot = false;
+            
+            document.getElementById('showE').checked = false;
+            document.getElementById('showB').checked = false;
+            document.getElementById('showPath').checked = false;
+            document.getElementById('showVectors').checked = false;
+            document.getElementById('showSnapshot').checked = false;
+            
+            // 开始演示序列
+            stepDemoTimer = setInterval(() => {
+                stepDemoPhase++;
+                
+                switch(stepDemoPhase) {
+                    case 1:
+                        // 步骤1: 显示传播轴
+                        showPath = true;
+                        document.getElementById('showPath').checked = true;
+                        break;
+                    case 2:
+                        // 步骤2: 显示电场
+                        showE = true;
+                        document.getElementById('showE').checked = true;
+                        break;
+                    case 3:
+                        // 步骤3: 显示电场矢量
+                        showVectors = true;
+                        document.getElementById('showVectors').checked = true;
+                        break;
+                    case 4:
+                        // 步骤4: 显示磁场
+                        showB = true;
+                        document.getElementById('showB').checked = true;
+                        break;
+                    case 5:
+                        // 步骤5: 显示磁场矢量
+                        // (已经显示)
+                        break;
+                    case 6:
+                        // 步骤6: 显示瞬时快照
+                        showSnapshot = true;
+                        document.getElementById('showSnapshot').checked = true;
+                        break;
+                    case 7:
+                        // 步骤7: 演示结束
+                        clearInterval(stepDemoTimer);
+                        stepDemoActive = false;
+                        break;
+                }
+            }, 1500);
+        }
+        
+        // 主绘制函数
+        function draw() {
+            // 清除画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制黑色背景
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制各个组件
+            drawGrid();
+            drawPropagationPath();
+            drawElectricField();
+            drawMagneticField();
+            
+            // 绘制探测点（如果存在）
+            if (probeMode && probePoint) {
+                drawProbePoint();
+                updateProbeInfo();
+            }
+            
+            // 绘制右手定则
+            drawRightHandRule();
+            
+            // 绘制波前标记
+            const waveFrontX = 200 * Math.cos(time * 0.02 * speed);
+            const pFront = projectPoint(waveFrontX, 0, 0);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            ctx.beginPath();
+            ctx.arc(pFront.x, pFront.y, 6, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.font = '12px Arial';
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillText('波前', pFront.x + 10, pFront.y);
+        }
+        
+        // 动画循环
+        function animate() {
+            if (isPlaying) {
+                time += 1;
+                draw();
+            }
+            
+            animationId = requestAnimationFrame(animate);
+        }
+        
+        // 启动动画
+        animate();
+    </script>
+</body>
+</html>

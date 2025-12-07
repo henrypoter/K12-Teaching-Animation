@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>物理教学动画 - K12 Teaching Animation</title>
+    <meta name="description" content="物理现象与定律的可视化教学动画集合">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --success-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --dark-bg: #0f0f23;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-hover: rgba(255, 255, 255, 0.08);
+            --text-primary: #ffffff;
+            --text-secondary: #b4b4c5;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(45deg, #0f0f23 0%, #1a1a3e 50%, #0f0f23 100%);
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveBackground 20s linear infinite;
+        }
+
+        @keyframes moveBackground {
+            0% {
+                transform: translate(0, 0);
+            }
+
+            100% {
+                transform: translate(50px, 50px);
+            }
+        }
+
+        /* Header */
+        header {
+            padding: 3rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .breadcrumb {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--card-bg);
+            border-radius: 50px;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.8s ease-out 0.4s both;
+            transition: all 0.3s ease;
+        }
+
+        .breadcrumb:hover {
+            background: var(--card-hover);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .breadcrumb a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--text-primary);
+        }
+
+        .breadcrumb span {
+            color: var(--text-secondary);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Category Section */
+        .category-section {
+            margin-bottom: 4rem;
+        }
+
+        .category-title {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            padding-left: 1rem;
+            border-left: 4px solid;
+            border-image: var(--accent-gradient) 1;
+            animation: slideInLeft 0.6s ease-out;
+        }
+
+        /* Grid Layout */
+        .animation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        /* Card Styles */
+        .animation-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .animation-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--accent-gradient);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: 0;
+        }
+
+        .animation-card:hover::before {
+            opacity: 0.1;
+        }
+
+        .animation-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+            border-color: rgba(102, 126, 234, 0.5); /* This might need adjustment based on theme */
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            background: var(--accent-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            transition: transform 0.4s ease;
+        }
+
+        .animation-card:hover .card-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+            line-height: 1.4;
+        }
+
+        .card-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tag {
+            padding: 0.25rem 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .animation-card:hover .tag {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+            color: var(--text-primary);
+        }
+
+        /* Stats Section */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+            padding: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border-color);
+            margin-top: 4rem;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            .animation-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .category-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-animation"></div>
+
+    <header>
+        <div class="header-content">
+            <h1>⚛️ 物理教学动画</h1>
+            <p class="subtitle">物理现象与定律的可视化教学动画集合</p>
+            <div class="breadcrumb">
+                <a href="../index.html">🏠 首页</a>
+                <span>/</span>
+                <span>物理</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Stats Section -->
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number">47</div>
+                <div class="stat-label">教学动画</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">5</div>
+                <div class="stat-label">主题分类</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">可视化</div>
+            </div>
+        </div>
+
+        
+        <section class="category-section">
+            <h2 class="category-title">⚡ 电磁学</h2>
+            <div class="animation-grid">
+        
+                <a href="./α粒子散射实验（卢瑟福原子模型建立过程）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">α粒子散射实验</h3>
+                        <p class="card-description">卢瑟福原子模型建立过程</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./串并联电路的电流路径（动画显示电子流动方向）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">串并联电路的电流路径</h3>
+                        <p class="card-description">动画显示电子流动方向</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./带电粒子在匀强磁场中的圆周运动（洛伦兹力提供向心力）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">带电粒子在匀强磁场中的圆周运动</h3>
+                        <p class="card-description">洛伦兹力提供向心力</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./带电粒子在复合场（电场+磁场）中的偏转与速度选择器/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">带电粒子在复合场</h3>
+                        <p class="card-description">电场+磁场中的偏转与速度选择器</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./带电粒子在磁场中的螺旋运动/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">带电粒子在磁场中的螺旋运动</h3>
+                        <p class="card-description">带电粒子在磁场中的螺旋运动</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./欧姆定律（I-U图象实时生成，电阻丝温度变化）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">欧姆定律</h3>
+                        <p class="card-description">I-U图象实时生成，电阻丝温度变化</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./焦耳定律（电流热效应微观解释）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">焦耳定律</h3>
+                        <p class="card-description">电流热效应微观解释</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./电磁感应中的动生电动势与感生电动势/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">电磁感应中的动生电动势与感生电动势</h3>
+                        <p class="card-description">电磁感应中的动生电动势与感生电动势</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./电磁感应（法拉第实验：磁铁插入线圈瞬间电流产生）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">电磁感应</h3>
+                        <p class="card-description">法拉第实验：磁铁插入线圈瞬间电流产生</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./电磁波的产生与传播（振荡电偶极子辐射电磁波）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">电磁波的产生与传播</h3>
+                        <p class="card-description">振荡电偶极子辐射电磁波</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./电磁波的电场与磁场垂直传播/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">电磁波的电场与磁场垂直传播</h3>
+                        <p class="card-description">电磁波的电场与磁场垂直传播</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./电磁震荡与LC回路（电场能与磁场能相互转化动态图）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">电磁震荡与LC回路</h3>
+                        <p class="card-description">电场能与磁场能相互转化动态图</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./自感现象（断电时灯泡反常亮一下）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">自感现象</h3>
+                        <p class="card-description">断电时灯泡反常亮一下</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./霍尔效应（动画显示载流子偏转产生横向电压）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">霍尔效应</h3>
+                        <p class="card-description">动画显示载流子偏转产生横向电压</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+            </div>
+        </section>
+        
+        <section class="category-section">
+            <h2 class="category-title">⚛️ 原子物理</h2>
+            <div class="animation-grid">
+        
+                <a href="./伦琴发现X射线（动画显示阴极射线撞击阳极产生X射线）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">伦琴发现X射线</h3>
+                        <p class="card-description">动画显示阴极射线撞击阳极产生X射线</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./原子核的衰变与半衰期（蒙特卡洛模拟）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">原子核的衰变与半衰期</h3>
+                        <p class="card-description">蒙特卡洛模拟</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./链式核反应（动画显示中子倍增与控制）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">链式核反应</h3>
+                        <p class="card-description">动画显示中子倍增与控制</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+            </div>
+        </section>
+        
+        <section class="category-section">
+            <h2 class="category-title">🌈 光学</h2>
+            <div class="animation-grid">
+        
+                <a href="./光的干涉与光子性（单光子双缝实验）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">光的干涉与光子性</h3>
+                        <p class="card-description">单光子双缝实验</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./光的直进、反射、折射（水面下鱼的位置、筷子变弯）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">光的直进、反射、折射</h3>
+                        <p class="card-description">水面下鱼的位置、筷子变弯</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./凸透镜成像全过程（物距连续变化）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">凸透镜成像全过程</h3>
+                        <p class="card-description">物距连续变化</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./凸透镜成像规律（物距像距实时变化+光路图）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">凸透镜成像规律</h3>
+                        <p class="card-description">物距像距实时变化+光路图</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./原子能级跃迁与光谱（氢原子光谱产生）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">原子能级跃迁与光谱</h3>
+                        <p class="card-description">氢原子光谱产生</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./多普勒效应（声波与光波红移蓝移）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">多普勒效应</h3>
+                        <p class="card-description">声波与光波红移蓝移</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./平面镜成像（虚像位置+光的实际路径）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">平面镜成像</h3>
+                        <p class="card-description">虚像位置+光的实际路径</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./波的干涉、衍射、偏振（双缝干涉条纹实时变化）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">波的干涉、衍射、偏振</h3>
+                        <p class="card-description">双缝干涉条纹实时变化</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./波的干涉与衍射（尤其是单缝衍射图样）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">波的干涉与衍射</h3>
+                        <p class="card-description">尤其是单缝衍射图样</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./简谐运动的波形图与圆周运动投影关系/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">简谐运动的波形图与圆周运动投影关系</h3>
+                        <p class="card-description">简谐运动的波形图与圆周运动投影关系</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./色散与三棱镜（白光分解成七色光的全过程）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">色散与三棱镜</h3>
+                        <p class="card-description">白光分解成七色光的全过程</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+            </div>
+        </section>
+        
+        <section class="category-section">
+            <h2 class="category-title">🔥 热学</h2>
+            <div class="animation-grid">
+        
+                <a href="./内能改变的两种方式（做功与热传递分子层面）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">内能改变的两种方式</h3>
+                        <p class="card-description">做功与热传递分子层面</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./分子运动论（布朗运动、扩散现象、汽化液化微观解释）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">分子运动论</h3>
+                        <p class="card-description">布朗运动、扩散现象、汽化液化微观解释</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./晶体非晶体熔化凝固图像（温度-时间图+分子排列动画）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">晶体非晶体熔化凝固图像</h3>
+                        <p class="card-description">温度-时间图+分子排列动画</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./气体三种变化过程的微观+宏观同步/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">气体三种变化过程的微观+宏观同步</h3>
+                        <p class="card-description">气体三种变化过程的微观+宏观同步</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./气体等温、等压、等容过程（p-V图+分子运动状态同步）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">气体等温、等压、等容过程</h3>
+                        <p class="card-description">p-V图+分子运动状态同步</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./热力学第一、二定律（微观解释熵增）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">热力学第一、二定律</h3>
+                        <p class="card-description">微观解释熵增</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+            </div>
+        </section>
+        
+        <section class="category-section">
+            <h2 class="category-title">⚙️ 力学</h2>
+            <div class="animation-grid">
+        
+                <a href="./动量守恒与能量守恒同时显示的碰撞/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">动量守恒与能量守恒同时显示的碰撞</h3>
+                        <p class="card-description">动量守恒与能量守恒同时显示的碰撞</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./动量守恒（完全弹性非弹性碰撞，显示矢量变化）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">动量守恒</h3>
+                        <p class="card-description">完全弹性非弹性碰撞，显示矢量变化</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./匀速圆周运动向心力来源（水杯旋转移中、水滴甩出）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">匀速圆周运动向心力来源</h3>
+                        <p class="card-description">水杯旋转移中、水滴甩出</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./抛体运动分解（水平+竖直方向独立，轨迹+分速度矢量）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">抛体运动分解</h3>
+                        <p class="card-description">水平+竖直方向独立，轨迹+分速度矢量</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./抛体运动的分运动合成/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">抛体运动的分运动合成</h3>
+                        <p class="card-description">抛体运动的分运动合成</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./机械能守恒（斜面-小车-圆形轨道全过程）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">机械能守恒</h3>
+                        <p class="card-description">斜面-小车-圆形轨道全过程</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./牛顿第一定律（惯性演示：小车撞墙、桌布抽离）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">牛顿第一定律</h3>
+                        <p class="card-description">惯性演示：小车撞墙、桌布抽离</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./牛顿第三定律（两人踩滑板互推、火箭喷气）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">牛顿第三定律</h3>
+                        <p class="card-description">两人踩滑板互推、火箭喷气</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./简谐振动全过程（弹簧振子位移-速度-加速度-回复力四图同步）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">简谐振动全过程</h3>
+                        <p class="card-description">弹簧振子位移-速度-加速度-回复力四图同步</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./简谐振动的相位差与简谐运动图像/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">简谐振动的相位差与简谐运动图像</h3>
+                        <p class="card-description">简谐振动的相位差与简谐运动图像</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./自由落体与空气阻力影响（伽利略斜面实验的理想化）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">自由落体与空气阻力影响</h3>
+                        <p class="card-description">伽利略斜面实验的理想化</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./行星运动与万有引力（开普勒三定律动态演示）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">行星运动与万有引力</h3>
+                        <p class="card-description">开普勒三定律动态演示</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+                <a href="./重力加速度测量（真实实验误差大，动画可做到0阻力）/index.html" class="animation-card" style="text-decoration: none;">
+                    <div class="card-content">
+                        <div class="card-icon">⚛️</div>
+                        <h3 class="card-title">重力加速度测量</h3>
+                        <p class="card-description">真实实验误差大，动画可做到0阻力</p>
+                        <div class="card-tags">
+                            <span class="tag">可视化</span>
+                            <span class="tag">动画</span>
+                        </div>
+                    </div>
+                </a>
+            
+            </div>
+        </section>
+        
+
+        <footer>
+            <div class="footer-content">
+                <p>&copy; 2024 K12 Teaching Animation. All rights reserved.</p>
+                <p style="margin-top: 0.5rem; font-size: 0.85rem;">让教育更生动，让学习更简单 ✨</p>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>
+    

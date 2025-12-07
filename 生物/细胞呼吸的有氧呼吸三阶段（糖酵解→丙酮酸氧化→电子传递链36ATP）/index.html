@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>有氧呼吸三阶段交互式教学动画</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            width: 100%;
+            max-width: 1200px;
+            justify-content: center;
+        }
+
+        /* 左侧动画区域 */
+        .animation-area {
+            flex: 3;
+            min-width: 700px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #animationCanvas {
+            width: 100%;
+            height: 500px;
+            display: block;
+            background-color: #f8fafc;
+            border-radius: 10px;
+        }
+
+        .stage-indicator {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #edf2f7;
+            border-radius: 10px;
+        }
+
+        .stage {
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            flex: 1;
+            margin: 0 5px;
+        }
+
+        .stage.active {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .stage-1 { background-color: #4a90e2; color: white; }
+        .stage-2 { background-color: #50c878; color: white; }
+        .stage-3 { background-color: #ff6b6b; color: white; }
+
+        /* 右侧控制面板 */
+        .control-panel {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .panel {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            padding: 25px;
+        }
+
+        .panel h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            border-bottom: 2px solid #eaeaea;
+            padding-bottom: 10px;
+        }
+
+        /* 控制按钮 */
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+
+        .btn-success {
+            background-color: #2ecc71;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+
+        /* 能量计数板 */
+        .energy-counter {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .energy-item {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border-left: 5px solid;
+            transition: transform 0.3s ease;
+        }
+
+        .energy-item:hover {
+            transform: translateY(-3px);
+        }
+
+        .energy-item.atp { border-left-color: #f1c40f; }
+        .energy-item.nadh { border-left-color: #e67e22; }
+        .energy-item.fadh2 { border-left-color: #2ecc71; }
+        .energy-item.total { border-left-color: #9b59b6; }
+
+        .energy-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+
+        .energy-label {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        /* 详细信息面板 */
+        .info-panel {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .info-content {
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .info-content h3 {
+            color: #2c3e50;
+            margin: 15px 0 8px 0;
+            font-size: 1.1rem;
+        }
+
+        .info-content p {
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        .molecule-key {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .key-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.85rem;
+        }
+
+        .key-color {
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+        }
+
+        /* 测验部分 */
+        .quiz {
+            display: none;
+        }
+
+        .quiz-question {
+            margin-bottom: 15px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .quiz-option {
+            background-color: #f8f9fa;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+
+        .quiz-option:hover {
+            background-color: #e9ecef;
+        }
+
+        .quiz-option.selected {
+            border-color: #3498db;
+            background-color: #e3f2fd;
+        }
+
+        .quiz-option.correct {
+            border-color: #2ecc71;
+            background-color: #d5f4e6;
+        }
+
+        .quiz-option.incorrect {
+            border-color: #e74c3c;
+            background-color: #fadbd8;
+        }
+
+        .quiz-feedback {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .feedback-correct {
+            background-color: #d5f4e6;
+            color: #27ae60;
+            border-left: 5px solid #2ecc71;
+        }
+
+        .feedback-incorrect {
+            background-color: #fadbd8;
+            color: #c0392b;
+            border-left: 5px solid #e74c3c;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1100px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .animation-area, .control-panel {
+                min-width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .animation-area {
+                padding: 15px;
+            }
+            
+            #animationCanvas {
+                height: 400px;
+            }
+            
+            .stage {
+                padding: 6px 12px;
+                font-size: 0.9rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            width: 100%;
+            max-width: 1200px;
+            padding-top: 20px;
+            border-top: 1px solid #eaeaea;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>有氧呼吸三阶段交互式教学动画</h1>
+        <p class="subtitle">糖酵解 → 丙酮酸氧化 → 电子传递链 (36 ATP)</p>
+    </div>
+
+    <div class="container">
+        <!-- 左侧动画区域 -->
+        <div class="animation-area">
+            <canvas id="animationCanvas" width="1000" height="500"></canvas>
+            
+            <div class="stage-indicator">
+                <div class="stage stage-1 active" data-stage="1">1. 糖酵解<br>(细胞质基质)</div>
+                <div class="stage stage-2" data-stage="2">2. 丙酮酸氧化<br>(线粒体基质)</div>
+                <div class="stage stage-3" data-stage="3">3. 电子传递链<br>(线粒体内膜)</div>
+            </div>
+        </div>
+
+        <!-- 右侧控制面板 -->
+        <div class="control-panel">
+            <!-- 控制按钮 -->
+            <div class="panel">
+                <h2>动画控制</h2>
+                <div class="controls">
+                    <button class="btn btn-primary" id="playPauseBtn">
+                        <span id="playIcon">▶</span> <span id="playText">播放</span>
+                    </button>
+                    <button class="btn btn-secondary" id="resetBtn">↺ 重置</button>
+                    <button class="btn btn-secondary" id="prevBtn">◀ 上一步</button>
+                    <button class="btn btn-secondary" id="nextBtn">下一步 ▶</button>
+                    <button class="btn btn-success" id="quizBtn">测验</button>
+                </div>
+            </div>
+
+            <!-- 能量计数板 -->
+            <div class="panel">
+                <h2>能量计数板</h2>
+                <div class="energy-counter">
+                    <div class="energy-item atp">
+                        <div class="energy-label">ATP (净)</div>
+                        <div class="energy-value" id="atpCount">2</div>
+                        <div class="energy-label">糖酵解产生</div>
+                    </div>
+                    <div class="energy-item nadh">
+                        <div class="energy-label">NADH</div>
+                        <div class="energy-value" id="nadhCount">2</div>
+                        <div class="energy-label">电子载体</div>
+                    </div>
+                    <div class="energy-item fadh2">
+                        <div class="energy-label">FADH₂</div>
+                        <div class="energy-value" id="fadh2Count">0</div>
+                        <div class="energy-label">电子载体</div>
+                    </div>
+                    <div class="energy-item total">
+                        <div class="energy-label">预计总ATP</div>
+                        <div class="energy-value" id="totalAtpCount">2</div>
+                        <div class="energy-label">(通过氧化磷酸化)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 详细信息面板 -->
+            <div class="panel info-panel">
+                <h2>阶段详情</h2>
+                <div class="info-content" id="stageInfo">
+                    <h3>1. 糖酵解 (细胞质基质)</h3>
+                    <p><strong>输入:</strong> 1葡萄糖 (6C) + 2ATP + 2NAD⁺</p>
+                    <p><strong>输出:</strong> 2丙酮酸 (3C) + 4ATP (净2) + 2NADH</p>
+                    <p><strong>关键步骤:</strong> 葡萄糖分解为两分子丙酮酸，产生少量ATP和NADH。</p>
+                    
+                    <div class="molecule-key">
+                        <div class="key-item">
+                            <div class="key-color" style="background-color: #4a90e2;"></div>
+                            <span>葡萄糖/碳骨架</span>
+                        </div>
+                        <div class="key-item">
+                            <div class="key-color" style="background-color: #f1c40f;"></div>
+                            <span>ATP</span>
+                        </div>
+                        <div class="key-item">
+                            <div class="key-color" style="background-color: #e67e22;"></div>
+                            <span>NADH</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 测验部分 -->
+            <div class="panel quiz" id="quizPanel">
+                <h2>知识测验</h2>
+                <div class="quiz-question" id="quizQuestion">有氧呼吸的三个阶段按顺序是？</div>
+                
+                <div class="quiz-option" data-answer="A">糖酵解 → 丙酮酸氧化 → 电子传递链</div>
+                <div class="quiz-option" data-answer="B">丙酮酸氧化 → 糖酵解 → 电子传递链</div>
+                <div class="quiz-option" data-answer="C">电子传递链 → 糖酵解 → 丙酮酸氧化</div>
+                <div class="quiz-option" data-answer="D">糖酵解 → 电子传递链 → 丙酮酸氧化</div>
+                
+                <div class="quiz-feedback" id="quizFeedback">
+                    <strong id="feedbackTitle">正确！</strong>
+                    <p id="feedbackText">有氧呼吸的正确顺序是糖酵解（细胞质）、丙酮酸氧化（线粒体基质）、电子传递链（线粒体内膜）。</p>
+                </div>
+                
+                <button class="btn btn-primary" id="submitQuizBtn" style="margin-top: 15px; width: 100%;">提交答案</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>交互式教学动画 | 有氧呼吸三阶段 | 设计：教育技术专家</p>
+        <p>提示：点击阶段标签可跳转，鼠标悬停在分子上查看详细信息</p>
+    </div>
+
+    <script>
+        // 全局变量
+        let canvas, ctx;
+        let animationId = null;
+        let isPlaying = false;
+        let currentStage = 1; // 1:糖酵解, 2:丙酮酸氧化, 3:电子传递链
+        let stageProgress = 0; // 当前阶段进度 0-100
+        let animationSpeed = 1;
+        
+        // 能量计数
+        let energyCounts = {
+            atp: 2,      // 净ATP
+            nadh: 2,     // NADH数量
+            fadh2: 0,    // FADH2数量
+            totalAtp: 2  // 预计总ATP
+        };
+        
+        // 分子定义
+        const molecules = {
+            glucose: { name: "葡萄糖", color: "#4a90e2", x: 150, y: 250, radius: 30 },
+            pyruvate: { name: "丙酮酸", color: "#3498db", x: 400, y: 250, radius: 20 },
+            acetylCoA: { name: "乙酰辅酶A", color: "#9b59b6", x: 650, y: 200, radius: 22 },
+            atp: { name: "ATP", color: "#f1c40f", x: 850, y: 150, radius: 18 },
+            nadh: { name: "NADH", color: "#e67e22", x: 850, y: 250, radius: 18 },
+            fadh2: { name: "FADH₂", color: "#2ecc71", x: 850, y: 350, radius: 18 },
+            co2: { name: "CO₂", color: "#95a5a6", x: 500, y: 150, radius: 15 },
+            o2: { name: "O₂", color: "#1abc9c", x: 750, y: 400, radius: 16 },
+            hPlus: { name: "H⁺", color: "#e74c3c", x: 700, y: 100, radius: 8 }
+        };
+        
+        // 线粒体结构
+        const mitochondria = {
+            outerMembrane: { x: 550, y: 250, width: 300, height: 200 },
+            innerMembrane: { x: 575, y: 250, width: 250, height: 150 },
+            matrix: { x: 600, y: 250, width: 200, height: 100 }
+        };
+        
+        // 初始化Canvas
+        function initCanvas() {
+            canvas = document.getElementById('animationCanvas');
+            ctx = canvas.getContext('2d');
+            
+            // 设置Canvas尺寸适应容器
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = 500;
+            
+            draw();
+        }
+        
+        // 绘制函数
+        function draw() {
+            // 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制背景和标题
+            drawBackground();
+            
+            // 根据当前阶段绘制
+            switch(currentStage) {
+                case 1:
+                    drawGlycolysis();
+                    break;
+                case 2:
+                    drawPyruvateOxidation();
+                    break;
+                case 3:
+                    drawETC();
+                    break;
+            }
+            
+            // 绘制线粒体（阶段2和3）
+            if (currentStage >= 2) {
+                drawMitochondria();
+            }
+            
+            // 绘制分子
+            drawMolecules();
+            
+            // 绘制电子和质子流动（阶段3）
+            if (currentStage === 3) {
+                drawElectronFlow();
+                drawProtonFlow();
+            }
+            
+            // 绘制ATP合酶（阶段3）
+            if (currentStage === 3 && stageProgress > 50) {
+                drawATPSynthase();
+            }
+        }
+        
+        // 绘制背景
+        function drawBackground() {
+            // 细胞质背景（左侧）
+            ctx.fillStyle = '#f0f8ff';
+            ctx.fillRect(0, 0, 500, canvas.height);
+            
+            // 线粒体区域背景（右侧）
+            ctx.fillStyle = '#f9f9f9';
+            ctx.fillRect(500, 0, canvas.width - 500, canvas.height);
+            
+            // 绘制标签
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText('细胞质基质', 100, 40);
+            
+            if (currentStage >= 2) {
+                ctx.fillText('线粒体', 650, 40);
+            }
+            
+            // 绘制阶段标题
+            ctx.font = 'bold 20px Arial';
+            const stageTitles = ['', '1. 糖酵解 (Glycolysis)', '2. 丙酮酸氧化 (Pyruvate Oxidation)', '3. 电子传递链 (Electron Transport Chain)'];
+            ctx.fillStyle = ['', '#4a90e2', '#50c878', '#ff6b6b'][currentStage];
+            ctx.fillText(stageTitles[currentStage], canvas.width/2 - 100, 80);
+            
+            // 绘制进度条
+            drawProgressBar();
+        }
+        
+        // 绘制进度条
+        function drawProgressBar() {
+            const barWidth = 300;
+            const barHeight = 10;
+            const barX = canvas.width/2 - barWidth/2;
+            const barY = 100;
+            
+            // 背景
+            ctx.fillStyle = '#ecf0f1';
+            ctx.fillRect(barX, barY, barWidth, barHeight);
+            ctx.strokeStyle = '#bdc3c7';
+            ctx.strokeRect(barX, barY, barWidth, barHeight);
+            
+            // 进度
+            ctx.fillStyle = ['', '#4a90e2', '#50c878', '#ff6b6b'][currentStage];
+            ctx.fillRect(barX, barY, barWidth * (stageProgress/100), barHeight);
+            
+            // 进度文本
+            ctx.fillStyle = '#7f8c8d';
+            ctx.font = '14px Arial';
+            ctx.fillText(`进度: ${Math.round(stageProgress)}%`, barX + barWidth/2 - 30, barY + 25);
+        }
+        
+        // 绘制糖酵解
+        function drawGlycolysis() {
+            // 绘制葡萄糖分解过程
+            const progress = stageProgress / 100;
+            
+            // 葡萄糖分子
+            drawHexagon(molecules.glucose.x, molecules.glucose.y, molecules.glucose.radius, molecules.glucose.color, '葡萄糖');
+            
+            // 箭头指向丙酮酸
+            drawArrow(molecules.glucose.x + molecules.glucose.radius, molecules.glucose.y, 
+                     molecules.pyruvate.x - molecules.pyruvate.radius, molecules.pyruvate.y, 
+                     '#4a90e2', progress * 0.7);
+            
+            // 丙酮酸分子（根据进度显示）
+            if (progress > 0.3) {
+                const pyruvateCount = progress > 0.6 ? 2 : 1;
+                for (let i = 0; i < pyruvateCount; i++) {
+                    const offset = i * 60 - 30;
+                    drawCircle(molecules.pyruvate.x + offset, molecules.pyruvate.y, molecules.pyruvate.radius, molecules.pyruvate.color, '丙酮酸');
+                }
+            }
+            
+            // ATP产生
+            if (progress > 0.4) {
+                const atpCount = progress > 0.8 ? 4 : (progress > 0.5 ? 2 : 0);
+                for (let i = 0; i < atpCount; i++) {
+                    const yPos = 150 + i * 30;
+                    drawCircle(300, yPos, 15, molecules.atp.color, 'ATP');
+                }
+            }
+            
+            // NADH产生
+            if (progress > 0.7) {
+                for (let i = 0; i < 2; i++) {
+                    const yPos = 350 + i * 30;
+                    drawCircle(300, yPos, 15, molecules.nadh.color, 'NADH');
+                }
+            }
+        }
+        
+        // 绘制丙酮酸氧化
+        function drawPyruvateOxidation() {
+            const progress = (stageProgress - 100) / 100; // 阶段2从100开始
+            
+            // 丙酮酸进入线粒体
+            if (progress > 0.1) {
+                for (let i = 0; i < 2; i++) {
+                    const offset = i * 40 - 20;
+                    drawCircle(450 + offset, 250, molecules.pyruvate.radius, molecules.pyruvate.color, '丙酮酸');
+                    
+                    // 箭头进入线粒体
+                    if (progress > 0.3) {
+                        drawArrow(450 + offset, 250, 550, 250, '#3498db', Math.min(1, (progress - 0.3) * 3));
+                    }
+                }
+            }
+            
+            // 乙酰辅酶A产生
+            if (progress > 0.5) {
+                drawCircle(molecules.acetylCoA.x, molecules.acetylCoA.y, molecules.acetylCoA.radius, molecules.acetylCoA.color, '乙酰辅酶A');
+                
+                // CO2释放
+                if (progress > 0.6) {
+                    drawCircle(molecules.co2.x, molecules.co2.y, molecules.co2.radius, molecules.co2.color, 'CO₂');
+                }
+                
+                // NADH产生
+                if (progress > 0.7) {
+                    for (let i = 0; i < 2; i++) {
+                        const yPos = 200 + i * 30;
+                        drawCircle(700, yPos, 15, molecules.nadh.color, 'NADH');
+                    }
+                }
+            }
+        }
+        
+        // 绘制电子传递链
+        function drawETC() {
+            const progress = (stageProgress - 200) / 100; // 阶段3从200开始
+            
+            // 绘制蛋白复合物
+            const complexes = [
+                { x: 620, y: 300, label: 'I', color: '#e74c3c' },
+                { x: 680, y: 300, label: 'III', color: '#9b59b6' },
+                { x: 740, y: 300, label: 'IV', color: '#3498db' }
+            ];
+            
+            complexes.forEach(complex => {
+                // 复合物矩形
+                ctx.fillStyle = complex.color;
+                ctx.fillRect(complex.x - 20, complex.y - 15, 40, 30);
+                ctx.strokeStyle = '#2c3e50';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(complex.x - 20, complex.y - 15, 40, 30);
+                
+                // 标签
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 16px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(complex.label, complex.x, complex.y);
+                
+                // 复合物名称
+                ctx.fillStyle = '#2c3e50';
+                ctx.font = '12px Arial';
+                ctx.fillText(`复合物${complex.label}`, complex.x, complex.y + 25);
+            });
+            
+            // ATP合酶
+            if (progress > 0.3) {
+                drawATPSynthase();
+            }
+            
+            // O2分子
+            drawCircle(molecules.o2.x, molecules.o2.y, molecules.o2.radius, molecules.o2.color, 'O₂');
+        }
+        
+        // 绘制电子流动
+        function drawElectronFlow() {
+            const progress = (stageProgress - 200) / 100;
+            const electronRadius = 6;
+            
+            if (progress > 0.1) {
+                // 从NADH到复合物I的电子
+                const electronCount = Math.min(10, Math.floor(progress * 20));
+                
+                for (let i = 0; i < electronCount; i++) {
+                    const t = (i / 10 + progress * 2) % 1;
+                    const x = 600 + t * 150;
+                    const y = 280 + Math.sin(t * Math.PI * 2) * 10;
+                    
+                    ctx.fillStyle = '#f39c12';
+                    ctx.beginPath();
+                    ctx.arc(x, y, electronRadius, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // 电子光晕
+                    ctx.strokeStyle = 'rgba(243, 156, 18, 0.5)';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(x, y, electronRadius + 3, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+            }
+        }
+        
+        // 绘制质子流动
+        function drawProtonFlow() {
+            const progress = (stageProgress - 200) / 100;
+            
+            if (progress > 0.4) {
+                // H+被泵出
+                const protonCount = Math.min(8, Math.floor((progress - 0.4) * 20));
+                
+                for (let i = 0; i < protonCount; i++) {
+                    const t = (i / 8 + (progress - 0.4) * 3) % 1;
+                    const x = 700 + Math.sin(t * Math.PI) * 50;
+                    const y = 280 - t * 60;
+                    
+                    drawCircle(x, y, molecules.hPlus.radius, molecules.hPlus.color, '');
+                }
+                
+                // H+通过ATP合酶回流
+                if (progress > 0.6) {
+                    const backflowCount = Math.min(5, Math.floor((progress - 0.6) * 15));
+                    
+                    for (let i = 0; i < backflowCount; i++) {
+                        const t = (i / 5 + (progress - 0.6) * 2) % 1;
+                        const x = 800 - t * 50;
+                        const y = 320 + Math.sin(t * Math.PI) * 20;
+                        
+                        drawCircle(x, y, molecules.hPlus.radius, molecules.hPlus.color, '');
+                    }
+                }
+            }
+        }
+        
+        // 绘制ATP合酶
+        function drawATPSynthase() {
+            const x = 800, y = 320;
+            const progress = (stageProgress - 200) / 100;
+            
+            // 基部
+            ctx.fillStyle = '#34495e';
+            ctx.fillRect(x - 15, y - 5, 30, 40);
+            
+            // 旋转部分（根据进度旋转）
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(progress * Math.PI * 4);
+            
+            // 转子
+            ctx.fillStyle = '#1abc9c';
+            ctx.beginPath();
+            ctx.arc(0, 0, 20, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 叶片
+            ctx.fillStyle = '#16a085';
+            for (let i = 0; i < 6; i++) {
+                ctx.rotate(Math.PI / 3);
+                ctx.fillRect(15, -5, 15, 10);
+            }
+            
+            ctx.restore();
+            
+            // ATP产生
+            if (progress > 0.7) {
+                const atpGenerated = Math.min(34, Math.floor((progress - 0.7) * 100));
+                for (let i = 0; i < Math.min(5, atpGenerated); i++) {
+                    const yPos = 380 + i * 25;
+                    drawCircle(x, yPos, 12, molecules.atp.color, '');
+                }
+                
+                // 显示ATP数量
+                ctx.fillStyle = '#2c3e50';
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(`已生成 ${atpGenerated} ATP`, x, 420);
+            }
+            
+            // 标签
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = 'bold 14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('ATP合酶', x, y + 60);
+        }
+        
+        // 绘制线粒体
+        function drawMitochondria() {
+            // 外膜
+            ctx.strokeStyle = '#d35400';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(
+                mitochondria.outerMembrane.x - mitochondria.outerMembrane.width/2,
+                mitochondria.outerMembrane.y - mitochondria.outerMembrane.height/2,
+                mitochondria.outerMembrane.width,
+                mitochondria.outerMembrane.height
+            );
+            
+            // 内膜（有褶皱）
+            ctx.strokeStyle = '#c0392b';
+            ctx.lineWidth = 3;
+            
+            const innerX = mitochondria.innerMembrane.x - mitochondria.innerMembrane.width/2;
+            const innerY = mitochondria.innerMembrane.y - mitochondria.innerMembrane.height/2;
+            const innerWidth = mitochondria.innerMembrane.width;
+            const innerHeight = mitochondria.innerMembrane.height;
+            
+            // 绘制内膜褶皱
+            ctx.beginPath();
+            for (let i = 0; i < 5; i++) {
+                const foldX = innerX + i * (innerWidth / 4);
+                const foldHeight = i % 2 === 0 ? innerHeight + 20 : innerHeight - 20;
+                
+                if (i === 0) {
+                    ctx.moveTo(foldX, innerY + innerHeight/2 - foldHeight/2);
+                }
+                
+                ctx.lineTo(foldX, innerY + innerHeight/2 - foldHeight/2);
+                ctx.lineTo(foldX + innerWidth/4, innerY + innerHeight/2 + foldHeight/2);
+            }
+            ctx.stroke();
+            
+            // 基质
+            ctx.fillStyle = 'rgba(241, 196, 15, 0.1)';
+            ctx.fillRect(
+                mitochondria.matrix.x - mitochondria.matrix.width/2,
+                mitochondria.matrix.y - mitochondria.matrix.height/2,
+                mitochondria.matrix.width,
+                mitochondria.matrix.height
+            );
+            
+            // 标签
+            ctx.fillStyle = '#2c3e50';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('线粒体外膜', mitochondria.outerMembrane.x, mitochondria.outerMembrane.y - mitochondria.outerMembrane.height/2 - 10);
+            ctx.fillText('线粒体内膜', mitochondria.innerMembrane.x, mitochondria.innerMembrane.y - mitochondria.innerMembrane.height/2 - 25);
+            ctx.fillText('基质', mitochondria.matrix.x, mitochondria.matrix.y);
+        }
+        
+        // 绘制所有分子
+        function drawMolecules() {
+            // 根据阶段显示不同的分子
+            if (currentStage === 1) {
+                // 阶段1：显示葡萄糖和ATP/NADH
+                drawHexagon(molecules.glucose.x, molecules.glucose.y, molecules.glucose.radius, molecules.glucose.color, '葡萄糖');
+                
+                // ATP分子
+                for (let i = 0; i < Math.min(4, energyCounts.atp + 2); i++) {
+                    const yPos = 150 + i * 30;
+                    drawCircle(300, yPos, 15, molecules.atp.color, i < 2 ? '消耗' : '产生');
+                }
+                
+                // NADH分子
+                if (stageProgress > 70) {
+                    for (let i = 0; i < 2; i++) {
+                        const yPos = 350 + i * 30;
+                        drawCircle(300, yPos, 15, molecules.nadh.color, 'NADH');
+                    }
+                }
+            }
+            
+            if (currentStage >= 2) {
+                // 阶段2和3：显示丙酮酸、乙酰辅酶A等
+                drawCircle(molecules.acetylCoA.x, molecules.acetylCoA.y, molecules.acetylCoA.radius, molecules.acetylCoA.color, '乙酰辅酶A');
+                drawCircle(molecules.co2.x, molecules.co2.y, molecules.co2.radius, molecules.co2.color, 'CO₂');
+                
+                // NADH
+                const nadhY = currentStage === 2 ? 200 : 250;
+                for (let i = 0; i < Math.min(10, energyCounts.nadh); i++) {
+                    const xPos = 700 + (i % 5) * 30;
+                    const yPos = nadhY + Math.floor(i / 5) * 30;
+                    drawCircle(xPos, yPos, 12, molecules.nadh.color, '');
+                }
+                
+                // FADH2（阶段3）
+                if (currentStage === 3 && energyCounts.fadh2 > 0) {
+                    for (let i = 0; i < Math.min(2, energyCounts.fadh2); i++) {
+                        drawCircle(700 + i * 30, 320, 12, molecules.fadh2.color, '');
+                    }
+               
+<!--检测到代码截断，自动续写中...-->
+            }
+            
+            if (currentStage === 3) {
+                // 阶段3：显示O2和ATP
+                drawCircle(molecules.o2.x, molecules.o2.y, molecules.o2.radius, molecules.o2.color, 'O₂');
+                
+                // 显示生成的ATP
+                const atpGenerated = Math.floor((energyCounts.totalAtp - 2) / 34 * 10);
+                for (let i = 0; i < Math.min(10, atpGenerated); i++) {
+                    const xPos = 850 + (i % 5) * 25;
+                    const yPos = 150 + Math.floor(i / 5) * 25;
+                    drawCircle(xPos, yPos, 10, molecules.atp.color, '');
+                }
+            }
+        }
+        
+        // 绘制六边形（代表葡萄糖）
+        function drawHexagon(x, y, radius, color, label) {
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            for (let i = 0; i < 6; i++) {
+                const angle = Math.PI / 3 * i;
+                const px = x + radius * Math.cos(angle);
+                const py = y + radius * Math.sin(angle);
+                
+                if (i === 0) {
+                    ctx.moveTo(px, py);
+                } else {
+                    ctx.lineTo(px, py);
+                }
+            }
+            ctx.closePath();
+            ctx.fill();
+            
+            // 边框
+            ctx.strokeStyle = '#2c3e50';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 标签
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 14px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(label, x, y);
+        }
+        
+        // 绘制圆形分子
+        function drawCircle(x, y, radius, color, label) {
+            // 分子主体
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 边框
+            ctx.strokeStyle = '#2c3e50';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            
+            // 标签
+            if (label) {
+                ctx.fillStyle = '#2c3e50';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(label, x, y + radius + 15);
+            }
+        }
+        
+        // 绘制箭头
+        function drawArrow(fromX, fromY, toX, toY, color, progress) {
+            if (progress <= 0) return;
+            
+            const currentToX = fromX + (toX - fromX) * progress;
+            const currentToY = fromY + (toY - fromY) * progress;
+            
+            // 箭头线
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(fromX, fromY);
+            ctx.lineTo(currentToX, currentToY);
+            ctx.stroke();
+            
+            // 箭头头部（如果进度足够）
+            if (progress > 0.1) {
+                const angle = Math.atan2(currentToY - fromY, currentToX - fromX);
+                const headLength = 15;
+                
+                ctx.fillStyle = color;
+                ctx.beginPath();
+                ctx.moveTo(currentToX, currentToY);
+                ctx.lineTo(
+                    currentToX - headLength * Math.cos(angle - Math.PI / 6),
+                    currentToY - headLength * Math.sin(angle - Math.PI / 6)
+                );
+                ctx.lineTo(
+                    currentToX - headLength * Math.cos(angle + Math.PI / 6),
+                    currentToY - headLength * Math.sin(angle + Math.PI / 6)
+                );
+                ctx.closePath();
+                ctx.fill();
+            }
+        }
+        
+        // 动画循环
+        function animate() {
+            if (!isPlaying) return;
+            
+            // 更新进度
+            stageProgress += animationSpeed;
+            
+            // 检查阶段转换
+            if (stageProgress > 100 && currentStage === 1) {
+                // 阶段1完成，转到阶段2
+                currentStage = 2;
+                stageProgress = 100; // 从100开始阶段2
+                updateStageIndicator();
+                updateStageInfo();
+                
+                // 更新能量计数
+                energyCounts.nadh += 2; // 丙酮酸氧化产生2NADH
+                updateEnergyCounts();
+            } else if (stageProgress > 200 && currentStage === 2) {
+                // 阶段2完成，转到阶段3
+                currentStage = 3;
+                stageProgress = 200; // 从200开始阶段3
+                updateStageIndicator();
+                updateStageInfo();
+                
+                // 更新能量计数
+                energyCounts.fadh2 = 2; // 电子传递链使用FADH2
+                updateEnergyCounts();
+            } else if (stageProgress > 300 && currentStage === 3) {
+                // 阶段3完成，停止动画
+                stageProgress = 300;
+                pauseAnimation();
+                
+                // 最终能量计算
+                energyCounts.totalAtp = 36;
+                updateEnergyCounts();
+            }
+            
+            // 更新能量计数（动态变化）
+            if (currentStage === 3 && stageProgress > 200) {
+                const etcProgress = (stageProgress - 200) / 100;
+                energyCounts.totalAtp = 2 + Math.floor(etcProgress * 34);
+                updateEnergyCounts();
+            }
+            
+            // 重绘画布
+            draw();
+            
+            // 继续动画循环
+            animationId = requestAnimationFrame(animate);
+        }
+        
+        // 更新阶段指示器
+        function updateStageIndicator() {
+            document.querySelectorAll('.stage').forEach(stage => {
+                stage.classList.remove('active');
+            });
+            document.querySelector(`.stage-${currentStage}`).classList.add('active');
+        }
+        
+        // 更新阶段信息
+        function updateStageInfo() {
+            const infoContent = document.getElementById('stageInfo');
+            
+            const stageInfo = [
+                '',
+                `<h3>1. 糖酵解 (细胞质基质)</h3>
+                <p><strong>输入:</strong> 1葡萄糖 (6C) + 2ATP + 2NAD⁺</p>
+                <p><strong>输出:</strong> 2丙酮酸 (3C) + 4ATP (净2) + 2NADH</p>
+                <p><strong>关键步骤:</strong> 葡萄糖分解为两分子丙酮酸，产生少量ATP和NADH。</p>`,
+                
+                `<h3>2. 丙酮酸氧化 (线粒体基质)</h3>
+                <p><strong>输入:</strong> 2丙酮酸 + 2NAD⁺ + 2辅酶A</p>
+                <p><strong>输出:</strong> 2乙酰辅酶A + 2CO₂ + 2NADH</p>
+                <p><strong>关键步骤:</strong> 丙酮酸进入线粒体，脱羧形成乙酰辅酶A，释放CO₂并产生NADH。</p>`,
+                
+                `<h3>3. 电子传递链与氧化磷酸化 (线粒体内膜)</h3>
+                <p><strong>输入:</strong> 10NADH + 2FADH₂ + 6O₂ + 约34ADP + Pi</p>
+                <p><strong>输出:</strong> 10NAD⁺ + 2FAD + 6H₂O + 约34ATP</p>
+                <p><strong>关键步骤:</strong> 电子通过蛋白复合物传递，驱动H⁺泵出形成梯度，H⁺通过ATP合酶回流驱动ATP合成。</p>
+                <p><strong>化学渗透学说:</strong> 质子梯度储存的能量用于合成ATP。</p>`
+            ];
+            
+            infoContent.innerHTML = stageInfo[currentStage] + `
+                <div class="molecule-key">
+                    <div class="key-item">
+                        <div class="key-color" style="background-color: #4a90e2;"></div>
+                        <span>葡萄糖/碳骨架</span>
+                    </div>
+                    <div class="key-item">
+                        <div class="key-color" style="background-color: #f1c40f;"></div>
+                        <span>ATP</span>
+                    </div>
+                    <div class="key-item">
+                        <div class="key-color" style="background-color: #e67e22;"></div>
+                        <span>NADH</span>
+                    </div>
+                    ${currentStage >= 3 ? `
+                    <div class="key-item">
+                        <div class="key-color" style="background-color: #2ecc71;"></div>
+                        <span>FADH₂</span>
+                    </div>
+                    <div class="key-item">
+                        <div class="key-color" style="background-color: #e74c3c;"></div>
+                        <span>H⁺质子</span>
+                    </div>
+                    ` : ''}
+                </div>`;
+        }
+        
+        // 更新能量计数显示
+        function updateEnergyCounts() {
+            document.getElementById('atpCount').textContent = energyCounts.atp;
+            document.getElementById('nadhCount').textContent = energyCounts.nadh;
+            document.getElementById('fadh2Count').textContent = energyCounts.fadh2;
+            document.getElementById('totalAtpCount').textContent = energyCounts.totalAtp;
+        }
+        
+        // 播放/暂停动画
+        function toggleAnimation() {
+            if (isPlaying) {
+                pauseAnimation();
+            } else {
+                playAnimation();
+            }
+        }
+        
+        function playAnimation() {
+            isPlaying = true;
+            document.getElementById('playIcon').textContent = '⏸';
+            document.getElementById('playText').textContent = '暂停';
+            animate();
+        }
+        
+        function pauseAnimation() {
+            isPlaying = false;
+            document.getElementById('playIcon').textContent = '▶';
+            document.getElementById('playText').textContent = '播放';
+            
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+        }
+        
+        // 重置动画
+        function resetAnimation() {
+            pauseAnimation();
+            currentStage = 1;
+            stageProgress = 0;
+            
+            // 重置能量计数
+            energyCounts = {
+                atp: 2,
+                nadh: 2,
+                fadh2: 0,
+                totalAtp: 2
+            };
+            
+            updateStageIndicator();
+            updateStageInfo();
+            updateEnergyCounts();
+            draw();
+        }
+        
+        // 下一步
+        function nextStep() {
+            pauseAnimation();
+            
+            if (currentStage === 1 && stageProgress < 100) {
+                stageProgress = Math.min(100, stageProgress + 20);
+                
+                // 更新能量计数
+                if (stageProgress >= 70 && energyCounts.nadh < 2) {
+                    energyCounts.nadh = 2;
+                }
+            } else if (currentStage === 2 && stageProgress < 200) {
+                stageProgress = Math.min(200, stageProgress + 20);
+                
+                // 更新能量计数
+                if (stageProgress >= 170 && energyCounts.nadh < 4) {
+                    energyCounts.nadh = 4;
+                }
+            } else if (currentStage === 3 && stageProgress < 300) {
+                stageProgress = Math.min(300, stageProgress + 20);
+                
+                // 更新能量计数
+                if (stageProgress >= 210) {
+                    energyCounts.fadh2 = 2;
+                    const etcProgress = (stageProgress - 200) / 100;
+                    energyCounts.totalAtp = 2 + Math.floor(etcProgress * 34);
+                }
+            } else if (currentStage < 3) {
+                // 转到下一阶段
+                currentStage++;
+                stageProgress = (currentStage - 1) * 100;
+                updateStageIndicator();
+                updateStageInfo();
+                
+                // 更新能量计数
+                if (currentStage === 2) {
+                    energyCounts.nadh = 4;
+                } else if (currentStage === 3) {
+                    energyCounts.fadh2 = 2;
+                }
+            }
+            
+            updateEnergyCounts();
+            draw();
+        }
+        
+        // 上一步
+        function prevStep() {
+            pauseAnimation();
+            
+            if (currentStage === 1 && stageProgress > 0) {
+                stageProgress = Math.max(0, stageProgress - 20);
+                
+                // 更新能量计数
+                if (stageProgress < 70) {
+                    energyCounts.nadh = 0;
+                }
+            } else if (currentStage === 2 && stageProgress > 100) {
+                stageProgress = Math.max(100, stageProgress - 20);
+                
+                // 更新能量计数
+                if (stageProgress < 170) {
+                    energyCounts.nadh = 2;
+                }
+            } else if (currentStage === 3 && stageProgress > 200) {
+                stageProgress = Math.max(200, stageProgress - 20);
+                
+                // 更新能量计数
+                const etcProgress = (stageProgress - 200) / 100;
+                energyCounts.totalAtp = 2 + Math.floor(etcProgress * 34);
+            } else if (currentStage > 1) {
+                // 转到上一阶段
+                currentStage--;
+                stageProgress = (currentStage - 1) * 100;
+                updateStageIndicator();
+                updateStageInfo();
+                
+                // 更新能量计数
+                if (currentStage === 1) {
+                    energyCounts.nadh = 2;
+                    energyCounts.fadh2 = 0;
+                    energyCounts.totalAtp = 2;
+                } else if (currentStage === 2) {
+                    energyCounts.fadh2 = 0;
+                    energyCounts.totalAtp = 2;
+                }
+            }
+            
+            updateEnergyCounts();
+            draw();
+        }
+        
+        // 跳转到阶段
+        function goToStage(stage) {
+            pauseAnimation();
+            currentStage = stage;
+            stageProgress = (stage - 1) * 100;
+            
+            // 更新能量计数
+            if (stage === 1) {
+                energyCounts = { atp: 2, nadh: 2, fadh2: 0, totalAtp: 2 };
+            } else if (stage === 2) {
+                energyCounts = { atp: 2, nadh: 4, fadh2: 0, totalAtp: 2 };
+            } else if (stage === 3) {
+                energyCounts = { atp: 2, nadh: 10, fadh2: 2, totalAtp: 2 };
+            }
+            
+            updateStageIndicator();
+            updateStageInfo();
+            updateEnergyCounts();
+            draw();
+        }
+        
+        // 切换测验面板
+        function toggleQuiz() {
+            const quizPanel = document.getElementById('quizPanel');
+            const isQuizVisible = quizPanel.style.display === 'block';
+            
+            if (isQuizVisible) {
+                quizPanel.style.display = 'none';
+                document.getElementById('quizBtn').textContent = '测验';
+            } else {
+                quizPanel.style.display = 'block';
+                document.getElementById('quizBtn').textContent = '返回动画';
+                
+                // 重置测验状态
+                document.querySelectorAll('.quiz-option').forEach(option => {
+                    option.classList.remove('selected', 'correct', 'incorrect');
+                });
+                document.getElementById('quizFeedback').style.display = 'none';
+            }
+        }
+        
+        // 处理测验
+        function handleQuiz() {
+            const selectedOption = document.querySelector('.quiz-option.selected');
+            if (!selectedOption) {
+                alert('请先选择一个答案！');
+                return;
+            }
+            
+            const isCorrect = selectedOption.dataset.answer === 'A';
+            const feedback = document.getElementById('quizFeedback');
+            
+            if (isCorrect) {
+                selectedOption.classList.add('correct');
+                feedback.className = 'quiz-feedback feedback-correct';
+                document.getElementById('feedbackTitle').textContent = '正确！';
+                document.getElementById('feedbackText').textContent = '有氧呼吸的正确顺序是糖酵解（细胞质）、丙酮酸氧化（线粒体基质）、电子传递链（线粒体内膜）。';
+            } else {
+                selectedOption.classList.add('incorrect');
+                feedback.className = 'quiz-feedback feedback-incorrect';
+                document.getElementById('feedbackTitle').textContent = '不正确';
+                document.getElementById('feedbackText').textContent = '正确答案是A：糖酵解 → 丙酮酸氧化 → 电子传递链。糖酵解在细胞质中进行，丙酮酸氧化在线粒体基质，电子传递链在线粒体内膜。';
+            }
+            
+            feedback.style.display = 'block';
+        }
+        
+        // 初始化事件监听
+        function initEventListeners() {
+            // 控制按钮
+            document.getElementById('playPauseBtn').addEventListener('click', toggleAnimation);
+            document.getElementById('resetBtn').addEventListener('click', resetAnimation);
+            document.getElementById('prevBtn').addEventListener('click', prevStep);
+            document.getElementById('nextBtn').addEventListener('click', nextStep);
+            document.getElementById('quizBtn').addEventListener('click', toggleQuiz);
+            document.getElementById('submitQuizBtn').addEventListener('click', handleQuiz);
+            
+            // 阶段跳转
+            document.querySelectorAll('.stage').forEach(stage => {
+                stage.addEventListener('click', () => {
+                    const stageNum = parseInt(stage.dataset.stage);
+                    goToStage(stageNum);
+                });
+            });
+            
+            // 测验选项
+            document.querySelectorAll('.quiz-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    // 移除其他选项的选中状态
+                    document.querySelectorAll('.quiz-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    
+                    // 选中当前选项
+                    option.classList.add('selected');
+                });
+            });
+            
+            // 窗口大小调整
+            window.addEventListener('resize', initCanvas);
+            
+            // Canvas点击交互
+            canvas.addEventListener('click', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                // 检查是否点击了分子
+                for (const [key, molecule] of Object.entries(molecules)) {
+                    const distance = Math.sqrt((x - molecule.x) ** 2 + (y - molecule.y) ** 2);
+                    if (distance < molecule.radius + 10) {
+                        alert(`您点击了: ${molecule.name}\n\n${getMoleculeInfo(key)}`);
+                        return;
+                    }
+                }
+                
+                // 检查是否点击了线粒体区域
+                if (x > 400 && x < 800 && y > 150 && y < 350) {
+                    alert('线粒体 - 细胞的"动力工厂"\n\n外膜: 通透性较高\n内膜: 折叠形成嵴，含有电子传递链蛋白\n基质: 含有三羧酸循环酶系');
+                }
+            });
+            
+            // Canvas悬停效果
+            canvas.addEventListener('mousemove', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                let hovered = false;
+                
+                // 检查是否悬停在分子上
+                for (const molecule of Object.values(molecules)) {
+                    const distance = Math.sqrt((x - molecule.x) ** 2 + (y - molecule.y) ** 2);
+                    if (distance < molecule.radius + 5) {
+                        canvas.style.cursor = 'pointer';
+                        hovered = true;
+                        break;
+                    }
+                }
+                
+                if (!hovered) {
+                    canvas.style.cursor = 'default';
+                }
+            });
+        }
+        
+        // 获取分子信息
+        function getMoleculeInfo(key) {
+            const info = {
+                glucose: '葡萄糖 (C₆H₁₂O₆): 细胞的主要能源物质，通过糖酵解分解。',
+                pyruvate: '丙酮酸 (C₃H₄O₃): 糖酵解的终产物，进入线粒体进一步氧化。',
+                acetylCoA: '乙酰辅酶A: 丙酮酸氧化的产物，进入三羧酸循环。',
+                atp: 'ATP (三磷酸腺苷): 细胞的能量货币，水解时释放能量。',
+                nadh: 'NADH: 还原型辅酶Ⅰ，携带高能电子，用于电子传递链。',
+                fadh2: 'FADH₂: 还原型黄素腺嘌呤二核苷酸，携带高能电子。',
+                co2: '二氧化碳 (CO₂): 呼吸作用的废物，通过肺部排出。',
+                o2: '氧气 (O₂): 最终电子受体，与H⁺结合生成水。',
+                hPlus: '氢离子 (H⁺): 电子传递链中泵出形成质子梯度。'
+            };
+            
+            return info[key] || '该分子的详细信息。';
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('load', () => {
+            initCanvas();
+            initEventListeners();
+            updateStageInfo();
+            updateEnergyCounts();
+            
+            // 初始绘制
+            draw();
+        });
+    </script>
+</body>
+</html>

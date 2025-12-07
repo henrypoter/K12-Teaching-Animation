@@ -1,0 +1,1586 @@
+# 需求：胚胎发育的原肠胚形成与三胚层分化（海胆、蛙、鸡胚同步对比）
+
+### 1. 专业思考
+
+### 1. 专业思考
+
+#### 用户需求分析
+本动画的目标用户主要为高校生物学、医学或发育生物学专业的学生，以及相关领域的教师和爱好者。用户的核心需求是：
+1.  **理解复杂过程**：将抽象的“原肠胚形成”与“三胚层分化”这一动态、复杂的胚胎发育过程具象化、可视化。
+2.  **建立比较认知**：理解海胆（等黄卵）、蛙（中等端黄卵）和鸡胚（端黄卵）这三种经典模式生物在原肠胚形成方式上的异同，这是发育生物学教学中的重点和难点。
+3.  **掌握空间结构**：理解从二维细胞层到三维胚体结构的转变，以及外胚层、中胚层、内胚层的空间位置关系。
+4.  **自主探索学习**：能够控制动画进度，反复观察关键步骤，并获取清晰的文字解释，以适应不同学习节奏。
+
+#### 教学设计思路
+1.  **核心概念聚焦**：
+    *   **原肠胚形成**：细胞大规模、有方向地迁移，形成具有原始肠管（原肠）和胚孔（或原条）的双层或三层结构。
+    *   **三胚层分化**：外胚层（表皮、神经系统）、中胚层（肌肉、骨骼、循环系统）、内胚层（消化道上皮、呼吸道上皮）的命运决定。
+    *   **关键对比点**：针对三种生物，重点对比其原肠胚形成的**起始位置**（植物极、胚孔背唇、原条前端）、**细胞运动方式**（内陷、外包、内卷、分层）以及**最终三胚层结构的形态**。
+
+2.  **认知规律遵循**：
+    *   **从整体到局部，从同步到分步**：先展示三个胚胎并排发育的宏观动画，建立同步性印象。然后允许用户选择单个胚胎，进入分步详细观察模式。
+    *   **从结构到功能**：先清晰展示三胚层的形成和空间位置，再通过提示或交互，揭示各胚层将来分化的主要组织和器官。
+    *   **类比与对比**：通过并排的视觉呈现和同步的时间轴，强化对比认知。使用相同的颜色编码（如外胚层-蓝色，中胚层-红色，内胚层-黄色）来统一表示三胚层，降低认知负荷。
+
+3.  **交互设计策略**：
+    *   **双视图模式**：
+        *   **对比视图**：三个胚胎并排，同步播放发育过程，侧重宏观对比。
+        *   **详解视图**：聚焦单个胚胎，提供分步控制、高亮显示细胞运动路径、显示3D剖视图，侧重微观理解。
+    *   **分层信息呈现**：默认显示核心动画和基础标签。用户点击或悬停时，才出现更详细的科学术语解释、细胞运动方式名称（如“内陷”）和未来分化命运。
+    *   **可控的时间线**：提供播放/暂停、步进（前进/后退）、跳转到关键阶段（如“囊胚期”、“原肠胚早期”、“神经胚期”）的控件。
+
+4.  **视觉呈现方案**：
+    *   **风格**：采用简洁、扁平的科学插图风格，线条清晰，色块明确，避免不必要的装饰，确保科学准确性优先。
+    *   **动态表现**：
+        *   使用平滑的形变和颜色过渡表示细胞层的变化。
+        *   用流动的粒子或箭头动画示意细胞群的迁移方向（如内陷、内卷）。
+        *   对于鸡胚的“原条”形成，采用从后向前的延伸动画。
+        *   提供3D旋转或剖面切换功能（尤其在详解视图），帮助理解立体结构。
+    *   **标注**：使用清晰的引线和非遮挡式标签，关键结构（胚孔、原条、原肠、各胚层）始终有标注。
+
+#### 配色方案选择
+选择一套清晰、区分度高且符合生物学图示惯例的配色：
+*   **背景**：浅灰色（#f5f5f5）或极浅的米色（#faf8f2），确保主体突出且不刺眼。
+*   **胚胎整体/非细胞部分**：
+    *   海胆/蛙卵黄：淡黄色（#fff9c4）。
+    *   胶膜等：半透明浅灰色。
+*   **三胚层通用色**（核心配色，贯穿三个胚胎）：
+    *   **外胚层**：冷静的蓝色系（如 #42a5f5 / #90caf9），代表体表与神经。
+    *   **中胚层**：温暖的红色系（如 #ef5350 / #f48fb1），代表肌肉与血液。
+    *   **内胚层**：明亮的黄色系（如 #ffca28 / #fff176），代表消化与呼吸上皮。
+*   **高亮与指示**：
+    *   细胞运动路径/箭头：深灰色（#424242）或与运动细胞层同色系但更深的颜色。
+    *   悬停/点击高亮：半透明白色光晕或加深边框。
+    *   重要结构标注线：黑色（#212121）。
+*   **UI控件**：中性蓝色（#5c6bc0），与主色调协调。
+
+#### 交互功能列表
+1.  **视图切换器**：按钮在“三胚胎对比视图”和“单胚胎详解视图”之间切换。
+2.  **胚胎选择器**（在对比视图和进入详解视图前）：点击海胆、蛙或鸡胚的图标或名称，可选中并高亮对应胚胎。
+3.  **主时间轴控制器**：
+    *   播放/暂停按钮。
+    *   前进/后退单步按钮。
+    *   进度条（可拖动）。
+    *   关键阶段快速跳转按钮（如“开始”、“囊胚期”、“原肠胚初期”、“原肠胚中期”、“原肠胚末期”、“三胚层期”）。
+4.  **动画显示控制**（尤其在详解视图）：
+    *   “显示/隐藏细胞运动箭头”复选框。
+    *   “显示/隐藏三胚层未来命运”复选框（点击后，各胚层区域会出现简化的器官图标，如大脑、心脏、肠管）。
+    *   “3D旋转/剖面”切换按钮（针对鸡胚等立体结构明显的胚胎）。
+5.  **悬停交互**：
+    *   悬停在胚胎区域：显示该部分的名称（如“蛙胚-胚孔背唇”）。
+    *   悬停在特定胚层：该胚层轻微高亮，并显示其名称（外/中/内胚层）。
+6.  **点击交互**：
+    *   点击关键结构（如原条、胚孔）：该结构持续高亮，并在侧边栏或弹出卡片中显示更详细的文字说明。
+    *   点击“详解”按钮：从对比视图进入当前选中胚胎的详解视图。
+7.  **图例/说明面板**：一个始终可见或可展开/收起的侧边栏，显示三胚层的颜色图例、当前阶段名称和简要描述。
+
+### 2. HTML_CODE
+
+### 2. HTML_CODE
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>胚胎发育：原肠胚形成与三胚层分化对比</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #faf8f2;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
+        
+        .subtitle {
+            color: #5c6bc0;
+            font-size: 1.1rem;
+            font-weight: normal;
+        }
+        
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .view-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .view-btn {
+            padding: 10px 20px;
+            background-color: #5c6bc0;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        
+        .view-btn:hover {
+            background-color: #3f51b5;
+        }
+        
+        .view-btn.active {
+            background-color: #303f9f;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .embryo-selector {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .embryo-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .embryo-option:hover {
+            background-color: rgba(92, 107, 192, 0.1);
+        }
+        
+        .embryo-option.selected {
+            background-color: rgba(92, 107, 192, 0.2);
+            border: 2px solid #5c6bc0;
+        }
+        
+        .embryo-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+        
+        #sea-urchin-icon {
+            background-color: #4db6ac;
+        }
+        
+        #frog-icon {
+            background-color: #81c784;
+        }
+        
+        #chick-icon {
+            background-color: #ffb74d;
+        }
+        
+        .animation-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .comparison-view {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .detail-view {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .embryo-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 350px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .embryo-title {
+            font-size: 1.3rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .canvas-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin-bottom: 15px;
+        }
+        
+        canvas {
+            background-color: white;
+            border-radius: 5px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .embryo-description {
+            font-size: 0.9rem;
+            color: #555;
+            text-align: center;
+            margin-top: 10px;
+            min-height: 60px;
+        }
+        
+        .detail-canvas-container {
+            width: 100%;
+            max-width: 500px;
+            height: 500px;
+            margin-bottom: 20px;
+        }
+        
+        #detail-canvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .controls {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 800px;
+        }
+        
+        .time-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .control-btn {
+            padding: 8px 15px;
+            background-color: #5c6bc0;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s;
+        }
+        
+        .control-btn:hover {
+            background-color: #3f51b5;
+        }
+        
+        .control-btn:disabled {
+            background-color: #b0bec5;
+            cursor: not-allowed;
+        }
+        
+        .stage-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        
+        .stage-btn {
+            padding: 6px 12px;
+            background-color: #e0e0e0;
+            color: #555;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s;
+        }
+        
+        .stage-btn:hover {
+            background-color: #d5d5d5;
+        }
+        
+        .stage-btn.active {
+            background-color: #5c6bc0;
+            color: white;
+        }
+        
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        #timeline-slider {
+            flex-grow: 1;
+            height: 8px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #e0e0e0;
+            border-radius: 4px;
+            outline: none;
+        }
+        
+        #timeline-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #5c6bc0;
+            cursor: pointer;
+        }
+        
+        #timeline-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #5c6bc0;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .display-controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .checkbox-container input {
+            width: 18px;
+            height: 18px;
+        }
+        
+        .legend-panel {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 800px;
+            margin-top: 10px;
+        }
+        
+        .legend-title {
+            font-size: 1.1rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .toggle-legend {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #5c6bc0;
+        }
+        
+        .legend-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .germ-layer-legend {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .color-box {
+            width: 25px;
+            height: 25px;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+        
+        .ectoderm-color {
+            background-color: #42a5f5;
+        }
+        
+        .mesoderm-color {
+            background-color: #ef5350;
+        }
+        
+        .endoderm-color {
+            background-color: #ffca28;
+        }
+        
+        .current-stage-info {
+            background-color: #e8f5e9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .info-title {
+            font-weight: bold;
+            color: #2e7d32;
+            margin-bottom: 5px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 1100px) {
+            .comparison-view {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .embryo-card {
+                max-width: 500px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .view-controls, .embryo-selector, .time-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .canvas-container {
+                width: 250px;
+                height: 250px;
+            }
+            
+            .detail-canvas-container {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>胚胎发育：原肠胚形成与三胚层分化</h1>
+        <p class="subtitle">海胆、蛙、鸡胚同步对比教学动画</p>
+    </header>
+    
+    <main class="main-container">
+        <div class="view-controls">
+            <button id="comparison-view-btn" class="view-btn active">对比视图</button>
+            <button id="detail-view-btn" class="view-btn">详解视图</button>
+        </div>
+        
+        <div class="embryo-selector">
+            <div id="sea-urchin-option" class="embryo-option selected" data-embryo="seaUrchin">
+                <div class="embryo-icon" id="sea-urchin-icon">海胆</div>
+                <span>海胆（等黄卵）</span>
+            </div>
+            <div id="frog-option" class="embryo-option" data-embryo="frog">
+                <div class="embryo-icon" id="frog-icon">蛙</div>
+                <span>蛙（中等端黄卵）</span>
+            </div>
+            <div id="chick-option" class="embryo-option" data-embryo="chick">
+                <div class="embryo-icon" id="chick-icon">鸡胚</div>
+                <span>鸡胚（端黄卵）</span>
+            </div>
+        </div>
+        
+        <div class="animation-container">
+            <!-- 对比视图 -->
+            <div id="comparison-view" class="comparison-view">
+                <div class="embryo-card">
+                    <h3 class="embryo-title">海胆胚胎</h3>
+                    <div class="canvas-container">
+                        <canvas id="sea-urchin-canvas" width="300" height="300"></canvas>
+                    </div>
+                    <p id="sea-urchin-desc" class="embryo-description">囊胚期：单层细胞组成的空心球</p>
+                </div>
+                
+                <div class="embryo-card">
+                    <h3 class="embryo-title">蛙胚胎</h3>
+                    <div class="canvas-container">
+                        <canvas id="frog-canvas" width="300" height="300"></canvas>
+                    </div>
+                    <p id="frog-desc" class="embryo-description">囊胚期：动物极细胞小，植物极细胞大</p>
+                </div>
+                
+                <div class="embryo-card">
+                    <h3 class="embryo-title">鸡胚胎</h3>
+                    <div class="canvas-container">
+                        <canvas id="chick-canvas" width="300" height="300"></canvas>
+                    </div>
+                    <p id="chick-desc" class="embryo-description">胚盘期：细胞层位于大量卵黄之上</p>
+                </div>
+            </div>
+            
+            <!-- 详解视图 -->
+            <div id="detail-view" class="detail-view hidden">
+                <div class="detail-canvas-container">
+                    <canvas id="detail-canvas" width="500" height="500"></canvas>
+                </div>
+            </div>
+            
+            <!-- 控制面板 -->
+            <div class="controls">
+                <div class="time-controls">
+                    <button id="play-pause-btn" class="control-btn">播放</button>
+                    <button id="prev-btn" class="control-btn">上一步</button>
+                    <button id="next-btn" class="control-btn">下一步</button>
+                    <button id="reset-btn" class="control-btn">重置</button>
+                    <span id="stage-label">阶段: 囊胚期</span>
+                    <span id="time-label">时间: 0%</span>
+                </div>
+                
+                <div class="slider-container">
+                    <span>发育进度:</span>
+                    <input type="range" id="timeline-slider" min="0" max="100" value="0">
+                    <span id="slider-value">0%</span>
+                </div>
+                
+                <div class="stage-buttons">
+                    <button class="stage-btn active" data-stage="0">囊胚期</button>
+                    <button class="stage-btn" data-stage="20">原肠胚初期</button>
+                    <button class="stage-btn" data-stage="40">原肠胚中期</button>
+                    <button class="stage-btn" data-stage="60">原肠胚末期</button>
+                    <button class="stage-btn" data-stage="80">三胚层形成</button>
+                    <button class="stage-btn" data-stage="100">三胚层分化</button>
+                </div>
+                
+                <div class="display-controls">
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="show-arrows" checked>
+                        <label for="show-arrows">显示细胞运动箭头</label>
+                    </div>
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="show-fate">
+                        <label for="show-fate">显示三胚层未来命运</label>
+                    </div>
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="show-3d">
+                        <label for="show-3d">显示3D剖面（鸡胚）</label>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 图例与说明面板 -->
+            <div class="legend-panel">
+                <div class="legend-title">
+                    <span>图例与说明</span>
+                    <button id="toggle-legend" class="toggle-legend">−</button>
+                </div>
+                
+                <div id="legend-content" class="legend-content">
+                    <div>
+                        <h4>三胚层颜色编码</h4>
+                        <div class="germ-layer-legend">
+                            <div class="color-box ectoderm-color"></div>
+                            <div>
+                                <strong>外胚层</strong>: 将发育为表皮、神经系统等
+                            </div>
+                        </div>
+                        <div class="germ-layer-legend">
+                            <div class="color-box mesoderm-color"></div>
+                            <div>
+                                <strong>中胚层</strong>: 将发育为肌肉、骨骼、循环系统等
+                            </div>
+                        </div>
+                        <div class="germ-layer-legend">
+                            <div class="color-box endoderm-color"></div>
+                            <div>
+                                <strong>内胚层</strong>: 将发育为消化道上皮、呼吸道上皮等
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="current-details">
+                        <h4>当前阶段说明</h4>
+                        <div class="current-stage-info">
+                            <div class="info-title">囊胚期</div>
+                            <p>胚胎发育的早期阶段，细胞经过多次分裂形成空心球状结构（海胆）或具有囊胚腔的细胞团（蛙、鸡）。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>教学动画设计：胚胎发育的原肠胚形成与三胚层分化对比 | 仅供教学使用</p>
+    </footer>
+
+    <script>
+        // 全局变量
+        let currentView = 'comparison'; // 'comparison' 或 'detail'
+        let selectedEmbryo = 'seaUrchin'; // 'seaUrchin', 'frog', 'chick'
+        let isPlaying = false;
+        let animationTime = 0; // 0-100
+        let animationId = null;
+        let lastTimestamp = 0;
+        const animationSpeed = 0.05; // 每毫秒增加的百分比
+        
+        // 胚胎数据
+        const embryos = {
+            seaUrchin: {
+                name: '海胆',
+                type: '等黄卵',
+                stages: [
+                    {time: 0, name: '囊胚期', desc: '单层细胞组成的空心球状囊胚'},
+                    {time: 20, name: '原肠胚初期', desc: '植物极细胞开始内陷，形成原肠雏形'},
+                    {time: 40, name: '原肠胚中期', desc: '内陷加深，原肠形成，出现初级中胚层细胞'},
+                    {time: 60, name: '原肠胚末期', desc: '原肠完全形成，三胚层结构初步建立'},
+                    {time: 80, name: '三胚层形成', desc: '外、中、内胚层清晰可分'},
+                    {time: 100, name: '三胚层分化', desc: '各胚层开始分化，形成器官原基'}
+                ]
+            },
+            frog: {
+                name: '蛙',
+                type: '中等端黄卵',
+                stages: [
+                    {time: 0, name: '囊胚期', desc: '动物极细胞小，植物极细胞大，囊胚腔偏动物极'},
+                    {time: 20, name: '原肠胚初期', desc: '胚孔形成，背唇处细胞开始内卷'},
+                    {time: 40, name: '原肠胚中期', desc: '外包、内卷和内陷同时进行，原肠形成'},
+                    {time: 60, name: '原肠胚末期', desc: '胚孔缩小，三胚层结构建立'},
+                    {time: 80, name: '三胚层形成', desc: '外、中、内胚层清晰可分，原肠完全形成'},
+                    {time: 100, name: '三胚层分化', desc: '各胚层开始分化，神经板形成'}
+                ]
+            },
+            chick: {
+                name: '鸡胚',
+                type: '端黄卵',
+                stages: [
+                    {time: 0, name: '胚盘期', desc: '细胞层位于大量卵黄之上，形成胚盘'},
+                    {time: 20, name: '原条形成期', desc: '原条从后向前延伸，原沟形成'},
+                    {time: 40, name: '原肠胚中期', desc: '细胞通过原沟内卷，形成中胚层和内胚层'},
+                    {time: 60, name: '原肠胚末期', desc: '原条退化，三胚层结构建立'},
+                    {time: 80, name: '三胚层形成', desc: '外、中、内胚层清晰可分，体节开始形成'},
+                    {time: 100, name: '三胚层分化', desc: '各胚层开始分化，神经管形成'}
+                ]
+            }
+        };
+        
+        // 颜色定义
+        const colors = {
+            background: '#faf8f2',
+            ectoderm: '#42a5f5',
+            mesoderm: '#ef5350',
+            endoderm: '#ffca28',
+            yolk: '#fff9c4',
+            arrow: '#424242',
+            text: '#212121'
+        };
+        
+        // DOM 元素
+        const comparisonViewBtn = document.getElementById('comparison-view-btn');
+        const detailViewBtn = document.getElementById('detail-view-btn');
+        const comparisonView = document.getElementById('comparison-view');
+        const detailView = document.getElementById('detail-view');
+        const embryoOptions = document.querySelectorAll('.embryo-option');
+        const playPauseBtn = document.getElementById('play-pause-btn');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const timelineSlider = document.getElementById('timeline-slider');
+        const sliderValue = document.getElementById('slider-value');
+        const stageLabel = document.getElementById('stage-label');
+        const timeLabel = document.getElementById('time-label');
+        const stageButtons = document.querySelectorAll('.stage-btn');
+        const showArrowsCheckbox = document.getElementById('show-arrows');
+        const showFateCheckbox = document.getElementById('show-fate');
+        const show3dCheckbox = document.getElementById('show-3d');
+        const toggleLegendBtn = document.getElementById('toggle-legend');
+        const legendContent = document.getElementById('legend-content');
+        const currentDetails = document.getElementById('current-details');
+        
+        // Canvas 元素
+        const seaUrchinCanvas = document.getElementById('sea-urchin-canvas');
+        const frogCanvas = document.getElementById('frog-canvas');
+        const chickCanvas = document.getElementById('chick-canvas');
+        const detailCanvas = document.getElementById('detail-canvas');
+        
+        // Canvas 上下文
+        const seaUrchinCtx = seaUrchinCanvas.getContext('2d');
+        const frogCtx = frogCanvas.getContext('2d');
+        const chickCtx = chickCanvas.getContext('2d');
+        const detailCtx = detailCanvas.getContext('2d');
+        
+        // 视图切换
+        comparisonViewBtn.addEventListener('click', () => {
+            switchView('comparison');
+        });
+        
+        detailViewBtn.addEventListener('click', () => {
+            switchView('detail');
+        });
+        
+        function switchView(view) {
+            currentView = view;
+            
+            if (view === 'comparison') {
+                comparisonView.classList.remove('hidden');
+                detailView.classList.add('hidden');
+                comparisonViewBtn.classList.add('active');
+                detailViewBtn.classList.remove('active');
+            } else {
+                comparisonView.classList.add('hidden');
+                detailView.classList.remove('hidden');
+                comparisonViewBtn.classList.remove('active');
+                detailViewBtn.classList.add('active');
+            }
+            
+            updateAllCanvases();
+        }
+        
+        // 胚胎选择
+        embryoOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                const embryo = option.getAttribute('data-embryo');
+                selectEmbryo(embryo);
+            });
+        });
+        
+        function selectEmbryo(embryo) {
+            selectedEmbryo = embryo;
+            
+            // 更新UI选择状态
+            embryoOptions.forEach(option => {
+                if (option.getAttribute('data-embryo') === embryo) {
+                    option.classList.add('selected');
+                } else {
+                    option.classList.remove('selected');
+                }
+            });
+            
+            // 更新3D复选框状态（仅鸡胚可用）
+            if (embryo === 'chick') {
+                show3dCheckbox.disabled = false;
+            } else {
+                show3dCheckbox.disabled = true;
+                show3dCheckbox.checked = false;
+            }
+            
+            updateAllCanvases();
+        }
+        
+        // 动画控制
+        playPauseBtn.addEventListener('click', togglePlayPause);
+        prevBtn.addEventListener('click', prevStep);
+        nextBtn.addEventListener('click', nextStep);
+        resetBtn.addEventListener('click', resetAnimation);
+        
+        function togglePlayPause() {
+            if (isPlaying) {
+                pauseAnimation();
+            } else {
+                playAnimation();
+            }
+        }
+        
+        function playAnimation() {
+            if (!isPlaying) {
+                isPlaying = true;
+                playPauseBtn.textContent = '暂停';
+                lastTimestamp = performance.now();
+                animationId = requestAnimationFrame(animate);
+            }
+        }
+        
+        function pauseAnimation() {
+            if (isPlaying) {
+                isPlaying = false;
+                playPauseBtn.textContent = '播放';
+                if (animationId) {
+                    cancelAnimationFrame(animationId);
+                    animationId = null;
+                }
+            }
+        }
+        
+        function animate(timestamp) {
+            if (!lastTimestamp) lastTimestamp = timestamp;
+            const elapsed = timestamp - lastTimestamp;
+            
+            // 更新时间
+            animationTime += elapsed * animationSpeed;
+            if (animationTime > 100) {
+                animationTime = 100;
+                pauseAnimation();
+            }
+            
+            // 更新UI
+            updateTimeUI();
+            updateAllCanvases();
+            
+            lastTimestamp = timestamp;
+            
+            if (isPlaying && animationTime < 100) {
+                animationId = requestAnimationFrame(animate);
+            } else if (animationTime >= 100) {
+                pauseAnimation();
+            }
+        }
+        
+        function prevStep() {
+            animationTime = Math.max(0, animationTime - 10);
+            updateTimeUI();
+            updateAllCanvases();
+        }
+        
+        function nextStep() {
+            animationTime = Math.min(100, animationTime + 10);
+            updateTimeUI();
+            updateAllCanvases();
+        }
+        
+        function resetAnimation() {
+            pauseAnimation();
+            animationTime = 0;
+            updateTimeUI();
+            updateAllCanvases();
+        }
+        
+        // 时间轴滑块
+        timelineSlider.addEventListener('input', () => {
+            animationTime = parseInt(timelineSlider.value);
+            updateTimeUI();
+            updateAllCanvases();
+        });
+        
+        // 阶段按钮
+        stageButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const stageTime = parseInt(button.getAttribute('data-stage'));
+                animationTime = stageTime;
+                updateTimeUI();
+                updateAllCanvases();
+                
+                // 更新按钮状态
+                stageButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+            });
+        });
+        
+        // 更新UI时间显示
+        function updateTimeUI() {
+            // 更新滑块和标签
+            timelineSlider.value = animationTime;
+            sliderValue.textContent = `${Math.round(animationTime)}%`;
+            timeLabel.textContent = `时间: ${Math.round(animationTime)}%`;
+            
+            // 更新阶段标签
+            const embryo = embryos[selectedEmbryo];
+            let currentStage = embryo.stages[0];
+            
+            for (let i = embryo.stages.length - 1; i >= 0; i--) {
+                if (animationTime >= embryo.stages[i].time) {
+                    currentStage = embryo.stages[i];
+                    break;
+                }
+            }
+            
+            stageLabel.textContent = `阶段: ${currentStage.name}`;
+            
+            // 更新阶段按钮状态
+            stageButtons.forEach(button => {
+                const stageTime = parseInt(button.getAttribute('data-stage'));
+                if (Math.abs(animationTime - stageTime) < 5) {
+                    button.classList.add('active');
+                } else {
+                    button.classList.remove('active');
+                }
+            });
+            
+            // 更新阶段说明
+            updateStageDescription();
+        }
+        
+        // 更新阶段说明
+        function updateStageDescription() {
+            const embryo = embryos[selectedEmbryo];
+            let currentStage = embryo.stages[0];
+            
+            for (let i = embryo.stages.length - 1; i >= 0; i--) {
+                if (animationTime >= embryo.stages[i].time) {
+                    currentStage = embryo.stages[i];
+                    break;
+                }
+            }
+            
+            const stageInfoHTML = `
+                <div class="info-title">${currentStage.name}</div>
+                <p>${currentStage.desc}</p>
+            `;
+            
+            currentDetails.querySelector('.current-stage-info').innerHTML = stageInfoHTML;
+            
+            // 更新对比视图中的描述
+            document.getElementById('sea-urchin-desc').textContent = getEmbryoDescription('seaUrchin');
+            document.getElementById('frog-desc').textContent = getEmbryoDescription('frog');
+            document.getElementById('chick-desc').textContent = getEmbryoDescription('chick');
+        }
+        
+        function getEmbryoDescription(embryoType) {
+            const embryo = embryos[embryoType];
+            let currentStage = embryo.stages[0];
+            
+            for (let i = embryo.stages.length - 1; i >= 0; i--) {
+                if (animationTime >= embryo.stages[i].time) {
+                    currentStage = embryo.stages[i];
+                    break;
+                }
+            }
+            
+            return currentStage.desc;
+        }
+        
+        // 图例切换
+        toggleLegendBtn.addEventListener('click', () => {
+            if (legendContent.classList.contains('hidden')) {
+                legendContent.classList.remove('hidden');
+                toggleLegendBtn.textContent = '−';
+            } else {
+                legendContent.classList.add('hidden');
+                toggleLegendBtn.textContent = '+';
+            }
+        });
+        
+        // 绘制函数
+        function updateAllCanvases() {
+            // 绘制对比视图
+            drawEmbryo(seaUrchinCtx, 'seaUrchin', 150, 150, 140);
+            drawEmbryo(frogCtx, 'frog', 150, 150, 140);
+            drawEmbryo(chickCtx, 'chick', 150, 150, 140);
+            
+            // 绘制详解视图
+            if (currentView === 'detail') {
+                drawDetailEmbryo();
+            }
+        }
+        
+        function drawEmbryo(ctx, embryoType, centerX, centerY, radius) {
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            
+            // 根据胚胎类型和时间绘制
+            const time = animationTime;
+            
+            if (embryoType === 'seaUrchin') {
+                drawSeaUrchin(ctx, centerX, centerY, radius, time);
+            } else if (embryoType === 'frog') {
+                drawFrog(ctx, centerX, centerY, radius, time);
+            } else if (embryoType === 'chick') {
+                drawChick(ctx, centerX, centerY, radius, time);
+            }
+        }
+        
+        function drawSeaUrchin(ctx, centerX, centerY, radius, time) {
+            // 绘制卵黄
+            ctx.fillStyle = colors.yolk;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 根据时间绘制不同阶段
+            if (time < 20) {
+                // 囊胚期：单层细胞球
+                ctx.strokeStyle = colors.ectoderm;
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius * 0.9, 0, Math.PI * 2);
+                ctx.stroke();
+                
+                // 添加标签
+                ctx.fillStyle = colors.text;
+                ctx.font = '14px Arial';
+                ctx.fillText('囊胚腔', centerX, centerY);
+            } else if (time < 40) {
+                // 原肠胚初期：开始内陷
+                const invagination = (time - 20) / 20 * 0.5;
+                
+                // 外胚层
+                ctx.strokeStyle = colors.ectoderm;
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius * 0.9, 0, Math.PI * 2);
+                ctx.stroke();
+                
+                // 内陷部分（内胚层）
+                ctx.fillStyle = colors.endoderm;
+                ctx.beginPath();
+                ctx.ellipse(centerX, centerY + radius * 0.4, radius * 0.3, radius * 0.6 * invagination, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 箭头
+                if (showArrowsCheckbox.checked) {
+                    drawArrow(ctx, centerX, centerY + radius * 0.2, centerX, centerY + radius * 0.6, colors.arrow);
+                }
+                
+                ctx.fillStyle = colors.text;
+                ctx.font = '14px Arial';
+                ctx.fillText('内陷', centerX, centerY - radius * 0.7);
+            } else if (time < 60) {
+                // 原肠胚中期：内陷加深
+                const invagination = 0.5 + (time - 40) / 20 * 0.3;
+                
+                // 外胚层
+                ctx.strokeStyle = colors.ectoderm;
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius * 0.9, 0, Math.PI * 2);
+                ctx.stroke();
+                
+                // 内胚层
+                ctx.fillStyle = colors.endoderm;
+                ctx.beginPath();
+                ctx.ellipse(centerX, centerY, radius * 0.4, radius * 0.7 * invagination, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 中胚层（初级间充质）
+                ctx.fillStyle = colors.mesoderm;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY - radius * 0.3, radius * 0.1, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillText('原肠', centerX, centerY);
+            } else if (time < 80) {
+                // 原肠胚末期：三胚层形成
+                // 外胚层
+                ctx.strokeStyle = colors.ectoderm;
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius * 0.9, 0, Math.PI * 2);
+                ctx.stroke();
+                
+                // 内胚层（原肠）
+                ctx.fillStyle = colors.endoderm;
+                ctx.beginPath();
+                ctx.ellipse(centerX, centerY, radius * 0.4, radius * 0.8, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 中胚层
+                ctx.fillStyle = colors.mesoderm;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY - radius * 0.5, radius * 0.15, 0, Math.PI * 2);
+                ctx.arc(centerX, centerY, radius * 0.15, 0, Math.PI * 2);
+                ctx.arc(centerX
+<!--检测到代码截断，自动续写中...-->
+, centerY + radius * 0.5, radius * 0.15, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillText('三胚层', centerX, centerY - radius * 0.7);
+            } else {
+                // 三胚层分化
+                // 外胚层
+                ctx.fillStyle = colors.ectoderm;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius * 0.9, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 内胚层（原肠）
+                ctx.fillStyle = colors.endoderm;
+                ctx.beginPath();
+                ctx.ellipse(centerX, centerY, radius * 0.35, radius * 0.7, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 中胚层
+                ctx.fillStyle = colors.mesoderm;
+                ctx.beginPath();
+                ctx.ellipse(centerX, centerY, radius * 0.6, radius * 0.8, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 覆盖外胚层
+                ctx.fillStyle = colors.ectoderm;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius * 0.9, 0, Math.PI * 2);
+                ctx.stroke();
+                
+                if (showFateCheckbox.checked) {
+                    ctx.fillStyle = colors.text;
+                    ctx.font = '12px Arial';
+                    ctx.fillText('神经', centerX, centerY - radius * 0.6);
+                    ctx.fillText('骨骼', centerX - radius * 0.4, centerY);
+                    ctx.fillText('肠道', centerX, centerY + radius * 0.3);
+                }
+            }
+        }
+        
+        function drawFrog(ctx, centerX, centerY, radius, time) {
+            // 绘制卵黄（植物极较大）
+            ctx.fillStyle = colors.yolk;
+            ctx.beginPath();
+            ctx.ellipse(centerX, centerY + radius * 0.2, radius, radius * 0.8, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 根据时间绘制不同阶段
+            if (time < 20) {
+                // 囊胚期：动物极细胞小，植物极细胞大
+                // 动物极（外胚层）
+                ctx.fillStyle = colors.ectoderm;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY - radius * 0.3, radius * 0.7, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 囊胚腔
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                ctx.beginPath();
+                ctx.arc(centerX, centerY - radius * 0.4, radius * 0.4, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = colors.text;
+                ctx.font = '14px Arial';
+                ctx.fillText('动物极', centerX, centerY - radius * 0.8);
+                ctx.fillText('植物极', centerX, centerY + radius * 0.6);
+            } else if (time < 40) {
+                // 原肠胚初期：胚孔形成，背唇内卷
+                const involution = (time - 20) / 20;
+                
+                // 外胚层
+                ctx.fillStyle = colors.ectoderm;
+                ctx.beginPath();
+                ctx.ellipse(centerX, centerY, radius * 0.9, radius * 0.7, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 胚孔和背唇
+                ctx.fillStyle = colors.endoderm;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY + radius * 0.5, radius * 0.3, Math.PI * 0.8, Math.PI * 1.2);
+                ctx.fill();
+                
+                // 内卷的细胞（中胚层）
+                ctx.fillStyle = colors.mesoderm;
+                ctx.beginPath();
+                ctx.ellipse(centerX, centerY + radius * 0.2, radius * 0.4 * involution, radius * 0.3, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                if (showArrowsCheckbox.checked) {
+                    drawArrow(ctx, centerX, centerY + radius * 0.7, centerX, centerY + radius * 0.3, colors.arrow);
+                }
+                
+                ctx.fillStyle = colors.text;
+                ctx.font = '14px Arial';
+                ctx.fillText('胚孔背唇', centerX, centerY + radius * 0.7);
+            } else if (time < 60) {
+                // 原肠胚中期：外包、内卷和内陷
+                const progress = (time - 40) / 20;
+                
+                // 外胚层（外包）
+                ctx.fillStyle = colors.ectoderm;
+                ctx.beginPath();
+                ctx.ellipse(centerX, centerY, radius * 0.9, radius * 0.6 * (1 - progress * 0.3), 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 内胚层
+                ctx.fillStyle = colors.endoderm;
+                ctx.beginPath();
+                ctx.ellipse(centerX, centerY, radius * 0.5, radius * 0.4, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 中胚层
+                ctx.fillStyle = colors.mesoderm;
+                ctx.beginPath();
+                ctx.ellipse(centerX, centerY, radius * 0.7, radius * 0.5, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 覆盖外胚层
+                ctx.strokeStyle = colors.ectoderm;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.ellipse(centerX, centerY, radius * 0.9, radius * 0.6 * (1 - progress * 0.3), 0, 0, Math.PI * 2);
+                ctx.stroke();
+                
+                ctx.fillText('原肠', centerX, centerY);
+            } else if (time < 80) {
+                // 原肠胚末期：三胚层结构建立
+                // 外胚层
+                ctx.fillStyle = colors.ectoderm;
+                ctx.beginPath();
+                ctx.ellipse(centerX, centerY, radius * 0.9, radius * 0.5, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 中胚层
+                ctx.fillStyle = colors.mesoderm;
+                ctx.beginPath();
+                ctx.ellipse(centerX, centerY, radius * 0.7, radius * 0.4, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 内胚层
+                ctx.fillStyle = colors.endoderm;
+                ctx.beginPath();
+                ctx.ellipse(centerX, centerY, radius * 0.5, radius * 0.3, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillText('三胚层', centerX, centerY - radius * 0.7);
+            } else {
+                // 三胚层分化
+                // 外胚层
+                ctx.fillStyle = colors.ectoderm;
+                ctx.beginPath();
+                ctx.ellipse(centerX, centerY, radius * 0.9, radius * 0.5, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 中胚层
+                ctx.fillStyle = colors.mesoderm;
+                ctx.beginPath();
+                ctx.ellipse(centerX, centerY, radius * 0.7, radius * 0.4, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 内胚层
+                ctx.fillStyle = colors.endoderm;
+                ctx.beginPath();
+                ctx.ellipse(centerX, centerY, radius * 0.5, radius * 0.3, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 神经板形成
+                ctx.fillStyle = '#2196f3';
+                ctx.beginPath();
+                ctx.ellipse(centerX, centerY - radius * 0.2, radius * 0.4, radius * 0.1, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                if (showFateCheckbox.checked) {
+                    ctx.fillStyle = colors.text;
+                    ctx.font = '12px Arial';
+                    ctx.fillText('神经板', centerX, centerY - radius * 0.3);
+                    ctx.fillText('脊索', centerX, centerY);
+                    ctx.fillText('原肠', centerX, centerY + radius * 0.2);
+                }
+            }
+        }
+        
+        function drawChick(ctx, centerX, centerY, radius, time) {
+            // 绘制卵黄（很大）
+            ctx.fillStyle = colors.yolk;
+            ctx.beginPath();
+            ctx.ellipse(centerX, centerY + radius * 0.3, radius * 1.2, radius, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 根据时间绘制不同阶段
+            if (time < 20) {
+                // 胚盘期：细胞层位于卵黄上
+                // 胚盘（外胚层）
+                ctx.fillStyle = colors.ectoderm;
+                ctx.beginPath();
+                ctx.ellipse(centerX, centerY - radius * 0.2, radius * 0.6, radius * 0.3, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = colors.text;
+                ctx.font = '14px Arial';
+                ctx.fillText('胚盘', centerX, centerY - radius * 0.5);
+                ctx.fillText('卵黄', centerX, centerY + radius * 0.8);
+            } else if (time < 40) {
+                // 原条形成期
+                const streakProgress = (time - 20) / 20;
+                
+                // 胚盘
+                ctx.fillStyle = colors.ectoderm;
+                ctx.beginPath();
+                ctx.ellipse(centerX, centerY - radius * 0.2, radius * 0.6, radius * 0.3, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 原条
+                ctx.fillStyle = colors.mesoderm;
+                ctx.beginPath();
+                ctx.ellipse(centerX, centerY - radius * 0.2, radius * 0.5 * streakProgress, radius * 0.08, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                if (showArrowsCheckbox.checked) {
+                    drawArrow(ctx, centerX + radius * 0.3, centerY - radius * 0.2, centerX - radius * 0.1, centerY - radius * 0.2, colors.arrow);
+                }
+                
+                ctx.fillStyle = colors.text;
+                ctx.font = '14px Arial';
+                ctx.fillText('原条', centerX, centerY - radius * 0.4);
+            } else if (time < 60) {
+                // 原肠胚中期：细胞通过原沟内卷
+                const progress = (time - 40) / 20;
+                
+                // 胚盘（外胚层）
+                ctx.fillStyle = colors.ectoderm;
+                ctx.beginPath();
+                ctx.ellipse(centerX, centerY - radius * 0.2, radius * 0.6, radius * 0.3, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 中胚层（通过原沟内卷）
+                ctx.fillStyle = colors.mesoderm;
+                ctx.beginPath();
+                ctx.ellipse(centerX, centerY - radius * 0.2, radius * 0.5, radius * 0.2 * progress, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 内胚层
+                ctx.fillStyle = colors.endoderm;
+                ctx.beginPath();
+                ctx.ellipse(centerX, centerY - radius * 0.1, radius * 0.4, radius * 0.1, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillText('原沟', centerX, centerY);
+            } else if (time < 80) {
+                // 原肠胚末期：三胚层结构建立
+                // 外胚层
+                ctx.fillStyle = colors.ectoderm;
+                ctx.beginPath();
+                ctx.ellipse(centerX, centerY - radius * 0.2, radius * 0.6, radius * 0.3, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 中胚层
+                ctx.fillStyle = colors.mesoderm;
+                ctx.beginPath();
+                ctx.ellipse(centerX, centerY - radius * 0.15, radius * 0.5, radius * 0.2, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 内胚层
+                ctx.fillStyle = colors.endoderm;
+                ctx.beginPath();
+                ctx.ellipse(centerX, centerY - radius * 0.1, radius * 0.4, radius * 0.15, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 体节
+                ctx.fillStyle = '#d32f2f';
+                for (let i = 0; i < 5; i++) {
+                    ctx.beginPath();
+                    ctx.ellipse(centerX - radius * 0.3 + i * radius * 0.15, centerY - radius * 0.2, radius * 0.05, radius * 0.08, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                
+                ctx.fillText('三胚层', centerX, centerY - radius * 0.5);
+            } else {
+                // 三胚层分化
+                // 外胚层
+                ctx.fillStyle = colors.ectoderm;
+                ctx.beginPath();
+                ctx.ellipse(centerX, centerY - radius * 0.2, radius * 0.6, radius * 0.3, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 中胚层
+                ctx.fillStyle = colors.mesoderm;
+                ctx.beginPath();
+                ctx.ellipse(centerX, centerY - radius * 0.15, radius * 0.5, radius * 0.2, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 内胚层
+                ctx.fillStyle = colors.endoderm;
+                ctx.beginPath();
+                ctx.ellipse(centerX, centerY - radius * 0.1, radius * 0.4, radius * 0.15, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 神经管形成
+                ctx.fillStyle = '#2196f3';
+                ctx.beginPath();
+                ctx.ellipse(centerX, centerY - radius * 0.25, radius * 0.3, radius * 0.08, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                if (showFateCheckbox.checked) {
+                    ctx.fillStyle = colors.text;
+                    ctx.font = '12px Arial';
+                    ctx.fillText('神经管', centerX, centerY - radius * 0.35);
+                    ctx.fillText('体节', centerX - radius * 0.2, centerY - radius * 0.1);
+                    ctx.fillText('前肠', centerX, centerY);
+                }
+                
+                // 3D剖面效果
+                if (show3dCheckbox.checked && selectedEmbryo === 'chick') {
+                    ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+                    ctx.setLineDash([5, 5]);
+                    ctx.beginPath();
+                    ctx.moveTo(centerX - radius * 0.6, centerY - radius * 0.2);
+                    ctx.lineTo(centerX + radius * 0.6, centerY - radius * 0.2);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                }
+            }
+        }
+        
+        function drawDetailEmbryo() {
+            const ctx = detailCtx;
+            const width = ctx.canvas.width;
+            const height = ctx.canvas.height;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const radius = Math.min(width, height) * 0.4;
+            
+            ctx.clearRect(0, 0, width, height);
+            
+            // 绘制选中的胚胎
+            if (selectedEmbryo === 'seaUrchin') {
+                drawSeaUrchin(ctx, centerX, centerY, radius, animationTime);
+            } else if (selectedEmbryo === 'frog') {
+                drawFrog(ctx, centerX, centerY, radius, animationTime);
+            } else if (selectedEmbryo === 'chick') {
+                drawChick(ctx, centerX, centerY, radius, animationTime);
+            }
+            
+            // 在详解视图中添加更多标注
+            ctx.fillStyle = colors.text;
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText(embryos[selectedEmbryo].name + '胚胎 (' + embryos[selectedEmbryo].type + ')', centerX, 30);
+            ctx.font = '14px Arial';
+            ctx.fillText('详解视图', centerX, height - 20);
+        }
+        
+        function drawArrow(ctx, fromX, fromY, toX, toY, color) {
+            const headlen = 10;
+            const angle = Math.atan2(toY - fromY, toX - fromX);
+            
+            ctx.strokeStyle = color;
+            ctx.fillStyle = color;
+            ctx.lineWidth = 2;
+            
+            // 绘制箭头线
+            ctx.beginPath();
+            ctx.moveTo(fromX, fromY);
+            ctx.lineTo(toX, toY);
+            ctx.stroke();
+            
+            // 绘制箭头头部
+            ctx.beginPath();
+            ctx.moveTo(toX, toY);
+            ctx.lineTo(toX - headlen * Math.cos(angle - Math.PI / 6), toY - headlen * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(toX - headlen * Math.cos(angle + Math.PI / 6), toY - headlen * Math.sin(angle + Math.PI / 6));
+            ctx.closePath();
+            ctx.fill();
+        }
+        
+        // 初始化
+        function init() {
+            updateTimeUI();
+            updateAllCanvases();
+            
+            // 添加事件监听器
+            showArrowsCheckbox.addEventListener('change', updateAllCanvases);
+            showFateCheckbox.addEventListener('change', updateAllCanvases);
+            show3dCheckbox.addEventListener('change', updateAllCanvases);
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
+
+### 3. 过程输出
+
+### 3. 使用指南
+
+## 《胚胎发育原肠胚形成与三胚层分化对比动画》使用指南
+
+欢迎使用本交互式教学动画！本工具旨在帮助您直观、深入地理解胚胎发育过程中**原肠胚形成**与**三胚层分化**这一核心且复杂的生物学过程，并通过**海胆、蛙、鸡胚**三种经典模式生物的同步对比，揭示不同卵黄含量对发育方式的影响。
+
+### 一、 功能说明
+
+本动画是一个基于HTML5 Canvas技术开发的交互式教学工具，将动态可视化、对比学习与自主探索融为一体。您无需安装任何插件，在支持现代标准的浏览器中即可流畅运行。
+
+### 二、 主要功能与操作
+
+1.  **视图切换**
+    *   **对比视图**：默认视图。海胆、蛙、鸡胚三个胚胎并排显示，同步展示发育过程，便于宏观比较其形态变化的异同。
+    *   **详解视图**：点击切换后，画面将聚焦于您选定的单个胚胎，提供更大的画幅和更丰富的交互细节，用于深入观察特定生物的发育机制。
+
+2.  **胚胎选择**
+    *   点击上方“海胆”、“蛙”或“鸡胚”的图标，即可选中对应胚胎。在**对比视图**下，选中的胚胎会高亮显示；在**详解视图**下，画面将完全切换至该胚胎的详细动画。
+
+3.  **动画控制面板**
+    *   **播放/暂停**：控制动画的自动播放与暂停。
+    *   **上一步/下一步**：以10%的进度步进，精细控制发育阶段。
+    *   **重置**：将动画进度归零，回到起始的囊胚期。
+    *   **进度条**：拖动滑块可以快速跳转到任意发育时间点。
+    *   **阶段按钮**：提供“囊胚期”、“原肠胚初期”、“原肠胚中期”、“原肠胚末期”、“三胚层形成”、“三胚层分化”六个关键节点的快速跳转。
+
+4.  **显示控制选项**
+    *   **显示细胞运动箭头**：勾选后，动画中将用箭头清晰指示细胞迁移的主要方向（如内陷、内卷），帮助理解运动模式。
+    *   **显示三胚层未来命运**：勾选后，在发育后期，各胚层区域将出现简化的器官图标（如神经、心脏、肠道），直观展示其分化方向。
+    *   **显示3D剖面（鸡胚）**：仅在选中鸡胚时可用。勾选后，画面中将出现虚线，示意胚胎的剖面结构，帮助理解其位于大量卵黄之上的立体胚盘结构。
+
+5.  **信息面板**
+    *   **图例**：始终显示外、中、内三个胚层的标准颜色编码（蓝、红、黄）及其发育命运。
+    *   **阶段说明**：实时更新，描述当前胚胎在所处发育阶段的主要形态特征和事件。
+    *   **点击“-”号**：可收起图例面板，以获得更宽阔的动画观看区域。
+
+### 三、 设计特色
+
+1.  **科学可视化**：采用简洁、准确的科学插图风格，严格依据发育生物学知识呈现细胞层运动、胚层分化和空间结构变化。
+2.  **同步对比教学**：独创的并排对比设计，让海胆的“内陷”、蛙的“外包与内卷”、鸡胚的“原条延伸”等关键差异一目了然，有效突破教学难点。
+3.  **分层信息呈现**：遵循认知规律，先呈现核心动画，再通过交互（悬停、点击选项）揭示深层信息（术语、机制、命运），满足不同层次学习需求。
+4.  **统一的视觉编码**：为三个胚层（外、中、内）设定了贯穿始终的颜色方案，极大降低了在不同胚胎间切换时的认知负荷，强化了“三胚层”这一核心概念。
+
+### 四、 核心教学要点与观察指引
+
+本动画重点阐释了以下核心生物学概念，建议您在操作时重点关注：
+
+1.  **原肠胚形成的不同方式**：
+    *   **海胆（等黄卵）**：观察植物极细胞的**内陷**如何形成一个管状的原肠。
+    *   **蛙（中等端黄卵）**：观察**胚孔背唇**处的细胞如何**内卷**，同时动物极细胞如何**外包**覆盖卵黄。
+    *   **鸡胚（端黄卵）**：观察**原条**如何从后向前延伸，细胞如何通过原沟**内卷**进入胚胎内部形成中胚层和内胚层。
+
+2.  **三胚层的起源与空间关系**：
+    *   注意观察三种胚胎最终如何都形成清晰的**外、中、内**三个胚层。
+    *   在详解视图中，利用显示选项，理解各胚层未来的分化方向：**外胚层→表皮/神经系统；中胚层→肌肉/骨骼/循环系统；内胚层→消化/呼吸道上皮**。
+
+3.  **卵黄含量对发育的影响**：
+    *   对比三种胚胎的初始形态：海胆（均匀）、蛙（动植物极分化）、鸡胚（胚盘与大量卵黄）。
+    *   理解正是由于卵黄含量和分布的不同，导致了它们原肠胚形成策略的适应性演化。
+
+### 五、 使用建议
+
+*   **对于学生**：
+    1.  **先观整体**：在“对比视图”下完整播放一遍动画，建立对三个胚胎发育全过程的同步印象。
+    2.  **再究细节**：切换到“详解视图”，选择一种胚胎，利用“步进”控制和“显示箭头”功能，一步步分析细胞运动轨迹。
+    3.  **主动对比**：针对同一发育阶段（如原肠胚中期），在三种胚胎间反复切换，比较其形态和细胞运动的关键差异。
+    4.  **自我测试**：关闭部分标签或说明，尝试自己描述当前看到的发育事件。
+
+*   **对于教师**：
+    1.  **课堂演示**：可作为讲解原肠胚形成与三胚层分化的核心可视化工具，动态揭示书本静态图片无法展现的过程。
+    2.  **引导探究**：提出引导性问题，如“为什么蛙胚需要外包而海胆不需要？”、“鸡胚的原条功能相当于蛙胚的哪个结构？”，让学生通过操作动画寻找答案。
+    3.  **复习与总结**：在课程结束时，让学生操作动画并复述三种模式的异同，巩固教学重点。
+
+我们希望这个精心设计的交互式动画能成为您探索胚胎发育奥秘的得力助手，让复杂抽象的生物学过程变得生动、清晰且充满乐趣！
+
+祝您学习愉快，探索有成！

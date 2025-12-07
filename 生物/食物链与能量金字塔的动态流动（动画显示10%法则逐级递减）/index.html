@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>食物链与能量金字塔 - 10%法则动态演示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #1a5276;
+            color: #ecf0f1;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 15px;
+            background-color: rgba(44, 62, 80, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            color: #f1c40f;
+            margin-bottom: 8px;
+            font-size: 2.2rem;
+        }
+        
+        .subtitle {
+            color: #bdc3c7;
+            font-size: 1.1rem;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .left-panel, .right-panel {
+            flex: 1;
+            min-width: 300px;
+            background-color: rgba(44, 62, 80, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .panel-title {
+            color: #3498db;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #3498db;
+            font-size: 1.4rem;
+        }
+        
+        #animationCanvas {
+            width: 100%;
+            height: 400px;
+            background-color: rgba(26, 82, 118, 0.3);
+            border-radius: 8px;
+            display: block;
+        }
+        
+        #pyramidCanvas {
+            width: 100%;
+            height: 400px;
+            background-color: rgba(26, 82, 118, 0.3);
+            border-radius: 8px;
+            display: block;
+        }
+        
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            background-color: rgba(52, 73, 94, 0.7);
+            padding: 12px;
+            border-radius: 8px;
+            min-width: 150px;
+        }
+        
+        .control-label {
+            font-size: 0.9rem;
+            color: #bdc3c7;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            min-width: 120px;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button#resetBtn {
+            background-color: #e74c3c;
+        }
+        
+        button#resetBtn:hover {
+            background-color: #c0392b;
+        }
+        
+        .slider-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        input[type="range"] {
+            width: 90%;
+            height: 8px;
+            border-radius: 4px;
+            background: #34495e;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #f1c40f;
+            cursor: pointer;
+        }
+        
+        .slider-value {
+            font-weight: bold;
+            color: #f1c40f;
+        }
+        
+        .info-panel {
+            background-color: rgba(44, 62, 80, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .info-title {
+            color: #2ecc71;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .info-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .info-item {
+            background-color: rgba(52, 73, 94, 0.5);
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 4px solid #f1c40f;
+        }
+        
+        .info-item h4 {
+            color: #f1c40f;
+            margin-bottom: 5px;
+        }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        
+        .legend-text {
+            font-size: 0.9rem;
+        }
+        
+        .current-info {
+            background-color: rgba(41, 128, 185, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            text-align: center;
+            font-size: 1.1rem;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .highlight {
+            color: #f1c40f;
+            font-weight: bold;
+        }
+        
+        .energy-value {
+            color: #f1c40f;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .dissipated {
+            color: #e74c3c;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .control-group {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>食物链与能量金字塔</h1>
+            <p class="subtitle">动态演示能量流动的10%法则 - 能量在营养级间逐级递减</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="left-panel">
+                <h2 class="panel-title">动态能量流动 (食物链)</h2>
+                <canvas id="animationCanvas"></canvas>
+                
+                <div class="current-info" id="currentInfo">
+                    点击"开始演示"按钮观察能量流动过程
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #f1c40f;"></div>
+                        <span class="legend-text">能量流动</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #e74c3c;"></div>
+                        <span class="legend-text">能量耗散 (呼吸、热量)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #27ae60;"></div>
+                        <span class="legend-text">生产者 (草)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #d35400;"></div>
+                        <span class="legend-text">初级消费者 (兔)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #e67e22;"></div>
+                        <span class="legend-text">次级消费者 (狐)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #34495e;"></div>
+                        <span class="legend-text">顶级消费者 (狼)</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="right-panel">
+                <h2 class="panel-title">能量金字塔结构</h2>
+                <canvas id="pyramidCanvas"></canvas>
+                
+                <div class="controls">
+                    <div class="control-group">
+                        <div class="control-label">动画控制</div>
+                        <button id="startBtn">开始演示</button>
+                        <button id="pauseBtn">暂停/继续</button>
+                        <button id="stepBtn">单步前进</button>
+                        <button id="resetBtn">重置</button>
+                    </div>
+                    
+                    <div class="control-group">
+                        <div class="control-label">能量传递效率</div>
+                        <div class="slider-container">
+                            <input type="range" id="efficiencySlider" min="5" max="20" value="10" step="1">
+                            <div class="slider-value" id="efficiencyValue">10%</div>
+                        </div>
+                        <div class="control-label">调整滑块观察金字塔变化</div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <div class="control-label">视图切换</div>
+                        <button id="viewToggleBtn">聚焦金字塔视图</button>
+                        <div class="control-label">点击生物聚焦该营养级</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-panel">
+            <h3 class="info-title">能量流动原理说明</h3>
+            <div class="info-content">
+                <div class="info-item">
+                    <h4>10%能量法则</h4>
+                    <p>能量在相邻营养级之间传递时，大约只有10%的能量能够传递到下一营养级，其余90%通过呼吸作用、热量散失、未被利用等途径耗散。</p>
+                </div>
+                <div class="info-item">
+                    <h4>食物链</h4>
+                    <p>表示生物之间吃与被吃的关系，箭头指向捕食者。本演示展示：草 → 兔 → 狐 → 狼。</p>
+                </div>
+                <div class="info-item">
+                    <h4>能量金字塔</h4>
+                    <p>表示生态系统中各营养级能量值的对比关系。底层最宽，代表生产者固定的太阳能；向上逐级变窄，代表能量逐级递减。</p>
+                </div>
+                <div class="info-item">
+                    <h4>交互操作</h4>
+                    <p>1. 使用控制按钮管理动画播放<br>2. 调整滑块改变能量传递效率<br>3. 点击生物聚焦该营养级能量流动<br>4. 切换视图查看不同表现形式</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 获取Canvas元素和上下文
+        const animationCanvas = document.getElementById('animationCanvas');
+        const pyramidCanvas = document.getElementById('pyramidCanvas');
+        const animCtx = animationCanvas.getContext('2d');
+        const pyramidCtx = pyramidCanvas.getContext('2d');
+        
+        // 设置Canvas尺寸
+        function resizeCanvases() {
+            animationCanvas.width = animationCanvas.offsetWidth;
+            animationCanvas.height = animationCanvas.offsetHeight;
+            pyramidCanvas.width = pyramidCanvas.offsetWidth;
+            pyramidCanvas.height = pyramidCanvas.offsetHeight;
+        }
+        
+        // 初始调整尺寸
+        resizeCanvases();
+        window.addEventListener('resize', resizeCanvases);
+        
+        // 获取控制元素
+        const startBtn = document.getElementById('startBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const stepBtn = document.getElementById('stepBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const efficiencySlider = document.getElementById('efficiencySlider');
+        const efficiencyValue = document.getElementById('efficiencyValue');
+        const viewToggleBtn = document.getElementById('viewToggleBtn');
+        const currentInfo = document.getElementById('currentInfo');
+        
+        // 动画状态
+        let animationState = {
+            isPlaying: false,
+            currentStep: 0, // 0: 初始, 1: 草到兔, 2: 兔到狐, 3: 狐到狼, 4: 完成
+            efficiency: 10, // 能量传递效率百分比
+            viewMode: 'both', // 'both', 'pyramid', 'foodchain'
+            energyValues: [10000, 0, 0, 0, 0], // 各营养级当前能量值 [草, 兔, 狐, 狼, 耗散]
+            focusLevel: -1, // 聚焦的营养级索引
+            particles: [], // 能量粒子
+            dissipatedParticles: [] // 耗散粒子
+        };
+        
+        // 营养级配置
+        const trophicLevels = [
+            { name: '生产者 (草)', color: '#27ae60', x: 0.15, y: 0.5, energy: 10000, key: 'producer' },
+            { name: '初级消费者 (兔)', color: '#d35400', x: 0.35, y: 0.5, energy: 0, key: 'primary' },
+            { name: '次级消费者 (狐)', color: '#e67e22', x: 0.65, y: 0.5, energy: 0, key: 'secondary' },
+            { name: '顶级消费者 (狼)', color: '#34495e', x: 0.85, y: 0.5, energy: 0, key: 'top' }
+        ];
+        
+        // 粒子类
+        class Particle {
+            constructor(x, y, color, targetX, targetY, isDissipated = false) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                this.targetX = targetX;
+                this.targetY = targetY;
+                this.speed = isDissipated ? 0.5 + Math.random() * 1 : 2 + Math.random() * 2;
+                this.size = isDissipated ? 2 + Math.random() * 3 : 3 + Math.random() * 4;
+                this.isDissipated = isDissipated;
+                this.life = 1.0;
+                this.decayRate = isDissipated ? 0.01 : 0.02;
+                this.vx = 0;
+                this.vy = 0;
+                this.calculateVelocity();
+            }
+            
+            calculateVelocity() {
+                const dx = this.targetX - this.x;
+                const dy = this.targetY - this.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                this.vx = (dx / distance) * this.speed;
+                this.vy = (dy / distance) * this.speed;
+            }
+            
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                
+                if (this.isDissipated) {
+                    this.life -= this.decayRate;
+                    // 耗散粒子随机飘动
+                    this.x += (Math.random() - 0.5) * 1.5;
+                    this.y += (Math.random() - 0.5) * 1.5;
+                }
+                
+                // 检查是否到达目标
+                const dx = this.targetX - this.x;
+                const dy = this.targetY - this.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < 5 || this.life <= 0) {
+                    return false; // 粒子应被移除
+                }
+                
+                return true; // 粒子继续存在
+            }
+            
+            draw(ctx) {
+                ctx.save();
+                ctx.globalAlpha = this.isDissipated ? this.life : 0.8;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+        
+        // 创建能量粒子
+        function createEnergyParticles(sourceIndex, targetIndex, count, isDissipated = false) {
+            const source = trophicLevels[sourceIndex];
+            const target = trophicLevels[targetIndex];
+            
+            const canvasWidth = animationCanvas.width;
+            const canvasHeight = animationCanvas.height;
+            
+            const sourceX = source.x * canvasWidth;
+            const sourceY = source.y * canvasHeight;
+            let targetX, targetY;
+            
+            if (isDissipated) {
+                // 耗散粒子随机散开
+                targetX = sourceX + (Math.random() - 0.5) * 200;
+                targetY = sourceY - 50 - Math.random() * 100;
+            } else {
+                targetX = target.x * canvasWidth;
+                targetY = target.y * canvasHeight;
+            }
+            
+            const color = isDissipated ? '#e74c3c' : '#f1c40f';
+            
+            for (let i = 0; i < count; i++) {
+                const particle = new Particle(
+                    sourceX + (Math.random() - 0.5) * 30,
+                    sourceY + (Math.random() - 0.5) * 30,
+                    color,
+                    targetX + (Math.random() - 0.5) * 30,
+                    targetY + (Math.random() - 0.5) * 30,
+                    isDissipated
+                );
+                
+                if (isDissipated) {
+                    animationState.dissipatedParticles.push(particle);
+                } else {
+                    animationState.particles.push(particle);
+                }
+            }
+        }
+        
+        // 更新能量传递
+        function updateEnergyTransfer() {
+            if (animationState.currentStep >= 4) return;
+            
+            const sourceIndex = animationState.currentStep;
+            const targetIndex = animationState.currentStep + 1;
+            
+            // 计算传递的能量
+            const transferEfficiency = animationState.efficiency / 100;
+            const energyToTransfer = animationState.energyValues[sourceIndex] * transferEfficiency;
+            const energyDissipated = animationState.energyValues[sourceIndex] - energyToTransfer;
+            
+            // 更新能量值
+            animationState.energyValues[sourceIndex] = 0;
+            animationState.energyValues[targetIndex] = energyToTransfer;
+            animationState.energyValues[4] += energyDissipated; // 耗散能量累加
+            
+            // 创建粒子
+            const particleCount = 50;
+            createEnergyParticles(sourceIndex, targetIndex, particleCount, false);
+            createEnergyParticles(sourceIndex, targetIndex, Math.floor(particleCount * 4.5), true);
+            
+            // 更新信息显示
+            updateInfoDisplay(sourceIndex, targetIndex, energyToTransfer, energyDissipated);
+            
+            // 进入下一步
+            animationState.currentStep++;
+            
+            // 如果完成所有步骤，停止动画
+            if (animationState.currentStep >= 4) {
+                animationState.isPlaying = false;
+                currentInfo.innerHTML = `能量流动完成！最终能量值：<span class="energy-value">草: 0J</span> | <span class="energy-value">兔: ${Math.round(animationState.energyValues[1])}J</span> | <span class="energy-value">狐: ${Math.round(animationState.energyValues[2])}J</span> | <span class="energy-value">狼: ${Math.round(animationState.energyValues[3])}J</span> | <span class="dissipated">耗散: ${Math.round(animationState.energyValues[4])}J</span>`;
+            }
+        }
+        
+        // 更新信息显示
+        function updateInfoDisplay(sourceIndex, targetIndex, transferred, dissipated) {
+            const sourceName = trophicLevels[sourceIndex].name;
+            const targetName = trophicLevels[targetIndex].name;
+            
+            currentInfo.innerHTML = `
+                <span class="highlight">${sourceName}</span> 传递 <span class="energy-value">${Math.round(transferred)}J</span> 
+                (${animationState.efficiency}%) 到 <span class="highlight">${targetName}</span> | 
+                <span class="dissipated">${Math.round(dissipated)}J (${100 - animationState.efficiency}%) 耗散</span>
+            `;
+        }
+        
+        // 绘制食物链动画
+        function drawFoodChain() {
+            const width = animationCanvas.width;
+            const height = animationCanvas.height;
+            
+            // 清除画布
+            animCtx.clearRect(0, 0, width, height);
+            
+            // 绘制背景
+            animCtx.fillStyle = 'rgba(26, 82, 118, 0.3)';
+            animCtx.fillRect(0, 0, width, height);
+            
+            // 绘制连接线
+            animCtx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+            animCtx.lineWidth = 2;
+            animCtx.setLineDash([5, 5]);
+            
+            for (let i = 0; i < trophicLevels.length - 1; i++) {
+                const startX = trophicLevels[i].x * width;
+                const startY = trophicLevels[i].y * height;
+                const endX = trophicLevels[i + 1].x * width;
+                const endY = trophicLevels[i + 1].y * height;
+                
+                animCtx.beginPath();
+                animCtx.moveTo(startX, startY);
+                animCtx.lineTo(endX, endY);
+                animCtx.stroke();
+                
+                // 绘制箭头
+                drawArrow(animCtx, startX, startY, endX, endY);
+            }
+            
+            animCtx.setLineDash([]);
+            
+            // 绘制粒子
+            animationState.particles = animationState.particles.filter(particle => particle.update());
+            animationState.dissipatedParticles = animationState.dissipatedParticles.filter(particle => particle.update());
+            
+            animationState.particles.forEach(particle => particle.draw(animCtx));
+            animationState.dissipatedParticles.forEach(particle => particle.draw(animCtx));
+            
+            // 绘制营养级节点
+            trophicLevels.forEach((level, index) => {
+                const x = level.x * width;
+                const y = level.y * height;
+                const radius = 40;
+                
+                // 绘制能量值背景
+                animCtx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                animCtx.fillRect(x - 50, y - 80, 100, 25);
+                
+                // 绘制能量值
+                animCtx.fillStyle = '#f1c40f';
+                animCtx.font = 'bold 14px Arial';
+                animCtx.textAlign = 'center';
+                animCtx.fillText(`${Math.round(animationState.energyValues[index])} J`, x, y - 65);
+                
+                // 绘制节点
+                animCtx.fillStyle = level.color;
+                animCtx.beginPath();
+                animCtx.arc(x, y, radius, 0, Math.PI * 2);
+                animCtx.fill();
+                
+                // 绘制节点边框
+                animCtx.strokeStyle = animationState.focusLevel === index ? '#f1c40f' : 'white';
+                animCtx.lineWidth = animationState.focusLevel === index ? 4 : 2;
+                animCtx.beginPath();
+                animCtx.arc(x, y, radius, 0, Math.PI * 2);
+                animCtx.stroke();
+                
+                // 绘制生物名称
+                animCtx.fillStyle = 'white';
+                animCtx.font = 'bold 16px Arial';
+                animCtx.textAlign = 'center';
+                animCtx.fillText(level.name, x, y + radius + 25);
+                
+                // 绘制点击提示
+                if (animationState.currentStep === 0 || animationState.focusLevel === index) {
+                    animCtx.fillStyle = 'rgba(52, 152, 219, 0.8)';
+                    animCtx.font = '12px Arial';
+                    animCtx.fillText('点击聚焦', x, y + radius + 45);
+                }
+            });
+            
+            // 绘制总耗散能量
+            if (animationState.energyValues[4] > 0) {
+                animCtx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                animCtx.fillRect(width - 150, 20, 130, 40);
+                
+                animCtx.fillStyle = '#e74c3c';
+                animCtx.font = 'bold 14px Arial';
+                animCtx.textAlign = 'left';
+                animCtx.fillText('总耗散能量:', width - 140, 40);
+                animCtx.fillText(`${Math.round(animationState.energyValues[4])} J`, width - 140, 60);
+            }
+        }
+        
+        // 绘制箭头
+        function drawArrow(ctx, fromX, fromY, toX, toY) {
+            const headlen = 15;
+            const dx = toX - fromX;
+            const dy = toY - fromY;
+            const angle = Math.atan2(dy, dx);
+            
+            ctx.beginPath();
+            ctx.moveTo(toX, toY);
+            ctx.lineTo(toX - headlen * Math.cos(angle - Math.PI / 6), toY - headlen * Math.sin(angle - Math.PI / 6));
+            ctx.moveTo(toX, toY);
+            ctx.lineTo(toX - headlen * Math.cos(angle + Math.PI / 6), toY - headlen * Math.sin(angle + Math.PI / 6));
+            ctx.stroke();
+        }
+        
+        // 绘制能量金字塔
+        function drawPyramid() {
+            const width = pyramidCanvas.width;
+            const height = pyramidCanvas.height;
+            
+            // 清除画布
+            pyramidCtx.clearRect(0, 0, width, height);
+            
+            // 绘制背景
+            pyramidCtx.fillStyle = 'rgba(26, 82, 118, 0.3)';
+            pyramidCtx.fillRect(0, 0, width, height);
+            
+            // 计算金字塔参数
+            const pyramidBase = width * 0.8;
+            const pyramidTop = width * 0.1;
+            const pyramidHeight = height * 0.7;
+            const pyramidX = (width - pyramidBase) / 2;
+            const pyramidY = height * 0.15;
+            
+            // 绘制金字塔轮廓
+            pyramidCtx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+            pyramidCtx.lineWidth = 3;
+            
+            pyramidCtx.beginPath();
+            pyramidCtx.moveTo(pyramidX, pyramidY + pyramidHeight);
+            pyramidCtx.lineTo(pyramidX + pyramidBase, pyramidY + pyramidHeight);
+            pyramidCtx.lineTo(pyramidX + pyramidBase / 2, pyramidY);
+            pyramidCtx.closePath();
+            pyramidCtx.stroke();
+            
+            // 计算各层高度（基于能量值）
+            const totalEnergy = 10000; // 初始能量
+            const levelHeights = [];
+            let currentHeight = pyramidHeight;
+            
+            for (let i = 0; i < 4; i++) {
+                const energyRatio = animationState.energyValues[i] / totalEnergy;
+                const levelHeight = energyRatio * pyramidHeight;
+                levelHeights.push(levelHeight);
+            }
+            
+            // 绘制金字塔各层
+            let currentY = pyramidY + pyramidHeight;
+            
+            for (let i = 0; i < 4; i++) {
+                const levelHeight = levelHeights[i];
+                const levelWidth = pyramidBase * (currentY - pyramidY) / pyramidHeight;
+                const levelX = pyramidX + (pyramidBase - levelWidth) / 2;
+                
+                // 绘制填充层
+                pyramidCtx.fillStyle = trophicLevels[i].color + 'CC'; // 添加透明度
+                pyramidCtx.beginPath();
+                pyramidCtx.moveTo(levelX, currentY);
+                pyramidCtx.lineTo(levelX + levelWidth, currentY);
+                pyramidCtx.lineTo(pyramidX + pyramidBase / 2, currentY - levelHeight);
+                pyramidCtx.closePath();
+                pyramidCtx.fill();
+                
+                // 绘制层边框
+                pyramidCtx.strokeStyle = 'white';
+                pyramidCtx.lineWidth = 2;
+                pyramidCtx.stroke();
+                
+                // 绘制层标签
+                pyramidCtx.fillStyle = 'white';
+                pyramidCtx.font = 'bold 14px Arial';
+                pyramidCtx.textAlign = 'center';
+                
+                const labelY = currentY - levelHeight / 2;
+                pyramidCtx.fillText(trophicLevels[i].name, pyramidX + pyramidBase / 2, labelY);
+                
+                // 绘制能量值
+                pyramidCtx.fillStyle = '#f1c40f';
+                pyramidCtx.font = 'bold 16px Arial';
+                pyramidCtx.fillText(`${Math.round(animationState.energyValues[i])} J`, pyramidX + pyramidBase / 2, labelY + 20);
+                
+                // 绘制传递效率（如果不是最后一层）
+                if (i < 3) {
+                    const efficiency = animationState.efficiency;
+                    pyramidCtx.fillStyle = '#3498db';
+                    pyramidCtx.font = 'italic 12px Arial';
+                    
+                    const efficiencyY = currentY - levelHeight + 15;
+                    pyramidCtx.fillText(`↓ ${efficiency}%`, pyramidX + pyramidBase / 2, efficiencyY);
+                }
+                
+                currentY -= levelHeight;
+            }
+            
+            // 绘制标题
+            pyramidCtx.fillStyle = '#f1c40f';
+            pyramidCtx.font = 'bold 18px Arial';
+            pyramidCtx.textAlign = 'center';
+            pyramidCtx.fillText('能量金字塔', width / 2, 30);
+            
+            // 绘制当前效率
+            pyramidCtx.fillStyle = '#3498db';
+            pyramidCtx.font = '16px Arial';
+            pyramidCtx.fillText(`当前能量传递效率: ${animationState.efficiency}%`, width / 2, height - 30);
+            
+            // 绘制耗散能量
+            if (animationState.energyValues[4] > 0) {
+                pyramidCtx.fillStyle = '#e74c3c';
+                pyramidCtx.font = '14px Arial';
+                pyramidCtx.fillText(`总耗散能量: ${Math.round(animationState.energyValues[4])} J`, width / 2, height - 10);
+            }
+        }
+        
+        // 动画循环
+        function animate() {
+            if (animationState.viewMode !== 'pyramid') {
+                drawFoodChain();
+            }
+            
+            if (animationState.viewMode !== 'foodchain') {
+                drawPyramid();
+            }
+            
+            // 如果正在播放且当前步骤未完成，自动进行下一步
+            if (animationState.isPlaying && animationState.currentStep < 4) {
+                // 检查粒子是否基本消失
+                if (animationState.particles.length < 10 && animationState.dissipatedParticles.length < 10) {
+                    // 延迟一段时间再进行下一步
+                    setTimeout(() => {
+                        updateEnergyTransfer();
+                    }, 800);
+                }
+            }
+            
+            requestAnimationFrame(animate);
+        }
+        
+        // 开始动画循环
+        animate();
+        
+        // 事件监听器
+        startBtn.addEventListener('click', () => {
+            if (animationState.currentStep >= 4) {
+                resetAnimation();
+            }
+            
+            animationState.isPlaying = true;
+            currentInfo.innerHTML = '能量流动开始...';
+        });
+        
+        pauseBtn.addEventListener('click', () => {
+            animationState.isPlaying = !animationState.isPlaying;
+            currentInfo.innerHTML = animationState.isPlaying ? '动画继续...' : '动画已暂停';
+        });
+        
+        stepBtn.addEventListener('click', () => {
+            if (animationState.currentStep < 4) {
+                updateEnergyTransfer();
+                animationState.isPlaying = false;
+            }
+        });
+        
+        resetBtn.addEventListener('click', resetAnimation);
+        
+        efficiencySlider.addEventListener('input', () => {
+            animationState.efficiency = parseInt(efficiencySlider.value);
+            efficiencyValue.textContent = `${animationState.efficiency}%`;
+            
+            // 如果动画已完成，重新计算能量值
+            if (animationState.currentStep >= 4) {
+                recalculateEnergyValues();
+            }
+        });
+        
+        viewToggleBtn.addEventListener('click', () => {
+            if (animationState.viewMode === 'both') {
+                animationState.viewMode = 'pyramid';
+                viewToggleBtn.textContent = '聚焦食物链视图';
+                animationCanvas.style.opacity = '0.3';
+                pyramidCanvas.style.opacity = '1';
+            } else if (animationState.viewMode === 'pyramid') {
+                animationState.viewMode = 'foodchain';
+                viewToggleBtn.textContent = '显示双视图';
+                animationCanvas.style.opacity = '1';
+                pyramidCanvas.style.opacity = '0.3';
+            } else {
+                animationState.viewMode = 'both';
+                viewToggleBtn.textContent = '聚焦金字塔视图';
+                animationCanvas.style.opacity = '1';
+                pyramidCanvas.style.opacity = '1';
+            }
+        });
+        
+        // 点击营养级聚焦
+        animationCanvas.addEventListener('click', (e) => {
+            const rect = animationCanvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const width = animationCanvas.width;
+            const height = animationCanvas.height;
+            
+            // 检查点击了哪个营养级
+            for (let i = 0; i < trophicLevels.length; i++) {
+                const level = trophicLevels[i];
+                const levelX = level.x * width;
+                const levelY = level.y * height;
+                const radius = 40;
+                
+                const distance = Math.sqrt((x - levelX) ** 2 + (y - levelY) ** 2);
+                
+                if (distance <= radius) {
+                    animationState.focusLevel = i;
+                    currentInfo.innerHTML = `聚焦: <span class="highlight">${level.name}</span> | 当前能量: <span class="energy-value">${Math.round(animationState.energyValues[i])}J</span>`;
+                    
+                    // 3秒后取消聚焦
+                    setTimeout(() => {
+                        animationState.focusLevel = -1;
+                    }, 3000);
+                    break;
+                }
+            }
+        });
+        
+        // 重置动画
+        function resetAnimation() {
+            animationState.isPlaying = false;
+            animationState.currentStep = 0;
+            animationState.energyValues = [10000, 0, 0, 0, 0];
+            animationState.particles = [];
+            animationState.dissipatedParticles = [];
+            animationState.focusLevel = -1;
+            
+            currentInfo.innerHTML = '动画已重置。点击"开始演示"按钮观察能量流动过程';
+        }
+        
+        // 根据当前效率重新计算能量值
+        function recalculateEnergyValues() {
+            const efficiency = animationState.efficiency / 100;
+            animationState.energyValues = [10000, 0, 0, 0, 0];
+            
+            for (let i = 0; i < 3; i++) {
+                const transferred = animationState.energyValues[i] * efficiency;
+                const dissipated = animation
+<!--检测到代码截断，自动续写中...-->
+dissipated = animationState.energyValues[i] - transferred;
+                animationState.energyValues[i] = 0;
+                animationState.energyValues[i + 1] = transferred;
+                animationState.energyValues[4] += dissipated;
+            }
+            
+            // 重新分配能量值（保持总量不变）
+            animationState.energyValues = [
+                10000,
+                10000 * efficiency,
+                10000 * efficiency * efficiency,
+                10000 * efficiency * efficiency * efficiency,
+                10000 - (10000 * efficiency * efficiency * efficiency)
+            ];
+            
+            currentInfo.innerHTML = `能量值已根据 ${animationState.efficiency}% 效率重新计算`;
+        }
+        
+        // 初始绘制
+        drawFoodChain();
+        drawPyramid();
+        
+        // 添加键盘快捷键
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case ' ':
+                    // 空格键切换播放/暂停
+                    animationState.isPlaying = !animationState.isPlaying;
+                    e.preventDefault();
+                    break;
+                case 'r':
+                case 'R':
+                    // R键重置
+                    resetAnimation();
+                    break;
+                case 'ArrowRight':
+                    // 右箭头单步前进
+                    if (animationState.currentStep < 4) {
+                        updateEnergyTransfer();
+                        animationState.isPlaying = false;
+                    }
+                    break;
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                    // 数字键1-4聚焦对应营养级
+                    const index = parseInt(e.key) - 1;
+                    if (index >= 0 && index < 4) {
+                        animationState.focusLevel = index;
+                        currentInfo.innerHTML = `聚焦: <span class="highlight">${trophicLevels[index].name}</span> | 当前能量: <span class="energy-value">${Math.round(animationState.energyValues[index])}J</span>`;
+                        
+                        setTimeout(() => {
+                            animationState.focusLevel = -1;
+                        }, 3000);
+                    }
+                    break;
+            }
+        });
+        
+        // 初始信息
+        currentInfo.innerHTML = '欢迎使用能量流动演示！点击"开始演示"按钮或使用键盘快捷键（空格:播放/暂停, R:重置, 右箭头:单步, 数字1-4:聚焦营养级）';
+    </script>
+</body>
+</html>

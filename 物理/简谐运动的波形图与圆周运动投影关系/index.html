@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简谐运动与圆周运动投影关系演示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background-color: #0f172a;
+            color: #cbd5e1;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #334155;
+        }
+
+        h1 {
+            color: #06b6d4;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            font-size: 1.2rem;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .animation-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .canvas-container {
+            background-color: #1e293b;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            flex: 1;
+            min-width: 300px;
+            max-width: 900px;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 500px;
+            border-radius: 8px;
+        }
+
+        .controls-panel {
+            background-color: #1e293b;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .panel-section {
+            margin-bottom: 25px;
+        }
+
+        h2 {
+            color: #67e8f9;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #334155;
+        }
+
+        h3 {
+            color: #86efac;
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #e2e8f0;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            height: 8px;
+            -webkit-appearance: none;
+            background: #334155;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #06b6d4;
+            cursor: pointer;
+        }
+
+        .value-display {
+            min-width: 60px;
+            text-align: center;
+            background: #334155;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-family: monospace;
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            background-color: #3b82f6;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        button:hover {
+            background-color: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button.reset {
+            background-color: #ef4444;
+        }
+
+        button.reset:hover {
+            background-color: #dc2626;
+        }
+
+        button.step {
+            background-color: #f59e0b;
+        }
+
+        button.step:hover {
+            background-color: #d97706;
+        }
+
+        .toggle-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .toggle-btn {
+            padding: 10px 15px;
+            background-color: #475569;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            flex: 1;
+        }
+
+        .toggle-btn.active {
+            background-color: #06b6d4;
+            color: white;
+        }
+
+        .toggle-btn:hover {
+            background-color: #64748b;
+        }
+
+        .info-panel {
+            background-color: #1e293b;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .info-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+        }
+
+        .info-content.expanded {
+            max-height: 500px;
+        }
+
+        .info-toggle {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding-bottom: 15px;
+        }
+
+        .info-toggle h2 {
+            margin-bottom: 0;
+            border-bottom: none;
+        }
+
+        .toggle-icon {
+            font-size: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .info-list {
+            list-style-type: none;
+            padding-top: 15px;
+        }
+
+        .info-list li {
+            margin-bottom: 15px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .info-list li:before {
+            content: "•";
+            color: #06b6d4;
+            font-size: 1.5rem;
+            position: absolute;
+            left: 0;
+            top: -5px;
+        }
+
+        .status-display {
+            background-color: #334155;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 1.1rem;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .status-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .status-label {
+            color: #94a3b8;
+        }
+
+        .status-value {
+            color: #fbbf24;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #334155;
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 1100px) {
+            .animation-area {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .canvas-container, .controls-panel {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>简谐运动与圆周运动投影关系</h1>
+            <p class="subtitle">动态演示简谐运动是匀速圆周运动在直径上的投影</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="animation-area">
+                <div class="canvas-container">
+                    <canvas id="animationCanvas"></canvas>
+                </div>
+                
+                <div class="controls-panel">
+                    <div class="panel-section">
+                        <h2>动画控制</h2>
+                        <div class="button-group">
+                            <button id="playPauseBtn">播放</button>
+                            <button id="stepBtn" class="step">单步前进</button>
+                            <button id="resetBtn" class="reset">重置</button>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label for="speedSlider">动画速度: <span id="speedValue">1.0x</span></label>
+                            <div class="slider-container">
+                                <input type="range" id="speedSlider" min="0.1" max="3" step="0.1" value="1">
+                                <div class="value-display" id="speedDisplay">1.0x</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="panel-section">
+                        <h2>参数调整</h2>
+                        
+                        <div class="control-group">
+                            <label for="amplitudeSlider">振幅 A = 半径 R: <span id="amplitudeValue">150</span> px</label>
+                            <div class="slider-container">
+                                <input type="range" id="amplitudeSlider" min="50" max="250" step="10" value="150">
+                                <div class="value-display" id="amplitudeDisplay">150</div>
+                            </div>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label for="frequencySlider">角频率 ω: <span id="frequencyValue">1.0</span> rad/s</label>
+                            <div class="slider-container">
+                                <input type="range" id="frequencySlider" min="0.2" max="3" step="0.1" value="1">
+                                <div class="value-display" id="frequencyDisplay">1.0</div>
+                            </div>
+                        </div>
+                        
+                        <div class="control-group">
+                            <label for="phaseSlider">初相位 φ: <span id="phaseValue">0.0</span> rad</label>
+                            <div class="slider-container">
+                                <input type="range" id="phaseSlider" min="0" max="6.28" step="0.1" value="0">
+                                <div class="value-display" id="phaseDisplay">0.0</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="panel-section">
+                        <h2>视图选项</h2>
+                        
+                        <div class="control-group">
+                            <h3>投影轴选择</h3>
+                            <div class="toggle-group">
+                                <div id="projectXBtn" class="toggle-btn active">X轴投影 (余弦)</div>
+                                <div id="projectYBtn" class="toggle-btn">Y轴投影 (正弦)</div>
+                            </div>
+                        </div>
+                        
+                        <div class="control-group">
+                            <h3>显示选项</h3>
+                            <div class="toggle-group">
+                                <div id="toggleLinesBtn" class="toggle-btn active">显示辅助线</div>
+                                <div id="toggleCoordsBtn" class="toggle-btn active">显示坐标</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="status-display">
+                        <div class="status-item">
+                            <span class="status-label">相位角 (ωt+φ):</span>
+                            <span class="status-value" id="phaseAngleValue">0.00 rad</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">时间 t:</span>
+                            <span class="status-value" id="timeValue">0.00 s</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">位移 x:</span>
+                            <span class="status-value" id="displacementValue">150.00 px</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-panel">
+                <div class="info-toggle" id="infoToggle">
+                    <h2>原理说明</h2>
+                    <div class="toggle-icon" id="toggleIcon">▼</div>
+                </div>
+                <div class="info-content" id="infoContent">
+                    <ul class="info-list">
+                        <li><strong>核心关系</strong>: 匀速圆周运动在直径上的投影是简谐运动。圆周上的质点（青色）在x轴或y轴上的投影点（黄色）做简谐振动。</li>
+                        <li><strong>参数对应</strong>: 圆周半径R对应简谐运动振幅A；圆周角速度ω对应简谐运动角频率ω；圆周相位角(ωt+φ)对应简谐运动相位。</li>
+                        <li><strong>波形图生成</strong>: 右侧波形图记录了投影点的位移随时间的变化，形成正弦/余弦曲线。波形图上的每个点都对应左侧圆周运动的一个特定相位。</li>
+                        <li><strong>相位角</strong>: 表示圆周运动质点的位置角度，决定了简谐运动质点的位移。初相位φ决定了t=0时质点的起始位置。</li>
+                        <li><strong>交互操作</strong>: 调整参数观察变化；使用"单步前进"仔细查看对应关系；切换投影轴观察正弦/余弦波形差异。</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>教学动画演示 | 简谐运动与圆周运动投影关系 | 设计原理：匀速圆周运动在直径上的投影是简谐运动</p>
+        </footer>
+    </div>
+
+    <script>
+        // 获取Canvas元素和上下文
+        const canvas = document.getElementById('animationCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 设置Canvas尺寸
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = 500;
+        }
+        
+        // 初始调整尺寸
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // 动画状态
+        let animationId = null;
+        let isPlaying = false;
+        let time = 0;
+        let lastTime = 0;
+        
+        // 物理参数
+        let amplitude = 150;    // 振幅/半径 (px)
+        let frequency = 1.0;    // 角频率 (rad/s)
+        let phase = 0;          // 初相位 (rad)
+        let speedFactor = 1.0;  // 动画速度因子
+        
+        // 视图选项
+        let projectToX = true;  // true: 投影到X轴 (余弦), false: 投影到Y轴 (正弦)
+        let showLines = true;   // 显示辅助线
+        let showCoords = true;  // 显示坐标
+        
+        // 颜色定义
+        const colors = {
+            background: '#0f172a',
+            canvasBg: '#1e293b',
+            circle: '#94a3b8',
+            circlePoint: '#06b6d4',
+            projectionLine: '#fbbf24',
+            projectionPoint: '#fbbf24',
+            harmonicPath: '#e2e8f0',
+            waveCurve: '#fbbf24',
+            angleArc: '#67e8f9',
+            angleLine: '#67e8f9',
+            text: '#cbd5e1',
+            axis: '#475569',
+            grid: '#334155'
+        };
+        
+        // 获取DOM元素
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const stepBtn = document.getElementById('stepBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const speedSlider = document.getElementById('speedSlider');
+        const speedValue = document.getElementById('speedValue');
+        const speedDisplay = document.getElementById('speedDisplay');
+        const amplitudeSlider = document.getElementById('amplitudeSlider');
+        const amplitudeValue = document.getElementById('amplitudeValue');
+        const amplitudeDisplay = document.getElementById('amplitudeDisplay');
+        const frequencySlider = document.getElementById('frequencySlider');
+        const frequencyValue = document.getElementById('frequencyValue');
+        const frequencyDisplay = document.getElementById('frequencyDisplay');
+        const phaseSlider = document.getElementById('phaseSlider');
+        const phaseValue = document.getElementById('phaseValue');
+        const phaseDisplay = document.getElementById('phaseDisplay');
+        const projectXBtn = document.getElementById('projectXBtn');
+        const projectYBtn = document.getElementById('projectYBtn');
+        const toggleLinesBtn = document.getElementById('toggleLinesBtn');
+        const toggleCoordsBtn = document.getElementById('toggleCoordsBtn');
+        const phaseAngleValue = document.getElementById('phaseAngleValue');
+        const timeValue = document.getElementById('timeValue');
+        const displacementValue = document.getElementById('displacementValue');
+        const infoToggle = document.getElementById('infoToggle');
+        const infoContent = document.getElementById('infoContent');
+        const toggleIcon = document.getElementById('toggleIcon');
+        
+        // 波形数据存储
+        let wavePoints = [];
+        const maxWavePoints = 500;
+        
+        // 初始化事件监听
+        function initEventListeners() {
+            // 动画控制
+            playPauseBtn.addEventListener('click', togglePlayPause);
+            stepBtn.addEventListener('click', stepAnimation);
+            resetBtn.addEventListener('click', resetAnimation);
+            
+            // 参数滑块
+            speedSlider.addEventListener('input', function() {
+                speedFactor = parseFloat(this.value);
+                speedValue.textContent = speedFactor.toFixed(1) + 'x';
+                speedDisplay.textContent = speedFactor.toFixed(1) + 'x';
+            });
+            
+            amplitudeSlider.addEventListener('input', function() {
+                amplitude = parseInt(this.value);
+                amplitudeValue.textContent = amplitude;
+                amplitudeDisplay.textContent = amplitude;
+                // 重置波形数据
+                wavePoints = [];
+            });
+            
+            frequencySlider.addEventListener('input', function() {
+                frequency = parseFloat(this.value);
+                frequencyValue.textContent = frequency.toFixed(1);
+                frequencyDisplay.textContent = frequency.toFixed(1);
+            });
+            
+            phaseSlider.addEventListener('input', function() {
+                phase = parseFloat(this.value);
+                phaseValue.textContent = phase.toFixed(1);
+                phaseDisplay.textContent = phase.toFixed(1);
+                // 重置波形数据
+                wavePoints = [];
+            });
+            
+            // 视图选项
+            projectXBtn.addEventListener('click', function() {
+                projectToX = true;
+                projectXBtn.classList.add('active');
+                projectYBtn.classList.remove('active');
+                // 重置波形数据
+                wavePoints = [];
+            });
+            
+            projectYBtn.addEventListener('click', function() {
+                projectToX = false;
+                projectYBtn.classList.add('active');
+                projectXBtn.classList.remove('active');
+                // 重置波形数据
+                wavePoints = [];
+            });
+            
+            toggleLinesBtn.addEventListener('click', function() {
+                showLines = !showLines;
+                toggleLinesBtn.classList.toggle('active', showLines);
+            });
+            
+            toggleCoordsBtn.addEventListener('click', function() {
+                showCoords = !showCoords;
+                toggleCoordsBtn.classList.toggle('active', showCoords);
+            });
+            
+            // 信息面板切换
+            infoToggle.addEventListener('click', function() {
+                infoContent.classList.toggle('expanded');
+                toggleIcon.textContent = infoContent.classList.contains('expanded') ? '▲' : '▼';
+            });
+        }
+        
+        // 动画控制函数
+        function togglePlayPause() {
+            if (isPlaying) {
+                pauseAnimation();
+            } else {
+                playAnimation();
+            }
+        }
+        
+        function playAnimation() {
+            if (!isPlaying) {
+                isPlaying = true;
+                playPauseBtn.textContent = '暂停';
+                lastTime = performance.now();
+                animationId = requestAnimationFrame(animate);
+            }
+        }
+        
+        function pauseAnimation() {
+            if (isPlaying) {
+                isPlaying = false;
+                playPauseBtn.textContent = '播放';
+                if (animationId) {
+                    cancelAnimationFrame(animationId);
+                    animationId = null;
+                }
+            }
+        }
+        
+        function stepAnimation() {
+            // 前进一个时间步长 (对应π/12弧度)
+            const stepAngle = Math.PI / 12;
+            time += stepAngle / frequency;
+            updateWavePoints();
+            draw();
+        }
+        
+        function resetAnimation() {
+            time = 0;
+            wavePoints = [];
+            draw();
+            
+            // 如果正在播放，继续播放
+            if (isPlaying) {
+                lastTime = performance.now();
+            }
+        }
+        
+        // 动画循环
+        function animate(currentTime) {
+            if (!lastTime) lastTime = currentTime;
+            
+            // 计算时间增量 (考虑速度因子)
+            const deltaTime = (currentTime - lastTime) / 1000; // 转换为秒
+            time += deltaTime * speedFactor;
+            lastTime = currentTime;
+            
+            // 更新波形数据
+            updateWavePoints();
+            
+            // 绘制场景
+            draw();
+            
+            // 更新状态显示
+            updateStatusDisplay();
+            
+            // 继续动画循环
+            if (isPlaying) {
+                animationId = requestAnimationFrame(animate);
+            }
+        }
+        
+        // 更新波形数据点
+        function updateWavePoints() {
+            // 计算当前相位角
+            const phaseAngle = frequency * time + phase;
+            
+            // 计算投影位移
+            let displacement;
+            if (projectToX) {
+                displacement = amplitude * Math.cos(phaseAngle); // X轴投影 (余弦)
+            } else {
+                displacement = amplitude * Math.sin(phaseAngle); // Y轴投影 (正弦)
+            }
+            
+            // 添加新的波形点
+            wavePoints.push({
+                time: time,
+                displacement: displacement,
+                phaseAngle: phaseAngle
+            });
+            
+            // 限制波形点的数量
+            if (wavePoints.length > maxWavePoints) {
+                wavePoints.shift();
+            }
+        }
+        
+        // 绘制整个场景
+        function draw() {
+            // 清除画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 计算布局参数
+            const centerX = canvas.width * 0.3;
+            const centerY = canvas.height / 2;
+            const circleRadius = amplitude;
+            const waveStartX = canvas.width * 0.6;
+            const waveWidth = canvas.width * 0.35;
+            const waveHeight = circleRadius * 2;
+            
+            // 绘制网格背景
+            drawGrid(centerX, centerY, waveStartX, waveWidth, waveHeight);
+            
+            // 绘制左侧圆周运动区域
+            drawCircleMotion(centerX, centerY, circleRadius);
+            
+            // 绘制中央简谐运动区域
+            drawHarmonicMotion(centerX, centerY, circleRadius);
+            
+            // 绘制右侧波形图区域
+            drawWaveGraph(waveStartX, centerY, waveWidth, waveHeight);
+            
+            // 绘制连接线（连接三个区域的关键点）
+            drawConnections(centerX, centerY, circleRadius, waveStartX, waveHeight);
+        }
+        
+        // 绘制网格背景
+        function drawGrid(centerX, centerY, waveStartX, waveWidth, waveHeight) {
+            ctx.strokeStyle = colors.grid;
+            ctx.lineWidth = 0.5;
+            ctx.setLineDash([2, 2]);
+            
+            // 左侧区域网格
+            const gridSize = 40;
+            for (let x = centerX - 300; x <= centerX + 300; x += gridSize) {
+                if (x >= 0 && x <= waveStartX - 50) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, canvas.height);
+                    ctx.stroke();
+                }
+            }
+            
+            for (let y = centerY - 300; y <= centerY + 300; y += gridSize) {
+                if (y >= 0 && y <= canvas.height) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(waveStartX - 50, y);
+                    ctx.stroke();
+                }
+            }
+            
+            // 波形图区域网格
+            for (let x = waveStartX; x <= waveStartX + waveWidth; x += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(x, centerY - waveHeight/2);
+                ctx.lineTo(x, centerY + waveHeight/2);
+                ctx.stroke();
+            }
+            
+            for (let y = centerY - waveHeight/2; y <= centerY + waveHeight/2; y += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(waveStartX, y);
+                ctx.lineTo(waveStartX + waveWidth, y);
+                ctx.stroke();
+            }
+            
+            ctx.setLineDash([]);
+        }
+        
+        // 绘制圆周运动
+        function drawCircleMotion(centerX, centerY, radius) {
+            // 绘制圆周轨迹
+            ctx.strokeStyle = colors.circle;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            // 计算当前相位角
+            const phaseAngle = frequency * time + phase;
+            
+            // 计算圆周上的质点位置
+            const circlePointX = centerX + radius * Math.cos(phaseAngle);
+            const circlePointY = centerY - radius * Math.sin(phaseAngle); // 注意：Canvas Y轴向下为正
+            
+            // 绘制坐标轴
+            ctx.strokeStyle = colors.axis;
+            ctx.lineWidth = 1;
+            
+            // X轴
+            ctx.beginPath();
+            ctx.moveTo(centerX - radius - 20, centerY);
+            ctx.lineTo(centerX + radius + 20, centerY);
+            ctx.stroke();
+            
+            // Y轴
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY - radius - 20);
+            ctx.lineTo(centerX, centerY + radius + 20);
+            ctx.stroke();
+            
+            // 绘制相位角
+            if (showLines) {
+                ctx.strokeStyle = colors.angleArc;
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius * 0.3, 0, phaseAngle, phaseAngle < 0);
+                ctx.stroke();
+                
+                // 角度线
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.lineTo(
+                    centerX + radius * 0.3 * Math.cos(phaseAngle),
+                    centerY - radius * 0.3 * Math.sin(phaseAngle)
+                );
+                ctx.stroke();
+                
+                // 角度标签
+                ctx.fillStyle = colors.angleArc;
+                ctx.font = '14px Arial';
+                const angleLabelX = centerX + radius * 0.35 * Math.cos(phaseAngle/2);
+                const angleLabelY = centerY - radius * 0.35 * Math.sin(phaseAngle/2) - 5;
+                ctx.fillText(`φ = ${phaseAngle.toFixed(2)} rad`, angleLabelX, angleLabelY);
+            }
+            
+            // 绘制圆周上的质点
+            ctx.fillStyle = colors.circlePoint;
+            ctx.beginPath();
+            ctx.arc(circlePointX, circlePointY, 8, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 绘制半径线
+            if (showLines) {
+                ctx.strokeStyle = colors.angleLine;
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.lineTo(circlePointX, circlePointY);
+                ctx.stroke();
+                
+                // 半径标签
+                ctx.fillStyle = colors.angleLine;
+                ctx.font = '14px Arial';
+                const radiusLabelX = (centerX + circlePointX) / 2;
+                const radiusLabelY = (centerY + circlePointY) / 2;
+                ctx.fillText(`R = A = ${amplitude}`, radiusLabelX + 5, radiusLabelY - 5);
+            }
+            
+            // 绘制坐标标签
+            ctx.fillStyle = colors.text;
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText('圆周运动', centerX - 40, centerY - radius - 30);
+            ctx.fillText(`ω = ${frequency.toFixed(1)} rad/s`, centerX - 40, centerY - radius - 10);
+        }
+        
+        // 绘制简谐运动
+        function drawHarmonicMotion(centerX, centerY, radius) {
+            // 计算当前相位角
+            const phaseAngle = frequency * time + phase;
+            
+            // 计算投影点位置
+            let projectionX, projectionY;
+            if (projectToX) {
+                // X轴投影
+                projectionX = centerX + radius * Math.cos(phaseAngle);
+                projectionY = centerY;
+            } else {
+                // Y轴投影
+                projectionX = centerX;
+                projectionY = centerY - radius * Math.sin(phaseAngle);
+            }
+            
+            // 绘制投影轴
+            ctx.strokeStyle = colors.harmonicPath;
+            ctx.lineWidth = 2;
+            
+            if (projectToX) {
+                // X轴投影 - 绘制水平线
+                ctx.beginPath();
+                ctx.moveTo(centerX - radius, centerY);
+                ctx.lineTo(centerX + radius, centerY);
+                ctx.stroke();
+                
+                // 绘制投影线
+                if (showLines) {
+                    ctx.strokeStyle = colors.projectionLine;
+                    ctx.lineWidth = 1;
+                    ctx.setLineDash([5, 3]);
+                    ctx.beginPath();
+                    const circlePointX = centerX + radius * Math.cos(phaseAngle);
+                    const circlePointY = centerY - radius * Math.sin(phaseAngle);
+                    ctx.moveTo(circlePointX, circlePointY);
+                    ctx.lineTo(projectionX, projectionY);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                }
+            } else {
+                // Y轴投影 - 绘制垂直线
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY - radius);
+                ctx.lineTo(centerX, centerY + radius);
+                ctx.stroke();
+                
+                // 绘制投影线
+                if (showLines) {
+                    ctx.strokeStyle = colors.projectionLine;
+                    ctx.lineWidth = 1;
+                    ctx.setLineDash([5, 3]);
+                    ctx.beginPath();
+                    const circlePointX = centerX + radius * Math.cos(phaseAngle);
+                    const circlePointY = centerY - radius * Math.sin(phaseAngle);
+                    ctx.moveTo(circlePointX, circlePointY);
+                    ctx.lineTo(projectionX, projectionY);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                }
+            }
+            
+            // 绘制投影点（简谐运动质点）
+            ctx.fillStyle = colors.projectionPoint;
+            ctx.beginPath();
+            ctx.arc(projectionX, projectionY, 6, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 绘制简谐运动标签
+            ctx.fillStyle = colors.text;
+            ctx.font = 'bold 16px Arial';
+            const labelY = projectToX ? centerY + 40 : centerX + 40;
+            const labelX = projectToX ? centerX - 40 : centerX + 20;
+            const labelText = projectToX ? 'X轴投影 (余弦)' : 'Y轴投影 (正弦)';
+            ctx.fillText('简谐运动', labelX, labelY);
+            ctx.fillText(labelText, labelX, labelY + 20);
+        }
+        
+        // 绘制波形图
+        function drawWaveGraph(startX, centerY, width, height) {
+            // 绘制坐标轴
+            ctx.strokeStyle = colors.axis;
+            ctx.lineWidth = 2;
+            
+            // 时间轴 (X轴)
+            ctx.beginPath();
+            ctx.moveTo(startX, centerY);
+            ctx.lineTo(startX + width, centerY);
+            ctx.stroke();
+            
+            // 位移轴 (Y轴)
+            ctx.beginPath();
+            ctx.moveTo(startX, centerY - height/2);
+            ctx.lineTo(startX, centerY + height/2);
+            ctx.stroke();
+            
+            // 坐标轴标签
+            ctx.fillStyle = colors.text;
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText('波形图 x(t)', startX + width/2 - 40, centerY - height/2 - 10);
+            ctx.font = '14px Arial';
+            ctx.fillText('位移 x', startX - 30, centerY - height/2 + 10);
+            ctx.fillText('时间 t', startX + width - 20, centerY + 20);
+            
+            // 绘制刻度
+            ctx.strokeStyle = colors.axis;
+            ctx.lineWidth = 1;
+            
+            // Y轴刻度 (位移)
+            for (let i = -2; i <= 2; i++) {
+                if (i === 0) continue;
+                const y = centerY - (i/2) * (height/2);
+                ctx.beginPath();
+                ctx.moveTo(startX - 5, y);
+                ctx.lineTo(startX, y);
+                ctx.stroke();
+                
+                ctx.fillText(`${i * amplitude/2}`, startX - 30, y + 4);
+            }
+            
+            // 绘制波形曲线
+            if (wavePoints.length > 1) {
+                ctx.strokeStyle = colors.waveCurve;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                
+                // 找到时间范围
+                const maxTime = wavePoints[wavePoints.length - 1].time;
+                const minTime = Math.max(0, maxTime - 10); // 显示最近10秒
+                
+                for (let i = 0; i < wavePoints.length; i++) {
+                    const point = wavePoints[i];
+                    
+                    // 只绘制在时间范围内的点
+                    if (point.time >= minTime) {
+                        const x = startX + ((point.time - minTime) / (maxTime - minTime)) * width;
+                        const y = centerY - (point.displacement / amplitude) * (height/2);
+                        
+                        if (i === 0) {
+                            ctx.moveTo(x, y);
+                        } else {
+                            ctx.lineTo(x, y);
+                        }
+                    }
+                }
+                
+                ctx.stroke();
+            }
+            
+            // 绘制当前时间点
+            if (wavePoints.length > 0) {
+                const currentPoint = wavePoints[wavePoints.length - 1];
+                const maxTime = wavePoints[wavePoints.length - 1].time;
+                const minTime = Math.max(0, maxTime - 10);
+                
+                const currentX = startX + ((currentPoint.time - minTime) / (maxTime - minTime)) * width;
+                const currentY = centerY - (currentPoint.displacement / amplitude) * (height/2);
+                
+                // 绘制时间线
+                ctx.strokeStyle = colors.projectionLine;
+                ctx.lineWidth = 1;
+                ctx.setLineDash([3, 3]);
+                ctx.beginPath();
+                ctx.moveTo(currentX, centerY - height/2);
+                ctx.lineTo(currentX, centerY + height/2);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                // 绘制当前波形点
+                ctx.fillStyle = colors.projectionPoint;
+                ctx.beginPath();
+                ctx.arc(currentX, currentY, 6, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 显示当前坐标
+                if (showCoords) {
+                    ctx.fillStyle = colors.projectionLine;
+                    ctx.font = '14px Arial';
+                    ctx.fillText(`t=${currentPoint.time.toFixed(2)}`, currentX + 5, centerY - height/2 + 15);
+                    ctx.fillText(`x=${currentPoint.displacement.toFixed(1)}`, currentX + 5, currentY - 10);
+                }
+            }
+            
+            // 绘制波形图标签
+            const waveType = projectToX ? 'x = A·cos(ωt+φ)' : 'x = A·sin(ωt+φ)';
+            ctx.fillStyle = colors.text;
+            ctx.font = '14px Arial';
+            ctx.fillText(waveType, startX + 10, centerY - height/2 + 25);
+        }
+        
+        // 绘制连接线
+        function drawConnections(centerX, centerY, radius, waveStartX, waveHeight) {
+            if (!showLines || wavePoints.length === 0) return;
+            
+            const current
+<!--检测到代码截断，自动续写中...-->
+const currentPoint = wavePoints[wavePoints.length - 1];
+            const phaseAngle = currentPoint.phaseAngle;
+            
+            // 计算圆周上的点
+            const circlePointX = centerX + radius * Math.cos(phaseAngle);
+            const circlePointY = centerY - radius * Math.sin(phaseAngle);
+            
+            // 计算投影点
+            let projectionX, projectionY;
+            if (projectToX) {
+                projectionX = centerX + radius * Math.cos(phaseAngle);
+                projectionY = centerY;
+            } else {
+                projectionX = centerX;
+                projectionY = centerY - radius * Math.sin(phaseAngle);
+            }
+            
+            // 计算波形图上的点
+            const maxTime = wavePoints[wavePoints.length - 1].time;
+            const minTime = Math.max(0, maxTime - 10);
+            const waveX = waveStartX + ((currentPoint.time - minTime) / (maxTime - minTime)) * (canvas.width * 0.35);
+            const waveY = centerY - (currentPoint.displacement / amplitude) * (waveHeight/2);
+            
+            // 绘制从圆周点到投影点的连接线
+            ctx.strokeStyle = colors.projectionLine;
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([5, 3]);
+            ctx.beginPath();
+            ctx.moveTo(circlePointX, circlePointY);
+            ctx.lineTo(projectionX, projectionY);
+            ctx.stroke();
+            
+            // 绘制从投影点到波形图的连接线
+            ctx.beginPath();
+            ctx.moveTo(projectionX, projectionY);
+            ctx.lineTo(waveX, waveY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // 绘制连接点
+            ctx.fillStyle = colors.projectionLine;
+            ctx.beginPath();
+            ctx.arc(projectionX, projectionY, 4, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        // 更新状态显示
+        function updateStatusDisplay() {
+            if (wavePoints.length > 0) {
+                const currentPoint = wavePoints[wavePoints.length - 1];
+                const phaseAngle = currentPoint.phaseAngle;
+                
+                phaseAngleValue.textContent = phaseAngle.toFixed(2) + ' rad';
+                timeValue.textContent = currentPoint.time.toFixed(2) + ' s';
+                displacementValue.textContent = currentPoint.displacement.toFixed(2) + ' px';
+            }
+        }
+        
+        // 初始化
+        function init() {
+            initEventListeners();
+            updateWavePoints();
+            draw();
+            updateStatusDisplay();
+            
+            // 初始绘制
+            requestAnimationFrame(() => {
+                draw();
+            });
+        }
+        
+        // 启动初始化
+        init();
+    </script>
+</body>
+</html>

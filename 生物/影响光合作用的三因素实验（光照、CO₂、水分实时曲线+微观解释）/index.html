@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>光合作用三因素实验 | 交互式教学动画</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background-color: #E8F5E9;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px;
+            background-color: #2E8B57;
+            color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(46, 139, 87, 0.2);
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .control-panel {
+            flex: 1;
+            min-width: 300px;
+            background-color: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .experiment-area {
+            flex: 2;
+            min-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .plant-container {
+            flex: 1;
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+            min-height: 350px;
+        }
+
+        .graph-container {
+            flex: 1;
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            min-height: 350px;
+        }
+
+        .factor-control {
+            margin-bottom: 30px;
+        }
+
+        .factor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .factor-title {
+            font-weight: 600;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .color-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+
+        .light-color { background-color: #1E88E5; }
+        .co2-color { background-color: #43A047; }
+        .water-color { background-color: #FF9800; }
+
+        .lock-btn {
+            padding: 6px 15px;
+            border: none;
+            border-radius: 20px;
+            background-color: #546E7A;
+            color: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .lock-btn:hover {
+            opacity: 0.9;
+        }
+
+        .lock-btn.locked {
+            background-color: #2E8B57;
+        }
+
+        .slider-container {
+            margin-top: 15px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .slider-value {
+            font-weight: 600;
+        }
+
+        .slider {
+            width: 100%;
+            height: 10px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #E0E0E0;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .light-slider::-webkit-slider-thumb { background-color: #1E88E5; }
+        .co2-slider::-webkit-slider-thumb { background-color: #43A047; }
+        .water-slider::-webkit-slider-thumb { background-color: #FF9800; }
+
+        .control-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s;
+            flex: 1;
+        }
+
+        .btn-primary {
+            background-color: #2E8B57;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #26734a;
+        }
+
+        .btn-secondary {
+            background-color: #FF5252;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #ff3838;
+        }
+
+        .mode-selector {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .mode-btn {
+            padding: 10px 20px;
+            border: 2px solid #2E8B57;
+            background-color: white;
+            color: #2E8B57;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            flex: 1;
+            transition: all 0.3s;
+        }
+
+        .mode-btn.active {
+            background-color: #2E8B57;
+            color: white;
+        }
+
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+        }
+
+        #plantCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        #graphCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .micro-explanation {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #2E8B57;
+            font-size: 0.95rem;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        .explanation-title {
+            font-weight: 600;
+            color: #2E8B57;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hint {
+            background-color: rgba(30, 136, 229, 0.1);
+            border-left: 4px solid #1E88E5;
+            padding: 12px;
+            border-radius: 4px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 1100px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .control-panel, .experiment-area {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>光合作用三因素实验</h1>
+            <p class="subtitle">光照、CO₂、水分对光合作用速率的影响 | 实时曲线与微观解释</p>
+        </header>
+
+        <div class="main-content">
+            <!-- 左侧控制面板 -->
+            <div class="control-panel">
+                <div class="factor-control">
+                    <div class="factor-header">
+                        <div class="factor-title">
+                            <div class="color-indicator light-color"></div>
+                            光照强度
+                        </div>
+                        <button id="lightLock" class="lock-btn locked">已锁定</button>
+                    </div>
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>弱光</span>
+                            <span class="slider-value" id="lightValue">50%</span>
+                            <span>强光</span>
+                        </div>
+                        <input type="range" min="0" max="100" value="50" class="slider light-slider" id="lightSlider">
+                    </div>
+                    <div class="hint" id="lightHint">
+                        调整光照强度，观察光反应速率变化。光反应为暗反应提供ATP和NADPH。
+                    </div>
+                </div>
+
+                <div class="factor-control">
+                    <div class="factor-header">
+                        <div class="factor-title">
+                            <div class="color-indicator co2-color"></div>
+                            CO₂浓度
+                        </div>
+                        <button id="co2Lock" class="lock-btn">未锁定</button>
+                    </div>
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>低浓度</span>
+                            <span class="slider-value" id="co2Value">50%</span>
+                            <span>高浓度</span>
+                        </div>
+                        <input type="range" min="0" max="100" value="50" class="slider co2-slider" id="co2Slider">
+                    </div>
+                    <div class="hint" id="co2Hint">
+                        CO₂是暗反应的原料。调整浓度，观察其对卡尔文循环的影响。
+                    </div>
+                </div>
+
+                <div class="factor-control">
+                    <div class="factor-header">
+                        <div class="factor-title">
+                            <div class="color-indicator water-color"></div>
+                            土壤水分
+                        </div>
+                        <button id="waterLock" class="lock-btn">未锁定</button>
+                    </div>
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>干燥</span>
+                            <span class="slider-value" id="waterValue">50%</span>
+                            <span>湿润</span>
+                        </div>
+                        <input type="range" min="0" max="100" value="50" class="slider water-slider" id="waterSlider">
+                    </div>
+                    <div class="hint" id="waterHint">
+                        水分影响气孔开闭，从而影响CO₂吸收。水分不足会导致气孔关闭。
+                    </div>
+                </div>
+
+                <div class="mode-selector">
+                    <button id="singleMode" class="mode-btn active">单因素实验模式</button>
+                    <button id="multiMode" class="mode-btn">综合探索模式</button>
+                </div>
+
+                <div class="control-buttons">
+                    <button id="resetBtn" class="btn btn-secondary">重置实验</button>
+                    <button id="demoBtn" class="btn btn-primary">显示典型曲线</button>
+                </div>
+            </div>
+
+            <!-- 右侧实验区域 -->
+            <div class="experiment-area">
+                <!-- 植物实验容器 -->
+                <div class="plant-container">
+                    <div class="canvas-container">
+                        <canvas id="plantCanvas"></canvas>
+                        <div class="micro-explanation">
+                            <div class="explanation-title">
+                                <span>🔬 微观过程解释</span>
+                            </div>
+                            <div id="explanationText">
+                                等待实验开始... 请调整上方因素滑块，观察光合作用的微观过程变化。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 实时曲线图 -->
+                <div class="graph-container">
+                    <div class="canvas-container">
+                        <canvas id="graphCanvas"></canvas>
+                    </div>
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="color-indicator light-color"></div>
+                            <span>光照强度曲线</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-indicator co2-color"></div>
+                            <span>CO₂浓度曲线</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-indicator water-color"></div>
+                            <span>水分含量曲线</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let currentMode = 'single'; // 'single' 或 'multi'
+        let activeFactor = 'light'; // 当前活跃因素
+        let dataPoints = {
+            light: [],
+            co2: [],
+            water: []
+        };
+        let experimentHistory = [];
+        let animationId = null;
+
+        // 获取DOM元素
+        const plantCanvas = document.getElementById('plantCanvas');
+        const graphCanvas = document.getElementById('graphCanvas');
+        const plantCtx = plantCanvas.getContext('2d');
+        const graphCtx = graphCanvas.getContext('2d');
+        
+        // 控制元素
+        const lightSlider = document.getElementById('lightSlider');
+        const co2Slider = document.getElementById('co2Slider');
+        const waterSlider = document.getElementById('waterSlider');
+        
+        const lightValue = document.getElementById('lightValue');
+        const co2Value = document.getElementById('co2Value');
+        const waterValue = document.getElementById('waterValue');
+        
+        const lightLock = document.getElementById('lightLock');
+        const co2Lock = document.getElementById('co2Lock');
+        const waterLock = document.getElementById('waterLock');
+        
+        const lightHint = document.getElementById('lightHint');
+        const co2Hint = document.getElementById('co2Hint');
+        const waterHint = document.getElementById('waterHint');
+        
+        const explanationText = document.getElementById('explanationText');
+        
+        const resetBtn = document.getElementById('resetBtn');
+        const demoBtn = document.getElementById('demoBtn');
+        const singleModeBtn = document.getElementById('singleMode');
+        const multiModeBtn = document.getElementById('multiMode');
+
+        // 初始化画布大小
+        function initCanvasSize() {
+            const plantContainer = document.querySelector('.plant-container .canvas-container');
+            const graphContainer = document.querySelector('.graph-container .canvas-container');
+            
+            plantCanvas.width = plantContainer.clientWidth;
+            plantCanvas.height = plantContainer.clientHeight;
+            
+            graphCanvas.width = graphContainer.clientWidth;
+            graphCanvas.height = graphContainer.clientHeight;
+        }
+
+        // 计算光合作用速率
+        function calculatePhotosynthesisRate(light, co2, water) {
+            // 模拟三因素对光合作用速率的影响
+            // 光照：S型曲线，饱和点约在70%
+            let lightEffect = 1 - Math.exp(-light / 30);
+            if (light > 70) lightEffect = 1 - Math.exp(-70 / 30) + (light - 70) * 0.002;
+            
+            // CO₂：S型曲线，饱和点约在60%
+            let co2Effect = 1 - Math.exp(-co2 / 25);
+            if (co2 > 60) co2Effect = 1 - Math.exp(-60 / 25) + (co2 - 60) * 0.001;
+            
+            // 水分：抛物线型，最优点在70%
+            let waterEffect;
+            if (water <= 70) {
+                waterEffect = water / 70;
+            } else {
+                waterEffect = 1 - (water - 70) / 30;
+            }
+            if (waterEffect < 0) waterEffect = 0;
+            
+            // 限制因子：取最小值，模拟限制因子定律
+            let rate = Math.min(lightEffect, co2Effect, waterEffect) * 100;
+            
+            // 在综合模式下，考虑因素的协同作用
+            if (currentMode === 'multi') {
+                rate = (lightEffect * co2Effect * waterEffect * 120);
+            }
+            
+            return Math.min(rate, 100);
+        }
+
+        // 获取当前因素值
+        function getCurrentValues() {
+            return {
+                light: parseInt(lightSlider.value),
+                co2: parseInt(co2Slider.value),
+                water: parseInt(waterSlider.value)
+            };
+        }
+
+        // 绘制植物实验场景
+        function drawPlantScene(light, co2, water, rate) {
+            const ctx = plantCtx;
+            const width = plantCanvas.width;
+            const height = plantCanvas.height;
+            
+            // 清空画布
+            ctx.clearRect(0, 0, width, height);
+            
+            // 绘制背景
+            ctx.fillStyle = '#E8F5E9';
+            ctx.fillRect(0, 0, width, height);
+            
+            // 绘制实验容器
+            ctx.fillStyle = '#B3E5FC';
+            ctx.fillRect(width * 0.1, height * 0.1, width * 0.8, height * 0.7);
+            ctx.strokeStyle = '#1E88E5';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(width * 0.1, height * 0.1, width * 0.8, height * 0.7);
+            
+            // 绘制土壤
+            ctx.fillStyle = '#8D6E63';
+            ctx.fillRect(width * 0.1, height * 0.7, width * 0.8, height * 0.2);
+            
+            // 绘制水位（根据水分）
+            const waterLevel = height * 0.7 - (water / 100) * height * 0.1;
+            ctx.fillStyle = 'rgba(30, 136, 229, 0.3)';
+            ctx.fillRect(width * 0.1, waterLevel, width * 0.8, height * 0.7 - waterLevel);
+            
+            // 绘制植物茎
+            ctx.beginPath();
+            ctx.moveTo(width * 0.5, height * 0.7);
+            ctx.lineTo(width * 0.5, height * 0.4);
+            ctx.strokeStyle = '#388E3C';
+            ctx.lineWidth = 8;
+            ctx.stroke();
+            
+            // 绘制叶片（根据光合速率改变大小和颜色）
+            const leafColor = rate > 50 ? '#4CAF50' : '#8BC34A';
+            ctx.fillStyle = leafColor;
+            
+            // 左叶片
+            ctx.beginPath();
+            ctx.ellipse(width * 0.4, height * 0.45, 40 + rate * 0.3, 20 + rate * 0.2, -Math.PI/6, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 右叶片
+            ctx.beginPath();
+            ctx.ellipse(width * 0.6, height * 0.45, 40 + rate * 0.3, 20 + rate * 0.2, Math.PI/6, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 绘制气泡（根据光合速率）
+            const bubbleCount = Math.floor(rate / 10);
+            const now = Date.now();
+            
+            for (let i = 0; i < bubbleCount; i++) {
+                const x = width * 0.5 + Math.sin(now/1000 + i) * 30;
+                const y = height * 0.4 - (now/50 + i * 50) % (height * 0.5);
+                const size = 3 + Math.sin(now/500 + i) * 2;
+                
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(33, 150, 243, 0.7)';
+                ctx.fill();
+                
+                // 气泡高光
+                ctx.beginPath();
+                ctx.arc(x - size/3, y - size/3, size/3, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                ctx.fill();
+            }
+            
+            // 绘制光照效果
+            if (light > 0) {
+                const gradient = ctx.createRadialGradient(
+                    width * 0.8, height * 0.2, 10,
+                    width * 0.8, height * 0.2, 100 + light
+                );
+                gradient.addColorStop(0, 'rgba(255, 255, 200, 0.8)');
+                gradient.addColorStop(1, 'rgba(255, 255, 200, 0)');
+                
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, width, height);
+            }
+            
+            // 绘制微观解释图标
+            drawMicroExplanation(ctx, width, height, light, co2, water, rate);
+        }
+
+        // 绘制微观解释
+        function drawMicroExplanation(ctx, width, height, light, co2, water, rate) {
+            const centerX = width * 0.8;
+            const centerY = height * 0.25;
+            const size = 80;
+            
+            // 绘制叶绿体容器
+            ctx.fillStyle = 'rgba(76, 175, 80, 0.1)';
+            ctx.fillRect(centerX - size/2, centerY - size/2, size, size);
+            ctx.strokeStyle = '#4CAF50';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(centerX - size/2, centerY - size/2, size, size);
+            
+            // 绘制光反应（左侧）
+            const lightReactionX = centerX - size/3;
+            
+            // 光子
+            for (let i = 0; i < Math.floor(light/20); i++) {
+                const angle = (Date.now()/500 + i) % (Math.PI * 2);
+                const x = lightReactionX + Math.cos(angle) * 15;
+                const y = centerY + Math.sin(angle) * 15;
+                
+                ctx.beginPath();
+                ctx.arc(x, y, 3, 0, Math.PI * 2);
+                ctx.fillStyle = '#FFC107';
+                ctx.fill();
+            }
+            
+            // 水分子分解
+            ctx.font = '12px Arial';
+            ctx.fillStyle = '#2196F3';
+            ctx.fillText('H₂O', lightReactionX - 10, centerY + 30);
+            
+            if (light > 30) {
+                ctx.fillText('→', lightReactionX, centerY + 30);
+                ctx.fillStyle = '#4CAF50';
+                ctx.fillText('O₂', lightReactionX + 10, centerY + 30);
+            }
+            
+            // 绘制ATP/NADPH（小电池）
+            if (light > 20) {
+                ctx.fillStyle = '#FF9800';
+                ctx.fillRect(lightReactionX - 8, centerY - 20, 16, 10);
+                ctx.fillStyle = '#795548';
+                ctx.fillRect(lightReactionX - 3, centerY - 25, 6, 5);
+            }
+            
+            // 绘制暗反应（右侧）
+            const darkReactionX = centerX + size/3;
+            
+            // CO₂分子
+            ctx.fillStyle = '#43A047';
+            for (let i = 0; i < Math.floor(co2/25); i++) {
+                const x = darkReactionX + Math.sin(Date.now()/800 + i) * 10;
+                const y = centerY - 15 + i * 8;
+                
+                ctx.beginPath();
+                ctx.arc(x, y, 4, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = 'white';
+                ctx.font = '10px Arial';
+                ctx.fillText('CO₂', x - 8, y + 3);
+                ctx.fillStyle = '#43A047';
+            }
+            
+            // 绘制糖分子（如果条件合适）
+            if (co2 > 30 && light > 30 && water > 30) {
+                ctx.fillStyle = '#8BC34A';
+                ctx.beginPath();
+                ctx.arc(darkReactionX, centerY + 20, 6, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = 'white';
+                ctx.font = '10px Arial';
+                ctx.fillText('C₆H₁₂O₆', darkReactionX - 15, centerY + 25);
+            }
+            
+            // 绘制水分影响指示器
+            if (water < 30) {
+                ctx.fillStyle = '#FF5252';
+                ctx.font = 'bold 14px Arial';
+                ctx.fillText('气孔关闭', centerX - 25, centerY - 40);
+            }
+        }
+
+        // 绘制实时曲线图
+        function drawGraph() {
+            const ctx = graphCtx;
+            const width = graphCanvas.width;
+            const height = graphCanvas.height;
+            
+            // 清空画布
+            ctx.clearRect(0, 0, width, height);
+            
+            // 绘制坐标轴
+            ctx.strokeStyle = '#546E7A';
+            ctx.lineWidth = 2;
+            
+            // Y轴
+            ctx.beginPath();
+            ctx.moveTo(50, 30);
+            ctx.lineTo(50, height - 50);
+            ctx.stroke();
+            
+            // X轴
+            ctx.beginPath();
+            ctx.moveTo(50, height - 50);
+            ctx.lineTo(width - 30, height - 50);
+            ctx.stroke();
+            
+            // 坐标轴标签
+            ctx.fillStyle = '#546E7A';
+            ctx.font = '14px Arial';
+            ctx.fillText('光合作用速率 (%)', 10, 20);
+            ctx.fillText('因素强度 (%)', width - 80, height - 20);
+            
+            // Y轴刻度
+            for (let i = 0; i <= 100; i += 20) {
+                const y = height - 50 - (i / 100) * (height - 100);
+                ctx.beginPath();
+                ctx.moveTo(45, y);
+                ctx.lineTo(50, y);
+                ctx.stroke();
+                
+                ctx.fillText(i.toString(), 30, y + 4);
+            }
+            
+            // X轴刻度
+            for (let i = 0; i <= 100; i += 20) {
+                const x = 50 + (i / 100) * (width - 100);
+                ctx.beginPath();
+                ctx.moveTo(x, height - 50);
+                ctx.lineTo(x, height - 45);
+                ctx.stroke();
+                
+                ctx.fillText(i.toString(), x - 5, height - 30);
+            }
+            
+            // 绘制数据点
+            drawDataPoints(ctx, width, height, 'light', '#1E88E5');
+            drawDataPoints(ctx, width, height, 'co2', '#43A047');
+            drawDataPoints(ctx, width, height, 'water', '#FF9800');
+            
+            // 绘制当前点
+            const values = getCurrentValues();
+            const rate = calculatePhotosynthesisRate(values.light, values.co2, values.water);
+            
+            let currentX;
+            if (currentMode === 'single') {
+                switch(activeFactor) {
+                    case 'light':
+                        currentX = 50 + (values.light / 100) * (width - 100);
+                        break;
+                    case 'co2':
+                        currentX = 50 + (values.co2 / 100) * (width - 100);
+                        break;
+                    case 'water':
+                        currentX = 50 + (values.water / 100) * (width - 100);
+                        break;
+                }
+            } else {
+                currentX = 50 + (values.light / 100) * (width - 100);
+            }
+            
+            const currentY = height - 50 - (rate / 100) * (height - 100);
+            
+            // 绘制当前点
+            ctx.beginPath();
+            ctx.arc(currentX, currentY, 8, 0, Math.PI * 2);
+            ctx.fillStyle = '#FF5252';
+            ctx.fill();
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        // 绘制数据点
+        function drawDataPoints(ctx, width, height, factor, color) {
+            const points = dataPoints[factor];
+            if (points.length === 0) return;
+            
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 3;
+            ctx.setLineDash([]);
+            
+            // 绘制连线
+            ctx.beginPath();
+            for (let i = 0; i < points.length; i++) {
+                const x = 50 + (points[i].x / 100) * (width - 100);
+                const y = height - 50 - (points[i].y / 100) * (height - 100);
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.stroke();
+            
+            // 绘制数据点
+            ctx.fillStyle = color;
+            for (let i = 0; i < points.length; i++) {
+                const x = 50 + (points[i].x / 100) * (width - 100);
+                const y = height - 50 - (points[i].y / 100) * (height - 100);
+                
+                ctx.beginPath();
+                ctx.arc(x, y, 5, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        // 更新解释文本
+        function updateExplanation(light, co2, water, rate) {
+            let explanation = '';
+            
+            if (currentMode === 'single') {
+                switch(activeFactor) {
+                    case 'light':
+                        if (light < 30) {
+                            explanation = `💡 光照较弱：光反应速率低，产生的ATP和NADPH不足，限制了整个光合作用过程。`;
+                        } else if (light < 70) {
+                            explanation = `💡 光照适中：光反应正常进行，为暗反应提供充足的ATP和NADPH。光合速率随光照增强而提高。`;
+                        } else {
+                            explanation = `💡 光照过强：已达到光饱和点。继续增加光照，光合速率不再提高，可能引起光抑制。`;
+                        }
+                        break;
+                        
+                    case 'co2':
+                        if (co2 < 20) {
+                            explanation = `🌿 CO₂浓度低：暗反应原料不足，卡尔文循环受限。即使光反应正常，光合速率也很低。`;
+                        } else if (co2 < 60) {
+                            explanation = `🌿 CO₂浓度适中：暗反应正常进行，CO₂被固定为有机物。光合速率随CO₂浓度增加而提高。`;
+                        } else {
+                            explanation = `🌿 CO₂浓度高：已达到CO₂饱和点。继续增加CO₂，光合速率提高不明显。`;
+                        }
+                        break;
+                        
+                    case 'water':
+                        if (water < 30) {
+                            explanation = `💧 水分不足：植物气孔关闭以减少水分蒸发，但同时限制了CO₂的吸收。光合速率显著下降。`;
+                        } else if (water < 70) {
+                            explanation = `💧 水分适中：气孔正常开放，CO₂吸收良好。水分参与光反应，提供电子和H⁺。`;
+                        } else {
+                            explanation = `💧 水分过多：土壤缺氧影响根系呼吸，间接限制光合作用。`;
+                        }
+                        break;
+                }
+            } else {
+                // 综合模式解释
+                const limitingFactor = getLimitingFactor(light, co2, water, rate);
+                explanation = `🔬 综合模式：当前光合速率 ${rate.toFixed(1)}%。`;
+                
+                if (limitingFactor) {
+                    explanation += ` 主要限制因子：${limitingFactor}。`;
+                }
+                
+                if (rate > 70) {
+                    explanation += ` 三因素配合良好，光合作用高效进行。`;
+                }
+            }
+            
+            explanationText.textContent = explanation;
+        }
+
+        // 获取主要限制因子
+        function getLimitingFactor(light, co2, water, rate) {
+            const lightEffect = 1 - Math.exp(-light / 30);
+            const co2Effect = 1 - Math.exp(-co2 / 25);
+            const waterEffect = water <= 70 ? water / 70 : 1 - (water - 70) / 30;
+            
+            const minEffect = Math.min(lightEffect, co2Effect, waterEffect);
+            
+            if (minEffect === lightEffect && lightEffect < 0.7) return '光照强度';
+            if (minEffect === co2Effect && co2Effect < 0.7) return 'CO₂浓度';
+            if (minEffect === waterEffect && waterEffect < 0.7) return '土壤水分';
+            
+            return null;
+        }
+
+        // 添加数据点
+        function addDataPoint(factor, x, y) {
+            dataPoints[factor].push({x, y});
+            
+            // 保持最多20个数据点
+            if (dataPoints[factor].length > 20) {
+                dataPoints[factor].shift();
+            }
+        }
+
+        // 更新滑块值显示
+        function updateSliderValues() {
+            lightValue.textContent = `${lightSlider.value}%`;
+            co2Value.textContent = `${co2Slider.value}%`;
+            waterValue.textContent = `${waterSlider.value}%`;
+        }
+
+        // 重置实验
+        function resetExperiment() {
+            dataPoints = {
+                light: [],
+                co2: [],
+                water: []
+            };
+            
+            lightSlider.value = 50;
+            co2Slider.value = 50;
+            waterSlider.value = 50;
+            
+            updateSliderValues();
+            updateDisplay();
+            
+            explanationText.textContent = '实验已重置。请调整因素滑块开始新的实验。';
+        }
+
+        // 显示典型曲线
+        function showDemoCurves() {
+            resetExperiment();
+            
+            // 生成典型数据点
+            for (let i = 0; i <= 100; i += 5) {
+                // 光照曲线：S型，饱和点在70
+                const lightRate = Math.min(100, (1 - Math.exp(-i/30)) * 120);
+                dataPoints.light.push({x: i, y: lightRate});
+                
+                // CO₂曲线：S型，饱和点在60
+                const co2Rate = Math.min(100, (1 - Math.exp(-i/25)) * 110);
+                dataPoints.co2.push({x: i, y: co2Rate});
+                
+                // 水分曲线：抛物线，峰值在70
+                let waterRate;
+                if (i <= 70) {
+                    waterRate = (i / 70) * 100;
+                } else {
+                    waterRate = (1 - (i - 70) / 30) * 100;
+                }
+                dataPoints.water.push({x: i, y: waterRate});
+            }
+            
+            updateDisplay();
+            explanationText.textContent = '已显示典型曲线。光照和CO₂呈S型曲线（有饱和点），水分呈抛物线型（有最适点）。';
+        }
+
+        // 更新显示
+        function updateDisplay() {
+            const values = getCurrentValues();
+            const rate = calculatePhotosynthesisRate(values.light, values.co2, values.water);
+            
+            drawPlantScene(values.light, values.co2, values.water, rate);
+            drawGraph();
+            updateExplanation(values.light, values.co2, values.water, rate);
+            
+            // 在单因素模式下，记录数据点
+            if (currentMode === 'single') {
+                let xValue;
+                switch(activeFactor) {
+                    case 'light':
+
+<!--检测到代码截断，自动续写中...-->
+xValue = values.light;
+                        break;
+                    case 'co2':
+                        xValue = values.co2;
+                        break;
+                    case 'water':
+                        xValue = values.water;
+                        break;
+                }
+                
+                // 检查是否已存在相近的数据点
+                const existingPoint = dataPoints[activeFactor].find(p => Math.abs(p.x - xValue) < 2);
+                if (!existingPoint) {
+                    addDataPoint(activeFactor, xValue, rate);
+                }
+            }
+        }
+
+        // 锁定/解锁因素
+        function toggleLock(factor) {
+            const lockBtns = {
+                light: lightLock,
+                co2: co2Lock,
+                water: waterLock
+            };
+            
+            const sliders = {
+                light: lightSlider,
+                co2: co2Slider,
+                water: waterSlider
+            };
+            
+            const hints = {
+                light: lightHint,
+                co2: co2Hint,
+                water: waterHint
+            };
+            
+            // 如果当前模式是单因素，处理锁定逻辑
+            if (currentMode === 'single') {
+                // 如果点击的是已锁定的按钮，则解锁它
+                if (lockBtns[factor].classList.contains('locked')) {
+                    // 解锁当前因素
+                    lockBtns[factor].classList.remove('locked');
+                    lockBtns[factor].textContent = '未锁定';
+                    sliders[factor].disabled = false;
+                    hints[factor].style.opacity = '0.6';
+                    
+                    // 找到下一个未锁定的因素并锁定它
+                    const factors = ['light', 'co2', 'water'];
+                    for (const f of factors) {
+                        if (f !== factor && !lockBtns[f].classList.contains('locked')) {
+                            lockBtns[f].classList.add('locked');
+                            lockBtns[f].textContent = '已锁定';
+                            sliders[f].disabled = true;
+                            hints[f].style.opacity = '0.3';
+                            activeFactor = f;
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            updateDisplay();
+        }
+
+        // 切换模式
+        function switchMode(mode) {
+            currentMode = mode;
+            
+            if (mode === 'single') {
+                singleModeBtn.classList.add('active');
+                multiModeBtn.classList.remove('active');
+                
+                // 初始化锁定状态：锁定co2和water，激活light
+                lightLock.classList.add('locked');
+                lightLock.textContent = '已锁定';
+                lightSlider.disabled = false;
+                lightHint.style.opacity = '1';
+                
+                co2Lock.classList.remove('locked');
+                co2Lock.textContent = '未锁定';
+                co2Slider.disabled = true;
+                co2Hint.style.opacity = '0.3';
+                
+                waterLock.classList.remove('locked');
+                waterLock.textContent = '未锁定';
+                waterSlider.disabled = true;
+                waterHint.style.opacity = '0.3';
+                
+                activeFactor = 'light';
+                
+                explanationText.textContent = '单因素实验模式已激活。当前研究因素：光照强度。调整光照滑块，观察曲线变化。';
+            } else {
+                singleModeBtn.classList.remove('active');
+                multiModeBtn.classList.add('active');
+                
+                // 解锁所有因素
+                lightLock.classList.remove('locked');
+                lightLock.textContent = '未锁定';
+                lightSlider.disabled = false;
+                lightHint.style.opacity = '1';
+                
+                co2Lock.classList.remove('locked');
+                co2Lock.textContent = '未锁定';
+                co2Slider.disabled = false;
+                co2Hint.style.opacity = '1';
+                
+                waterLock.classList.remove('locked');
+                waterLock.textContent = '未锁定';
+                waterSlider.disabled = false;
+                waterHint.style.opacity = '1';
+                
+                explanationText.textContent = '综合探索模式已激活。可同时调整所有因素，观察限制因子效应。';
+            }
+            
+            // 清空数据点
+            dataPoints = {
+                light: [],
+                co2: [],
+                water: []
+            };
+            
+            updateDisplay();
+        }
+
+        // 动画循环
+        function animate() {
+            updateDisplay();
+            animationId = requestAnimationFrame(animate);
+        }
+
+        // 初始化
+        function init() {
+            // 设置初始画布大小
+            initCanvasSize();
+            
+            // 初始显示
+            updateSliderValues();
+            switchMode('single');
+            
+            // 添加事件监听器
+            lightSlider.addEventListener('input', () => {
+                updateSliderValues();
+                updateDisplay();
+            });
+            
+            co2Slider.addEventListener('input', () => {
+                updateSliderValues();
+                updateDisplay();
+            });
+            
+            waterSlider.addEventListener('input', () => {
+                updateSliderValues();
+                updateDisplay();
+            });
+            
+            lightLock.addEventListener('click', () => toggleLock('light'));
+            co2Lock.addEventListener('click', () => toggleLock('co2'));
+            waterLock.addEventListener('click', () => toggleLock('water'));
+            
+            resetBtn.addEventListener('click', resetExperiment);
+            demoBtn.addEventListener('click', showDemoCurves);
+            
+            singleModeBtn.addEventListener('click', () => switchMode('single'));
+            multiModeBtn.addEventListener('click', () => switchMode('multi'));
+            
+            // 窗口大小改变时调整画布
+            window.addEventListener('resize', () => {
+                initCanvasSize();
+                updateDisplay();
+            });
+            
+            // 开始动画循环
+            animate();
+            
+            // 初始提示
+            explanationText.textContent = '欢迎使用光合作用三因素实验模拟！在单因素模式下，每次只研究一个因素对光合作用的影响。';
+        }
+
+        // 页面加载完成后初始化
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

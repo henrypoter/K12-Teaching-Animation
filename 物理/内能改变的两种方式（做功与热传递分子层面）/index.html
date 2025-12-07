@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>内能改变的两种方式 - 分子层面教学动画</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2980 0%, #26d0ce 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            margin-top: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #26d0ce;
+        }
+
+        h1 {
+            color: #1a2980;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .subtitle {
+            color: #555;
+            font-size: 1.2rem;
+            font-weight: normal;
+        }
+
+        .scene-selector {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .scene-btn {
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: #f0f0f0;
+            color: #555;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .scene-btn.active {
+            background-color: #26d0ce;
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(38, 208, 206, 0.4);
+        }
+
+        .scene-btn:hover:not(.active) {
+            background-color: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
+        .animation-area {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .macro-micro-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .view-container {
+            flex: 1;
+            min-width: 300px;
+            background-color: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            border: 2px solid #e9ecef;
+        }
+
+        .view-title {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #1a2980;
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            background-color: #1a1a2e;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        .controls-panel {
+            background-color: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            border: 2px solid #e9ecef;
+        }
+
+        .control-group {
+            margin-bottom: 25px;
+        }
+
+        .control-title {
+            color: #1a2980;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .basic-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            padding: 12px 25px;
+            font-size: 1rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: bold;
+        }
+
+        .play-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .pause-btn {
+            background-color: #FF9800;
+            color: white;
+        }
+
+        .reset-btn {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .slider-label {
+            min-width: 120px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        .slider-value {
+            min-width: 40px;
+            text-align: center;
+            font-weight: bold;
+            color: #1a2980;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            height: 10px;
+            -webkit-appearance: none;
+            background: linear-gradient(to right, #26d0ce, #ff6b6b);
+            border-radius: 5px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #1a2980;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .options-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .data-panel {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .data-item {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            min-width: 150px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border: 2px solid #e9ecef;
+        }
+
+        .data-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .data-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #1a2980;
+        }
+
+        .explanation {
+            background-color: #fff9e6;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 30px;
+            border-left: 5px solid #FF9800;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .explanation-title {
+            color: #1a2980;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .explanation-content {
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .highlight {
+            background-color: rgba(255, 235, 59, 0.3);
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        .comparison-btn {
+            display: block;
+            margin: 30px auto 0;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            background-color: #1a2980;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(26, 41, 128, 0.4);
+        }
+
+        .comparison-btn:hover {
+            background-color: #26d0ce;
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(38, 208, 206, 0.5);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            padding: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .macro-micro-container {
+                flex-direction: column;
+            }
+            
+            .scene-selector {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .scene-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>内能改变的两种方式</h1>
+            <p class="subtitle">分子层面可视化教学动画 - 理解做功与热传递的本质</p>
+        </header>
+
+        <div class="scene-selector">
+            <button class="scene-btn active" id="work-btn">做功改变内能</button>
+            <button class="scene-btn" id="heat-btn">热传递改变内能</button>
+        </div>
+
+        <div class="animation-area">
+            <div class="macro-micro-container">
+                <div class="view-container">
+                    <div class="view-title">宏观视图</div>
+                    <div class="canvas-container">
+                        <canvas id="macroCanvas" width="800" height="300"></canvas>
+                    </div>
+                </div>
+                
+                <div class="view-container">
+                    <div class="view-title">微观分子视图</div>
+                    <div class="canvas-container">
+                        <canvas id="microCanvas" width="800" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls-panel">
+                <div class="control-group">
+                    <div class="control-title">动画控制</div>
+                    <div class="basic-controls">
+                        <button class="control-btn play-btn" id="playBtn">播放</button>
+                        <button class="control-btn pause-btn" id="pauseBtn">暂停</button>
+                        <button class="control-btn reset-btn" id="resetBtn">重置</button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <div class="control-title">参数调节</div>
+                    <div id="work-controls">
+                        <div class="slider-container">
+                            <span class="slider-label">活塞压力:</span>
+                            <input type="range" id="pressureSlider" min="1" max="10" value="5">
+                            <span class="slider-value" id="pressureValue">5</span>
+                        </div>
+                        <div class="slider-container">
+                            <span class="slider-label">摩擦系数:</span>
+                            <input type="range" id="frictionSlider" min="1" max="10" value="5">
+                            <span class="slider-value" id="frictionValue">5</span>
+                        </div>
+                    </div>
+                    <div id="heat-controls" style="display: none;">
+                        <div class="slider-container">
+                            <span class="slider-label">热源温度:</span>
+                            <input type="range" id="hotTempSlider" min="300" max="800" value="600">
+                            <span class="slider-value" id="hotTempValue">600K</span>
+                        </div>
+                        <div class="slider-container">
+                            <span class="slider-label">冷源温度:</span>
+                            <input type="range" id="coldTempSlider" min="200" max="500" value="300">
+                            <span class="slider-value" id="coldTempValue">300K</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <div class="control-title">显示选项</div>
+                    <div class="options-container">
+                        <div class="option-item">
+                            <input type="checkbox" id="showTrajectory" checked>
+                            <label for="showTrajectory">显示分子轨迹</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="checkbox" id="showVectors">
+                            <label for="showVectors">显示速度矢量</label>
+                        </div>
+                        <div class="option-item">
+                            <input type="checkbox" id="showEnergyFlow" checked>
+                            <label for="showEnergyFlow">显示能量流动</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="data-panel">
+                <div class="data-item">
+                    <div class="data-label">系统内能</div>
+                    <div class="data-value" id="internalEnergy">100</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-label">平均动能</div>
+                    <div class="data-value" id="avgKinetic">50</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-label">平均势能</div>
+                    <div class="data-value" id="avgPotential">50</div>
+                </div>
+                <div class="data-item">
+                    <div class="data-label">温度</div>
+                    <div class="data-value" id="temperature">300K</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="explanation" id="explanation">
+            <div class="explanation-title">做功改变内能</div>
+            <div class="explanation-content">
+                <p>在宏观视图中，活塞对气体<strong class="highlight">做功</strong>，压缩气体体积。在微观视图中，可以看到：</p>
+                <p>1. 活塞运动推动分子，使分子运动速度<strong class="highlight">加快</strong>（动能增加）</p>
+                <p>2. 分子间距离<strong class="highlight">减小</strong>，分子间作用力增强（势能增加）</p>
+                <p>3. 宏观机械能转化为系统的<strong class="highlight">内能</strong></p>
+            </div>
+        </div>
+
+        <button class="comparison-btn" id="comparisonBtn">对比两种方式</button>
+    </div>
+
+    <footer>
+        <p>教学动画设计 | 内能改变的分子机制 | 适用于初中/高中物理教学</p>
+    </footer>
+
+    <script>
+        // 全局变量
+        let currentScene = 'work'; // 'work' 或 'heat'
+        let animationId = null;
+        let isPlaying = false;
+        let animationTime = 0;
+        
+        // 获取Canvas元素和上下文
+        const macroCanvas = document.getElementById('macroCanvas');
+        const microCanvas = document.getElementById('microCanvas');
+        const macroCtx = macroCanvas.getContext('2d');
+        const microCtx = microCanvas.getContext('2d');
+        
+        // 调整Canvas大小以适应容器
+        function resizeCanvases() {
+            const macroContainer = macroCanvas.parentElement;
+            const microContainer = microCanvas.parentElement;
+            
+            macroCanvas.width = macroContainer.clientWidth;
+            macroCanvas.height = macroContainer.clientHeight;
+            
+            microCanvas.width = microContainer.clientWidth;
+            microCanvas.height = microContainer.clientHeight;
+        }
+        
+        // 分子系统
+        class MolecularSystem {
+            constructor() {
+                this.reset();
+            }
+            
+            reset() {
+                this.molecules = [];
+                this.pistonY = microCanvas.height * 0.3;
+                this.pistonSpeed = 0;
+                this.pistonDirection = 1; // 1向下，-1向上
+                this.isCompressing = false;
+                this.frictionHeat = 0;
+                this.heatSourceTemp = 600;
+                this.coldSourceTemp = 300;
+                this.energyFlow = [];
+                this.systemTemp = 300;
+                this.avgKinetic = 50;
+                this.avgPotential = 50;
+                this.internalEnergy = 100;
+                
+                // 初始化分子
+                this.initMolecules();
+            }
+            
+            initMolecules() {
+                this.molecules = [];
+                const moleculeCount = 40;
+                
+                for (let i = 0; i < moleculeCount; i++) {
+                    const isHot = i < moleculeCount / 2;
+                    const baseSpeed = isHot ? 3 : 1.5;
+                    
+                    this.molecules.push({
+                        x: Math.random() * microCanvas.width,
+                        y: Math.random() * (microCanvas.height * 0.6) + microCanvas.height * 0.3,
+                        vx: (Math.random() - 0.5) * baseSpeed * 2,
+                        vy: (Math.random() - 0.5) * baseSpeed * 2,
+                        radius: 6,
+                        color: isHot ? '#FF6B6B' : '#4D96FF',
+                        trail: [],
+                        maxTrailLength: 10,
+                        isHot: isHot,
+                        baseSpeed: baseSpeed
+                    });
+                }
+            }
+            
+            update(deltaTime) {
+                // 更新活塞位置（做功场景）
+                if (currentScene === 'work') {
+                    this.updatePiston(deltaTime);
+                }
+                
+                // 更新分子
+                this.updateMolecules(deltaTime);
+                
+                // 更新能量流动（热传递场景）
+                if (currentScene === 'heat') {
+                    this.updateEnergyFlow(deltaTime);
+                }
+                
+                // 更新系统数据
+                this.updateSystemData();
+            }
+            
+            updatePiston(deltaTime) {
+                const pressure = parseInt(document.getElementById('pressureSlider').value);
+                const friction = parseInt(document.getElementById('frictionSlider').value);
+                
+                if (this.isCompressing) {
+                    this.pistonSpeed = 0.5 + pressure * 0.1;
+                    this.pistonY += this.pistonSpeed * this.pistonDirection;
+                    
+                    // 活塞到达边界时改变方向
+                    if (this.pistonY > microCanvas.height * 0.7) {
+                        this.pistonDirection = -1;
+                        this.frictionHeat += friction * 0.5;
+                    } else if (this.pistonY < microCanvas.height * 0.3) {
+                        this.pistonDirection = 1;
+                        this.frictionHeat += friction * 0.5;
+                    }
+                    
+                    // 活塞压缩时增加分子速度
+                    if (this.pistonDirection === 1) {
+                        this.molecules.forEach(molecule => {
+                            if (molecule.y < this.pistonY + 20) {
+                                molecule.vx *= 1.01;
+                                molecule.vy *= 1.01;
+                            }
+                        });
+                    }
+                }
+            }
+            
+            updateMolecules(deltaTime) {
+                const showTrajectory = document.getElementById('showTrajectory').checked;
+                
+                this.molecules.forEach(molecule => {
+                    // 保存轨迹
+                    if (showTrajectory) {
+                        molecule.trail.push({x: molecule.x, y: molecule.y});
+                        if (molecule.trail.length > molecule.maxTrailLength) {
+                            molecule.trail.shift();
+                        }
+                    }
+                    
+                    // 更新位置
+                    molecule.x += molecule.vx;
+                    molecule.y += molecule.vy;
+                    
+                    // 边界碰撞
+                    if (molecule.x < molecule.radius || molecule.x > microCanvas.width - molecule.radius) {
+                        molecule.vx *= -1;
+                        molecule.x = Math.max(molecule.radius, Math.min(microCanvas.width - molecule.radius, molecule.x));
+                    }
+                    
+                    // 与活塞碰撞（做功场景）
+                    if (currentScene === 'work' && molecule.y < this.pistonY + molecule.radius && molecule.vy < 0) {
+                        molecule.vy *= -1;
+                        molecule.y = this.pistonY + molecule.radius;
+                        // 碰撞后增加速度（模拟能量传递）
+                        molecule.vx *= 1.05;
+                        molecule.vy *= 1.05;
+                    }
+                    
+                    // 底部边界
+                    if (molecule.y > microCanvas.height - molecule.radius) {
+                        molecule.vy *= -1;
+                        molecule.y = microCanvas.height - molecule.radius;
+                    }
+                    
+                    // 顶部边界（热传递场景的热源）
+                    if (currentScene === 'heat' && molecule.y < molecule.radius) {
+                        molecule.vy *= -1;
+                        molecule.y = molecule.radius;
+                        
+                        // 如果是冷分子接触热源，可能变成热分子
+                        if (!molecule.isHot && Math.random() < 0.1) {
+                            molecule.isHot = true;
+                            molecule.color = '#FF6B6B';
+                            molecule.vx *= 1.5;
+                            molecule.vy *= 1.5;
+                        }
+                    }
+                    
+                    // 分子间碰撞（简化版）
+                    for (let other of this.molecules) {
+                        if (other === molecule) continue;
+                        
+                        const dx = other.x - molecule.x;
+                        const dy = other.y - molecule.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < molecule.radius + other.radius) {
+                            // 简单弹性碰撞响应
+                            const angle = Math.atan2(dy, dx);
+                            const speed1 = Math.sqrt(molecule.vx * molecule.vx + molecule.vy * molecule.vy);
+                            const speed2 = Math.sqrt(other.vx * other.vx + other.vy * other.vy);
+                            
+                            // 热传递：高温分子将能量传递给低温分子
+                            if (currentScene === 'heat' && molecule.isHot !== other.isHot) {
+                                if (molecule.isHot && !other.isHot) {
+                                    // 高温分子传递给低温分子
+                                    molecule.vx *= 0.95;
+                                    molecule.vy *= 0.95;
+                                    other.vx *= 1.05;
+                                    other.vy *= 1.05;
+                                    
+                                    // 记录能量流动
+                                    this.energyFlow.push({
+                                        fromX: molecule.x,
+                                        fromY: molecule.y,
+                                        toX: other.x,
+                                        toY: other.y,
+                                        life: 1.0
+                                    });
+                                }
+                            }
+                            
+                            // 避免重叠
+                            const overlap = (molecule.radius + other.radius - distance) / 2;
+                            molecule.x -= overlap * Math.cos(angle);
+                            molecule.y -= overlap * Math.sin(angle);
+                            other.x += overlap * Math.cos(angle);
+                            other.y += overlap * Math.sin(angle);
+                        }
+                    }
+                });
+                
+                // 更新能量流动生命周期
+                this.energyFlow = this.energyFlow.filter(flow => {
+                    flow.life -= 0.02;
+                    return flow.life > 0;
+                });
+            }
+            
+            updateEnergyFlow(deltaTime) {
+                // 随机创建新的能量流动（从热区到冷区）
+                if (Math.random() < 0.1) {
+                    const hotMolecules = this.molecules.filter(m => m.isHot);
+                    const coldMolecules = this.molecules.filter(m => !m.isHot);
+                    
+                    if (hotMolecules.length > 0 && coldMolecules.length > 0) {
+                        const from = hotMolecules[Math.floor(Math.random() * hotMolecules.length)];
+                        const to = coldMolecules[Math.floor(Math.random() * coldMolecules.length)];
+                        
+                        this.energyFlow.push({
+                            fromX: from.x,
+                            fromY: from.y,
+                            toX: to.x,
+                            toY: to.y,
+                            life: 1.0
+                        });
+                    }
+                }
+            }
+            
+            updateSystemData() {
+                // 计算平均动能和势能
+                let totalKinetic = 0;
+                let totalPotential = 0;
+                
+                this.molecules.forEach(molecule => {
+                    const speed = Math.sqrt(molecule.vx * molecule.vx + molecule.vy * molecule.vy);
+                    totalKinetic += speed * speed;
+                    
+                    // 简化的势能计算（基于分子间距）
+                    let potential = 0;
+                    this.molecules.forEach(other => {
+                        if (other === molecule) return;
+                        const dx = other.x - molecule.x;
+                        const dy = other.y - molecule.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        if (distance < 50) {
+                            potential += (50 - distance) / 50;
+                        }
+                    });
+                    totalPotential += potential;
+                });
+                
+                this.avgKinetic = Math.round(totalKinetic / this.molecules.length * 10);
+                this.avgPotential = Math.round(totalPotential / this.molecules.length * 10);
+                this.internalEnergy = this.avgKinetic + this.avgPotential;
+                
+                // 温度与平均动能成正比
+                this.systemTemp = 300 + this.avgKinetic * 2;
+                
+                // 更新显示
+                document.getElementById('internalEnergy').textContent = this.internalEnergy;
+                document.getElementById('avgKinetic').textContent = this.avgKinetic;
+                document.getElementById('avgPotential').textContent = this.avgPotential;
+                document.getElementById('temperature').textContent = Math.round(this.systemTemp) + 'K';
+            }
+            
+            drawMacroView(ctx) {
+                ctx.clearRect(0, 0, macroCanvas.width, macroCanvas.height);
+                
+                if (currentScene === 'work') {
+                    this.drawWorkMacroView(ctx);
+                } else {
+                    this.drawHeatMacroView(ctx);
+                }
+            }
+            
+            drawWorkMacroView(ctx) {
+                const centerX = macroCanvas.width / 2;
+                const centerY = macroCanvas.height / 2;
+                
+                // 绘制气缸
+                ctx.fillStyle = '#333';
+                ctx.fillRect(centerX - 100, 50, 200, macroCanvas.height - 100);
+                
+                // 绘制活塞
+                const pistonHeight = 30;
+                const pistonY = 50 + (this.pistonY / microCanvas.height) * (macroCanvas.height - 100 - pistonHeight);
+                
+                ctx.fillStyle = '#666';
+                ctx.fillRect(centerX - 90, pistonY, 180, pistonHeight);
+                
+                // 绘制活塞杆
+                ctx.fillStyle = '#888';
+                ctx.fillRect(centerX - 10, pistonY - 30, 20, 30);
+                
+                // 绘制气体
+                ctx.fillStyle = 'rgba(77, 150, 255, 0.3)';
+                ctx.fillRect(centerX - 95, pistonY + pistonHeight, 190, macroCanvas.height - 100 - pistonY - pistonHeight);
+                
+                // 绘制摩擦生热区域
+                if (this.frictionHeat > 0) {
+                    const heatIntensity = Math.min(this.frictionHeat / 10, 1);
+                    ctx.fillStyle = `rgba(255, 107, 107, ${0.3 + heatIntensity * 0.5})`;
+                    ctx.fillRect(centerX - 100, pistonY + pistonHeight - 5, 200, 10);
+                }
+                
+                // 绘制标签
+                ctx.fillStyle = '#1a2980';
+                ctx.font = 'bold 16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('气缸与活塞系统', centerX, 30);
+                ctx.fillText('机械能 → 内能', centerX, macroCanvas.height - 20);
+                
+                // 绘制能量转化箭头
+                ctx.strokeStyle = '#FFD700';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(centerX + 120, centerY);
+                ctx.lineTo(centerX + 180, centerY);
+                ctx.stroke();
+                
+                ctx.fillStyle = '#FFD700';
+                ctx.beginPath();
+                ctx.moveTo(centerX + 180, centerY);
+                ctx.lineTo(centerX + 170, centerY - 10);
+                ctx.lineTo(centerX + 170, centerY + 10);
+                ctx.closePath();
+                ctx.fill();
+                
+                ctx.fillStyle = '#FFD700';
+                ctx.font = 'bold 14px Arial';
+                ctx.fillText('做功', centerX + 150, centerY - 15);
+            }
+            
+            drawHeatMacroView(ctx) {
+                const centerX = macroCanvas.width / 2;
+                
+                // 绘制热源（左）
+                const hotSourceHeight = macroCanvas.height * 0.6;
+                const hotSourceY = (macroCanvas.height - hotSourceHeight) / 2;
+                
+                const hotTemp = parseInt(document.getElementById('hotTempSlider').value);
+                const hotColorIntensity = (hotTemp - 300) / 500;
+                const hotColor = `rgb(255, ${107 + (148 * (1 - hotColorIntensity))}, ${107 + (148 * (1 - hotColorIntensity))})`;
+                
+                ctx.fillStyle = hotColor;
+                ctx.fillRect(centerX - 200, hotSourceY, 100, hotSourceHeight);
+                
+                // 绘制冷源（右）
+                const coldTemp = parseInt(document.getElementById('coldTempSlider').value);
+                const coldColorIntensity = (coldTemp - 200) / 300;
+                const coldColor = `rgb(${77 + (178 * (1 - coldColorIntensity))}, ${150 + (105 * (1 - coldColorIntensity))}, 255)`;
+                
+                ctx.fillStyle = coldColor;
+                ctx.fillRect(centerX + 100, hotSourceY, 100, hotSourceHeight);
+                
+                // 绘制热传递箭头
+                const showEnergyFlow = document.getElementById('showEnergyFlow').checked;
+                if (showEnergyFlow) {
+                    ctx.strokeStyle = 'rgba(255, 215, 0, 0.7)';
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([5, 5]);
+                    
+                    for (let i = 0; i < 3; i++) {
+                        const y = hotSourceY + hotSourceHeight * 0.25 * (i + 1);
+                        ctx.beginPath();
+                        ctx.moveTo(centerX - 100, y);
+                        ctx.lineTo(centerX + 100, y);
+                        ctx.stroke();
+                        
+                        // 箭头
+                        ctx.fillStyle = 'rgba(255, 215, 0, 0.7)';
+                        ctx.beginPath();
+                        ctx.moveTo(centerX + 100, y);
+                        ctx.lineTo(centerX + 90, y - 5);
+                        ctx.lineTo(centerX + 90, y + 5);
+                        ctx.closePath();
+                        ctx.fill();
+                    }
+                    
+                    ctx.setLineDash([]);
+                }
+                
+                // 绘制标签
+                ctx.fillStyle = '#1a2980';
+                ctx.font = 'bold 16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('高温热源', centerX - 150, hotSourceY - 10);
+                ctx.fillText(`${hotTemp}K`, centerX - 150, hotSourceY + hotSourceHeight + 25);
+                
+                ctx.fillText('低温冷源', centerX + 150, hotSourceY - 10);
+                ctx.fillText(`${coldTemp}K`, centerX + 150, hotSourceY + hotSourceHeight + 25);
+                
+                ctx.fillText('热传递：内能转移', centerX, macroCanvas.height - 20);
+            }
+            
+            drawMicroView(ctx) {
+                ctx.clearRect(0, 0, microCanvas.width, microCanvas.height);
+                
+                // 绘制背景
+                ctx.fillStyle = '#1a1a2e';
+                ctx.fillRect(0, 0, microCanvas.width, microCanvas.height);
+                
+                // 绘制分子轨迹
+                const showTrajectory = document.getElementById('showTrajectory').checked;
+                if (showTrajectory) {
+                    this.molecules.forEach(molecule => {
+                        if (molecule.trail.length > 1) {
+                            ctx.strokeStyle = molecule.isHot ? 
+                                'rgba(255, 107, 107, 0.3)' : 
+                                'rgba(77, 150, 255, 0.3)';
+                            ctx.lineWidth = 1;
+                            ctx.beginPath();
+                            ctx.moveTo(molecule.trail[0].x, molecule.trail[0].y);
+                            for (let i = 1; i < molecule.trail.length; i++) {
+                                ctx.lineTo(molecule.trail[i].x, molecule.trail[i].y);
+                            }
+                            ctx.stroke();
+                        }
+                    });
+                }
+                
+                // 绘制能量流动（热传递场景）
+                const showEnergyFlow = document.getElementById('showEnergyFlow').checked;
+                if (showEnergyFlow && currentScene === 'heat') {
+                    this.energyFlow.forEach(flow => {
+                        const alpha = flow.life * 0.7;
+                        ctx.strokeStyle = `rgba(255, 215, 0, ${alpha})`;
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        ctx.moveTo(flow.fromX, flow.fromY);
+                        ctx.lineTo(flow.toX, flow.toY);
+                        ctx.stroke();
+                    });
+                }
+                
+                // 绘制分子
+                this.molecules.forEach(molecule => {
+                    // 分子本体
+                    ctx.fillStyle = molecule.color;
+                    ctx.beginPath();
+                    ctx.arc(molecule.x, molecule.y, molecule.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // 分子边框
+                    ctx.strokeStyle = '#FFFFFF';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                    
+                    // 速度矢量（可选）
+                    const showVectors = document.getElementById('showVectors').checked;
+                    if (showVectors) {
+                        ctx.strokeStyle = molecule.isHot ? '#FFD700' : '#90EE90';
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(molecule.x, molecule.y);
+                        ctx.lineTo(molecule.x + molecule.vx * 10, molecule.y + molecule.vy * 10);
+                        ctx.stroke();
+                    }
+                });
+                
+                // 绘制活塞（做功场景）
+                if (currentScene === 'work') {
+                    ctx.fillStyle = 'rgba(100, 100, 100, 0.8)';
+                    ctx.fillRect(0, this.pistonY, microCanvas.width, 10);
+                    
+                    // 活塞标签
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.font = 'bold 14px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('活塞', microCanvas.width / 2, this.pistonY - 10);
+                }
+                
+                // 绘制热源和冷源边界（热传递场景）
+                if (currentScene === 'heat') {
+                    // 热源区域（顶部）
+                    const hotTemp = parseInt(document.getElementById('hotTempSlider').value);
+                    const hotColorIntensity = (hotTemp - 300) / 500;
+                    const hotColor = `rgba(255, 107, 107, ${0.2 + hotColorIntensity * 0.3})`;
+                    
+                    ctx.fillStyle = hotColor;
+                    ctx.fillRect(0, 0, microCanvas.width, 50);
+                    
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.font = 'bold 14px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('高温热源', microCanvas.width / 2, 30);
+                    
+                    // 冷源区域（底部）
+                    const coldTemp = parseInt(document.getElementById('coldTempSlider').value);
+                    const coldColorIntensity = (coldTemp - 200) / 300;
+                    const coldColor = `rgba(77, 150, 255, ${0.2 + coldColorIntensity * 0.
+<!--检测到代码截断，自动续写中...-->

@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>蚕的一生 - 生命周期教学动画</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4efe9 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        h1 {
+            color: #2e7d32;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .subtitle {
+            color: #555;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 900px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .mode-selector {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .mode-btn {
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        #storyMode {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        #exploreMode {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        .mode-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .mode-btn.active {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+
+        .animation-area {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background-color: #f9fdf8;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 3px solid #c8e6c9;
+            margin-bottom: 25px;
+        }
+
+        #mainCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .lifecycle-nav {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .stage-btn {
+            padding: 10px 15px;
+            background-color: #e8f5e9;
+            border: 2px solid #a5d6a7;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            color: #2e7d32;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 100px;
+        }
+
+        .stage-btn:hover {
+            background-color: #c8e6c9;
+            transform: translateY(-3px);
+        }
+
+        .stage-btn.active {
+            background-color: #4CAF50;
+            color: white;
+            border-color: #2e7d32;
+        }
+
+        .stage-icon {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .timeline-container {
+            width: 100%;
+            margin-bottom: 25px;
+        }
+
+        .timeline-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        #timeline {
+            width: 100%;
+            height: 40px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: linear-gradient(to right, #e8f5e9, #c8e6c9, #a5d6a7, #81c784, #4CAF50);
+            border-radius: 20px;
+            outline: none;
+        }
+
+        #timeline::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #ff9800;
+            cursor: pointer;
+            border: 3px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .control-btn {
+            padding: 10px 20px;
+            background-color: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .control-btn:hover {
+            background-color: #f57c00;
+            transform: translateY(-2px);
+        }
+
+        .details-panel {
+            background-color: #f1f8e9;
+            border-radius: 15px;
+            padding: 20px;
+            border-left: 5px solid #4CAF50;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .details-panel.active {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stage-title {
+            color: #2e7d32;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stage-duration {
+            color: #ff9800;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .stage-description {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .action-btn {
+            padding: 8px 15px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .action-btn:hover {
+            background-color: #1976D2;
+        }
+
+        .fun-fact {
+            background-color: #e3f2fd;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            border-left: 5px solid #2196F3;
+            display: none;
+        }
+
+        .fun-fact.active {
+            display: block;
+            animation: fadeIn 0.8s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .fact-title {
+            color: #1976D2;
+            font-weight: bold;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .day-counter {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #2e7d32;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .animation-area {
+                height: 300px;
+            }
+            
+            .stage-btn {
+                min-width: 80px;
+                padding: 8px 10px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🐛 蚕的一生</h1>
+        <p class="subtitle">从卵到成虫的完整生命周期（30-40天）</p>
+    </div>
+
+    <div class="main-container">
+        <div class="mode-selector">
+            <button id="storyMode" class="mode-btn active">📖 故事模式</button>
+            <button id="exploreMode" class="mode-btn">🔍 探索模式</button>
+        </div>
+
+        <div class="animation-area">
+            <div class="day-counter">第 <span id="dayCount">1</span> 天</div>
+            <canvas id="mainCanvas"></canvas>
+        </div>
+
+        <div class="lifecycle-nav">
+            <button class="stage-btn active" data-stage="egg">
+                <span class="stage-icon">🥚</span>
+                <span>卵期</span>
+            </button>
+            <button class="stage-btn" data-stage="larva">
+                <span class="stage-icon">🐛</span>
+                <span>幼虫期</span>
+            </button>
+            <button class="stage-btn" data-stage="pupa">
+                <span class="stage-icon">🕸️</span>
+                <span>蛹期</span>
+            </button>
+            <button class="stage-btn" data-stage="adult">
+                <span class="stage-icon">🦋</span>
+                <span>成虫期</span>
+            </button>
+        </div>
+
+        <div class="timeline-container">
+            <div class="timeline-label">
+                <span>第1天 (卵)</span>
+                <span>第10天 (幼虫)</span>
+                <span>第25天 (结茧)</span>
+                <span>第35天 (羽化)</span>
+                <span>第40天 (产卵)</span>
+            </div>
+            <input type="range" id="timeline" min="1" max="40" value="1" step="1">
+        </div>
+
+        <div class="controls">
+            <button id="playBtn" class="control-btn">▶️ 播放故事</button>
+            <button id="pauseBtn" class="control-btn">⏸️ 暂停</button>
+            <button id="resetBtn" class="control-btn">🔄 重置</button>
+            <button id="funFactBtn" class="control-btn">❓ 趣味知识</button>
+        </div>
+
+        <div id="detailsPanel" class="details-panel active">
+            <h2 class="stage-title"><span>🥚</span> 卵期</h2>
+            <div class="stage-duration">持续时间：约3-5天</div>
+            <p class="stage-description">蚕的生命从微小的卵开始。卵呈椭圆形，最初为淡黄色，随后逐渐变为深灰色或紫色。在适宜的温度下，大约3-5天后，蚁蚕就会从卵中孵化出来。</p>
+            <button class="action-btn" data-action="hatch">👀 观看孵化过程</button>
+        </div>
+
+        <div id="funFact" class="fun-fact">
+            <div class="fact-title">💡 你知道吗？</div>
+            <p id="factText">一条蚕宝宝一生可以吃掉大约20-30片桑叶，是它自身体重的许多倍！</p>
+        </div>
+    </div>
+
+    <script>
+        // 获取DOM元素
+        const canvas = document.getElementById('mainCanvas');
+        const ctx = canvas.getContext('2d');
+        const storyModeBtn = document.getElementById('storyMode');
+        const exploreModeBtn = document.getElementById('exploreMode');
+        const stageBtns = document.querySelectorAll('.stage-btn');
+        const timeline = document.getElementById('timeline');
+        const dayCount = document.getElementById('dayCount');
+        const playBtn = document.getElementById('playBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const funFactBtn = document.getElementById('funFactBtn');
+        const detailsPanel = document.getElementById('detailsPanel');
+        const funFact = document.getElementById('funFact');
+        const factText = document.getElementById('factText');
+
+        // 设置Canvas尺寸
+        function resizeCanvas() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // 动画状态
+        let currentStage = 'egg';
+        let currentDay = 1;
+        let isStoryMode = true;
+        let isPlaying = false;
+        let animationId = null;
+        let storyProgress = 0;
+        
+        // 趣味知识库
+        const funFacts = [
+            "蚕宝宝有16条腿！胸部有3对胸足，腹部有4对腹足，还有1对尾足。",
+            "一条蚕吐的丝可以长达1000-1500米，相当于3-5个足球场的长度！",
+            "蚕丝是天然蛋白质纤维，主要由丝素和丝胶组成，非常柔软且有光泽。",
+            "蚕宝宝一生要蜕皮4次，每次蜕皮后都会长大很多，食量也大大增加。",
+            "蚕蛾没有咀嚼式口器，成虫后不再进食，它们的唯一任务是交配产卵。",
+            "蚕的寿命大约40天，其中幼虫期占大部分时间，而成虫期只有几天。",
+            "中国是世界上最早养蚕、缫丝、织绸的国家，已有5000多年历史。"
+        ];
+
+        // 阶段信息
+        const stageInfo = {
+            egg: {
+                title: "🥚 卵期",
+                duration: "约3-5天",
+                description: "蚕的生命从微小的卵开始。卵呈椭圆形，最初为淡黄色，随后逐渐变为深灰色或紫色。在适宜的温度下，大约3-5天后，蚁蚕就会从卵中孵化出来。",
+                actions: ["hatch"],
+                dayRange: [1, 5],
+                color: "#9c27b0"
+            },
+            larva: {
+                title: "🐛 幼虫期",
+                duration: "约25-30天",
+                description: "幼虫期是蚕生长最快的阶段。蚁蚕孵化后不断进食桑叶，经历4次蜕皮，分为5个龄期。每蜕一次皮，身体就长大一些，食量也大大增加。",
+                actions: ["eat", "molt"],
+                dayRange: [6, 30],
+                color: "#8bc34a"
+            },
+            pupa: {
+                title: "🕸️ 蛹期",
+                duration: "约10-15天",
+                description: "幼虫成熟后开始吐丝结茧，在茧内化为蛹。蛹期外表静止，内部却发生着巨大的变化，幼虫器官逐渐分解，成虫器官逐渐形成。",
+                actions: ["spin", "transform"],
+                dayRange: [31, 40],
+                color: "#ff9800"
+            },
+            adult: {
+                title: "🦋 成虫期",
+                duration: "约5-10天",
+                description: "蚕蛾从茧中羽化而出，翅膀逐渐展开变硬。成虫不再进食，主要任务是交配和产卵。雌蛾可产下300-500粒卵，完成一个生命循环。",
+                actions: ["emerge", "mate"],
+                dayRange: [41, 45],
+                color: "#2196f3"
+            }
+        };
+
+        // 初始化
+        function init() {
+            updateStage('egg');
+            updateDay(1);
+            draw();
+        }
+
+        // 绘制函数
+        function draw() {
+            // 清除画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制背景
+            drawBackground();
+            
+            // 根据当前阶段绘制
+            switch(currentStage) {
+                case 'egg':
+                    drawEggStage();
+                    break;
+                case 'larva':
+                    drawLarvaStage();
+                    break;
+                case 'pupa':
+                    drawPupaStage();
+                    break;
+                case 'adult':
+                    drawAdultStage();
+                    break;
+            }
+            
+            // 如果正在播放故事模式，更新进度
+            if (isPlaying && isStoryMode) {
+                storyProgress += 0.005;
+                if (storyProgress > 1) {
+                    storyProgress = 0;
+                    if (currentStage === 'adult') {
+                        updateStage('egg');
+                        updateDay(1);
+                    } else {
+                        const stages = ['egg', 'larva', 'pupa', 'adult'];
+                        const currentIndex = stages.indexOf(currentStage);
+                        const nextStage = stages[(currentIndex + 1) % stages.length];
+                        updateStage(nextStage);
+                        updateDay(stageInfo[nextStage].dayRange[0]);
+                    }
+                }
+                updateStoryAnimation();
+            }
+            
+            animationId = requestAnimationFrame(draw);
+        }
+
+        // 绘制背景
+        function drawBackground() {
+            // 天空
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#e3f2fd');
+            gradient.addColorStop(1, '#f1f8e9');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 草地
+            ctx.fillStyle = '#a5d6a7';
+            ctx.fillRect(0, canvas.height * 0.7, canvas.width, canvas.height * 0.3);
+            
+            // 桑叶
+            ctx.fillStyle = '#4caf50';
+            for (let i = 0; i < 5; i++) {
+                const x = 50 + i * 80;
+                const y = canvas.height * 0.65;
+                drawLeaf(x, y, 40, 30);
+            }
+        }
+
+        // 绘制桑叶
+        function drawLeaf(x, y, width, height) {
+            ctx.save();
+            ctx.translate(x, y);
+            
+            ctx.fillStyle = '#4caf50';
+            ctx.beginPath();
+            ctx.ellipse(0, 0, width, height, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 叶脉
+            ctx.strokeStyle = '#2e7d32';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0, -height);
+            ctx.lineTo(0, height);
+            ctx.stroke();
+            
+            ctx.restore();
+        }
+
+        // 绘制卵期
+        function drawEggStage() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            // 绘制多个卵
+            for (let i = 0; i < 15; i++) {
+                const angle = (i / 15) * Math.PI * 2;
+                const radius = 100;
+                const x = centerX + Math.cos(angle) * radius;
+                const y = centerY + Math.sin(angle) * radius;
+                
+                // 卵的颜色随天数变化
+                const dayProgress = (currentDay - 1) / 4;
+                const colorValue = Math.floor(200 - dayProgress * 150);
+                ctx.fillStyle = `rgb(${colorValue}, ${colorValue}, ${colorValue})`;
+                
+                // 卵微微发亮效果
+                if (isStoryMode && storyProgress > 0.7) {
+                    ctx.shadowColor = '#ffeb3b';
+                    ctx.shadowBlur = 10;
+                }
+                
+                ctx.beginPath();
+                ctx.ellipse(x, y, 5, 3, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.shadowBlur = 0;
+            }
+            
+            // 如果正在孵化
+            if (currentDay >= 4 && currentDay <= 5) {
+                const hatchProgress = (currentDay - 3) / 2;
+                drawAntSilkworm(centerX, centerY, hatchProgress);
+            }
+        }
+
+        // 绘制蚁蚕
+        function drawAntSilkworm(x, y, progress) {
+            ctx.save();
+            ctx.translate(x, y);
+            
+            // 身体
+            ctx.fillStyle = '#000000';
+            const bodyLength = 10 + progress * 5;
+            ctx.beginPath();
+            ctx.ellipse(0, 0, bodyLength, 3, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 头部
+            ctx.beginPath();
+            ctx.arc(-bodyLength, 0, 2, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.restore();
+        }
+
+        // 绘制幼虫期
+        function drawLarvaStage() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            // 计算幼虫大小（随天数增长）
+            const dayInStage = Math.min(currentDay - 5, 25);
+            const sizeProgress = dayInStage / 25;
+            const bodyLength = 30 + sizeProgress * 100;
+            const bodyWidth = 8 + sizeProgress * 12;
+            
+            // 绘制幼虫身体
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            
+            // 身体颜色
+            const gradient = ctx.createLinearGradient(-bodyLength, 0, bodyLength, 0);
+            gradient.addColorStop(0, '#f5f5f5');
+            gradient.addColorStop(0.5, '#fff8e1');
+            gradient.addColorStop(1, '#f5f5f5');
+            ctx.fillStyle = gradient;
+            
+            // 身体
+            ctx.beginPath();
+            ctx.ellipse(0, 0, bodyLength, bodyWidth, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 身体节段
+            ctx.strokeStyle = '#ccc';
+            ctx.lineWidth = 1;
+            for (let i = -bodyLength + 10; i < bodyLength; i += 15) {
+                ctx.beginPath();
+                ctx.moveTo(i, -bodyWidth);
+                ctx.lineTo(i, bodyWidth);
+                ctx.stroke();
+            }
+            
+            // 头部
+            ctx.fillStyle = '#795548';
+            ctx.beginPath();
+            ctx.arc(-bodyLength, 0, bodyWidth * 0.8, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 眼睛
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.arc(-bodyLength - 3, -2, 1, 0, Math.PI * 2);
+            ctx.arc(-bodyLength - 3, 2, 1, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 足部（简化表示）
+            ctx.fillStyle = '#795548';
+            for (let i = -bodyLength + 15; i < bodyLength; i += 20) {
+                ctx.beginPath();
+                ctx.arc(i, -bodyWidth - 2, 2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.beginPath();
+                ctx.arc(i, bodyWidth + 2, 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // 如果正在吃桑叶
+            if (isStoryMode && storyProgress > 0.3 && storyProgress < 0.7) {
+                drawEatingAnimation(bodyLength);
+            }
+            
+            ctx.restore();
+        }
+
+        // 绘制吃桑叶动画
+        function drawEatingAnimation(bodyLength) {
+            const eatProgress = (storyProgress - 0.3) / 0.4;
+            const leafX = 100;
+            const leafY = 50;
+            
+            // 被吃的桑叶
+            ctx.fillStyle = '#4caf50';
+            ctx.beginPath();
+            ctx.ellipse(leafX, leafY, 40 - eatProgress * 20, 30, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 咀嚼动作
+            const chewOffset = Math.sin(eatProgress * Math.PI * 10) * 2;
+            ctx.translate(chewOffset, 0);
+        }
+
+        // 绘制蛹期
+        function drawPupaStage() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            // 蚕茧
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            
+            // 茧的颜色
+            const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, 50);
+            gradient.addColorStop(0, '#fff9c4');
+            gradient.addColorStop(1, '#ffecb3');
+            ctx.fillStyle = gradient;
+            
+            // 茧的形状
+            ctx.beginPath();
+            ctx.ellipse(0, 0, 50, 35, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 茧的纹理
+            ctx.strokeStyle = 'rgba(255, 193, 7, 0.3)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < 8; i++) {
+                const angle = (i / 8) * Math.PI * 2;
+                const x1 = Math.cos(angle) * 30;
+                const y1 = Math.sin(angle) * 20;
+                const x2 = Math.cos(angle) * 45;
+                const y2 = Math.sin(angle) * 30;
+                
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+            }
+            
+            // 茧内的蛹（半透明）
+            if (currentDay >= 35) {
+                const pupaProgress = (currentDay - 34) / 6;
+                drawPupaInside(pupaProgress);
+            }
+            
+            ctx.restore();
+        }
+
+        // 绘制茧内的蛹
+        function drawPupaInside(progress) {
+            ctx.save();
+            
+            // 蛹逐渐显现
+            ctx.globalAlpha = progress;
+            
+            // 蛹的形状
+            ctx.fillStyle = '#8d6e63';
+            ctx.beginPath();
+            ctx.ellipse(0, 0, 30 * progress, 20 * progress, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 蛹的细节
+            ctx.strokeStyle = '#5d4037';
+            ctx.lineWidth = 2;
+            for (let i = -20; i <= 20; i += 10) {
+                ctx.beginPath();
+                ctx.moveTo(i, -15);
+                ctx.lineTo(i, 15);
+                ctx.stroke();
+            }
+            
+            ctx.restore();
+        }
+
+        // 绘制成虫期
+        function drawAdultStage() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            
+            // 翅膀展开进度
+            const wingProgress = Math.min((currentDay - 40) / 3, 1);
+            
+            // 身体
+            ctx.fillStyle = '#795548';
+            ctx.beginPath();
+            ctx.ellipse(0, 0, 25, 10, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 翅膀
+            ctx.fillStyle = 'rgba(189, 189, 189, 0.8)';
+            
+            // 左翅膀
+            ctx.save();
+            ctx.translate(-15, 0);
+            ctx.rotate(-Math.PI/4 * wingProgress);
+            ctx.beginPath();
+            ctx.ellipse(0, 0, 40 * wingProgress, 25 * wingProgress, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+            
+            // 右翅膀
+            ctx.save();
+            ctx.translate(15, 0);
+            ctx.rotate(Math.PI/4 * wingProgress);
+            ctx.beginPath();
+            ctx.ellipse(0, 0, 40 * wingProgress, 25 * wingProgress, 0, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+            
+            // 头部
+            ctx.fillStyle = '#5d4037';
+            ctx.beginPath();
+            ctx.arc(0, 0, 8, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 触角
+            ctx.strokeStyle = '#5d4037';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(-5, -8);
+            ctx.lineTo(-15, -20);
+            ctx.moveTo(5, -8);
+            ctx.lineTo(15, -20);
+            ctx.stroke();
+            
+            // 眼睛
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.arc(-3, -2, 2, 0, Math.PI * 2);
+            ctx.arc(3, -2, 2, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 如果正在产卵
+            if (currentDay >= 43 && currentDay <= 45) {
+                drawEggLaying();
+            }
+            
+            ctx.restore();
+        }
+
+        // 绘制产卵动画
+        function drawEggLaying() {
+            const eggCount = Math.min((currentDay - 42) * 100, 300);
+            
+            for (let i = 0; i < eggCount / 10; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 100 + Math.random() * 100;
+                const x = Math.cos(angle) * distance;
+                const y = Math.sin(angle) * distance + 50;
+                
+                ctx.fillStyle = '#9c27b0';
+                ctx.beginPath();
+                ctx.ellipse(x, y, 2, 1.5, 0, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        // 更新故事动画
+        function updateStoryAnimation() {
+            // 根据故事进度更新天数
+            const totalDays = 45;
+            const newDay = Math.floor(storyProgress * totalDays) + 1;
+            if (newDay !== currentDay) {
+                updateDay(newDay);
+                
+                // 根据天数更新阶段
+                if (newDay <= 5) {
+                    updateStage('egg');
+                } else if (newDay <= 30) {
+                    updateStage('larva');
+                } else if (newDay <= 40) {
+                    updateStage('pupa');
+                } else {
+                    updateStage('adult');
+                }
+            }
+        }
+
+        // 更新阶段
+        function updateStage(stage) {
+            currentStage = stage;
+            
+            // 更新按钮状态
+            stageBtns.forEach(btn => {
+                if (btn.dataset.stage === stage) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            // 更新详情面板
+            const info = stageInfo[stage];
+            detailsPanel.innerHTML = `
+                <h2 class="stage-title"><span>${info.title.split(' ')[0]}</span> ${info.title.split(' ')[1]}</h2>
+                <div class="stage-duration">持续时间：${info.duration}</div>
+                <p class="stage-description">${info.description}</p>
+                ${info.actions.map(action => {
+                    let actionText = '';
+                    if (action === 'hatch') actionText = '👀 观看孵化过程';
+                    if (action === 'eat') actionText = '🍃 观看吃桑叶';
+                    if (action === 'molt') actionText = '🔄 观看蜕皮过程';
+                    if (action === 'spin') actionText = '🕸️ 观看吐丝结茧';
+                    if (action === 'transform') actionText = '✨ 观看化蛹变化';
+                    if (action === 'emerge') actionText = '🦋 观看羽化过程';
+                    if (action === 'mate') actionText = '❤️ 观看交配产卵';
+                    return `<button class="action-btn" data-action="${action}">${actionText}</button>`;
+                }).join('')}
+            `;
+            
+            // 更新时间轴
+            timeline.value = info.dayRange[0];
+        }
+
+        // 更新天数
+        function updateDay(day) {
+            currentDay = Math.min(Math.max(day, 1), 45);
+            dayCount.textContent = currentDay;
+            timeline.value = currentDay;
+        }
+
+        // 显示趣味知识
+        function showFunFact() {
+            const randomFact = funFacts[Math.floor(Math.random() * funFacts.length)];
+            factText.textContent = randomFact;
+            funFact.classList.add('active');
+            
+            // 3秒后自动隐藏
+            setTimeout(() => {
+                funFact.classList.remove('active');
+            }, 5000);
+        }
+
+        // 事件监听器
+        storyModeBtn.addEventListener('click', () => {
+            isStoryMode = true;
+            storyModeBtn.classList.add('active');
+            exploreModeBtn.classList.remove('active');
+            isPlaying = false;
+        });
+
+        exploreModeBtn.addEventListener('click', () => {
+            isStoryMode = false;
+            exploreModeBtn.classList.add('active');
+            storyModeBtn.classList.remove('active');
+            isPlaying = false;
+        });
+
+        stageBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                if (!isStoryMode) {
+                    updateStage(btn.dataset.stage);
+                    updateDay(stageInfo[btn.dataset.stage].dayRange[0]);
+                }
+            });
+        });
+
+        timeline.addEventListener('input', () => {
+            if (!isStoryMode) {
+                updateDay(parseInt(timeline.value));
+                
+                // 根据天数确定阶段
+                if (currentDay <= 5) {
+                    updateStage('egg');
+                } else if (currentDay <= 30) {
+                    updateStage('larva');
+                } else if (currentDay <= 40) {
+                    updateStage('pupa');
+                } else {
+                    updateStage('adult');
+                }
+            }
+        });
+
+        playBtn.addEventListener('click', () => {
+            isPlaying = true;
+            if (!isStoryMode) {
+                isStoryMode = true;
+                storyModeBtn.classList.add('active');
+                exploreModeBtn.classList.remove('active');
+            }
+        });
+
+        pauseBtn.addEventListener('click', () => {
+            isPlaying = false;
+        });
+
+        resetBtn.addEventListener('click', () => {
+            isPlaying = false;
+            storyProgress = 0;
+            updateStage('egg');
+            updateDay(1);
+        });
+
+        funFactBtn.addEventListener('click', showFunFact);
+
+        // 委托处理动作按钮
+        detailsPanel.addEventListener('click', (e) => {
+            if (e.target.classList.contains('action-btn')) {
+                const action = e.target.dataset.action;
+                // 这里可以添加特定动作的动画
+                alert(`即将演示：${e.target.textContent}`);
+            }
+        });
+
+        // 初始化并开始动画
+        init();
+    </script>
+</body>
+</html>

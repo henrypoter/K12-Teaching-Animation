@@ -1,0 +1,1588 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>热力学定律与熵增原理 - 微观解释</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #0f1a2f;
+            color: #ecf0f1;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #3498db;
+        }
+        
+        h1 {
+            color: #1abc9c;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+        
+        .subtitle {
+            color: #bdc3c7;
+            font-size: 1.2rem;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .module-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+            background-color: rgba(44, 62, 80, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .module-btn {
+            padding: 12px 24px;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .module-btn:hover {
+            background-color: #3498db;
+            transform: translateY(-2px);
+        }
+        
+        .module-btn.active {
+            background-color: #1abc9c;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(26, 188, 156, 0.3);
+        }
+        
+        .simulation-area {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .canvas-container {
+            background-color: rgba(15, 26, 47, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        canvas {
+            display: block;
+            margin: 0 auto;
+            background-color: rgba(15, 26, 47, 0.9);
+            border-radius: 5px;
+        }
+        
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(44, 62, 80, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .control-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+        
+        .play-btn {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .play-btn:hover {
+            background-color: #27ae60;
+        }
+        
+        .reset-btn {
+            background-color: #f1c40f;
+            color: #2c3e50;
+        }
+        
+        .reset-btn:hover {
+            background-color: #f39c12;
+        }
+        
+        .param-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .param-slider {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            min-width: 180px;
+        }
+        
+        .param-slider label {
+            font-size: 0.9rem;
+            color: #bdc3c7;
+        }
+        
+        .param-slider input {
+            width: 100%;
+        }
+        
+        .data-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            background-color: rgba(44, 62, 80, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .data-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+            background-color: rgba(52, 73, 94, 0.8);
+            border-radius: 8px;
+        }
+        
+        .data-label {
+            font-size: 0.9rem;
+            color: #bdc3c7;
+            margin-bottom: 5px;
+        }
+        
+        .data-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ecf0f1;
+        }
+        
+        .entropy-value {
+            color: #e67e22;
+        }
+        
+        .energy-value {
+            color: #1abc9c;
+        }
+        
+        .explanation {
+            background-color: rgba(44, 62, 80, 0.7);
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 5px solid #3498db;
+        }
+        
+        .explanation h3 {
+            color: #1abc9c;
+            margin-bottom: 15px;
+        }
+        
+        .explanation p {
+            margin-bottom: 15px;
+        }
+        
+        .key-concept {
+            background-color: rgba(155, 89, 182, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #9b59b6;
+        }
+        
+        .law-first {
+            color: #1abc9c;
+            font-weight: bold;
+        }
+        
+        .law-second {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        .highlight {
+            background-color: rgba(231, 76, 60, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #e74c3c;
+        }
+        
+        .probability-display {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .probability-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+            background-color: rgba(52, 73, 94, 0.8);
+            border-radius: 8px;
+            min-width: 120px;
+        }
+        
+        .probability-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #2c3e50;
+            border-radius: 10px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .probability-fill {
+            height: 100%;
+            background-color: #3498db;
+            border-radius: 10px;
+            width: 0%;
+            transition: width 1s ease;
+        }
+        
+        .hot {
+            color: #e74c3c;
+        }
+        
+        .cold {
+            color: #3498db;
+        }
+        
+        .mixed {
+            color: #9b59b6;
+        }
+        
+        @media (max-width: 768px) {
+            .module-selector {
+                flex-direction: column;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            .param-controls {
+                width: 100%;
+            }
+            
+            .data-panel {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>热力学第一、第二定律与熵增原理</h1>
+            <p class="subtitle">微观解释与交互式模拟</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="module-selector">
+                <button class="module-btn active" data-module="first-law">第一定律：能量守恒</button>
+                <button class="module-btn" data-module="entropy-intro">熵的微观解释</button>
+                <button class="module-btn" data-module="gas-diffusion">气体扩散</button>
+                <button class="module-btn" data-module="heat-conduction">热传导</button>
+                <button class="module-btn" data-module="summary">总结与对比</button>
+            </div>
+            
+            <div class="simulation-area">
+                <div class="canvas-container">
+                    <canvas id="simulationCanvas" width="800" height="500"></canvas>
+                </div>
+                
+                <div class="controls">
+                    <button class="control-btn play-btn" id="playBtn">播放</button>
+                    <button class="control-btn reset-btn" id="resetBtn">重置</button>
+                    
+                    <div class="param-controls">
+                        <div class="param-slider" id="particleSlider">
+                            <label for="particleCount">粒子数量: <span id="particleValue">50</span></label>
+                            <input type="range" id="particleCount" min="10" max="200" value="50" step="10">
+                        </div>
+                        
+                        <div class="param-slider" id="tempSlider" style="display:none;">
+                            <label for="temperature">温度差: <span id="tempValue">50</span>%</label>
+                            <input type="range" id="temperature" min="10" max="100" value="50">
+                        </div>
+                        
+                        <button class="control-btn" id="randomizeBtn" style="background-color:#9b59b6; color:white; display:none;">随机分配</button>
+                        
+                        <button class="control-btn" id="removeWallBtn" style="background-color:#e74c3c; color:white; display:none;">移除隔板</button>
+                    </div>
+                </div>
+                
+                <div class="data-panel">
+                    <div class="data-item">
+                        <div class="data-label">总能量</div>
+                        <div class="data-value energy-value" id="totalEnergy">100.0</div>
+                    </div>
+                    
+                    <div class="data-item">
+                        <div class="data-label">熵 (相对值)</div>
+                        <div class="data-value entropy-value" id="entropyValue">0.0</div>
+                    </div>
+                    
+                    <div class="data-item">
+                        <div class="data-label">微观状态数</div>
+                        <div class="data-value" id="microstates">1</div>
+                    </div>
+                    
+                    <div class="data-item">
+                        <div class="data-label">当前状态概率</div>
+                        <div class="data-value" id="stateProbability">100%</div>
+                    </div>
+                </div>
+                
+                <div class="probability-display" id="probabilityDisplay" style="display:none;">
+                    <!-- 概率条将通过JS动态生成 -->
+                </div>
+                
+                <div class="explanation" id="explanation">
+                    <h3>第一定律：能量守恒</h3>
+                    <p>在这个模拟中，小球在封闭系统中运动，相互碰撞并与墙壁碰撞。观察动能和势能如何相互转化，但系统的<strong class="law-first">总能量保持不变</strong>。</p>
+                    <p>热力学第一定律告诉我们能量既不能被创造也不能被消灭，只能从一种形式转化为另一种形式。但它没有告诉我们过程发生的<strong>方向</strong>。</p>
+                    
+                    <div class="key-concept">
+                        <p><strong>关键概念：</strong> 第一定律是"能量记账" - 它只关心能量的数量，不关心能量的质量或过程的方向性。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let canvas, ctx;
+        let animationId = null;
+        let isPlaying = false;
+        let currentModule = 'first-law';
+        
+        // 模拟参数
+        let particles = [];
+        let walls = [];
+        let leftBoxParticles = [];
+        let rightBoxParticles = [];
+        let hotParticles = [];
+        let coldParticles = [];
+        
+        // 物理参数
+        const GRAVITY = 0.1;
+        const FRICTION = 0.995;
+        const PARTICLE_RADIUS = 5;
+        const PARTICLE_MASS = 1;
+        
+        // 状态变量
+        let totalEnergy = 100;
+        let entropy = 0;
+        let microstates = 1;
+        let stateProbability = 1;
+        let temperatureDifference = 0.5;
+        let particleCount = 50;
+        let hasWall = true;
+        let isMixed = false;
+        
+        // DOM元素
+        const playBtn = document.getElementById('playBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const particleCountSlider = document.getElementById('particleCount');
+        const particleValueSpan = document.getElementById('particleValue');
+        const temperatureSlider = document.getElementById('temperature');
+        const tempValueSpan = document.getElementById('tempValue');
+        const randomizeBtn = document.getElementById('randomizeBtn');
+        const removeWallBtn = document.getElementById('removeWallBtn');
+        const tempSliderDiv = document.getElementById('tempSlider');
+        const particleSliderDiv = document.getElementById('particleSlider');
+        const probabilityDisplay = document.getElementById('probabilityDisplay');
+        
+        // 数据面板元素
+        const totalEnergyEl = document.getElementById('totalEnergy');
+        const entropyValueEl = document.getElementById('entropyValue');
+        const microstatesEl = document.getElementById('microstates');
+        const stateProbabilityEl = document.getElementById('stateProbability');
+        const explanationEl = document.getElementById('explanation');
+        
+        // 模块按钮
+        const moduleBtns = document.querySelectorAll('.module-btn');
+        
+        // 初始化
+        function init() {
+            canvas = document.getElementById('simulationCanvas');
+            ctx = canvas.getContext('2d');
+            
+            // 设置事件监听器
+            playBtn.addEventListener('click', togglePlay);
+            resetBtn.addEventListener('click', resetSimulation);
+            particleCountSlider.addEventListener('input', updateParticleCount);
+            temperatureSlider.addEventListener('input', updateTemperature);
+            randomizeBtn.addEventListener('click', randomizeParticles);
+            removeWallBtn.addEventListener('click', removeWall);
+            
+            // 模块切换
+            moduleBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    switchModule(btn.dataset.module);
+                });
+            });
+            
+            // 初始化模拟
+            resetSimulation();
+        }
+        
+        // 切换播放状态
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            playBtn.textContent = isPlaying ? '暂停' : '播放';
+            
+            if (isPlaying) {
+                animate();
+            } else {
+                cancelAnimationFrame(animationId);
+            }
+        }
+        
+        // 重置模拟
+        function resetSimulation() {
+            // 停止动画
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+            
+            isPlaying = false;
+            playBtn.textContent = '播放';
+            
+            // 根据当前模块重置
+            setupModule(currentModule);
+        }
+        
+        // 切换模块
+        function switchModule(moduleName) {
+            // 更新活动按钮
+            moduleBtns.forEach(btn => {
+                if (btn.dataset.module === moduleName) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            currentModule = moduleName;
+            resetSimulation();
+        }
+        
+        // 设置模块
+        function setupModule(moduleName) {
+            // 重置粒子数组
+            particles = [];
+            
+            // 重置墙壁
+            walls = [];
+            
+            // 根据模块设置UI
+            switch(moduleName) {
+                case 'first-law':
+                    setupFirstLaw();
+                    updateExplanationFirstLaw();
+                    particleSliderDiv.style.display = 'block';
+                    tempSliderDiv.style.display = 'none';
+                    randomizeBtn.style.display = 'none';
+                    removeWallBtn.style.display = 'none';
+                    probabilityDisplay.style.display = 'none';
+                    break;
+                    
+                case 'entropy-intro':
+                    setupEntropyIntro();
+                    updateExplanationEntropyIntro();
+                    particleSliderDiv.style.display = 'block';
+                    tempSliderDiv.style.display = 'none';
+                    randomizeBtn.style.display = 'block';
+                    removeWallBtn.style.display = 'none';
+                    probabilityDisplay.style.display = 'flex';
+                    break;
+                    
+                case 'gas-diffusion':
+                    setupGasDiffusion();
+                    updateExplanationGasDiffusion();
+                    particleSliderDiv.style.display = 'block';
+                    tempSliderDiv.style.display = 'none';
+                    randomizeBtn.style.display = 'none';
+                    removeWallBtn.style.display = 'block';
+                    probabilityDisplay.style.display = 'none';
+                    break;
+                    
+                case 'heat-conduction':
+                    setupHeatConduction();
+                    updateExplanationHeatConduction();
+                    particleSliderDiv.style.display = 'block';
+                    tempSliderDiv.style.display = 'block';
+                    randomizeBtn.style.display = 'none';
+                    removeWallBtn.style.display = 'none';
+                    probabilityDisplay.style.display = 'none';
+                    break;
+                    
+                case 'summary':
+                    setupSummary();
+                    updateExplanationSummary();
+                    particleSliderDiv.style.display = 'block';
+                    tempSliderDiv.style.display = 'none';
+                    randomizeBtn.style.display = 'none';
+                    removeWallBtn.style.display = 'none';
+                    probabilityDisplay.style.display = 'none';
+                    break;
+            }
+            
+            // 更新数据面板
+            updateDataPanel();
+        }
+        
+        // 设置第一定律模块
+        function setupFirstLaw() {
+            // 创建墙壁
+            walls.push({x: 50, y: 50, width: canvas.width - 100, height: 20}); // 上墙
+            walls.push({x: 50, y: canvas.height - 70, width: canvas.width - 100, height: 20}); // 下墙
+            walls.push({x: 50, y: 50, width: 20, height: canvas.height - 120}); // 左墙
+            walls.push({x: canvas.width - 70, y: 50, width: 20, height: canvas.height - 120}); // 右墙
+            
+            // 创建粒子
+            for (let i = 0; i < particleCount; i++) {
+                const radius = PARTICLE_RADIUS;
+                const x = Math.random() * (canvas.width - 140) + 80;
+                const y = Math.random() * (canvas.height - 140) + 80;
+                const vx = (Math.random() - 0.5) * 4;
+                const vy = (Math.random() - 0.5) * 4;
+                
+                particles.push({
+                    x, y, radius,
+                    vx, vy,
+                    mass: PARTICLE_MASS,
+                    color: '#1abc9c'
+                });
+            }
+            
+            // 计算初始总能量
+            calculateTotalEnergy();
+        }
+        
+        // 设置熵介绍模块
+        function setupEntropyIntro() {
+            // 创建两个盒子
+            const boxWidth = canvas.width / 2 - 60;
+            const boxHeight = canvas.height - 150;
+            const boxY = 80;
+            
+            // 左盒子墙壁
+            walls.push({x: 50, y: boxY, width: boxWidth, height: 20}); // 上墙
+            walls.push({x: 50, y: boxY + boxHeight, width: boxWidth, height: 20}); // 下墙
+            walls.push({x: 50, y: boxY, width: 20, height: boxHeight}); // 左墙
+            walls.push({x: 50 + boxWidth - 20, y: boxY, width: 20, height: boxHeight}); // 中间墙
+            
+            // 右盒子墙壁
+            walls.push({x: canvas.width/2 + 10, y: boxY, width: boxWidth, height: 20}); // 上墙
+            walls.push({x: canvas.width/2 + 10, y: boxY + boxHeight, width: boxWidth, height: 20}); // 下墙
+            walls.push({x: canvas.width/2 + boxWidth + 10, y: boxY, width: 20, height: boxHeight}); // 右墙
+            
+            // 创建粒子（全部在左盒）
+            leftBoxParticles = [];
+            rightBoxParticles = [];
+            
+            for (let i = 0; i < Math.min(particleCount, 20); i++) {
+                const radius = 8;
+                const x = Math.random() * (boxWidth - 60) + 70;
+                const y = Math.random() * (boxHeight - 60) + boxY + 30;
+                const vx = (Math.random() - 0.5) * 2;
+                const vy = (Math.random() - 0.5) * 2;
+                
+                const particle = {
+                    x, y, radius,
+                    vx, vy,
+                    mass: PARTICLE_MASS,
+                    color: '#3498db',
+                    inLeftBox: true
+                };
+                
+                particles.push(particle);
+                leftBoxParticles.push(particle);
+            }
+            
+            // 计算微观状态和熵
+            calculateEntropyStats();
+            
+            // 创建概率显示
+            createProbabilityDisplay();
+        }
+        
+        // 设置气体扩散模块
+        function setupGasDiffusion() {
+            // 创建墙壁和隔板
+            const containerWidth = canvas.width - 100;
+            const containerHeight = canvas.height - 150;
+            const containerY = 80;
+            
+            // 容器墙壁
+            walls.push({x: 50, y: containerY, width: containerWidth, height: 20}); // 上墙
+            walls.push({x: 50, y: containerY + containerHeight, width: containerWidth, height: 20}); // 下墙
+            walls.push({x: 50, y: containerY, width: 20, height: containerHeight}); // 左墙
+            walls.push({x: 50 + containerWidth - 20, y: containerY, width: 20, height: containerHeight}); // 右墙
+            
+            // 中间隔板（如果存在）
+            if (hasWall) {
+                walls.push({x: canvas.width/2 - 10, y: containerY, width: 20, height: containerHeight});
+            }
+            
+            // 创建红色粒子（左盒）
+            for (let i = 0; i < particleCount/2; i++) {
+                const radius = PARTICLE_RADIUS;
+                const x = Math.random() * (containerWidth/2 - 60) + 70;
+                const y = Math.random() * (containerHeight - 60) + containerY + 30;
+                const vx = (Math.random() - 0.5) * 3;
+                const vy = (Math.random() - 0.5) * 3;
+                
+                particles.push({
+                    x, y, radius,
+                    vx, vy,
+                    mass: PARTICLE_MASS,
+                    color: '#e74c3c' // 红色
+                });
+            }
+            
+            // 创建蓝色粒子（右盒）
+            for (let i = 0; i < particleCount/2; i++) {
+                const radius = PARTICLE_RADIUS;
+                const x = Math.random() * (containerWidth/2 - 60) + canvas.width/2 + 30;
+                const y = Math.random() * (containerHeight - 60) + containerY + 30;
+                const vx = (Math.random() - 0.5) * 3;
+                const vy = (Math.random() - 0.5) * 3;
+                
+                particles.push({
+                    x, y, radius,
+                    vx, vy,
+                    mass: PARTICLE_MASS,
+                    color: '#3498db' // 蓝色
+                });
+            }
+            
+            // 计算初始熵
+            calculateDiffusionEntropy();
+        }
+        
+        // 设置热传导模块
+        function setupHeatConduction() {
+            // 创建墙壁
+            const containerWidth = canvas.width - 100;
+            const containerHeight = canvas.height - 150;
+            const containerY = 80;
+            
+            walls.push({x: 50, y: containerY, width: containerWidth, height: 20}); // 上墙
+            walls.push({x: 50, y: containerY + containerHeight, width: containerWidth, height: 20}); // 下墙
+            walls.push({x: 50, y: containerY, width: 20, height: containerHeight}); // 左墙
+            walls.push({x: 50 + containerWidth - 20, y: containerY, width: 20, height: containerHeight}); // 右墙
+            
+            // 重置热冷粒子数组
+            hotParticles = [];
+            coldParticles = [];
+            
+            // 创建热粒子（左半部分）
+            const hotSpeedFactor = 1 + temperatureDifference;
+            for (let i = 0; i < particleCount/2; i++) {
+                const radius = PARTICLE_RADIUS;
+                const x = Math.random() * (containerWidth/2 - 60) + 70;
+                const y = Math.random() * (containerHeight - 60) + containerY + 30;
+                const vx = (Math.random() - 0.5) * 4 * hotSpeedFactor;
+                const vy = (Math.random() - 0.5) * 4 * hotSpeedFactor;
+                
+                const particle = {
+                    x, y, radius,
+                    vx, vy,
+                    mass: PARTICLE_MASS,
+                    color: '#e74c3c', // 红色表示热
+                    isHot: true
+                };
+                
+                particles.push(particle);
+                hotParticles.push(particle);
+            }
+            
+            // 创建冷粒子（右半部分）
+            const coldSpeedFactor = 1 - temperatureDifference * 0.5;
+            for (let i = 0; i < particleCount/2; i++) {
+                const radius = PARTICLE_RADIUS;
+                const x = Math.random() * (containerWidth/2 - 60) + canvas.width/2 + 30;
+                const y = Math.random() * (containerHeight - 60) + containerY + 30;
+                const vx = (Math.random() - 0.5) * 4 * coldSpeedFactor;
+                const vy = (Math.random() - 0.5) * 4 * coldSpeedFactor;
+                
+                const particle = {
+                    x, y, radius,
+                    vx, vy,
+                    mass: PARTICLE_MASS,
+                    color: '#3498db', // 蓝色表示冷
+                    isHot: false
+                };
+                
+                particles.push(particle);
+                coldParticles.push(particle);
+            }
+            
+            // 计算初始熵
+            calculateHeatConductionEntropy();
+        }
+        
+        // 设置总结模块
+        function setupSummary() {
+            // 创建墙壁
+            walls.push({x: 50, y: 50, width: canvas.width - 100, height: 20}); // 上墙
+            walls.push({x: 50, y: canvas.height - 70, width: canvas.width - 100, height: 20}); // 下墙
+            walls.push({x: 50, y: 50, width: 20, height: canvas.height - 120}); // 左墙
+            walls.push({x: canvas.width - 70, y: 50, width: 20, height: canvas.height - 120}); // 右墙
+            
+            // 创建混合粒子
+            for (let i = 0; i < particleCount; i++) {
+                const radius = PARTICLE_RADIUS;
+                const x = Math.random() * (canvas.width - 140) + 80;
+                const y = Math.random() * (canvas.height - 140) + 80;
+                const vx = (Math.random() - 0.5) * 4;
+                const vy = (Math.random() - 0.5) * 4;
+                
+                // 随机分配颜色（模拟混合状态）
+                const isRed = Math.random() > 0.5;
+                particles.push({
+                    x, y, radius,
+                    vx, vy,
+                    mass: PARTICLE_MASS,
+                    color: isRed ? '#e74c3c' : '#3498db'
+                });
+            }
+            
+            // 计算总能量和熵
+            calculateTotalEnergy();
+            entropy = 8.5; // 设置一个较高的熵值表示混合状态
+        }
+        
+        // 更新粒子数量
+        function updateParticleCount() {
+            particleCount = parseInt(particleCountSlider.value);
+            particleValueSpan.textContent = particleCount;
+            resetSimulation();
+        }
+        
+        // 更新温度差
+        function updateTemperature() {
+            temperatureDifference = parseInt(temperatureSlider.value) / 100;
+            tempValueSpan.textContent = parseInt(temperatureSlider.value);
+            
+            if (currentModule === 'heat-conduction') {
+                // 更新热冷粒子的速度
+                const hotSpeedFactor = 1 + temperatureDifference;
+                const coldSpeedFactor = 1 - temperatureDifference * 0.5;
+                
+                hotParticles.forEach(p => {
+                    p.vx *= hotSpeedFactor / (1 + temperatureDifference - 0.01);
+                    p.vy *= hotSpeedFactor / (1 + temperatureDifference - 0.01);
+                });
+                
+                coldParticles.forEach(p => {
+                    p.vx *= coldSpeedFactor / (1 - (temperatureDifference - 0.01) * 0.5);
+                    p.vy *= coldSpeedFactor / (1 - (temperatureDifference - 0.01) * 0.5);
+                });
+            }
+        }
+        
+        // 随机分配粒子（用于熵介绍模块）
+        function randomizeParticles() {
+            if (currentModule !== 'entropy-intro') return;
+            
+            // 清空左右盒子粒子数组
+            leftBoxParticles = [];
+            rightBoxParticles = [];
+            
+            // 随机分配每个粒子到左盒或右盒
+            particles.forEach(particle => {
+                const inLeftBox = Math.random() > 0.5;
+                particle.inLeftBox = inLeftBox;
+                
+                // 设置位置
+                const boxWidth = canvas.width / 2 - 60;
+                const boxHeight = canvas.height - 150;
+                const boxY = 80;
+                
+                if (inLeftBox) {
+                    particle.x = Math.random() * (boxWidth - 60) + 70;
+                    leftBoxParticles.push(particle);
+                } else {
+                    particle.x = Math.random() * (boxWidth - 60) + canvas.width/2 + 30;
+                    rightBoxParticles.push(particle);
+                }
+                
+                particle.y = Math.random() * (boxHeight - 60) + boxY + 30;
+                
+                // 随机速度
+                particle.vx = (Math.random() - 0.5) * 2;
+                particle.vy = (Math.random() - 0.5) * 2;
+            });
+            
+            // 计算微观状态和熵
+            calculateEntropyStats();
+        }
+        
+        // 移除隔板（用于气体扩散模块）
+        function removeWall() {
+            if (currentModule !== 'gas-diffusion') return;
+            
+            hasWall = false;
+            removeWallBtn.style.display = 'none';
+            
+            // 移除中间隔板
+            walls = walls.filter(wall => !(wall.x === canvas.width/2 - 10 && wall.width === 20));
+            
+            // 开始动画
+            if (!isPlaying) {
+                togglePlay();
+            }
+        }
+        
+        // 计算总能量（用于第一定律模块）
+        function calculateTotalEnergy() {
+            totalEnergy = 0;
+            particles.forEach(p => {
+                const kinetic = 0.5 * p.mass * (p.vx * p.vx + p.vy * p.vy);
+                const potential = p.mass * GRAVITY * (canvas.height - p.y);
+                totalEnergy += kinetic + potential;
+            });
+            
+            totalEnergy = Math.round(totalEnergy * 10) / 10;
+        }
+        
+        // 计算熵统计（用于熵介绍模块）
+        function calculateEntropyStats() {
+            const N = particles.length;
+            const nLeft = leftBoxParticles.length;
+            const nRight = rightBoxParticles.length;
+            
+            // 计算微观状态数（组合数 C(N, nLeft)）
+            microstates = combination(N, nLeft);
+            
+            // 计算熵 S = k * ln(W)，这里k设为1
+            entropy = Math.log(microstates);
+            
+            // 计算当前状态概率
+            const totalMicrostates = Math.pow(2, N);
+            stateProbability = microstates / totalMicrostates;
+            
+            // 更新数据面板
+            updateDataPanel();
+            
+            // 更新概率显示
+            updateProbabilityDisplay(N, nLeft);
+        }
+        
+        // 计算组合数 C(n, k)
+        function combination(n, k) {
+            if (k < 0 || k > n) return 0;
+            if (k === 0 || k === n) return 1;
+            
+            k = Math.min(k, n - k);
+            let result = 1;
+            for (let i = 1; i <= k; i++) {
+                result = result * (n - k + i) / i;
+            }
+            
+            return Math.round(result);
+        }
+        
+        // 创建概率显示
+        function createProbabilityDisplay() {
+            probabilityDisplay.innerHTML = '';
+            
+            const N = Math.min(particles.length, 8); // 限制显示的数量
+            
+            for (let k = 0; k <= N; k++) {
+                const probItem = document.createElement('div');
+                probItem.className = 'probability-item';
+                
+                const label = document.createElement('div');
+                label.className = 'data-label';
+                label.textContent = `${k}:${N-k}`;
+                
+                const value = document.createElement('div');
+                value.className = 'data-value';
+                value.id = `probValue${k}`;
+                value.textContent = '0%';
+                
+                const bar = document.createElement('div');
+                bar.className = 'probability-bar';
+                
+                const fill = document.createElement('div');
+                fill.className = 'probability-fill';
+                fill.id = `probFill${k}`;
+                
+                bar.appendChild(fill);
+                probItem.appendChild(label);
+                probItem.appendChild(value);
+                probItem.appendChild(bar);
+                
+                probabilityDisplay.appendChild(probItem);
+            }
+        }
+        
+        // 更新概率显示
+        function updateProbabilityDisplay(N, currentK) {
+            const totalMicrostates = Math.pow(2, N);
+            
+            for (let k = 0; k <= N; k++) {
+                const microstatesK = combination(N, k);
+                const probability = microstatesK / totalMicrostates;
+                const percentage = Math.round(probability * 1000) / 10;
+                
+                const valueEl = document.getElementById(`probValue${k}`);
+                const fillEl = document.getElementById(`probFill${k}`);
+                
+                if (valueEl && fillEl) {
+                    valueEl.textContent = `${percentage}%`;
+                    fillEl.style.width = `${probability * 100}%`;
+                    
+                    // 高亮当前状态
+                    if (k === currentK) {
+                        fillEl.style.backgroundColor = '#e74c3c';
+                        valueEl.style.color = '#e74c3c';
+                        valueEl.style.fontWeight = 'bold';
+                    } else {
+                        fillEl.style.backgroundColor = '#3498db';
+                        valueEl.style.color = '#ecf0f1';
+                        valueEl.style.fontWeight = 'normal';
+                    }
+                }
+            }
+        }
+        
+        // 计算扩散熵
+        function calculateDiffusionEntropy() {
+            // 简化的熵计算：基于混合程度
+            const containerWidth = canvas.width - 100;
+            const leftBoundary = 50 + 20;
+            const rightBoundary = 50 + containerWidth - 20;
+            const middle = canvas.width / 2;
+            
+            let redInLeft = 0;
+            let redInRight = 0;
+            let blueInLeft = 0;
+            let blueInRight =
+<!--检测到代码截断，自动续写中...-->
+0;
+            
+            particles.forEach(p => {
+                if (p.color === '#e74c3c') { // 红色粒子
+                    if (p.x < middle) redInLeft++;
+                    else redInRight++;
+                } else { // 蓝色粒子
+                    if (p.x < middle) blueInLeft++;
+                    else blueInRight++;
+                }
+            });
+            
+            // 计算混合程度 (0-1)
+            const totalRed = redInLeft + redInRight;
+            const totalBlue = blueInLeft + blueInRight;
+            
+            let mixFactor = 0;
+            if (totalRed > 0 && totalBlue > 0) {
+                // 理想混合：红色和蓝色在左右均匀分布
+                const idealRedInLeft = totalRed / 2;
+                const idealBlueInLeft = totalBlue / 2;
+                
+                // 计算实际分布与理想分布的差异
+                const redDiff = Math.abs(redInLeft - idealRedInLeft) / totalRed;
+                const blueDiff = Math.abs(blueInLeft - idealBlueInLeft) / totalBlue;
+                
+                mixFactor = 1 - (redDiff + blueDiff) / 2;
+            }
+            
+            // 熵与混合程度成正比
+            entropy = 10 * mixFactor;
+            
+            // 微观状态数（简化计算）
+            const totalParticles = particles.length;
+            const particlesInLeft = redInLeft + blueInLeft;
+            microstates = combination(totalParticles, particlesInLeft);
+            
+            // 状态概率（简化）
+            stateProbability = mixFactor;
+            
+            updateDataPanel();
+        }
+        
+        // 计算热传导熵
+        function calculateHeatConductionEntropy() {
+            // 计算平均动能（温度）
+            let totalKineticEnergy = 0;
+            particles.forEach(p => {
+                const kinetic = 0.5 * p.mass * (p.vx * p.vx + p.vy * p.vy);
+                totalKineticEnergy += kinetic;
+            });
+            
+            const avgKineticEnergy = totalKineticEnergy / particles.length;
+            
+            // 计算速度分布的方差（作为熵的度量）
+            let variance = 0;
+            particles.forEach(p => {
+                const kinetic = 0.5 * p.mass * (p.vx * p.vx + p.vy * p.vy);
+                const diff = kinetic - avgKineticEnergy;
+                variance += diff * diff;
+            });
+            
+            variance /= particles.length;
+            
+            // 熵与速度分布的均匀程度成正比（方差越小，熵越大）
+            // 这里使用反比关系简化计算
+            const maxVariance = 50; // 估计的最大方差
+            entropy = 10 * (1 - Math.min(variance / maxVariance, 1));
+            
+            // 更新数据面板
+            updateDataPanel();
+        }
+        
+        // 更新数据面板
+        function updateDataPanel() {
+            totalEnergyEl.textContent = totalEnergy.toFixed(1);
+            entropyValueEl.textContent = entropy.toFixed(2);
+            microstatesEl.textContent = microstates.toLocaleString();
+            stateProbabilityEl.textContent = (stateProbability * 100).toFixed(1) + '%';
+        }
+        
+        // 更新解释文本
+        function updateExplanationFirstLaw() {
+            explanationEl.innerHTML = `
+                <h3>第一定律：能量守恒</h3>
+                <p>在这个模拟中，小球在封闭系统中运动，相互碰撞并与墙壁碰撞。观察动能和势能如何相互转化，但系统的<strong class="law-first">总能量保持不变</strong>。</p>
+                <p>热力学第一定律告诉我们能量既不能被创造也不能被消灭，只能从一种形式转化为另一种形式。但它没有告诉我们过程发生的<strong>方向</strong>。</p>
+                
+                <div class="key-concept">
+                    <p><strong>关键概念：</strong> 第一定律是"能量记账" - 它只关心能量的数量，不关心能量的质量或过程的方向性。</p>
+                </div>
+            `;
+        }
+        
+        function updateExplanationEntropyIntro() {
+            const N = particles.length;
+            const nLeft = leftBoxParticles.length;
+            const nRight = rightBoxParticles.length;
+            
+            explanationEl.innerHTML = `
+                <h3>熵的微观解释</h3>
+                <p>熵（S）是系统"微观状态数（W）"的量度：S ∝ ln(W)。微观状态数是指实现同一个宏观状态所对应的所有可能的分子排列方式。</p>
+                <p>当前系统：${N}个可区分粒子，${nLeft}个在左盒，${nRight}个在右盒。</p>
+                <p>微观状态数 W = C(${N}, ${nLeft}) = <strong>${microstates.toLocaleString()}</strong></p>
+                <p>熵 S ≈ ln(${microstates.toLocaleString()}) ≈ <strong>${entropy.toFixed(2)}</strong></p>
+                
+                <div class="key-concept">
+                    <p><strong>关键发现：</strong> 点击"随机分配"按钮，你会发现粒子均匀分布（左右各一半）的概率最大。这就是<strong class="law-second">熵增原理</strong>的统计基础：系统总是自发地走向概率更大的宏观状态。</p>
+                </div>
+            `;
+        }
+        
+        function updateExplanationGasDiffusion() {
+            explanationEl.innerHTML = `
+                <h3>气体扩散与熵增</h3>
+                <p>开始时，红色粒子和蓝色粒子被隔板分开，处于低熵状态。点击"移除隔板"观察气体扩散过程。</p>
+                <p>扩散发生后，两种粒子<strong class="mixed">均匀混合</strong>，系统的微观状态数急剧增加，熵达到最大值。</p>
+                <p>反向过程（所有红色粒子自动回到左盒，蓝色粒子回到右盒）的概率微乎其微，这就是<strong class="law-second">不可逆过程</strong>的微观解释。</p>
+                
+                <div class="key-concept">
+                    <p><strong>关键概念：</strong> 熵增并不意味着"无序"，而是系统走向<strong>更可能</strong>的宏观状态。混合状态比分离状态有更多可能的微观排列方式。</p>
+                </div>
+            `;
+        }
+        
+        function updateExplanationHeatConduction() {
+            explanationEl.innerHTML = `
+                <h3>热传导与能量品质退化</h3>
+                <p><span class="hot">红色粒子</span>代表高温区域（分子平均速度快），<span class="cold">蓝色粒子</span>代表低温区域（分子平均速度慢）。</p>
+                <p>当它们混合时，通过碰撞，能量从高温粒子传递到低温粒子，最终达到温度均衡。</p>
+                <p>虽然总能量守恒（第一定律），但能量从<strong>集中可用</strong>的形式（高温）变成了<strong>分散无用</strong>的形式（均匀温度），能量的品质下降了。</p>
+                
+                <div class="key-concept">
+                    <p><strong>关键概念：</strong> 热力学第二定律指出，在孤立系统中，熵永不减少。热传导过程使系统的熵增加，因为均匀的温度分布对应更多的微观速度分布方式。</p>
+                </div>
+            `;
+        }
+        
+        function updateExplanationSummary() {
+            explanationEl.innerHTML = `
+                <h3>总结：两个定律的关系</h3>
+                <p><strong class="law-first">热力学第一定律（能量守恒）</strong>：<br>
+                • 关注能量的数量<br>
+                • 能量不能创造或消灭，只能转化<br>
+                • 不涉及过程的方向性</p>
+                
+                <p><strong class="law-second">热力学第二定律（熵增原理）</strong>：<br>
+                • 关注能量的品质和过程的方向<br>
+                • 孤立系统的熵永不减少<br>
+                • 基于微观状态数的统计规律</p>
+                
+                <div class="key-concept">
+                    <p><strong>核心理解：</strong> 第一定律说"能不能"（能量是否守恒），第二定律说"可不可以、方向如何"（过程是否可能自发发生）。所有自发过程都朝着熵增加的方向进行，因为那对应着概率更大的宏观状态。</p>
+                    <p>生命体、机器等局部系统可以通过消耗能量来降低自身的熵（变得有序），但必须以环境更大的熵增为代价。宇宙的总熵永远在增加。</p>
+                </div>
+            `;
+        }
+        
+        // 动画循环
+        function animate() {
+            // 清除画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 更新和绘制墙壁
+            walls.forEach(wall => {
+                ctx.fillStyle = '#95a5a6';
+                ctx.fillRect(wall.x, wall.y, wall.width, wall.height);
+            });
+            
+            // 根据当前模块更新物理
+            switch(currentModule) {
+                case 'first-law':
+                    updateFirstLawPhysics();
+                    break;
+                case 'entropy-intro':
+                    updateEntropyIntroPhysics();
+                    break;
+                case 'gas-diffusion':
+                    updateGasDiffusionPhysics();
+                    break;
+                case 'heat-conduction':
+                    updateHeatConductionPhysics();
+                    break;
+                case 'summary':
+                    updateSummaryPhysics();
+                    break;
+            }
+            
+            // 绘制粒子
+            particles.forEach(p => {
+                // 绘制粒子
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = p.color;
+                ctx.fill();
+                ctx.closePath();
+                
+                // 绘制速度箭头（可选，用于热传导模块）
+                if (currentModule === 'heat-conduction' && p.isHot) {
+                    ctx.beginPath();
+                    ctx.moveTo(p.x, p.y);
+                    ctx.lineTo(p.x + p.vx, p.y + p.vy);
+                    ctx.strokeStyle = '#e74c3c';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+            });
+            
+            // 绘制模块特定的图形
+            drawModuleSpecificGraphics();
+            
+            // 继续动画循环
+            if (isPlaying) {
+                animationId = requestAnimationFrame(animate);
+            }
+        }
+        
+        // 更新第一定律物理
+        function updateFirstLawPhysics() {
+            // 更新粒子位置和碰撞
+            particles.forEach(p => {
+                // 应用重力
+                p.vy += GRAVITY;
+                
+                // 应用摩擦力
+                p.vx *= FRICTION;
+                p.vy *= FRICTION;
+                
+                // 更新位置
+                p.x += p.vx;
+                p.y += p.vy;
+                
+                // 边界碰撞检测
+                walls.forEach(wall => {
+                    if (p.x + p.radius > wall.x && p.x - p.radius < wall.x + wall.width &&
+                        p.y + p.radius > wall.y && p.y - p.radius < wall.y + wall.height) {
+                        
+                        // 确定碰撞方向并反弹
+                        const dx = p.x - (wall.x + wall.width/2);
+                        const dy = p.y - (wall.y + wall.height/2);
+                        
+                        if (Math.abs(dx) > Math.abs(dy)) {
+                            // 水平碰撞
+                            p.vx = -p.vx * 0.9;
+                            p.x += p.vx;
+                        } else {
+                            // 垂直碰撞
+                            p.vy = -p.vy * 0.9;
+                            p.y += p.vy;
+                        }
+                    }
+                });
+                
+                // 粒子间碰撞检测（简化）
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const p1 = particles[i];
+                        const p2 = particles[j];
+                        
+                        const dx = p2.x - p1.x;
+                        const dy = p2.y - p1.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < p1.radius + p2.radius) {
+                            // 简单弹性碰撞
+                            const angle = Math.atan2(dy, dx);
+                            const speed1 = Math.sqrt(p1.vx * p1.vx + p1.vy * p1.vy);
+                            const speed2 = Math.sqrt(p2.vx * p2.vx + p2.vy * p2.vy);
+                            
+                            const direction1 = Math.atan2(p1.vy, p1.vx);
+                            const direction2 = Math.atan2(p2.vy, p2.vx);
+                            
+                            // 交换速度（简化）
+                            const tempVx = p1.vx;
+                            const tempVy = p1.vy;
+                            
+                            p1.vx = p2.vx * 0.9;
+                            p1.vy = p2.vy * 0.9;
+                            
+                            p2.vx = tempVx * 0.9;
+                            p2.vy = tempVy * 0.9;
+                            
+                            // 防止重叠
+                            const overlap = (p1.radius + p2.radius - distance) / 2;
+                            p1.x -= overlap * Math.cos(angle);
+                            p1.y -= overlap * Math.sin(angle);
+                            p2.x += overlap * Math.cos(angle);
+                            p2.y += overlap * Math.sin(angle);
+                        }
+                    }
+                }
+            });
+            
+            // 更新总能量
+            calculateTotalEnergy();
+        }
+        
+        // 更新熵介绍物理
+        function updateEntropyIntroPhysics() {
+            // 粒子在各自盒子内运动
+            particles.forEach(p => {
+                // 更新位置
+                p.x += p.vx;
+                p.y += p.vy;
+                
+                // 盒子边界碰撞检测
+                const boxWidth = canvas.width / 2 - 60;
+                const boxHeight = canvas.height - 150;
+                const boxY = 80;
+                
+                let leftBound, rightBound, topBound, bottomBound;
+                
+                if (p.inLeftBox) {
+                    leftBound = 50 + 20;
+                    rightBound = 50 + boxWidth - 20;
+                } else {
+                    leftBound = canvas.width/2 + 10 + 20;
+                    rightBound = canvas.width/2 + 10 + boxWidth - 20;
+                }
+                
+                topBound = boxY + 20;
+                bottomBound = boxY + boxHeight - 20;
+                
+                // 左右边界
+                if (p.x - p.radius < leftBound) {
+                    p.x = leftBound + p.radius;
+                    p.vx = -p.vx * 0.9;
+                }
+                if (p.x + p.radius > rightBound) {
+                    p.x = rightBound - p.radius;
+                    p.vx = -p.vx * 0.9;
+                }
+                
+                // 上下边界
+                if (p.y - p.radius < topBound) {
+                    p.y = topBound + p.radius;
+                    p.vy = -p.vy * 0.9;
+                }
+                if (p.y + p.radius > bottomBound) {
+                    p.y = bottomBound - p.radius;
+                    p.vy = -p.vy * 0.9;
+                }
+            });
+        }
+        
+        // 更新气体扩散物理
+        function updateGasDiffusionPhysics() {
+            particles.forEach(p => {
+                // 更新位置
+                p.x += p.vx;
+                p.y += p.vy;
+                
+                // 容器边界碰撞检测
+                const containerWidth = canvas.width - 100;
+                const containerHeight = canvas.height - 150;
+                const containerY = 80;
+                
+                const leftBound = 50 + 20;
+                const rightBound = 50 + containerWidth - 20;
+                const topBound = containerY + 20;
+                const bottomBound = containerY + containerHeight - 20;
+                
+                // 左右边界
+                if (p.x - p.radius < leftBound) {
+                    p.x = leftBound + p.radius;
+                    p.vx = -p.vx * 0.9;
+                }
+                if (p.x + p.radius > rightBound) {
+                    p.x = rightBound - p.radius;
+                    p.vx = -p.vx * 0.9;
+                }
+                
+                // 上下边界
+                if (p.y - p.radius < topBound) {
+                    p.y = topBound + p.radius;
+                    p.vy = -p.vy * 0.9;
+                }
+                if (p.y + p.radius > bottomBound) {
+                    p.y = bottomBound - p.radius;
+                    p.vy = -p.vy * 0.9;
+                }
+                
+                // 如果隔板存在，检测与隔板的碰撞
+                if (hasWall) {
+                    const wallX = canvas.width/2 - 10;
+                    const wallWidth = 20;
+                    
+                    if (p.x + p.radius > wallX && p.x - p.radius < wallX + wallWidth &&
+                        p.y > containerY && p.y < containerY + containerHeight) {
+                        
+                        // 从左侧碰撞
+                        if (p.x < wallX + wallWidth/2) {
+                            p.x = wallX - p.radius;
+                            p.vx = -Math.abs(p.vx) * 0.9;
+                        } 
+                        // 从右侧碰撞
+                        else {
+                            p.x = wallX + wallWidth + p.radius;
+                            p.vx = Math.abs(p.vx) * 0.9;
+                        }
+                    }
+                }
+                
+                // 粒子间碰撞（简化）
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const p1 = particles[i];
+                        const p2 = particles[j];
+                        
+                        const dx = p2.x - p1.x;
+                        const dy = p2.y - p1.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < p1.radius + p2.radius) {
+                            // 简单弹性碰撞
+                            const tempVx = p1.vx;
+                            const tempVy = p1.vy;
+                            
+                            p1.vx = p2.vx * 0.95;
+                            p1.vy = p2.vy * 0.95;
+                            
+                            p2.vx = tempVx * 0.95;
+                            p2.vy = tempVy * 0.95;
+                            
+                            // 防止重叠
+                            const overlap = (p1.radius + p2.radius - distance) / 2;
+                            const angle = Math.atan2(dy, dx);
+                            p1.x -= overlap * Math.cos(angle);
+                            p1.y -= overlap * Math.sin(angle);
+                            p2.x += overlap * Math.cos(angle);
+                            p2.y += overlap * Math.sin(angle);
+                        }
+                    }
+                }
+            });
+            
+            // 更新熵
+            calculateDiffusionEntropy();
+        }
+        
+        // 更新热传导物理
+        function updateHeatConductionPhysics() {
+            particles.forEach(p => {
+                // 更新位置
+                p.x += p.vx;
+                p.y += p.vy;
+                
+                // 容器边界碰撞检测
+                const containerWidth = canvas.width - 100;
+                const containerHeight = canvas.height - 150;
+                const containerY = 80;
+                
+                const leftBound = 50 + 20;
+                const rightBound = 50 + containerWidth - 20;
+                const topBound = containerY + 20;
+                const bottomBound = containerY + containerHeight - 20;
+                
+                // 左右边界
+                if (p.x - p.radius < leftBound) {
+                    p.x = leftBound + p.radius;
+                    p.vx = -p.vx * 0.9;
+                }
+                if (p.x + p.radius > rightBound) {
+                    p.x = rightBound - p.radius;
+                    p.vx = -p.vx * 0.9;
+                }
+                
+                // 上下边界
+                if (p.y - p.radius < topBound) {
+                    p.y = topBound + p.radius;
+                    p.vy = -p.vy * 0.9;
+                }
+                if (p.y + p.radius > bottomBound) {
+                    p.y = bottomBound - p.radius;
+                    p.vy = -p.vy * 0.9;
+                }
+                
+                // 粒子间碰撞（能量传递）
+                for (let i = 0; i < particles.length; i++) {
+                    for (let j = i + 1; j < particles.length; j++) {
+                        const p1 = particles[i];
+                        const p2 = particles[j];
+                        
+                        const dx = p2.x - p1.x;
+                        const dy = p2.y - p1.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < p1.radius + p2.radius) {
+                            // 计算碰撞法线
+                            const nx = dx / distance;
+                            const ny = dy / distance;
+                            
+                            // 计算相对速度
+                            const dvx = p2.vx - p1.vx;
+                            const dvy = p2.vy - p1.vy;
+                            
+                            // 计算相对速度在法线方向的分量
+                            const speedNormal = dvx * nx + dvy * ny;
+                            
+                            // 只有相互靠近时才碰撞
+                            if (speedNormal < 0) {
+                                // 计算碰撞冲量（简化能量传递）
+                                const impulse = 2 * speedNormal / (p1.mass + p2.mass);
+                                
+                                // 更新速度
+                                p1.vx += impulse * p2.mass * nx;
+                                p1.vy += impulse * p2.mass * ny;
+                                p2.vx -= impulse * p1.mass * nx;
+                                p2.vy -= impulse * p1.mass * ny;
+                                
+                                // 防止重叠
+                                const overlap = (p1.radius + p2.radius - distance) / 2;
+                                p1.x -= overlap * nx;
+                                p1.y -= overlap * ny;
+                                p2.x += overlap * nx;
+                                p2.y += overlap * ny;
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // 更新熵
+            calculateHeatConductionEntropy();
+        }
+        
+        // 更新总结模块物理
+        function updateSummaryPhysics() {
+            updateFirstLawPhysics(); // 使用与第一定律相同的物理
+        }
+        
+        // 绘制模块特定的图形
+        function drawModuleSpecificGraphics() {
+            ctx.font = '16px Arial';
+            ctx.fillStyle = '#ecf0f1';
+            ctx.textAlign = 'center';
+            
+            switch(currentModule) {
+                case 'entropy-intro':
+                    // 绘制盒子标签
+                    ctx.fillText('左盒', canvas.width/4, 60);
+                    ctx.fillText('右盒', 3*canvas.width/4, 60);
+                    
+                    // 绘制粒子计数
+                    ctx.fillText(`粒子数: ${leftBoxParticles.length}`, canvas.width/4, canvas.height - 40);
+                    ctx.fillText(`粒子数: ${rightBoxParticles.length}`, 3*canvas.width/4, canvas.height - 40);
+                    break;
+                    
+                case 'gas-diffusion':
+                    if (hasWall) {
+                        ctx.fillText('点击"移除隔板"开始扩散', canvas.width/2, 60);
+                    } else {
+                        ctx.fillText('扩散进行中... 熵增加', canvas.width/2, 60);
+                    }
+                    break;
+                    
+                case 'heat-conduction':
+                    ctx.fillStyle = '#e74c3c';
+                    ctx.fillText('高温区', canvas.width/4, 60);
+                    ctx.fillStyle = '#3498db';
+                    ctx.fillText('低温区', 3*canvas.width/4, 60);
+                    ctx.fillStyle = '#ecf0f1';
+                    ctx.fillText('热传导使温度均衡，熵增加', canvas.width/2, canvas.height - 40);
+                    break;
+                    
+                case 'summary':
+                    ctx.fillText('混合状态：高熵', canvas.width/2, 60);
+                    ctx.fillText('总能量守恒，但熵达到最大', canvas.width/2, canvas.height - 40);
+                    break;
+            }
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

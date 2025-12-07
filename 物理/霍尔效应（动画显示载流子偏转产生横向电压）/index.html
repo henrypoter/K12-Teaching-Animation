@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>霍尔效应交互教学动画</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a237e 0%, #2c3e50 100%);
+            color: #eceff1;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #42a5f5, #ffeb3b);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .animation-panel {
+            flex: 3;
+            min-width: 300px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        #mainCanvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .control-panel {
+            flex: 2;
+            min-width: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .section {
+            margin-bottom: 25px;
+        }
+        
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #ffeb3b;
+            border-bottom: 2px solid rgba(255, 235, 59, 0.3);
+            padding-bottom: 5px;
+        }
+        
+        h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #42a5f5;
+        }
+        
+        .control-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        input[type="range"] {
+            flex: 1;
+            height: 8px;
+            -webkit-appearance: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            outline: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #42a5f5;
+            cursor: pointer;
+            border: 2px solid white;
+        }
+        
+        .value-display {
+            min-width: 60px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #42a5f5, #0d47a1);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(66, 165, 245, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button.reset {
+            background: linear-gradient(135deg, #ef5350, #b71c1c);
+        }
+        
+        button.reset:hover {
+            box-shadow: 0 5px 15px rgba(239, 83, 80, 0.4);
+        }
+        
+        .toggle-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .toggle-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .material-select {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .material-btn {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .material-btn.active {
+            background: rgba(66, 165, 245, 0.3);
+            border-color: #42a5f5;
+            box-shadow: 0 0 15px rgba(66, 165, 245, 0.3);
+        }
+        
+        .material-btn.n-type {
+            color: #42a5f5;
+        }
+        
+        .material-btn.p-type {
+            color: #ef5350;
+        }
+        
+        .info-panel {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .info-box {
+            flex: 1;
+            min-width: 150px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .info-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .voltage-positive {
+            color: #66bb6a;
+        }
+        
+        .voltage-negative {
+            color: #ef5350;
+        }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+        
+        .legend-color.rect {
+            border-radius: 4px;
+        }
+        
+        .explanation {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            line-height: 1.6;
+        }
+        
+        .explanation h3 {
+            color: #ff9800;
+            margin-bottom: 10px;
+        }
+        
+        .explanation p {
+            margin-bottom: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>霍尔效应交互教学动画</h1>
+            <p class="subtitle">直观展示载流子在磁场中偏转产生横向电压的物理过程</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="animation-panel">
+                <div class="canvas-container">
+                    <canvas id="mainCanvas"></canvas>
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #42a5f5;"></div>
+                        <span>电子 (N型)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #ef5350;"></div>
+                        <span>空穴 (P型)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color rect" style="background-color: #ffeb3b;"></div>
+                        <span>电流方向</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color rect" style="background-color: #66bb6a;"></div>
+                        <span>磁场方向 (×进入屏幕)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color rect" style="background-color: #ff9800;"></div>
+                        <span>洛伦兹力</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color rect" style="background-color: #ab47bc;"></div>
+                        <span>电场力</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="control-panel">
+                <div class="section">
+                    <h2>动画控制</h2>
+                    <div class="button-group">
+                        <button id="playBtn">播放</button>
+                        <button id="pauseBtn">暂停</button>
+                        <button id="resetBtn" class="reset">重置</button>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h2>参数调节</h2>
+                    
+                    <div class="control-group">
+                        <label for="currentSlider">电流强度 (I): <span id="currentValue">1.0</span> A</label>
+                        <div class="slider-container">
+                            <input type="range" id="currentSlider" min="0.1" max="3.0" step="0.1" value="1.0">
+                            <div class="value-display" id="currentDisplay">1.0 A</div>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="magneticSlider">磁场强度 (B): <span id="magneticValue">1.0</span> T</label>
+                        <div class="slider-container">
+                            <input type="range" id="magneticSlider" min="0.0" max="2.0" step="0.1" value="1.0">
+                            <div class="value-display" id="magneticDisplay">1.0 T</div>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="thicknessSlider">材料厚度 (d): <span id="thicknessValue">1.0</span> mm</label>
+                        <div class="slider-container">
+                            <input type="range" id="thicknessSlider" min="0.5" max="3.0" step="0.1" value="1.0">
+                            <div class="value-display" id="thicknessDisplay">1.0 mm</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h2>材料类型</h2>
+                    <div class="material-select">
+                        <div class="material-btn n-type active" id="nTypeBtn">
+                            <strong>N型半导体</strong><br>
+                            <small>电子导电</small>
+                        </div>
+                        <div class="material-btn p-type" id="pTypeBtn">
+                            <strong>P型半导体</strong><br>
+                            <small>空穴导电</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h2>视图选项</h2>
+                    <div class="toggle-group">
+                        <div class="toggle-item">
+                            <input type="checkbox" id="showMicroView" checked>
+                            <label for="showMicroView">显示微观视图</label>
+                        </div>
+                        <div class="toggle-item">
+                            <input type="checkbox" id="showForces" checked>
+                            <label for="showForces">显示力与场</label>
+                        </div>
+                        <div class="toggle-item">
+                            <input type="checkbox" id="showTrails">
+                            <label for="showTrails">显示粒子轨迹</label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h2>实时数据</h2>
+                    <div class="info-panel">
+                        <div class="info-box">
+                            <div>霍尔电压 U<sub>H</sub></div>
+                            <div class="info-value" id="voltageValue">0.00 mV</div>
+                            <div>V = (IB)/(ned)</div>
+                        </div>
+                        <div class="info-box">
+                            <div>洛伦兹力 F<sub>L</sub></div>
+                            <div class="info-value" id="lorentzValue">0.00</div>
+                            <div>F = qvB</div>
+                        </div>
+                        <div class="info-box">
+                            <div>电场力 F<sub>E</sub></div>
+                            <div class="info-value" id="electricValue">0.00</div>
+                            <div>F = qE</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="explanation">
+            <h3>霍尔效应原理说明</h3>
+            <p><strong>1. 初始状态：</strong>导体中通有电流，载流子（电子或空穴）定向移动。</p>
+            <p><strong>2. 施加磁场：</strong>垂直施加磁场，载流子受到洛伦兹力作用。</p>
+            <p><strong>3. 电荷偏转与积累：</strong>载流子向导体一侧偏转，导致横向两侧出现电荷积累，形成内部横向电场。</p>
+            <p><strong>4. 动态平衡与电压输出：</strong>横向电场力与洛伦兹力达到平衡，载流子恢复纵向移动，此时横向两侧产生稳定的霍尔电压。</p>
+            <p><strong>霍尔电压公式：</strong> U<sub>H</sub> = (I × B) / (n × e × d)，其中n为载流子浓度，e为元电荷，d为材料厚度。</p>
+        </div>
+    </div>
+
+    <script>
+        // 获取Canvas元素和上下文
+        const canvas = document.getElementById('mainCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 设置Canvas尺寸
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+        }
+        
+        // 初始调整Canvas尺寸
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // 霍尔效应模拟参数
+        let simulation = {
+            isPlaying: true,
+            time: 0,
+            current: 1.0,      // 电流强度 (A)
+            magneticField: 1.0, // 磁场强度 (T)
+            thickness: 1.0,     // 材料厚度 (mm)
+            materialType: 'n',  // 'n' 或 'p'
+            showMicroView: true,
+            showForces: true,
+            showTrails: false,
+            hallVoltage: 0,
+            lorentzForce: 0,
+            electricForce: 0
+        };
+        
+        // 载流子类
+        class ChargeCarrier {
+            constructor(x, y, type) {
+                this.x = x;
+                this.y = y;
+                this.type = type; // 'electron' 或 'hole'
+                this.vx = 0;
+                this.vy = 0;
+                this.radius = type === 'electron' ? 6 : 7;
+                this.color = type === 'electron' ? '#42a5f5' : '#ef5350';
+                this.trail = [];
+                this.maxTrailLength = 20;
+            }
+            
+            update(dt, current, magneticField, hallVoltage) {
+                // 基本速度（与电流成正比）
+                const baseSpeed = 2 + current * 3;
+                
+                // 纵向速度（电流方向）
+                this.vx = baseSpeed;
+                
+                // 洛伦兹力引起的横向速度（与磁场和载流子类型有关）
+                const lorentzEffect = magneticField * 5;
+                if (this.type === 'electron') {
+                    this.vy = -lorentzEffect; // 电子向上偏转
+                } else {
+                    this.vy = lorentzEffect; // 空穴向下偏转
+                }
+                
+                // 霍尔电场引起的反向速度（与霍尔电压成正比）
+                const hallEffect = hallVoltage * 0.5;
+                this.vy -= hallEffect * (this.type === 'electron' ? -1 : 1);
+                
+                // 更新位置
+                this.x += this.vx * dt;
+                this.y += this.vy * dt;
+                
+                // 记录轨迹
+                if (simulation.showTrails) {
+                    this.trail.push({x: this.x, y: this.y});
+                    if (this.trail.length > this.maxTrailLength) {
+                        this.trail.shift();
+                    }
+                }
+                
+                // 边界处理：从左侧重新进入
+                if (this.x > canvas.width + 50) {
+                    this.x = -50;
+                    this.y = Math.random() * (canvas.height - 200) + 100;
+                    this.trail = [];
+                }
+                
+                // 上下边界反弹（模拟导体边界）
+                if (this.y < 100 || this.y > canvas.height - 100) {
+                    this.vy *= -0.5;
+                }
+            }
+            
+            draw(ctx) {
+                // 绘制轨迹
+                if (simulation.showTrails && this.trail.length > 1) {
+                    ctx.beginPath();
+                    ctx.moveTo(this.trail[0].x, this.trail[0].y);
+                    
+                    for (let i = 1; i < this.trail.length; i++) {
+                        ctx.lineTo(this.trail[i].x, this.trail[i].y);
+                    }
+                    
+                    ctx.strokeStyle = this.color + '80';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                }
+                
+                // 绘制载流子
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.fill();
+                
+                // 绘制符号
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 10px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(this.type === 'electron' ? '−' : '+', this.x, this.y);
+            }
+        }
+        
+        // 创建载流子
+        let carriers = [];
+        function createCarriers() {
+            carriers = [];
+            const count = 30;
+            const carrierType = simulation.materialType === 'n' ? 'electron' : 'hole';
+            
+            for (let i = 0; i < count; i++) {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * (canvas.height - 200) + 100;
+                carriers.push(new ChargeCarrier(x, y, carrierType));
+            }
+        }
+        
+        // 绘制导体
+        function drawConductor() {
+            const width = canvas.width * 0.8;
+            const height = canvas.height * 0.4;
+            const x = canvas.width * 0.1;
+            const y = canvas.height * 0.3;
+            
+            // 导体主体
+            ctx.fillStyle = '#b0bec5';
+            ctx.fillRect(x, y, width, height);
+            
+            // 导体边框
+            ctx.strokeStyle = '#78909c';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x, y, width, height);
+            
+            // 电荷积累区域（左侧）
+            const chargeHeight = height * 0.7;
+            const chargeY = y + (height - chargeHeight) / 2;
+            
+            if (simulation.materialType === 'n') {
+                // N型：电子积累在上侧
+                ctx.fillStyle = '#0d47a180';
+                ctx.fillRect(x, chargeY, 20, chargeHeight / 2);
+                
+                ctx.fillStyle = '#b71c1c80';
+                ctx.fillRect(x, chargeY + chargeHeight / 2, 20, chargeHeight / 2);
+                
+                // 绘制极性符号
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 16px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('−', x + 10, chargeY + chargeHeight / 4);
+                ctx.fillText('+', x + 10, chargeY + chargeHeight * 3 / 4);
+            } else {
+                // P型：空穴积累在下侧
+                ctx.fillStyle = '#b71c1c80';
+                ctx.fillRect(x, chargeY, 20, chargeHeight / 2);
+                
+                ctx.fillStyle = '#0d47a180';
+                ctx.fillRect(x, chargeY + chargeHeight / 2, 20, chargeHeight / 2);
+                
+                // 绘制极性符号
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 16px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('+', x + 10, chargeY + chargeHeight / 4);
+                ctx.fillText('−', x + 10, chargeY + chargeHeight * 3 / 4);
+            }
+            
+            // 右侧电压测量点
+            ctx.fillStyle = '#ffeb3b';
+            ctx.beginPath();
+            ctx.arc(x + width, chargeY + chargeHeight / 4, 8, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.arc(x + width, chargeY + chargeHeight * 3 / 4, 8, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 连接线
+            ctx.strokeStyle = '#ffeb3b';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(x + width, chargeY + chargeHeight / 4);
+            ctx.lineTo(canvas.width - 50, 100);
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.moveTo(x + width, chargeY + chargeHeight * 3 / 4);
+            ctx.lineTo(canvas.width - 50, 150);
+            ctx.stroke();
+            
+            // 电压表
+            drawVoltmeter(canvas.width - 100, 80);
+            
+            // 电流方向箭头
+            drawCurrentArrow(x + width / 2, y - 30);
+            
+            // 磁场指示
+            drawMagneticField(x + width / 2, y + height + 30);
+            
+            return {x, y, width, height};
+        }
+        
+        // 绘制电压表
+        function drawVoltmeter(x, y) {
+            // 电压表主体
+            ctx.fillStyle = '#37474f';
+            ctx.fillRect(x, y, 80, 100);
+            
+            // 电压表面板
+            ctx.fillStyle = '#000';
+            ctx.fillRect(x + 5, y + 5, 70, 70);
+            
+            // 刻度
+            ctx.strokeStyle = '#66bb6a';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(x + 40, y + 40);
+            
+            // 根据电压值偏转指针
+            const maxVoltage = 5;
+            const angle = (simulation.hallVoltage / maxVoltage) * Math.PI;
+            const pointerX = x + 40 + Math.sin(angle) * 25;
+            const pointerY = y + 40 - Math.cos(angle) * 25;
+            
+            ctx.lineTo(pointerX, pointerY);
+            ctx.stroke();
+            
+            // 表盘刻度
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 1;
+            for (let i = -1; i <= 1; i += 0.5) {
+                const a = i * Math.PI / 2;
+                const startX = x + 40 + Math.sin(a) * 30;
+                const startY = y + 40 - Math.cos(a) * 30;
+                const endX = x + 40 + Math.sin(a) * 35;
+                const endY = y + 40 - Math.cos(a) * 35;
+                
+                ctx.beginPath();
+                ctx.moveTo(startX, startY);
+                ctx.lineTo(endX, endY);
+                ctx.stroke();
+            }
+            
+            // 标签
+            ctx.fillStyle = '#fff';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('电压表', x + 40, y + 95);
+        }
+        
+        // 绘制电流方向箭头
+        function drawCurrentArrow(x, y) {
+            ctx.strokeStyle = '#ffeb3b';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(x - 100, y);
+            ctx.lineTo(x + 100, y);
+            ctx.stroke();
+            
+            // 箭头
+            ctx.fillStyle = '#ffeb3b';
+            ctx.beginPath();
+            ctx.moveTo(x + 100, y);
+            ctx.lineTo(x + 80, y - 10);
+            ctx.lineTo(x + 80, y + 10);
+            ctx.closePath();
+            ctx.fill();
+            
+            // 标签
+            ctx.fillStyle = '#ffeb3b';
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('电流 I', x, y - 15);
+        }
+        
+        // 绘制磁场指示
+        function drawMagneticField(x, y) {
+            ctx.fillStyle = '#66bb6a';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // 绘制多个"×"表示磁场进入屏幕
+            for (let i = -2; i <= 2; i++) {
+                ctx.fillText('×', x + i * 40, y);
+            }
+            
+            // 标签
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText('磁场 B (垂直进入屏幕)', x, y + 30);
+        }
+        
+        // 绘制微观视图
+        function drawMicroView(conductor) {
+            if (!simulation.showMicroView) return;
+            
+            const microX = conductor.x + conductor.width * 0.7;
+            const microY = conductor.y + conductor.height * 0.5;
+            const microSize = 120;
+            
+            // 微观视图边框
+            ctx.strokeStyle = '#ff9800';
+            ctx.lineWidth = 3;
+            ctx.setLineDash([5, 5]);
+            ctx.strokeRect(microX - microSize/2, microY - microSize/2, microSize, microSize);
+            ctx.setLineDash([]);
+            
+            // 放大镜效果
+            ctx.strokeStyle = '#ff9800';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(microX, microY, microSize/2, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            // 绘制放大的载流子
+            const scale = 2;
+            carriers.forEach(carrier => {
+                const dx = carrier.x - microX;
+                const dy = carrier.y - microY;
+                const distance = Math.sqrt(dx*dx + dy*dy);
+                
+                if (distance < microSize/2) {
+                    // 在微观视图中绘制放大的载流子
+                    ctx.save();
+                    ctx.translate(microX + dx*scale, microY + dy*scale);
+                    
+                    // 载流子
+                    ctx.beginPath();
+                    ctx.arc(0, 0, carrier.radius * scale, 0, Math.PI * 2);
+                    ctx.fillStyle = carrier.color;
+                    ctx.fill();
+                    
+                    // 符号
+                    ctx.fillStyle = 'white';
+                    ctx.font = `bold ${12*scale}px Arial`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(carrier.type === 'electron' ? '−' : '+', 0, 0);
+                    
+                    // 绘制力箭头
+                    if (simulation.showForces) {
+                        // 洛伦兹力（橙色）
+                        ctx.strokeStyle = '#ff9800';
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        ctx.moveTo(0, 0);
+                        
+                        if (carrier.type === 'electron') {
+                            ctx.lineTo(0, -30 * simulation.magneticField);
+                        } else {
+                            ctx.lineTo(0, 30 * simulation.magneticField);
+                        }
+                        ctx.stroke();
+                        
+                        // 箭头头
+                        ctx.fillStyle = '#ff9800';
+                        if (carrier.type === 'electron') {
+                            ctx.beginPath();
+                            ctx.moveTo(0, -30 * simulation.magneticField);
+                            ctx.lineTo(-5, -25 * simulation.magneticField);
+                            ctx.lineTo(5, -25 * simulation.magneticField);
+                            ctx.closePath();
+                        } else {
+                            ctx.beginPath();
+                            ctx.moveTo(0, 30 * simulation.magneticField);
+                            ctx.lineTo(-5, 25 * simulation.magneticField);
+                            ctx.lineTo(5, 25 * simulation.magneticField);
+                            ctx.closePath();
+                        }
+                        ctx.fill();
+                        
+                        // 电场力（紫色）- 与洛伦兹力方向相反
+                        ctx.strokeStyle = '#ab47bc';
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        ctx.moveTo(0, 0);
+                        
+                        if (carrier.type === 'electron') {
+                            ctx.lineTo(0, 20 * Math.abs(simulation.hallVoltage));
+                        } else {
+                            ctx.lineTo(0, -20 * Math.abs(simulation.hallVoltage));
+                        }
+                        ctx.stroke();
+                        
+                        // 箭头头
+                        ctx.fillStyle = '#ab47bc';
+                        if (carrier.type === 'electron') {
+                            ctx.beginPath();
+                            ctx.moveTo(0, 20 * Math.abs(simulation.hallVoltage));
+                            ctx.lineTo(-5, 15 * Math.abs(simulation.hallVoltage));
+                            ctx.lineTo(5, 15 * Math.abs(simulation.hallVoltage));
+                            ctx.closePath();
+                        } else {
+                            ctx.beginPath();
+                            ctx.moveTo(0, -20 * Math.abs(simulation.hallVoltage));
+                            ctx.lineTo(-5, -15 * Math.abs(simulation.hallVoltage));
+                            ctx.lineTo(5, -15 * Math.abs(simulation.hallVoltage));
+                            ctx.closePath();
+                        }
+                        ctx.fill();
+                    }
+                    
+                    ctx.restore();
+                }
+            });
+            
+            // 微观视图标签
+            ctx.fillStyle = '#ff9800';
+            ctx.font = 'bold 14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('微观视图 (放大)', microX, microY - microSize/2 - 10);
+        }
+        
+        // 计算霍尔电压
+        function calculateHallVoltage() {
+            // 霍尔电压公式: U_H = (I * B) / (n * e * d)
+            // 简化计算，假设n和e为常数
+            const n = 1e28; // 载流子浓度 (1/m³)
+            const e = 1.6e-19; // 元电荷 (C)
+            const d = simulation.thickness * 1e-3; // 转换为米
+            
+            let voltage = (simulation.current * simulation.magneticField) / (n * e * d);
+            
+            // 转换为毫伏并限制范围
+            voltage = voltage * 1000; // 转换为mV
+            voltage = Math.min(Math.max(voltage, -10), 10);
+            
+            // P型材料电压极性相反
+            if (simulation.materialType === 'p') {
+                voltage = -voltage;
+            }
+            
+            simulation.hallVoltage = voltage;
+            
+            // 计算力的大小
+            simulation.lorentzForce = Math.abs(simulation.current * simulation.magneticField * 0.1);
+            simulation.electricForce = Math.abs(simulation.hallVoltage * 0.05);
+        }
+        
+        // 更新UI显示
+        function updateUI() {
+            document.getElementById('currentValue').textContent = simulation.current.toFixed(1);
+            document.getElementById('currentDisplay').textContent = simulation.current.toFixed(1) + ' A';
+            
+            document.getElementById('magneticValue').textContent = simulation.magneticField.toFixed(1);
+            document.getElementById('magneticDisplay').textContent = simulation.magneticField.toFixed(1) + ' T';
+            
+            document.getElementById('thicknessValue').textContent = simulation.thickness.toFixed(1);
+            document.getElementById('thicknessDisplay').textContent = simulation.thickness.toFixed(1) + ' mm';
+            
+            const voltageElem = document.getElementById('voltageValue');
+            voltageElem.textContent = Math.abs(simulation.hallVoltage).toFixed(2) + ' mV';
+            voltageElem.className = simulation.hallVoltage >= 0 ? 'info-value voltage-positive' : 'info-value voltage-negative';
+            
+            document.getElementById('lorentzValue').textContent = simulation.lorentzForce.toFixed(2);
+            document.getElementById('electricValue').textContent = simulation.electricForce.toFixed(2);
+            
+            // 更新材料类型按钮状态
+            document.getElementById('nTypeBtn').classList.toggle('active', simulation.materialType === 'n');
+            document.getElementById('pTypeBtn').classList.toggle('active', simulation.materialType === 'p');
+        }
+        
+        // 动画循环
+        let lastTime = 0;
+        function animate(timestamp) {
+            if (!lastTime) lastTime = timestamp;
+            const dt = (timestamp - lastTime) / 1000;
+            lastTime = timestamp;
+            
+            // 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 计算霍尔电压
+            calculateHallVoltage();
+            
+            // 绘制导体
+            const conductor = drawConductor();
+            
+            // 更新并绘制载流子
+            if (simulation.isPlaying) {
+                carriers.forEach(carrier => {
+                    carrier.update(dt, simulation.current, simulation.magneticField, simulation.hallVoltage);
+                });
+            }
+            
+            carriers.forEach(carrier => {
+                carrier.draw(ctx);
+            });
+            
+            // 绘制微观视图
+            drawMicroView(conductor);
+            
+            // 更新UI
+            updateUI();
+            
+            // 继续动画循环
+            requestAnimationFrame(animate);
+        }
+        
+        // 初始化UI
+<!--检测到代码截断，自动续写中...-->
+事件监听器
+        function initEventListeners() {
+            // 动画控制按钮
+            document.getElementById('playBtn').addEventListener('click', () => {
+                simulation.isPlaying = true;
+            });
+            
+            document.getElementById('pauseBtn').addEventListener('click', () => {
+                simulation.isPlaying = false;
+            });
+            
+            document.getElementById('resetBtn').addEventListener('click', () => {
+                simulation.current = 1.0;
+                simulation.magneticField = 1.0;
+                simulation.thickness = 1.0;
+                simulation.materialType = 'n';
+                simulation.hallVoltage = 0;
+                
+                // 重置滑块
+                document.getElementById('currentSlider').value = 1.0;
+                document.getElementById('magneticSlider').value = 1.0;
+                document.getElementById('thicknessSlider').value = 1.0;
+                
+                // 重置复选框
+                document.getElementById('showMicroView').checked = true;
+                document.getElementById('showForces').checked = true;
+                document.getElementById('showTrails').checked = false;
+                
+                simulation.showMicroView = true;
+                simulation.showForces = true;
+                simulation.showTrails = false;
+                
+                // 重置材料类型按钮
+                document.getElementById('nTypeBtn').classList.add('active');
+                document.getElementById('pTypeBtn').classList.remove('active');
+                
+                // 重新创建载流子
+                createCarriers();
+                
+                updateUI();
+            });
+            
+            // 滑块控制
+            document.getElementById('currentSlider').addEventListener('input', (e) => {
+                simulation.current = parseFloat(e.target.value);
+                updateUI();
+            });
+            
+            document.getElementById('magneticSlider').addEventListener('input', (e) => {
+                simulation.magneticField = parseFloat(e.target.value);
+                updateUI();
+            });
+            
+            document.getElementById('thicknessSlider').addEventListener('input', (e) => {
+                simulation.thickness = parseFloat(e.target.value);
+                updateUI();
+            });
+            
+            // 材料类型选择
+            document.getElementById('nTypeBtn').addEventListener('click', () => {
+                simulation.materialType = 'n';
+                document.getElementById('nTypeBtn').classList.add('active');
+                document.getElementById('pTypeBtn').classList.remove('active');
+                createCarriers();
+            });
+            
+            document.getElementById('pTypeBtn').addEventListener('click', () => {
+                simulation.materialType = 'p';
+                document.getElementById('pTypeBtn').classList.add('active');
+                document.getElementById('nTypeBtn').classList.remove('active');
+                createCarriers();
+            });
+            
+            // 视图选项
+            document.getElementById('showMicroView').addEventListener('change', (e) => {
+                simulation.showMicroView = e.target.checked;
+            });
+            
+            document.getElementById('showForces').addEventListener('change', (e) => {
+                simulation.showForces = e.target.checked;
+            });
+            
+            document.getElementById('showTrails').addEventListener('change', (e) => {
+                simulation.showTrails = e.target.checked;
+            });
+            
+            // 预设场景按钮（快速演示）
+            document.addEventListener('keydown', (e) => {
+                // 快捷键：1-标准N型演示，2-切换载流子对比，3-增强磁场效果
+                switch(e.key) {
+                    case '1':
+                        // 标准N型演示
+                        simulation.current = 1.0;
+                        simulation.magneticField = 1.0;
+                        simulation.thickness = 1.0;
+                        simulation.materialType = 'n';
+                        
+                        document.getElementById('currentSlider').value = 1.0;
+                        document.getElementById('magneticSlider').value = 1.0;
+                        document.getElementById('thicknessSlider').value = 1.0;
+                        
+                        document.getElementById('nTypeBtn').classList.add('active');
+                        document.getElementById('pTypeBtn').classList.remove('active');
+                        
+                        createCarriers();
+                        updateUI();
+                        break;
+                        
+                    case '2':
+                        // 切换载流子对比
+                        simulation.materialType = simulation.materialType === 'n' ? 'p' : 'n';
+                        
+                        if (simulation.materialType === 'n') {
+                            document.getElementById('nTypeBtn').classList.add('active');
+                            document.getElementById('pTypeBtn').classList.remove('active');
+                        } else {
+                            document.getElementById('pTypeBtn').classList.add('active');
+                            document.getElementById('nTypeBtn').classList.remove('active');
+                        }
+                        
+                        createCarriers();
+                        updateUI();
+                        break;
+                        
+                    case '3':
+                        // 增强磁场效果
+                        simulation.magneticField = 2.0;
+                        document.getElementById('magneticSlider').value = 2.0;
+                        updateUI();
+                        break;
+                }
+            });
+        }
+        
+        // 初始化函数
+        function init() {
+            // 创建初始载流子
+            createCarriers();
+            
+            // 初始化事件监听器
+            initEventListeners();
+            
+            // 开始动画循环
+            requestAnimationFrame(animate);
+            
+            // 初始UI更新
+            updateUI();
+            
+            // 显示快捷键提示
+            console.log('快捷键提示：');
+            console.log('1 - 标准N型演示');
+            console.log('2 - 切换载流子对比');
+            console.log('3 - 增强磁场效果');
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('load', init);
+        
+        // 添加预设场景按钮到页面
+        document.addEventListener('DOMContentLoaded', () => {
+            const controlPanel = document.querySelector('.control-panel');
+            const presetSection = document.createElement('div');
+            presetSection.className = 'section';
+            presetSection.innerHTML = `
+                <h2>快速演示（快捷键）</h2>
+                <div class="button-group">
+                    <button onclick="runPreset(1)">标准N型演示 (1)</button>
+                    <button onclick="runPreset(2)">切换载流子对比 (2)</button>
+                    <button onclick="runPreset(3)">增强磁场效果 (3)</button>
+                </div>
+                <p style="margin-top: 10px; font-size: 0.9em; opacity: 0.8;">
+                    提示：也可以使用键盘数字键1、2、3快速切换
+                </p>
+            `;
+            
+            controlPanel.appendChild(presetSection);
+            
+            // 将预设函数添加到全局作用域
+            window.runPreset = function(presetNum) {
+                switch(presetNum) {
+                    case 1:
+                        // 标准N型演示
+                        simulation.current = 1.0;
+                        simulation.magneticField = 1.0;
+                        simulation.thickness = 1.0;
+                        simulation.materialType = 'n';
+                        
+                        document.getElementById('currentSlider').value = 1.0;
+                        document.getElementById('magneticSlider').value = 1.0;
+                        document.getElementById('thicknessSlider').value = 1.0;
+                        
+                        document.getElementById('nTypeBtn').classList.add('active');
+                        document.getElementById('pTypeBtn').classList.remove('active');
+                        
+                        createCarriers();
+                        updateUI();
+                        break;
+                        
+                    case 2:
+                        // 切换载流子对比
+                        simulation.materialType = simulation.materialType === 'n' ? 'p' : 'n';
+                        
+                        if (simulation.materialType === 'n') {
+                            document.getElementById('nTypeBtn').classList.add('active');
+                            document.getElementById('pTypeBtn').classList.remove('active');
+                        } else {
+                            document.getElementById('pTypeBtn').classList.add('active');
+                            document.getElementById('nTypeBtn').classList.remove('active');
+                        }
+                        
+                        createCarriers();
+                        updateUI();
+                        break;
+                        
+                    case 3:
+                        // 增强磁场效果
+                        simulation.magneticField = 2.0;
+                        document.getElementById('magneticSlider').value = 2.0;
+                        updateUI();
+                        break;
+                }
+            };
+        });
+    </script>
+</body>
+</html>

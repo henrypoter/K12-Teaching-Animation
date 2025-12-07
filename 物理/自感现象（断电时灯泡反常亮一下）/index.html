@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自感现象教学动画 - 断电时灯泡反常亮一下</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        header {
+            text-align: center;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+        }
+
+        h1 {
+            color: #f1c40f;
+            margin-bottom: 10px;
+            font-size: 2.4rem;
+        }
+
+        .subtitle {
+            color: #bdc3c7;
+            font-size: 1.1rem;
+        }
+
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+
+        .animation-area {
+            flex: 1;
+            min-width: 600px;
+            background-color: #34495e;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .canvas-container {
+            flex: 1;
+            position: relative;
+            border: 2px solid #4a6572;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        #circuitCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .control-panel {
+            background-color: #3a506b;
+            border-radius: 12px;
+            padding: 25px;
+            min-width: 320px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .panel-section {
+            margin-bottom: 25px;
+        }
+
+        h2 {
+            color: #3498db;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #4a6572;
+            font-size: 1.4rem;
+        }
+
+        h3 {
+            color: #1abc9c;
+            margin: 15px 0 10px 0;
+            font-size: 1.1rem;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            background-color: #3498db;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button#resetBtn {
+            background-color: #e74c3c;
+        }
+
+        button#resetBtn:hover {
+            background-color: #c0392b;
+        }
+
+        .slider-container {
+            margin: 15px 0;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .slider-label span {
+            font-size: 0.95rem;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #4a6572;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #1abc9c;
+            cursor: pointer;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #3498db;
+            cursor: pointer;
+        }
+
+        label {
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .color-legend {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+        }
+
+        .explanation {
+            background-color: #3a506b;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 10px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .explanation p {
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .highlight {
+            color: #f1c40f;
+            font-weight: 600;
+        }
+
+        .key-point {
+            background-color: rgba(52, 152, 219, 0.1);
+            border-left: 4px solid #3498db;
+            padding: 12px 15px;
+            margin: 15px 0;
+            border-radius: 0 6px 6px 0;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #4a6572;
+            color: #95a5a6;
+            font-size: 0.9rem;
+            width: 100%;
+        }
+
+        @media (max-width: 1000px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .animation-area, .control-panel {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>自感现象教学动画</h1>
+            <p class="subtitle">断电时灯泡"反常"亮一下的原理探究</p>
+        </header>
+
+        <div class="main-content">
+            <div class="animation-area">
+                <div class="canvas-container">
+                    <canvas id="circuitCanvas" width="800" height="500"></canvas>
+                </div>
+                
+                <div class="color-legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #3498db;"></div>
+                        <span>电源电流</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #2ecc71;"></div>
+                        <span>自感电流</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #1abc9c;"></div>
+                        <span>磁场</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #f1c40f;"></div>
+                        <span>灯泡亮起</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-panel">
+                <div class="panel-section">
+                    <h2>实验控制</h2>
+                    <div class="button-group">
+                        <button id="closeSwitchBtn">闭合开关</button>
+                        <button id="openSwitchBtn">断开开关</button>
+                        <button id="resetBtn">重置实验</button>
+                    </div>
+                    
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>动画速度</span>
+                            <span id="speedValue">1.0x</span>
+                        </div>
+                        <input type="range" id="speedSlider" min="0.1" max="3" step="0.1" value="1">
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h2>可视化选项</h2>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="showCurrent" checked>
+                            <label for="showCurrent">显示电流粒子流</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="showMagnetic" checked>
+                            <label for="showMagnetic">显示磁感线</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="showGraph" checked>
+                            <label for="showGraph">显示电流变化曲线</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="showLabels" checked>
+                            <label for="showLabels">显示原理提示标签</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h2>参数调节</h2>
+                    <h3>线圈电感量 L</h3>
+                    <div class="slider-container">
+                        <input type="range" id="inductanceSlider" min="1" max="3" step="1" value="2">
+                        <div class="slider-label">
+                            <span>小</span>
+                            <span>中</span>
+                            <span>大</span>
+                        </div>
+                    </div>
+                    
+                    <h3>灯泡电阻 R</h3>
+                    <div class="slider-container">
+                        <input type="range" id="resistanceSlider" min="1" max="3" step="1" value="2">
+                        <div class="slider-label">
+                            <span>小</span>
+                            <span>中</span>
+                            <span>大</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="explanation">
+            <h2>原理解释</h2>
+            <p>当开关断开时，线圈中的电流突然减小，导致穿过线圈的<span class="highlight">磁通量发生变化</span>。根据法拉第电磁感应定律，线圈会产生一个自感电动势。</p>
+            
+            <div class="key-point">
+                这个自感电动势的方向总是<span class="highlight">阻碍原电流的变化</span>。在断电瞬间，它试图维持原电流方向继续流动。
+            </div>
+            
+            <p>由于开关已断开，线圈与灯泡构成了一个新的闭合回路。线圈中储存的<span class="highlight">磁场能</span>通过自感电流的形式释放，使灯泡获得电能而短暂发光。</p>
+            <p>调节线圈电感量(L)和灯泡电阻(R)可以观察到：<span class="highlight">L越大，储存的磁场能越多；R越小，灯泡获得的功率越大</span>，现象越明显。</p>
+        </div>
+
+        <footer>
+            <p>教学动画设计 | 自感现象探究 | 交互式物理学习工具</p>
+        </footer>
+    </div>
+
+    <script>
+        // 获取Canvas和上下文
+        const canvas = document.getElementById('circuitCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // 电路状态
+        let circuitState = {
+            switchClosed: false,
+            animationPhase: 'idle', // 'idle', 'closing', 'steady', 'opening', 'selfInduction'
+            animationTime: 0,
+            animationSpeed: 1.0,
+            showCurrent: true,
+            showMagnetic: true,
+            showGraph: true,
+            showLabels: true,
+            inductance: 2, // 1-3
+            resistance: 2  // 1-3
+        };
+
+        // 物理参数
+        const physicsParams = {
+            steadyCurrent: 1.0,
+            selfInductionCurrent: 0,
+            magneticFieldStrength: 0,
+            bulbBrightness: 0,
+            graphData: []
+        };
+
+        // 电路元件位置
+        const circuit = {
+            battery: { x: 150, y: 250, width: 80, height: 40 },
+            switch: { x: 350, y: 200, radius: 15, angle: 0 },
+            inductor: { x: 550, y: 250, width: 120, height: 80, turns: 8 },
+            bulb: { x: 750, y: 250, radius: 30 },
+            wirePaths: []
+        };
+
+        // 初始化导线路径
+        function initWirePaths() {
+            circuit.wirePaths = [
+                // 电池正极到开关
+                { from: { x: circuit.battery.x + circuit.battery.width/2, y: circuit.battery.y - circuit.battery.height/2 }, 
+                  to: { x: circuit.switch.x, y: circuit.switch.y } },
+                // 开关到电感
+                { from: { x: circuit.switch.x, y: circuit.switch.y }, 
+                  to: { x: circuit.inductor.x - circuit.inductor.width/2, y: circuit.inductor.y } },
+                // 电感到底部导线
+                { from: { x: circuit.inductor.x + circuit.inductor.width/2, y: circuit.inductor.y }, 
+                  to: { x: circuit.bulb.x, y: circuit.bulb.y } },
+                // 灯泡回电池负极
+                { from: { x: circuit.bulb.x, y: circuit.bulb.y }, 
+                  to: { x: circuit.battery.x + circuit.battery.width/2, y: circuit.battery.y + circuit.battery.height/2 } }
+            ];
+        }
+
+        // 电流粒子
+        let currentParticles = [];
+        let selfInductionParticles = [];
+
+        // 初始化电流粒子
+        function initParticles() {
+            currentParticles = [];
+            selfInductionParticles = [];
+            
+            // 创建正常电流粒子
+            for (let i = 0; i < 30; i++) {
+                currentParticles.push({
+                    position: 0,
+                    speed: 0.02,
+                    offset: Math.random() * Math.PI * 2
+                });
+            }
+            
+            // 创建自感电流粒子
+            for (let i = 0; i < 20; i++) {
+                selfInductionParticles.push({
+                    position: 0,
+                    speed: 0.03,
+                    offset: Math.random() * Math.PI * 2,
+                    active: false
+                });
+            }
+        }
+
+        // 绘制电池
+        function drawBattery() {
+            const b = circuit.battery;
+            
+            // 电池主体
+            ctx.fillStyle = '#ecf0f1';
+            ctx.fillRect(b.x - b.width/2, b.y - b.height/2, b.width, b.height);
+            ctx.strokeStyle = '#bdc3c7';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(b.x - b.width/2, b.y - b.height/2, b.width, b.height);
+            
+            // 正极标记
+            ctx.fillStyle = '#e74c3c';
+            ctx.fillRect(b.x - b.width/2 + 10, b.y - b.height/2 + 10, 20, 20);
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 14px Arial';
+            ctx.fillText('+', b.x - b.width/2 + 17, b.y - b.height/2 + 25);
+            
+            // 负极标记
+            ctx.fillStyle = '#2c3e50';
+            ctx.fillRect(b.x + b.width/2 - 30, b.y - b.height/2 + 10, 20, 20);
+            ctx.fillStyle = '#fff';
+            ctx.fillText('-', b.x + b.width/2 - 23, b.y - b.height/2 + 25);
+            
+            // 标签
+            ctx.fillStyle = '#ecf0f1';
+            ctx.font = '16px Arial';
+            ctx.fillText('电源', b.x - 20, b.y + b.height/2 + 25);
+        }
+
+        // 绘制开关
+        function drawSwitch() {
+            const s = circuit.switch;
+            
+            // 开关底座
+            ctx.fillStyle = '#95a5a6';
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 开关手柄
+            ctx.strokeStyle = '#ecf0f1';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            const angle = circuitState.switchClosed ? 0 : Math.PI * 0.3;
+            const endX = s.x + Math.cos(angle) * s.radius * 1.5;
+            const endY = s.y + Math.sin(angle) * s.radius * 1.5;
+            ctx.moveTo(s.x, s.y);
+            ctx.lineTo(endX, endY);
+            ctx.stroke();
+            
+            // 触点
+            ctx.fillStyle = circuitState.switchClosed ? '#f1c40f' : '#7f8c8d';
+            ctx.beginPath();
+            ctx.arc(endX, endY, 5, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 标签
+            ctx.fillStyle = '#ecf0f1';
+            ctx.font = '16px Arial';
+            ctx.fillText('开关', s.x - 15, s.y - s.radius - 10);
+        }
+
+        // 绘制电感线圈
+        function drawInductor() {
+            const ind = circuit.inductor;
+            const turns = circuit.inductor.turns;
+            const turnSpacing = ind.width / turns;
+            
+            // 线圈
+            ctx.strokeStyle = '#d35400';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            
+            for (let i = 0; i < turns; i++) {
+                const x = ind.x - ind.width/2 + i * turnSpacing;
+                const radius = ind.height / 3;
+                
+                ctx.moveTo(x, ind.y - radius);
+                ctx.arc(x + turnSpacing/2, ind.y - radius, turnSpacing/2, Math.PI, 0, false);
+                ctx.moveTo(x + turnSpacing, ind.y - radius);
+                ctx.arc(x + turnSpacing*1.5, ind.y, turnSpacing/2, Math.PI * 1.5, Math.PI * 0.5, false);
+                ctx.moveTo(x + turnSpacing*2, ind.y);
+                ctx.arc(x + turnSpacing*2.5, ind.y + radius, turnSpacing/2, Math.PI, 0, true);
+            }
+            
+            ctx.stroke();
+            
+            // 标签
+            ctx.fillStyle = '#ecf0f1';
+            ctx.font = '16px Arial';
+            ctx.fillText('电感线圈', ind.x - 35, ind.y - ind.height/2 - 15);
+            
+            // 电感值显示
+            ctx.fillStyle = '#1abc9c';
+            ctx.font = '14px Arial';
+            const lValues = ['小 (L小)', '中 (L中)', '大 (L大)'];
+            ctx.fillText(`电感量: ${lValues[circuitState.inductance - 1]}`, ind.x - 40, ind.y + ind.height/2 + 25);
+        }
+
+        // 绘制灯泡
+        function drawBulb() {
+            const b = circuit.bulb;
+            
+            // 灯泡玻璃
+            const brightness = physicsParams.bulbBrightness;
+            const glowColor = `rgba(252, 243, 207, ${0.3 + brightness * 0.7})`;
+            const filamentColor = `rgba(241, 196, 15, ${brightness})`;
+            
+            ctx.fillStyle = glowColor;
+            ctx.beginPath();
+            ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 灯泡底座
+            ctx.fillStyle = '#7f8c8d';
+            ctx.fillRect(b.x - 15, b.y + b.radius - 10, 30, 15);
+            
+            // 灯丝
+            ctx.strokeStyle = filamentColor;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(b.x - 10, b.y);
+            ctx.lineTo(b.x - 5, b.y + 5);
+            ctx.lineTo(b.x + 5, b.y - 5);
+            ctx.lineTo(b.x + 10, b.y);
+            ctx.stroke();
+            
+            // 发光效果
+            if (brightness > 0.1) {
+                ctx.shadowColor = '#f1c40f';
+                ctx.shadowBlur = 20 * brightness;
+                ctx.beginPath();
+                ctx.arc(b.x, b.y, b.radius * 0.8, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(241, 196, 15, ${brightness * 0.3})`;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+            
+            // 标签
+            ctx.fillStyle = '#ecf0f1';
+            ctx.font = '16px Arial';
+            ctx.fillText('灯泡', b.x - 15, b.y - b.radius - 10);
+            
+            // 电阻值显示
+            ctx.fillStyle = '#2ecc71';
+            ctx.font = '14px Arial';
+            const rValues = ['小 (R小)', '中 (R中)', '大 (R大)'];
+            ctx.fillText(`电阻: ${rValues[circuitState.resistance - 1]}`, b.x - 35, b.y + b.radius + 25);
+        }
+
+        // 绘制导线
+        function drawWires() {
+            ctx.strokeStyle = '#bdc3c7';
+            ctx.lineWidth = 3;
+            
+            circuit.wirePaths.forEach(path => {
+                ctx.beginPath();
+                ctx.moveTo(path.from.x, path.from.y);
+                ctx.lineTo(path.to.x, path.to.y);
+                ctx.stroke();
+            });
+        }
+
+        // 绘制电流粒子
+        function drawCurrentParticles() {
+            if (!circuitState.showCurrent) return;
+            
+            const time = Date.now() * 0.001;
+            
+            // 正常电流粒子（蓝色）
+            if (circuitState.switchClosed && physicsParams.steadyCurrent > 0.1) {
+                currentParticles.forEach(particle => {
+                    const pos = (particle.position + time * particle.speed * circuitState.animationSpeed) % 1;
+                    const pathIndex = Math.floor(pos * 3) % 4;
+                    const pathPos = (pos * 3) % 1;
+                    
+                    const path = circuit.wirePaths[pathIndex];
+                    const x = path.from.x + (path.to.x - path.from.x) * pathPos;
+                    const y = path.from.y + (path.to.y - path.from.y) * pathPos;
+                    
+                    const alpha = 0.5 + 0.5 * Math.sin(time * 2 + particle.offset);
+                    
+                    ctx.beginPath();
+                    ctx.arc(x, y, 4, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(52, 152, 219, ${alpha})`;
+                    ctx.fill();
+                });
+            }
+            
+            // 自感电流粒子（绿色）
+            if (circuitState.animationPhase === 'selfInduction' && physicsParams.selfInductionCurrent > 0.1) {
+                selfInductionParticles.forEach(particle => {
+                    if (!particle.active) return;
+                    
+                    const pos = (particle.position + time * particle.speed * circuitState.animationSpeed) % 1;
+                    // 自感电流只在电感-灯泡-电池负极回路中流动
+                    const effectivePos = pos * 0.7 + 0.3; // 从电感开始
+                    
+                    let x, y;
+                    if (effectivePos < 0.5) {
+                        // 电感到灯泡
+                        const path = circuit.wirePaths[2];
+                        const pathPos = (effectivePos - 0.3) / 0.2;
+                        x = path.from.x + (path.to.x - path.from.x) * pathPos;
+                        y = path.from.y + (path.to.y - path.from.y) * pathPos;
+                    } else {
+                        // 灯泡回电池负极
+                        const path = circuit.wirePaths[3];
+                        const pathPos = (effectivePos - 0.5) / 0.5;
+                        x = path.from.x + (path.to.x - path.from.x) * pathPos;
+                        y = path.from.y + (path.to.y - path.from.y) * pathPos;
+                    }
+                    
+                    const alpha = 0.5 + 0.5 * Math.sin(time * 3 + particle.offset);
+                    
+                    ctx.beginPath();
+                    ctx.arc(x, y, 5, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(46, 204, 113, ${alpha})`;
+                    ctx.fill();
+                });
+            }
+        }
+
+        // 绘制磁场
+        function drawMagneticField() {
+            if (!circuitState.showMagnetic) return;
+            
+            const ind = circuit.inductor;
+            const strength = physicsParams.magneticFieldStrength;
+            
+            if (strength < 0.01) return;
+            
+            // 绘制磁感线
+            ctx.strokeStyle = `rgba(26, 188, 156, ${0.3 + strength * 0.7})`;
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([5, 5]);
+            
+            const lines = 8;
+            for (let i = 0; i < lines; i++) {
+                const angle = (i / lines) * Math.PI * 2;
+                const radius = 30 + strength * 40;
+                
+                ctx.beginPath();
+                ctx.ellipse(
+                    ind.x, ind.y,
+                    radius, radius * 0.6,
+                    angle, 0, Math.PI * 2
+                );
+                ctx.stroke();
+            }
+            
+            ctx.setLineDash([]);
+            
+            // 磁场强度指示
+            if (circuitState.showLabels) {
+                ctx.fillStyle = '#1abc9c';
+                ctx.font = '14px Arial';
+                ctx.fillText(`磁场强度: ${strength.toFixed(2)}`, ind.x - 40, ind.y + 60);
+            }
+        }
+
+        // 绘制电流曲线图
+        function drawCurrentGraph() {
+            if (!circuitState.showGraph) return;
+            
+            const graphWidth = 600;
+            const graphHeight = 150;
+            const graphX = 100;
+            const graphY = 380;
+            
+            // 背景
+            ctx.fillStyle = 'rgba(44, 62, 80, 0.8)';
+            ctx.fillRect(graphX, graphY, graphWidth, graphHeight);
+            ctx.strokeStyle = '#ecf0f1';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(graphX, graphY, graphWidth, graphHeight);
+            
+            // 坐标轴
+            ctx.strokeStyle = '#95a5a6';
+            ctx.beginPath();
+            // X轴
+            ctx.moveTo(graphX, graphY + graphHeight/2);
+            ctx.lineTo(graphX + graphWidth, graphY + graphHeight/2);
+            // Y轴
+            ctx.moveTo(graphX, graphY);
+            ctx.lineTo(graphX, graphY + graphHeight);
+            ctx.stroke();
+            
+            // 坐标标签
+            ctx.fillStyle = '#ecf0f1';
+            ctx.font = '12px Arial';
+            ctx.fillText('时间', graphX + graphWidth - 30, graphY + graphHeight - 5);
+            ctx.fillText('电流', graphX + 5, graphY + 15);
+            ctx.fillText('电源电流', graphX + 100, graphY + 20);
+            ctx.fillStyle = '#2ecc71';
+            ctx.fillText('自感电流', graphX + 100, graphY + 40);
+            
+            // 绘制曲线
+            if (physicsParams.graphData.length > 1) {
+                // 电源电流曲线（蓝色）
+                ctx.strokeStyle = '#3498db';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                
+                physicsParams.graphData.forEach((point, index) => {
+                    const x = graphX + (index / (physicsParams.graphData.length - 1)) * graphWidth;
+                    const y = graphY + graphHeight/2 - point.steadyCurrent * graphHeight/2 * 0.8;
+                    
+                    if (index === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                });
+                ctx.stroke();
+                
+                // 自感电流曲线（绿色）
+                ctx.strokeStyle = '#2ecc71';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                
+                physicsParams.graphData.forEach((point, index) => {
+                    const x = graphX + (index / (physicsParams.graphData.length - 1)) * graphWidth;
+                    const y = graphY + graphHeight/2 - point.selfInductionCurrent * graphHeight/2 * 0.8;
+                    
+                    if (index === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                });
+                ctx.stroke();
+            }
+            
+            // 当前值显示
+            ctx.fillStyle = '#ecf0f1';
+            ctx.font = '14px Arial';
+            ctx.fillText(`电源电流: ${physicsParams.steadyCurrent.toFixed(2)}`, graphX + 400, graphY + 25);
+            ctx.fillStyle = '#2ecc71';
+            ctx.fillText(`自感电流: ${physicsParams.selfInductionCurrent.toFixed(2)}`, graphX + 400, graphY + 50);
+        }
+
+        // 绘制原理提示标签
+        function drawLabels() {
+            if (!circuitState.showLabels) return;
+            
+            ctx.fillStyle = '#ecf0f1';
+            ctx.font = 'bold 16px Arial';
+            
+            switch (circuitState.animationPhase) {
+                case 'closing':
+                    ctx.fillText('开关闭合，电流开始建立...', 300, 100);
+                    break;
+                case 'steady':
+                    ctx.fillText('稳定状态：电流恒定，磁场稳定', 300, 100);
+                    break;
+                case 'opening':
+                    ctx.fillText('开关断开，电流开始减小...', 300, 100);
+                    break;
+                case 'selfInduction':
+                    ctx.fillText('自感现象：线圈产生电动势，维持电流流动', 300, 100);
+                    ctx.fillStyle = '#f1c40f';
+                    ctx.fillText('灯泡因获得能量而发光！', 300, 130);
+                    break;
+            }
+            
+            // 物理量显示
+            ctx.fillStyle = '#3498db';
+            ctx.font = '14px Arial';
+            ctx.fillText(`动画阶段: ${circuitState.animationPhase}`, 50, 50);
+            ctx.fillText(`动画速度: ${circuitState.animationSpeed.toFixed(1)}x`, 50, 70);
+        }
+
+        // 更新物理状态
+        function updatePhysics(deltaTime) {
+            const dt = deltaTime * circuitState.animationSpeed;
+            circuitState.animationTime += dt;
+            
+            switch (circuitState.animationPhase) {
+                case 'closing':
+                    // 开关闭合过程
+                    physicsParams.steadyCurrent = Math.min(1.0, circuitState.animationTime * 2);
+                    physicsParams.magneticFieldStrength = physicsParams.steadyCurrent;
+                    physicsParams.bulbBrightness = physicsParams.steadyCurrent;
+                    
+                    if (circuitState.animationTime > 0.5) {
+                        circuitState.animationPhase = 'steady';
+                        circuitState.animationTime = 0;
+                    }
+                    break;
+                    
+                case 'steady':
+                    // 稳定状态
+                    physicsParams.steadyCurrent = 1.0;
+                    physicsParams.magneticFieldStrength = 1.0;
+                    physicsParams.bulbBrightness = 1.0;
+                    break;
+                    
+                case 'opening':
+                    // 开关断开过程
+                    physicsParams.steadyCurrent = Math.max(0, 1.0 - circuitState.animationTime * 3);
+                    physicsParams.magneticFieldStrength = physicsParams.steadyCurrent;
+                    physicsParams.bulbBrightness = physicsParams.steadyCurrent;
+                    
+                    if (circuitState.animationTime > 0.3) {
+                        circuitState.animationPhase = 'selfInduction';
+                        circuitState.animationTime = 0;
+                        // 激活自感电流粒子
+                        selfInductionParticles.forEach(p => p.active = true);
+                    }
+                    break;
+                    
+                case 'selfInduction':
+                    // 自感过程
+                    const inductanceFactor = circuitState.inductance / 2;
+                    const resistanceFactor = 1 / circuitState.resistance;
+                    
+                    // 自感电流先增大后减小
+                    const peakTime = 0.5 * inductanceFactor;
+                    if (circuitState.animationTime < peakTime) {
+                        physicsParams.selfInductionCurrent = circuitState.animationTime / peakTime;
+                    } else {
+                        physicsParams.selfInductionCurrent = Math.max(0, 1 - (circuitState.animationTime - peakTime) / peakTime);
+                    }
+                    
+                    // 磁场能量释放
+                    physicsParams.magneticFieldStrength = Math.max(0, 1 - circuitState.animationTime / (1 * inductanceFactor));
+                    
+                    // 灯泡亮度与自感电流和电阻相关
+                    physicsParams.bulbBrightness = physicsParams.selfInductionCurrent * resistanceFactor;
+                    
+                    // 更新自感粒子位置
+                    selfInductionParticles.forEach(p => {
+                        p.position = (p.position + dt * 0.5) % 1;
+                    });
+                    
+                    if (circuitState.animationTime > 2 * inductanceFactor) {
+                        circuitState.animationPhase = 'idle';
+                        physicsParams.selfInductionCurrent = 0;
+                        physicsParams.bulbBrightness = 0;
+                        selfInductionParticles.forEach(p => p.active = false);
+                    }
+                    break;
+            }
+            
+            // 记录图表数据
+            physicsParams.graphData.push({
+                steadyCurrent: physicsParams.steadyCurrent,
+                selfInductionCurrent: physicsParams.selfInductionCurrent,
+                time: Date.now()
+            });
+            
+            // 保持数据量适中
+            if (physicsParams.graphData.length > 200) {
+                physicsParams.graphData = physicsParams.graphData.slice(-200);
+            }
+            
+            // 更新正常电流粒子
+            currentParticles.forEach(p => {
+                p.position = (p.position + dt * 0.3) % 1;
+            });
+        }
+
+        // 绘制函数
+        function draw() {
+            // 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制所有元件
+            drawWires();
+            drawBattery();
+            drawSwitch();
+            drawInductor();
+            drawBulb();
+            drawMagneticField();
+            drawCurrentParticles();
+            drawCurrentGraph();
+            drawLabels();
+        }
+
+        // 动画循环
+        let lastTime = 0;
+        function animate(timestamp) {
+            const deltaTime = timestamp - lastTime || 0;
+            lastTime = timestamp;
+            
+            updatePhysics(deltaTime
+<!--检测到代码截断，自动续写中...-->
+);
+            draw();
+            requestAnimationFrame(animate);
+        }
+
+        // 初始化
+        function init() {
+            initWirePaths();
+            initParticles();
+            
+            // 设置Canvas大小
+            function resizeCanvas() {
+                const container = canvas.parentElement;
+                canvas.width = container.clientWidth;
+                canvas.height = container.clientHeight;
+                
+                // 重新计算元件位置
+                circuit.battery.x = canvas.width * 0.2;
+                circuit.battery.y = canvas.height * 0.5;
+                circuit.switch.x = canvas.width * 0.4;
+                circuit.switch.y = canvas.height * 0.4;
+                circuit.inductor.x = canvas.width * 0.65;
+                circuit.inductor.y = canvas.height * 0.5;
+                circuit.bulb.x = canvas.width * 0.85;
+                circuit.bulb.y = canvas.height * 0.5;
+                
+                initWirePaths();
+            }
+            
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+            
+            // 开始动画循环
+            animate(0);
+        }
+
+        // 事件监听器
+        document.getElementById('closeSwitchBtn').addEventListener('click', () => {
+            if (!circuitState.switchClosed && circuitState.animationPhase === 'idle') {
+                circuitState.switchClosed = true;
+                circuitState.animationPhase = 'closing';
+                circuitState.animationTime = 0;
+                physicsParams.graphData = [];
+            }
+        });
+
+        document.getElementById('openSwitchBtn').addEventListener('click', () => {
+            if (circuitState.switchClosed && circuitState.animationPhase === 'steady') {
+                circuitState.switchClosed = false;
+                circuitState.animationPhase = 'opening';
+                circuitState.animationTime = 0;
+            }
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            circuitState.switchClosed = false;
+            circuitState.animationPhase = 'idle';
+            circuitState.animationTime = 0;
+            physicsParams.steadyCurrent = 0;
+            physicsParams.selfInductionCurrent = 0;
+            physicsParams.magneticFieldStrength = 0;
+            physicsParams.bulbBrightness = 0;
+            physicsParams.graphData = [];
+            selfInductionParticles.forEach(p => p.active = false);
+        });
+
+        document.getElementById('speedSlider').addEventListener('input', (e) => {
+            circuitState.animationSpeed = parseFloat(e.target.value);
+            document.getElementById('speedValue').textContent = circuitState.animationSpeed.toFixed(1) + 'x';
+        });
+
+        document.getElementById('showCurrent').addEventListener('change', (e) => {
+            circuitState.showCurrent = e.target.checked;
+        });
+
+        document.getElementById('showMagnetic').addEventListener('change', (e) => {
+            circuitState.showMagnetic = e.target.checked;
+        });
+
+        document.getElementById('showGraph').addEventListener('change', (e) => {
+            circuitState.showGraph = e.target.checked;
+        });
+
+        document.getElementById('showLabels').addEventListener('change', (e) => {
+            circuitState.showLabels = e.target.checked;
+        });
+
+        document.getElementById('inductanceSlider').addEventListener('input', (e) => {
+            circuitState.inductance = parseInt(e.target.value);
+        });
+
+        document.getElementById('resistanceSlider').addEventListener('input', (e) => {
+            circuitState.resistance = parseInt(e.target.value);
+        });
+
+        // 启动初始化
+        init();
+    </script>
+</body>
+</html>

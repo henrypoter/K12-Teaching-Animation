@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>细胞膜的流动镶嵌模型 - 交互式教学动画</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #0d1b2a;
+            color: #f8f9fa;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 1000px;
+        }
+        
+        h1 {
+            color: #8ecae6;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
+        
+        .subtitle {
+            color: #cbd5e1;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+        
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            max-width: 1200px;
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .canvas-container {
+            flex: 1;
+            min-width: 600px;
+            background-color: #1b263b;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #membraneCanvas {
+            display: block;
+            width: 100%;
+            height: 500px;
+            background-color: #0d1b2a;
+            border-radius: 8px;
+        }
+        
+        .controls-container {
+            width: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .control-panel {
+            background-color: #1b263b;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        .panel-title {
+            color: #8ecae6;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #2d3047;
+            font-size: 1.3rem;
+        }
+        
+        .control-group {
+            margin-bottom: 15px;
+        }
+        
+        .control-label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .control-label input {
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        
+        .color-indicator {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            background-color: #2d3047;
+            color: #f8f9fa;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        button:hover {
+            background-color: #3a3f5e;
+            transform: translateY(-2px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button.primary {
+            background-color: #fb8500;
+        }
+        
+        button.primary:hover {
+            background-color: #e07a00;
+        }
+        
+        button.secondary {
+            background-color: #9d4edd;
+        }
+        
+        button.secondary:hover {
+            background-color: #8c3dcc;
+        }
+        
+        .info-panel {
+            background-color: #1b263b;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        .info-content {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #cbd5e1;
+        }
+        
+        .highlight {
+            color: #ffafcc;
+            font-weight: bold;
+        }
+        
+        .molecule-key {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .key-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+        
+        .key-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            margin-right: 6px;
+        }
+        
+        .instructions {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #8ecae6;
+            text-align: center;
+            max-width: 1000px;
+        }
+        
+        .tooltip {
+            position: absolute;
+            background-color: rgba(27, 38, 59, 0.95);
+            color: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 100;
+            border: 1px solid #2d3047;
+            max-width: 250px;
+        }
+        
+        @media (max-width: 1000px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .canvas-container, .controls-container {
+                width: 100%;
+                min-width: unset;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>细胞膜的流动镶嵌模型</h1>
+        <p class="subtitle">磷脂双层 + 蛋白质漂浮 + 实时翻转 - 交互式教学动画</p>
+    </div>
+    
+    <div class="container">
+        <div class="canvas-container">
+            <canvas id="membraneCanvas"></canvas>
+            <div class="tooltip" id="tooltip"></div>
+        </div>
+        
+        <div class="controls-container">
+            <div class="control-panel">
+                <h3 class="panel-title">结构显示控制</h3>
+                
+                <div class="control-group">
+                    <label class="control-label">
+                        <input type="checkbox" id="showPhospholipids" checked>
+                        <span class="color-indicator" style="background-color: #8ecae6;"></span>
+                        磷脂双层
+                    </label>
+                    <label class="control-label">
+                        <input type="checkbox" id="showProteins" checked>
+                        <span class="color-indicator" style="background-color: #fb8500;"></span>
+                        膜蛋白
+                    </label>
+                    <label class="control-label">
+                        <input type="checkbox" id="showGlyco" checked>
+                        <span class="color-indicator" style="background-color: #a7c957;"></span>
+                        糖蛋白/糖脂
+                    </label>
+                    <label class="control-label">
+                        <input type="checkbox" id="showCholesterol">
+                        <span class="color-indicator" style="background-color: #ff5d8f;"></span>
+                        胆固醇（拓展）
+                    </label>
+                </div>
+                
+                <h3 class="panel-title">动画控制</h3>
+                <div class="button-group">
+                    <button id="playBtn" class="primary">▶ 播放运动</button>
+                    <button id="pauseBtn">⏸ 暂停</button>
+                    <button id="resetBtn">↺ 重置</button>
+                </div>
+                
+                <h3 class="panel-title">专项演示</h3>
+                <div class="button-group">
+                    <button id="flipBtn" class="secondary">🔄 演示磷脂翻转</button>
+                    <button id="channelBtn" class="secondary">🚪 演示通道运输</button>
+                </div>
+            </div>
+            
+            <div class="info-panel">
+                <h3 class="panel-title">模型信息</h3>
+                <div class="info-content">
+                    <p><span class="highlight">流动镶嵌模型</span>认为细胞膜是由磷脂双层和镶嵌其中的蛋白质组成的动态结构。</p>
+                    <p><span class="highlight">磷脂分子</span>具有亲水头部和疏水尾部，在水中自发形成双层结构。</p>
+                    <p><span class="highlight">膜蛋白</span>以不同深度镶嵌在磷脂双层中，执行运输、识别等功能。</p>
+                    <p><span class="highlight">流动性</span>是细胞膜的重要特性，磷脂和蛋白质可进行侧向扩散。</p>
+                    
+                    <div class="molecule-key">
+                        <div class="key-item">
+                            <div class="key-color" style="background-color: #8ecae6;"></div>
+                            <span>磷脂亲水头</span>
+                        </div>
+                        <div class="key-item">
+                            <div class="key-color" style="background-color: #cbd5e1;"></div>
+                            <span>磷脂疏水尾</span>
+                        </div>
+                        <div class="key-item">
+                            <div class="key-color" style="background-color: #fb8500;"></div>
+                            <span>膜蛋白</span>
+                        </div>
+                        <div class="key-item">
+                            <div class="key-color" style="background-color: #a7c957;"></div>
+                            <span>糖链</span>
+                        </div>
+                        <div class="key-item">
+                            <div class="key-color" style="background-color: #9d4edd;"></div>
+                            <span>受体蛋白</span>
+                        </div>
+                        <div class="key-item">
+                            <div class="key-color" style="background-color: #ff5d8f;"></div>
+                            <span>胆固醇</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <p class="instructions">提示：点击并拖拽磷脂分子或蛋白质可体验膜的流动性。鼠标悬停在分子上查看详细信息。</p>
+
+    <script>
+        // 获取Canvas元素和上下文
+        const canvas = document.getElementById('membraneCanvas');
+        const ctx = canvas.getContext('2d');
+        const tooltip = document.getElementById('tooltip');
+        
+        // 设置Canvas尺寸
+        function resizeCanvas() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+        }
+        
+        // 初始调整尺寸
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // 动画状态
+        let animationId = null;
+        let isAnimating = true;
+        
+        // 控制状态
+        const controls = {
+            showPhospholipids: true,
+            showProteins: true,
+            showGlyco: true,
+            showCholesterol: false
+        };
+        
+        // 分子定义
+        const Phospholipid = {
+            HEAD_COLOR: '#8ecae6',
+            TAIL_COLOR: '#cbd5e1',
+            HEAD_RADIUS: 6,
+            TAIL_LENGTH: 20,
+            TAIL_WIDTH: 2
+        };
+        
+        const Protein = {
+            COLOR: '#fb8500',
+            RECEPTOR_COLOR: '#9d4edd',
+            RADIUS: 12
+        };
+        
+        const GlycoChain = {
+            COLOR: '#a7c957',
+            LENGTH: 15
+        };
+        
+        const Cholesterol = {
+            COLOR: '#ff5d8f',
+            SIZE: 8
+        };
+        
+        // 分子数组
+        let phospholipids = [];
+        let proteins = [];
+        let cholesterols = [];
+        let draggedMolecule = null;
+        let dragOffsetX = 0;
+        let dragOffsetY = 0;
+        
+        // 专项演示状态
+        let isFlipping = false;
+        let flipProgress = 0;
+        let flipMolecule = null;
+        let isChannelActive = false;
+        let channelProgress = 0;
+        let channelMolecule = null;
+        let ions = [];
+        
+        // 初始化分子
+        function initMolecules() {
+            phospholipids = [];
+            proteins = [];
+            cholesterols = [];
+            ions = [];
+            
+            const rows = 8;
+            const cols = 12;
+            const cellWidth = canvas.width / cols;
+            const cellHeight = canvas.height / rows;
+            
+            // 创建磷脂分子（双层）
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    // 上层磷脂
+                    phospholipids.push({
+                        x: col * cellWidth + cellWidth/2 + Math.random() * 10 - 5,
+                        y: row * cellHeight/2 + cellHeight/4 + Math.random() * 4 - 2,
+                        rotation: Math.PI, // 头部朝外
+                        layer: 'top',
+                        type: 'phospholipid',
+                        speed: 0.5 + Math.random() * 0.5,
+                        direction: Math.random() * Math.PI * 2,
+                        isFlipping: false
+                    });
+                    
+                    // 下层磷脂
+                    phospholipids.push({
+                        x: col * cellWidth + cellWidth/2 + Math.random() * 10 - 5,
+                        y: row * cellHeight/2 + cellHeight*3/4 + Math.random() * 4 - 2,
+                        rotation: 0, // 头部朝外
+                        layer: 'bottom',
+                        type: 'phospholipid',
+                        speed: 0.5 + Math.random() * 0.5,
+                        direction: Math.random() * Math.PI * 2,
+                        isFlipping: false
+                    });
+                }
+            }
+            
+            // 创建膜蛋白
+            for (let i = 0; i < 8; i++) {
+                const proteinType = Math.random() > 0.7 ? 'receptor' : 'integral';
+                
+                proteins.push({
+                    x: canvas.width * 0.2 + Math.random() * canvas.width * 0.6,
+                    y: canvas.height/2 + (Math.random() - 0.5) * 50,
+                    type: proteinType,
+                    radius: Protein.RADIUS + (proteinType === 'receptor' ? 2 : 0),
+                    color: proteinType === 'receptor' ? Protein.RECEPTOR_COLOR : Protein.COLOR,
+                    speed: 0.2 + Math.random() * 0.3,
+                    direction: Math.random() * Math.PI * 2,
+                    hasGlyco: Math.random() > 0.5 && proteinType === 'receptor',
+                    isChannel: Math.random() > 0.8 && proteinType === 'integral'
+                });
+            }
+            
+            // 创建胆固醇分子
+            for (let i = 0; i < 15; i++) {
+                cholesterols.push({
+                    x: Math.random() * canvas.width,
+                    y: canvas.height/2 + (Math.random() - 0.5) * 60,
+                    type: 'cholesterol',
+                    size: Cholesterol.SIZE,
+                    color: Cholesterol.COLOR,
+                    speed: 0.1 + Math.random() * 0.2,
+                    direction: Math.random() * Math.PI * 2
+                });
+            }
+        }
+        
+        // 绘制磷脂分子
+        function drawPhospholipid(phos) {
+            if (!controls.showPhospholipids) return;
+            
+            ctx.save();
+            ctx.translate(phos.x, phos.y);
+            ctx.rotate(phos.rotation);
+            
+            // 绘制亲水头部
+            ctx.fillStyle = Phospholipid.HEAD_COLOR;
+            ctx.beginPath();
+            ctx.arc(0, 0, Phospholipid.HEAD_RADIUS, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 绘制疏水尾部（两条）
+            ctx.strokeStyle = Phospholipid.TAIL_COLOR;
+            ctx.lineWidth = Phospholipid.TAIL_WIDTH;
+            
+            // 左尾
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(-Phospholipid.TAIL_LENGTH/3, Phospholipid.TAIL_LENGTH);
+            ctx.stroke();
+            
+            // 右尾
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(Phospholipid.TAIL_LENGTH/3, Phospholipid.TAIL_LENGTH);
+            ctx.stroke();
+            
+            ctx.restore();
+        }
+        
+        // 绘制膜蛋白
+        function drawProtein(protein) {
+            if (!controls.showProteins) return;
+            
+            ctx.save();
+            
+            // 绘制蛋白质主体
+            ctx.fillStyle = protein.color;
+            ctx.beginPath();
+            ctx.arc(protein.x, protein.y, protein.radius, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 如果是通道蛋白，绘制通道
+            if (protein.isChannel && isChannelActive && channelMolecule === protein) {
+                ctx.strokeStyle = '#f8f9fa';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(protein.x, protein.y - protein.radius);
+                ctx.lineTo(protein.x, protein.y + protein.radius);
+                ctx.stroke();
+                
+                // 绘制离子
+                drawIons();
+            }
+            
+            // 绘制糖链（如果是糖蛋白）
+            if (protein.hasGlyco && controls.showGlyco) {
+                drawGlycoChain(protein.x, protein.y - protein.radius);
+            }
+            
+            ctx.restore();
+        }
+        
+        // 绘制糖链
+        function drawGlycoChain(x, y) {
+            ctx.save();
+            ctx.strokeStyle = GlycoChain.COLOR;
+            ctx.lineWidth = 1.5;
+            ctx.fillStyle = GlycoChain.COLOR;
+            
+            // 绘制主链和分支
+            const branches = 3 + Math.floor(Math.random() * 3);
+            
+            for (let i = 0; i < branches; i++) {
+                const angle = -Math.PI/2 + (i - (branches-1)/2) * 0.4;
+                const length = GlycoChain.LENGTH * (0.7 + Math.random() * 0.6);
+                
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                const endX = x + Math.cos(angle) * length;
+                const endY = y + Math.sin(angle) * length;
+                ctx.lineTo(endX, endY);
+                ctx.stroke();
+                
+                // 绘制末端糖环
+                ctx.beginPath();
+                ctx.arc(endX, endY, 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            ctx.restore();
+        }
+        
+        // 绘制胆固醇
+        function drawCholesterol(chol) {
+            if (!controls.showCholesterol) return;
+            
+            ctx.save();
+            ctx.fillStyle = chol.color;
+            
+            // 绘制胆固醇分子（简化表示）
+            ctx.beginPath();
+            ctx.arc(chol.x, chol.y, chol.size, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 添加内部结构示意
+            ctx.strokeStyle = '#0d1b2a';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.arc(chol.x, chol.y, chol.size * 0.7, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            ctx.restore();
+        }
+        
+        // 绘制离子（用于通道演示）
+        function drawIons() {
+            if (!isChannelActive || !channelMolecule) return;
+            
+            ctx.save();
+            
+            ions.forEach(ion => {
+                ctx.fillStyle = ion.color;
+                ctx.beginPath();
+                ctx.arc(ion.x, ion.y, 3, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 离子符号
+                ctx.fillStyle = '#0d1b2a';
+                ctx.font = 'bold 8px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(ion.symbol, ion.x, ion.y);
+            });
+            
+            ctx.restore();
+        }
+        
+        // 更新离子位置
+        function updateIons() {
+            if (!isChannelActive || !channelMolecule) return;
+            
+            // 创建新离子
+            if (ions.length < 5 && Math.random() < 0.05) {
+                const side = Math.random() > 0.5 ? 'top' : 'bottom';
+                ions.push({
+                    x: channelMolecule.x + (Math.random() - 0.5) * 30,
+                    y: side === 'top' ? channelMolecule.y - 40 : channelMolecule.y + 40,
+                    targetX: channelMolecule.x,
+                    targetY: channelMolecule.y,
+                    color: side === 'top' ? '#ffb703' : '#4361ee',
+                    symbol: side === 'top' ? 'K+' : 'Na+',
+                    speed: 1 + Math.random() * 0.5
+                });
+            }
+            
+            // 更新离子位置
+            ions.forEach((ion, index) => {
+                const dx = ion.targetX - ion.x;
+                const dy = ion.targetY - ion.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < 5) {
+                    // 离子到达通道，移除并可能在另一侧创建新离子
+                    ions.splice(index, 1);
+                    
+                    // 在另一侧创建新离子
+                    if (Math.random() > 0.3) {
+                        const newSide = ion.y < channelMolecule.y ? 'bottom' : 'top';
+                        ions.push({
+                            x: channelMolecule.x,
+                            y: channelMolecule.y,
+                            targetX: channelMolecule.x + (Math.random() - 0.5) * 30,
+                            targetY: newSide === 'top' ? channelMolecule.y - 40 : channelMolecule.y + 40,
+                            color: newSide === 'top' ? '#ffb703' : '#4361ee',
+                            symbol: newSide === 'top' ? 'K+' : 'Na+',
+                            speed: 1 + Math.random() * 0.5
+                        });
+                    }
+                } else {
+                    ion.x += (dx / distance) * ion.speed;
+                    ion.y += (dy / distance) * ion.speed;
+                }
+            });
+        }
+        
+        // 更新分子位置（侧向扩散）
+        function updateMolecules() {
+            // 更新磷脂分子
+            phospholipids.forEach(phos => {
+                if (phos === draggedMolecule || phos.isFlipping) return;
+                
+                // 随机改变方向
+                if (Math.random() < 0.02) {
+                    phos.direction += (Math.random() - 0.5) * 0.5;
+                }
+                
+                // 移动分子
+                phos.x += Math.cos(phos.direction) * phos.speed * (isAnimating ? 1 : 0);
+                phos.y += Math.sin(phos.direction) * phos.speed * (isAnimating ? 1 : 0);
+                
+                // 边界检查
+                if (phos.x < 20) phos.x = 20;
+                if (phos.x > canvas.width - 20) phos.x = canvas.width - 20;
+                if (phos.y < 50) phos.y = 50;
+                if (phos.y > canvas.height - 50) phos.y = canvas.height - 50;
+                
+                // 保持大致在双层内
+                if (phos.layer === 'top' && phos.y > canvas.height/2 - 10) {
+                    phos.y = canvas.height/2 - 10;
+                    phos.direction = -phos.direction;
+                }
+                if (phos.layer === 'bottom' && phos.y < canvas.height/2 + 10) {
+                    phos.y = canvas.height/2 + 10;
+                    phos.direction = -phos.direction;
+                }
+            });
+            
+            // 更新蛋白质
+            proteins.forEach(protein => {
+                if (protein === draggedMolecule) return;
+                
+                // 随机改变方向
+                if (Math.random() < 0.01) {
+                    protein.direction += (Math.random() - 0.5) * 0.3;
+                }
+                
+                // 移动蛋白质（比磷脂慢）
+                protein.x += Math.cos(protein.direction) * protein.speed * (isAnimating ? 1 : 0);
+                protein.y += Math.sin(protein.direction) * protein.speed * (isAnimating ? 1 : 0);
+                
+                // 边界检查
+                if (protein.x < protein.radius) protein.x = protein.radius;
+                if (protein.x > canvas.width - protein.radius) protein.x = canvas.width - protein.radius;
+                if (protein.y < protein.radius + 50) protein.y = protein.radius + 50;
+                if (protein.y > canvas.height - protein.radius - 50) protein.y = canvas.height - protein.radius - 50;
+            });
+            
+            // 更新胆固醇
+            cholesterols.forEach(chol => {
+                // 随机改变方向
+                if (Math.random() < 0.01) {
+                    chol.direction += (Math.random() - 0.5) * 0.4;
+                }
+                
+                // 移动胆固醇
+                chol.x += Math.cos(chol.direction) * chol.speed * (isAnimating ? 1 : 0);
+                chol.y += Math.sin(chol.direction) * chol.speed * (isAnimating ? 1 : 0);
+                
+                // 边界检查
+                if (chol.x < chol.size) chol.x = chol.size;
+                if (chol.x > canvas.width - chol.size) chol.x = canvas.width - chol.size;
+                if (chol.y < chol.size + 50) chol.y = chol.size + 50;
+                if (chol.y > canvas.height - chol.size - 50) chol.y = canvas.height - chol.size - 50;
+            });
+            
+            // 更新翻转动画
+            if (isFlipping && flipMolecule) {
+                flipProgress += 0.02;
+                
+                if (flipProgress >= 1) {
+                    // 翻转完成
+                    isFlipping = false;
+                    flipMolecule.isFlipping = false;
+                    flipMolecule.layer = flipMolecule.layer === 'top' ? 'bottom' : 'top';
+                    flipMolecule.rotation = flipMolecule.rotation === 0 ? Math.PI : 0;
+                    flipMolecule = null;
+                    flipProgress = 0;
+                }
+            }
+            
+            // 更新离子
+            updateIons();
+        }
+        
+        // 绘制翻转动画
+        function drawFlipAnimation() {
+            if (!isFlipping || !flipMolecule) return;
+            
+            ctx.save();
+            
+            // 计算当前翻转位置
+            const startY = flipMolecule.layer === 'top' ? 
+                canvas.height/2 - 30 : canvas.height/2 + 30;
+            const endY = flipMolecule.layer === 'top' ? 
+                canvas.height/2 + 30 : canvas.height/2 - 30;
+            const currentY = startY + (endY - startY) * flipProgress;
+            
+            // 计算旋转（在中间时旋转90度）
+            const rotation = flipMolecule.rotation + Math.PI/2 * flipProgress;
+            
+            // 绘制翻转中的分子
+            ctx.translate(flipMolecule.x, currentY);
+            ctx.rotate(rotation);
+            
+            // 绘制亲水头部
+            ctx.fillStyle = Phospholipid.HEAD_COLOR;
+            ctx.beginPath();
+            ctx.arc(0, 0, Phospholipid.HEAD_RADIUS, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 绘制疏水尾部
+            ctx.strokeStyle = Phospholipid.TAIL_COLOR;
+            ctx.lineWidth = Phospholipid.TAIL_WIDTH;
+            
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(-Phospholipid.TAIL_LENGTH/3, Phospholipid.TAIL_LENGTH);
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(Phospholipid.TAIL_LENGTH/3, Phospholipid.TAIL_LENGTH);
+            ctx.stroke();
+            
+            ctx.restore();
+            
+            // 绘制说明文字
+            ctx.fillStyle = '#ffafcc';
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('磷脂翻转运动（极少发生）', canvas.width/2, 30);
+        }
+        
+        // 绘制通道动画
+        function drawChannelAnimation() {
+            if (!isChannelActive || !channelMolecule) return;
+            
+            // 绘制说明文字
+            ctx.fillStyle = '#a7c957';
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('通道蛋白介导的协助扩散', canvas.width/2, 30);
+        }
+        
+        // 主绘制函数
+        function draw() {
+            // 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制背景指示线（细胞膜中心线）
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height/2);
+            ctx.lineTo(canvas.width, canvas.height/2);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // 绘制细胞膜内外标识
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            ctx.font = '14px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText('细胞外', 10, 30);
+            ctx.textAlign = 'right';
+            ctx.fillText('细胞内', canvas.width - 10, canvas.height - 10);
+            
+            // 绘制所有分子
+            phospholipids.forEach(drawPhospholipid);
+            cholesterols.forEach(drawCholesterol);
+            proteins.forEach(drawProtein);
+            
+            // 绘制专项动画
+            if (isFlipping) {
+                drawFlipAnimation();
+            }
+            
+            if (isChannelActive) {
+                drawChannelAnimation();
+            }
+            
+            // 如果正在拖拽分子，将其绘制在最上层
+            if (draggedMolecule) {
+                if (draggedMolecule.type === 'phospholipid') {
+                    drawPhospholipid(draggedMolecule);
+                } else if (draggedMolecule.type === 'protein' || draggedMolecule.type === 'receptor') {
+                    drawProtein(draggedMolecule);
+                }
+            }
+        }
+        
+        // 动画循环
+        function animate() {
+            updateMolecules();
+            draw();
+            animationId = requestAnimationFrame(animate);
+        }
+        
+        // 查找点击的分子
+        function findMoleculeAt(x, y) {
+            // 检查蛋白质
+            for (const protein of proteins) {
+                const dx = x - protein.x;
+                const dy = y - protein.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance <= protein.radius) {
+                    return protein;
+                }
+            }
+            
+            // 检查磷脂分子
+            for (const phos of phospholipids) {
+                const dx = x - phos.x;
+                const dy = y - phos.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance <= Phospholipid.HEAD_RADIUS + 5) {
+                    return phos;
+                }
+            }
+            
+            return null;
+        }
+        
+        // 获取分子信息
+        function getMoleculeInfo(molecule) {
+            if (!molecule) return '';
+            
+            switch (molecule.type) {
+                case 'phospholipid':
+                    return `磷脂分子 - 亲水头部（蓝色）和疏水尾部（灰色）。位于${molecule.layer === 'top' ? '上层' : '下层'}。`;
+                case 'protein':
+                case 'receptor':
+                    let info = molecule.type === 'receptor' ? '受体蛋白' : '整合蛋白';
+                    if (molecule.isChannel) info = '通道蛋白';
+                    if (molecule.hasGlyco) info += '（糖蛋白）';
+                    info += ' - 镶嵌在磷脂双层中，执行特定功能。';
+                    return info;
+                case 'cholesterol':
+                    return '胆固醇分子 - 调节细胞膜的流动性，增加膜的稳定性。';
+                default:
+                    return '未知分子';
+            }
+        }
+        
+        // 事件监听器
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // 更新工具提示
+            const molecule = findMoleculeAt(x, y);
+            if (molecule) {
+                tooltip.textContent = getMoleculeInfo(molecule);
+                tooltip.style.left = (e.clientX + 10) + 'px';
+                tooltip.style.top = (e.clientY + 10) + 'px';
+                tooltip.style.opacity = '1';
+                canvas.style.cursor = 'pointer';
+            } else {
+                tooltip.style.opacity = '0';
+                canvas.style.cursor = 'default';
+            }
+            
+            // 如果正在拖拽，更新分子位置
+            if (draggedMolecule) {
+                draggedMolecule.x = x - dragOffsetX;
+                draggedMolecule.y = y - dragOffsetY;
+            }
+        });
+        
+        canvas.addEventListener('mousedown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const molecule = findMoleculeAt(x, y);
+            if (molecule) {
+                draggedMolecule = molecule;
+                dragOffsetX = x - molecule.x;
+                dragOffsetY = y - molecule.y;
+                canvas.style.cursor = 'grabbing';
+            }
+        });
+        
+        canvas.addEventListener('mouseup', () => {
+            draggedMolecule = null;
+            canvas.style.cursor = 'default';
+        });
+        
+        canvas.addEventListener('mouseleave', () => {
+            tooltip.style.opacity = '0';
+            draggedMolecule = null;
+        });
+        
+        // 控制面板事件监听
+        document.getElementById('showPhospholipids').addEventListener('change', (e) => {
+            controls.showPhospholipids = e.target.checked;
+        });
+        
+        document.getElementById('showProteins').addEventListener('change', (e) => {
+            controls.showProteins = e.target.checked;
+        });
+        
+        document.getElementById('showGlyco').addEventListener('change', (e) => {
+            controls.showGlyco = e.target.checked;
+        });
+        
+        document.getElementById('showCholesterol').addEventListener('change', (e) => {
+            controls.showCholesterol = e.target.checked;
+        });
+        
+        document.getElementById('playBtn').addEventListener('click', () => {
+            isAnimating = true;
+        });
+        
+        document.getElementById('pauseBtn').addEventListener('click', () => {
+            isAnimating = false;
+        });
+        
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            initMolecules();
+            isFlipping = false;
+            isChannelActive = false;
+            flipMolecule = null;
+            channelMolecule = null;
+            ions = [];
+        });
+        
+        document.getElementById('flipBtn').addEventListener('click', () => {
+            if (isFlipping) return;
+            
+            // 随机选择一个磷脂分子进行翻转
+            const candidates = phospholipids.filter(p => !p.isFlipping);
+            if (candidates.length > 0) {
+                flipMolecule = candidates[Math.floor(Math.random()
+<!--检测到代码截断，自动续写中...-->
+* candidates.length)];
+                flipMolecule.isFlipping = true;
+                isFlipping = true;
+                flipProgress = 0;
+            }
+        });
+        
+        document.getElementById('channelBtn').addEventListener('click', () => {
+            // 查找通道蛋白
+            const channelProteins = proteins.filter(p => p.isChannel);
+            if (channelProteins.length > 0) {
+                isChannelActive = true;
+                channelMolecule = channelProteins[Math.floor(Math.random() * channelProteins.length)];
+                ions = [];
+                
+                // 30秒后自动关闭通道演示
+                setTimeout(() => {
+                    isChannelActive = false;
+                    channelMolecule = null;
+                    ions = [];
+                }, 30000);
+            } else {
+                alert('当前没有通道蛋白，请重置模型或等待生成。');
+            }
+        });
+        
+        // 初始化并开始动画
+        initMolecules();
+        animate();
+        
+        // 初始提示
+        setTimeout(() => {
+            alert('欢迎使用细胞膜流动镶嵌模型交互动画！\n\n提示：\n1. 使用左侧控制面板显示/隐藏不同成分\n2. 点击按钮播放动画或演示专项过程\n3. 点击并拖拽分子体验膜的流动性\n4. 鼠标悬停在分子上查看详细信息');
+        }, 500);
+    </script>
+</body>
+</html>

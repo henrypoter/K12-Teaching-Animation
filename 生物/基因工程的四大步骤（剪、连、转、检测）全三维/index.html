@@ -1,0 +1,1590 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>基因工程四大步骤：剪、连、转、检 - 3D交互教学动画</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1A237E 0%, #2C3E50 100%);
+            color: #f0f0f0;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(74, 144, 226, 0.3);
+        }
+
+        h1 {
+            color: #4A90E2;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            color: #50C878;
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .animation-section {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(74, 144, 226, 0.2);
+        }
+
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            background: rgba(10, 15, 30, 0.7);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        #dnaCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4A90E2 0%, #2A6FC9 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.15);
+            color: #f0f0f0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #50C878 0%, #2E8B57 100%);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #FFA726 0%, #F57C00 100%);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #FF5252 0%, #D32F2F 100%);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            position: relative;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            position: relative;
+            z-index: 2;
+        }
+
+        .step-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .step.active .step-circle {
+            background: #4A90E2;
+            border-color: #4A90E2;
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(74, 144, 226, 0.7);
+        }
+
+        .step.completed .step-circle {
+            background: #50C878;
+            border-color: #50C878;
+            color: white;
+        }
+
+        .step-label {
+            font-size: 0.9rem;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .step-line {
+            position: absolute;
+            top: 25px;
+            left: 10%;
+            right: 10%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: 1;
+        }
+
+        .info-panel {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid #4A90E2;
+        }
+
+        .info-title {
+            color: #4A90E2;
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-content {
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .toolbox {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+
+        .tool {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            cursor: grab;
+            transition: all 0.2s ease;
+            border: 2px dashed transparent;
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .tool:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .tool.active {
+            border-color: #4A90E2;
+            background: rgba(74, 144, 226, 0.2);
+        }
+
+        .tool-icon {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .tool-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .quiz-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+            border: 1px solid rgba(80, 200, 120, 0.3);
+        }
+
+        .quiz-question {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #50C878;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .quiz-option {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .quiz-option:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .quiz-option.correct {
+            background: rgba(80, 200, 120, 0.3);
+            border-left: 4px solid #50C878;
+        }
+
+        .quiz-option.incorrect {
+            background: rgba(255, 82, 82, 0.3);
+            border-left: 4px solid #FF5252;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .hint {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            max-width: 250px;
+            z-index: 100;
+            pointer-events: none;
+            border: 1px solid #4A90E2;
+        }
+
+        .completion-message {
+            text-align: center;
+            padding: 30px;
+            background: rgba(80, 200, 120, 0.1);
+            border-radius: 15px;
+            margin-top: 30px;
+            border: 2px solid #50C878;
+        }
+
+        .completion-title {
+            color: #50C878;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .step-indicator {
+                flex-wrap: wrap;
+                gap: 20px;
+            }
+            
+            .step {
+                flex: 0 0 calc(50% - 20px);
+            }
+            
+            .canvas-container {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>基因工程四大步骤</h1>
+            <p class="subtitle">剪、连、转、检 - 三维交互式教学动画</p>
+        </header>
+        
+        <main class="main-content">
+            <section class="animation-section">
+                <div class="step-indicator">
+                    <div class="step-line"></div>
+                    <div class="step active" data-step="1">
+                        <div class="step-circle">1</div>
+                        <div class="step-label">剪 - 切割DNA</div>
+                    </div>
+                    <div class="step" data-step="2">
+                        <div class="step-circle">2</div>
+                        <div class="step-label">连 - 连接基因</div>
+                    </div>
+                    <div class="step" data-step="3">
+                        <div class="step-circle">3</div>
+                        <div class="step-label">转 - 转入细胞</div>
+                    </div>
+                    <div class="step" data-step="4">
+                        <div class="step-circle">4</div>
+                        <div class="step-label">检 - 检测表达</div>
+                    </div>
+                </div>
+                
+                <div class="canvas-container">
+                    <canvas id="dnaCanvas"></canvas>
+                    <div id="hint" class="hint hidden"></div>
+                </div>
+                
+                <div class="toolbox" id="toolbox">
+                    <div class="tool" data-tool="restriction-enzyme" id="tool-restriction">
+                        <div class="tool-icon">✂️</div>
+                        <div class="tool-name">限制性内切酶</div>
+                    </div>
+                    <div class="tool" data-tool="dna-fragment" id="tool-dna">
+                        <div class="tool-icon">🧬</div>
+                        <div class="tool-name">目标基因片段</div>
+                    </div>
+                    <div class="tool" data-tool="ligase" id="tool-ligase">
+                        <div class="tool-icon">🔗</div>
+                        <div class="tool-name">DNA连接酶</div>
+                    </div>
+                    <div class="tool" data-tool="plasmid" id="tool-plasmid">
+                        <div class="tool-icon">⭕</div>
+                        <div class="tool-name">质粒载体</div>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button class="btn btn-secondary" id="prevBtn">
+                        <span>◀</span> 上一步
+                    </button>
+                    <button class="btn btn-primary" id="playBtn">
+                        <span>▶</span> 播放动画
+                    </button>
+                    <button class="btn btn-secondary" id="nextBtn">
+                        下一步 <span>▶</span>
+                    </button>
+                    <button class="btn btn-secondary" id="resetBtn">
+                        <span>↺</span> 重置
+                    </button>
+                    <button class="btn btn-success" id="testBtn">
+                        <span>🔬</span> 开始检测
+                    </button>
+                </div>
+                
+                <div class="info-panel">
+                    <div class="info-title">
+                        <span id="stepIcon">✂️</span>
+                        <span id="stepTitle">步骤一：剪切DNA</span>
+                    </div>
+                    <div class="info-content" id="stepDescription">
+                        使用限制性内切酶在特定识别序列处切割DNA分子，产生黏性末端。请从左侧工具箱中选择"限制性内切酶"，然后拖拽到DNA链上进行切割。
+                    </div>
+                </div>
+            </section>
+            
+            <section class="quiz-section hidden" id="quizSection">
+                <h2 class="info-title">知识挑战</h2>
+                <p class="quiz-question" id="quizQuestion">基因工程中，用来切割DNA产生黏性末端的工具是什么？</p>
+                <div class="quiz-options" id="quizOptions">
+                    <div class="quiz-option" data-answer="A">A. DNA连接酶</div>
+                    <div class="quiz-option" data-answer="B">B. 限制性内切酶</div>
+                    <div class="quiz-option" data-answer="C">C. RNA聚合酶</div>
+                    <div class="quiz-option" data-answer="D">D. 解旋酶</div>
+                </div>
+            </section>
+            
+            <div class="completion-message hidden" id="completionMessage">
+                <h2 class="completion-title">🎉 恭喜！</h2>
+                <p>您已经成功完成了基因工程四大步骤的学习！</p>
+                <p>通过这个交互式动画，您已经掌握了：</p>
+                <ul style="text-align: left; margin: 15px 0; padding-left: 20px;">
+                    <li>使用限制性内切酶切割DNA</li>
+                    <li>使用DNA连接酶连接基因片段与质粒</li>
+                    <li>将重组质粒转入细菌细胞</li>
+                    <li>检测基因是否成功表达</li>
+                </ul>
+                <p>点击"重置"按钮可以重新开始学习。</p>
+            </div>
+        </main>
+        
+        <footer>
+            <p>基因工程教学动画 | 设计：教育技术专家 | 本动画为教学演示用途</p>
+            <p>注意：本动画对分子过程进行了简化与可视化处理，便于理解核心概念</p>
+        </footer>
+    </div>
+
+    <script>
+        // 全局变量
+        let currentStep = 1;
+        let animationPlaying = false;
+        let canvas, ctx;
+        let animationId;
+        let hintElement;
+        
+        // 颜色定义
+        const colors = {
+            dnaBackbone: '#CCCCCC',
+            dnaBaseA: '#FFA726', // 橙色
+            dnaBaseT: '#42A5F5', // 蓝色
+            dnaBaseG: '#66BB6A', // 绿色
+            dnaBaseC: '#EF5350', // 红色
+            restrictionEnzyme: '#FF5252', // 红色
+            ligase: '#FFD95C', // 黄色
+            plasmid: '#AB47BC', // 紫色
+            bacteria: '#E8F5E9', // 浅绿色
+            success: '#00E676', // 绿色
+            failure: '#FF5252', // 红色
+            highlight: '#FFFFFF' // 白色
+        };
+        
+        // 动画状态
+        const state = {
+            dnaCut: false,
+            geneConnected: false,
+            transformed: false,
+            tested: false,
+            selectedTool: null,
+            dragging: false,
+            dragObject: null,
+            dragOffset: {x: 0, y: 0},
+            bacteria: [],
+            showAntibiotic: false,
+            showUV: false
+        };
+        
+        // 初始化细菌
+        function initBacteria() {
+            state.bacteria = [];
+            for (let i = 0; i < 20; i++) {
+                state.bacteria.push({
+                    x: 100 + (i % 5) * 120,
+                    y: 150 + Math.floor(i / 5) * 80,
+                    radius: 20,
+                    transformed: i < 5, // 前5个是成功转化的
+                    glowing: false,
+                    alive: true
+                });
+            }
+        }
+        
+        // 初始化Canvas
+        function initCanvas() {
+            canvas = document.getElementById('dnaCanvas');
+            ctx = canvas.getContext('2d');
+            hintElement = document.getElementById('hint');
+            
+            // 设置Canvas尺寸
+            function resizeCanvas() {
+                const container = canvas.parentElement;
+                canvas.width = container.clientWidth;
+                canvas.height = container.clientHeight;
+                draw();
+            }
+            
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+            
+            // 事件监听
+            canvas.addEventListener('mousedown', handleMouseDown);
+            canvas.addEventListener('mousemove', handleMouseMove);
+            canvas.addEventListener('mouseup', handleMouseUp);
+            canvas.addEventListener('click', handleCanvasClick);
+            
+            // 工具点击事件
+            document.querySelectorAll('.tool').forEach(tool => {
+                tool.addEventListener('click', () => {
+                    if (tool.classList.contains('active')) {
+                        tool.classList.remove('active');
+                        state.selectedTool = null;
+                    } else {
+                        document.querySelectorAll('.tool').forEach(t => t.classList.remove('active'));
+                        tool.classList.add('active');
+                        state.selectedTool = tool.dataset.tool;
+                        showHint(`已选择：${tool.querySelector('.tool-name').textContent}`);
+                    }
+                });
+            });
+            
+            // 控制按钮事件
+            document.getElementById('prevBtn').addEventListener('click', prevStep);
+            document.getElementById('nextBtn').addEventListener('click', nextStep);
+            document.getElementById('playBtn').addEventListener('click', toggleAnimation);
+            document.getElementById('resetBtn').addEventListener('click', resetAnimation);
+            document.getElementById('testBtn').addEventListener('click', startTest);
+            
+            // 初始化细菌
+            initBacteria();
+        }
+        
+        // 绘制函数
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 根据当前步骤绘制不同内容
+            switch(currentStep) {
+                case 1:
+                    drawStep1();
+                    break;
+                case 2:
+                    drawStep2();
+                    break;
+                case 3:
+                    drawStep3();
+                    break;
+                case 4:
+                    drawStep4();
+                    break;
+            }
+            
+            // 绘制拖拽对象
+            if (state.dragging && state.dragObject) {
+                drawDragObject();
+            }
+        }
+        
+        // 步骤1：剪切DNA
+        function drawStep1() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            // 绘制DNA链
+            drawDNA(centerX - 200, centerY, 400, 30, false);
+            
+            // 绘制限制酶（如果在工具箱中）
+            if (!state.dnaCut) {
+                drawRestrictionEnzyme(centerX + 150, centerY - 100);
+                
+                // 绘制提示
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                ctx.font = '16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('点击并拖拽限制酶到DNA链上进行切割', centerX, centerY + 100);
+            } else {
+                // 绘制切割后的DNA
+                drawCutDNA(centerX, centerY);
+                
+                ctx.fillStyle = colors.success;
+                ctx.font = 'bold 18px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('✓ DNA已成功切割！', centerX, centerY + 100);
+            }
+        }
+        
+        // 步骤2：连接基因
+        function drawStep2() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            // 绘制质粒
+            drawPlasmid(centerX, centerY - 50, 80);
+            
+            // 绘制目标基因片段
+            if (!state.geneConnected) {
+                drawDNAFragment(centerX - 200, centerY + 100, 150, 20);
+                
+                // 绘制DNA连接酶
+                drawLigase(centerX + 150, centerY + 100);
+                
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                ctx.font = '16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('拖拽基因片段到质粒切口处，然后使用连接酶', centerX, centerY + 180);
+            } else {
+                // 绘制重组质粒
+                drawRecombinantPlasmid(centerX, centerY);
+                
+                ctx.fillStyle = colors.success;
+                ctx.font = 'bold 18px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('✓ 重组质粒构建成功！', centerX, centerY + 150);
+            }
+        }
+        
+        // 步骤3：转入细胞
+        function drawStep3() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            // 绘制细菌细胞
+            drawBacteriaCell(centerX, centerY, 60);
+            
+            // 绘制质粒
+            if (!state.transformed) {
+                const angle = Date.now() / 1000;
+                const plasmidX = centerX + Math.cos(angle) * 150;
+                const plasmidY = centerY + Math.sin(angle) * 150;
+                
+                drawPlasmid(plasmidX, plasmidY, 40);
+                
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                ctx.font = '16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('点击"播放动画"观看质粒转入细菌的过程', centerX, centerY + 150);
+            } else {
+                // 绘制质粒在细菌内
+                drawPlasmidInCell(centerX, centerY);
+                
+                ctx.fillStyle = colors.success;
+                ctx.font = 'bold 18px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('✓ 质粒成功转入细菌细胞！', centerX, centerY + 150);
+            }
+        }
+        
+        // 步骤4：检测表达
+        function drawStep4() {
+            const centerX = canvas.width / 2;
+            
+            // 绘制标题
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.font = 'bold 20px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('细菌培养皿', centerX, 50);
+            
+            // 绘制培养皿
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(centerX, 250, 200, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            // 绘制细菌菌落
+            state.bacteria.forEach(bacteria => {
+                drawBacteriaColony(bacteria);
+            });
+            
+            // 绘制抗生素效果
+            if (state.showAntibiotic) {
+                ctx.fillStyle = 'rgba(255, 82, 82, 0.3)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.fillStyle = colors.failure;
+                ctx.font = 'bold 18px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('抗生素杀死了未成功转化的细菌', centerX, 450);
+            }
+            
+            // 绘制UV效果
+            if (state.showUV) {
+                // UV光效果
+                const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+                gradient.addColorStop(0, 'rgba(128, 0, 255, 0.1)');
+                gradient.addColorStop(0.5, 'rgba(128, 0, 255, 0.3)');
+                gradient.addColorStop(1, 'rgba(128, 0, 255, 0.1)');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.fillStyle = colors.success;
+                ctx.font = 'bold 18px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('UV照射下，成功表达荧光蛋白的菌落发出绿色荧光', centerX, 450);
+            }
+            
+            if (!state.tested) {
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                ctx.font = '16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('点击"开始检测"按钮进行基因表达检测', centerX, 480);
+            }
+        }
+        
+        // 绘制DNA链
+        function drawDNA(x, y, length, basePairs, isCircular = false) {
+            const segmentLength = length / basePairs;
+            
+            // 绘制主链
+            ctx.strokeStyle = colors.dnaBackbone;
+            ctx.lineWidth = 3;
+            
+            if (isCircular) {
+                ctx.beginPath();
+                ctx.arc(x, y, length / (2 * Math.PI), 0, Math.PI * 2);
+                ctx.stroke();
+            } else {
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(x + length, y);
+                ctx.stroke();
+            }
+            
+            // 绘制碱基对
+            for (let i = 0; i < basePairs; i++) {
+                const baseX = x + i * segmentLength + segmentLength / 2;
+                
+                // 交替绘制不同颜色的碱基对
+                let color1, color2;
+                if (i % 4 === 0) {
+                    color1 = colors.dnaBaseA;
+                    color2 = colors.dnaBaseT;
+                } else if (i % 4 === 1) {
+                    color1 = colors.dnaBaseT;
+                    color2 = colors.dnaBaseA;
+                } else if (i % 4 === 2) {
+                    color1 = colors.dnaBaseG;
+                    color2 = colors.dnaBaseC;
+                } else {
+                    color1 = colors.dnaBaseC;
+                    color2 = colors.dnaBaseG;
+                }
+                
+                // 绘制碱基对连线
+                ctx.strokeStyle = color1;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(baseX, y - 15);
+                ctx.lineTo(baseX, y + 15);
+                ctx.stroke();
+                
+                // 绘制碱基点
+                ctx.fillStyle = color1;
+                ctx.beginPath();
+                ctx.arc(baseX, y - 15, 3, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = color2;
+                ctx.beginPath();
+                ctx.arc(baseX, y + 15, 3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        
+        // 绘制切割后的DNA
+        function drawCutDNA(x, y) {
+            // 左半部分DNA
+            drawDNA(x - 150, y, 150, 15);
+            
+            // 右半部分DNA
+            drawDNA(x + 50, y, 150, 15);
+            
+            // 绘制切割点（黏性末端）
+            ctx.strokeStyle = colors.highlight;
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            
+            // 左端黏性末端
+            ctx.beginPath();
+            ctx.moveTo(x - 5, y - 10);
+            ctx.lineTo(x - 15, y - 10);
+            ctx.moveTo(x - 5, y + 10);
+            ctx.lineTo(x - 15, y + 10);
+            ctx.stroke();
+            
+            // 右端黏性末端
+            ctx.beginPath();
+            ctx.moveTo(x + 5, y - 10);
+            ctx.lineTo(x + 15, y - 10);
+            ctx.moveTo(x + 5, y + 10);
+            ctx.lineTo(x + 15, y + 10);
+            ctx.stroke();
+            
+            ctx.setLineDash([]);
+        }
+        
+        // 绘制限制酶
+        function drawRestrictionEnzyme(x, y) {
+            // 酶的主体
+            ctx.fillStyle = colors.restrictionEnzyme;
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x - 20, y - 30);
+            ctx.lineTo(x + 20, y - 30);
+            ctx.closePath();
+            ctx.fill();
+            
+            // 剪刀形状
+            ctx.strokeStyle = colors.highlight;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(x - 15, y - 20);
+            ctx.lineTo(x - 5, y - 10);
+            ctx.moveTo(x + 15, y - 20);
+            ctx.lineTo(x + 5, y - 10);
+            ctx.stroke();
+            
+            // 标签
+            ctx.fillStyle = 'white';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('限制酶', x, y - 40);
+        }
+        
+        // 绘制DNA片段
+        function drawDNAFragment(x, y, length, basePairs) {
+            drawDNA(x, y, length, basePairs);
+            
+            // 高亮显示
+            ctx.strokeStyle = colors.highlight;
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x - 10, y - 25, length + 20, 50);
+        }
+        
+        // 绘制DNA连接酶
+        function drawLigase(x, y) {
+            // 酶的主体
+            ctx.fillStyle = colors.ligase;
+            ctx.beginPath();
+            ctx.arc(x, y, 25, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 连接符号
+            ctx.strokeStyle = colors.highlight;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(x - 15, y);
+            ctx.lineTo(x - 5, y);
+            ctx.moveTo(x + 5, y);
+            ctx.lineTo(x + 15, y);
+            ctx.moveTo(x - 5, y - 5);
+            ctx.lineTo(x - 5, y + 5);
+            ctx.moveTo(x + 5, y - 5);
+            ctx.lineTo(x + 5, y + 5);
+            ctx.stroke();
+            
+            // 标签
+            ctx.fillStyle = 'white';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('连接酶', x, y - 35);
+        }
+        
+        // 绘制质粒
+        function drawPlasmid(x, y, radius) {
+            // 环形DNA
+            ctx.strokeStyle = colors.plasmid;
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            // 绘制一些碱基对
+            const baseCount = 12;
+            for (let i = 0; i < baseCount; i++) {
+                const angle = (i / baseCount) * Math.PI * 2;
+                const baseX = x + Math.cos(angle) * radius;
+                const baseY = y + Math.sin(angle) * radius;
+                
+                ctx.fillStyle = i % 2 === 0 ? colors.dnaBaseA : colors.dnaBaseG;
+                ctx.beginPath();
+                ctx.arc(baseX, baseY, 3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // 如果是切割后的质粒，显示切口
+            if (currentStep === 2 && !state.geneConnected) {
+                ctx.strokeStyle = colors.restrictionEnzyme;
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(x + radius, y, 5, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+        }
+        
+        // 绘制重组质粒
+        function drawRecombinantPlasmid(x, y) {
+            const radius = 100;
+            
+            // 绘制质粒环
+            ctx.strokeStyle = colors.plasmid;
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            // 绘制插入的基因片段（不同颜色）
+            ctx.strokeStyle = colors.dnaBaseA;
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.arc(x, y, radius, -Math.PI/4, Math.PI/4);
+            ctx.stroke();
+            
+            // 高亮显示插入点
+            ctx.fillStyle = colors.success;
+            ctx.beginPath();
+            ctx.arc(x + radius * Math.cos(Math.PI/4), y + radius * Math.sin(Math.PI/4), 8, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.arc(x + radius * Math.cos(-Math.PI/4), y + radius * Math.sin(-Math.PI/4), 8, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 标签
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('重组质粒', x, y - radius - 20);
+        }
+        
+        // 绘制细菌细胞
+        function drawBacteriaCell(x, y, radius) {
+            // 细胞膜
+            ctx.strokeStyle = colors.bacteria;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.ellipse(x, y, radius * 1.5, radius, 
+<!--检测到代码截断，自动续写中...-->
+0, Math.PI * 2);
+            ctx.stroke();
+            
+            // 细胞质
+            ctx.fillStyle = colors.bacteria + '40';
+            ctx.beginPath();
+            ctx.ellipse(x, y, radius * 1.5, radius, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 细胞内部结构
+            ctx.fillStyle = colors.dnaBaseG + '80';
+            ctx.beginPath();
+            ctx.arc(x - radius/2, y, 8, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.arc(x + radius/2, y - 10, 6, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.arc(x + radius/3, y + 15, 5, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        // 绘制质粒在细胞内
+        function drawPlasmidInCell(x, y) {
+            // 先绘制细菌细胞
+            drawBacteriaCell(x, y, 60);
+            
+            // 在细胞内绘制质粒
+            const angle = Date.now() / 1000;
+            const plasmidX = x + Math.cos(angle) * 20;
+            const plasmidY = y + Math.sin(angle) * 15;
+            
+            drawPlasmid(plasmidX, plasmidY, 25);
+            
+            // 添加高亮效果
+            ctx.strokeStyle = colors.success;
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.ellipse(x, y, 90, 60, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+        
+        // 绘制细菌菌落
+        function drawBacteriaColony(bacteria) {
+            if (!bacteria.alive) {
+                // 死亡的细菌
+                ctx.fillStyle = colors.failure + '40';
+                ctx.beginPath();
+                ctx.arc(bacteria.x, bacteria.y, bacteria.radius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.strokeStyle = colors.failure;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(bacteria.x - bacteria.radius/2, bacteria.y - bacteria.radius/2);
+                ctx.lineTo(bacteria.x + bacteria.radius/2, bacteria.y + bacteria.radius/2);
+                ctx.moveTo(bacteria.x + bacteria.radius/2, bacteria.y - bacteria.radius/2);
+                ctx.lineTo(bacteria.x - bacteria.radius/2, bacteria.y + bacteria.radius/2);
+                ctx.stroke();
+                return;
+            }
+            
+            // 正常细菌
+            ctx.fillStyle = bacteria.transformed ? colors.bacteria : '#CCCCCC';
+            ctx.beginPath();
+            ctx.arc(bacteria.x, bacteria.y, bacteria.radius, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 成功转化的细菌有特殊标记
+            if (bacteria.transformed) {
+                ctx.strokeStyle = colors.plasmid;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(bacteria.x, bacteria.y, bacteria.radius - 3, 0, Math.PI * 2);
+                ctx.stroke();
+                
+                // 如果正在发光（UV照射下）
+                if (bacteria.glowing) {
+                    // 发光效果
+                    const gradient = ctx.createRadialGradient(
+                        bacteria.x, bacteria.y, 0,
+                        bacteria.x, bacteria.y, bacteria.radius * 2
+                    );
+                    gradient.addColorStop(0, colors.success + '80');
+                    gradient.addColorStop(1, colors.success + '0');
+                    
+                    ctx.fillStyle = gradient;
+                    ctx.beginPath();
+                    ctx.arc(bacteria.x, bacteria.y, bacteria.radius * 2, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // 细菌本身更亮
+                    ctx.fillStyle = colors.success;
+                    ctx.beginPath();
+                    ctx.arc(bacteria.x, bacteria.y, bacteria.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+        }
+        
+        // 绘制拖拽对象
+        function drawDragObject() {
+            if (!state.dragObject) return;
+            
+            const {type, x, y} = state.dragObject;
+            
+            switch(type) {
+                case 'restriction-enzyme':
+                    drawRestrictionEnzyme(x, y);
+                    break;
+                case 'dna-fragment':
+                    drawDNAFragment(x - 75, y, 150, 20);
+                    break;
+                case 'ligase':
+                    drawLigase(x, y);
+                    break;
+                case 'plasmid':
+                    drawPlasmid(x, y, 40);
+                    break;
+            }
+        }
+        
+        // 鼠标事件处理
+        function handleMouseDown(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // 检查是否点击了可拖拽对象
+            if (currentStep === 1 && !state.dnaCut) {
+                // 检查是否点击了限制酶
+                const enzymeX = canvas.width / 2 + 150;
+                const enzymeY = canvas.height / 2 - 100;
+                const distance = Math.sqrt((x - enzymeX) ** 2 + (y - enzymeY) ** 2);
+                
+                if (distance < 40 && state.selectedTool === 'restriction-enzyme') {
+                    state.dragging = true;
+                    state.dragObject = {
+                        type: 'restriction-enzyme',
+                        x: x,
+                        y: y
+                    };
+                    state.dragOffset = {x: enzymeX - x, y: enzymeY - y};
+                }
+            }
+            
+            if (currentStep === 2 && !state.geneConnected) {
+                // 检查是否点击了DNA片段
+                const fragmentX = canvas.width / 2 - 200;
+                const fragmentY = canvas.height / 2 + 100;
+                const distance = Math.sqrt((x - fragmentX) ** 2 + (y - fragmentY) ** 2);
+                
+                if (distance < 100 && state.selectedTool === 'dna-fragment') {
+                    state.dragging = true;
+                    state.dragObject = {
+                        type: 'dna-fragment',
+                        x: x,
+                        y: y
+                    };
+                    state.dragOffset = {x: fragmentX - x, y: fragmentY - y};
+                }
+                
+                // 检查是否点击了连接酶
+                const ligaseX = canvas.width / 2 + 150;
+                const ligaseY = canvas.height / 2 + 100;
+                const ligaseDistance = Math.sqrt((x - ligaseX) ** 2 + (y - ligaseY) ** 2);
+                
+                if (ligaseDistance < 40 && state.selectedTool === 'ligase') {
+                    state.dragging = true;
+                    state.dragObject = {
+                        type: 'ligase',
+                        x: x,
+                        y: y
+                    };
+                    state.dragOffset = {x: ligaseX - x, y: ligaseY - y};
+                }
+            }
+        }
+        
+        function handleMouseMove(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // 更新拖拽对象位置
+            if (state.dragging && state.dragObject) {
+                state.dragObject.x = x + state.dragOffset.x;
+                state.dragObject.y = y + state.dragOffset.y;
+                draw();
+            }
+            
+            // 显示提示
+            showHintAtPosition(x, y);
+        }
+        
+        function handleMouseUp(e) {
+            if (!state.dragging || !state.dragObject) {
+                state.dragging = false;
+                return;
+            }
+            
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // 检查是否放置到正确位置
+            if (currentStep === 1 && state.dragObject.type === 'restriction-enzyme') {
+                const dnaX = canvas.width / 2;
+                const dnaY = canvas.height / 2;
+                
+                // 检查是否靠近DNA链
+                if (Math.abs(y - dnaY) < 50 && x > dnaX - 250 && x < dnaX + 250) {
+                    // 成功切割DNA
+                    state.dnaCut = true;
+                    showHint('✓ DNA切割成功！产生了黏性末端。');
+                    
+                    // 更新步骤信息
+                    updateStepInfo();
+                    
+                    // 播放成功音效（模拟）
+                    playSuccessSound();
+                }
+            }
+            
+            if (currentStep === 2) {
+                const plasmidX = canvas.width / 2;
+                const plasmidY = canvas.height / 2 - 50;
+                
+                if (state.dragObject.type === 'dna-fragment') {
+                    // 检查是否靠近质粒切口
+                    const distance = Math.sqrt((x - (plasmidX + 80)) ** 2 + (y - plasmidY) ** 2);
+                    
+                    if (distance < 30) {
+                        showHint('基因片段已放置到质粒切口处。现在请使用DNA连接酶进行连接。');
+                    }
+                }
+                
+                if (state.dragObject.type === 'ligase') {
+                    // 检查是否靠近质粒
+                    const distance = Math.sqrt((x - plasmidX) ** 2 + (y - plasmidY) ** 2);
+                    
+                    if (distance < 100) {
+                        // 成功连接
+                        state.geneConnected = true;
+                        showHint('✓ DNA连接成功！重组质粒构建完成。');
+                        
+                        // 更新步骤信息
+                        updateStepInfo();
+                        
+                        // 播放成功音效（模拟）
+                        playSuccessSound();
+                    }
+                }
+            }
+            
+            state.dragging = false;
+            state.dragObject = null;
+            draw();
+        }
+        
+        function handleCanvasClick(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // 步骤3：点击播放转化动画
+            if (currentStep === 3 && !state.transformed) {
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                const distance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+                
+                if (distance < 100) {
+                    playTransformationAnimation();
+                }
+            }
+        }
+        
+        // 播放转化动画
+        function playTransformationAnimation() {
+            if (animationPlaying) return;
+            
+            animationPlaying = true;
+            document.getElementById('playBtn').disabled = true;
+            
+            let startTime = Date.now();
+            const duration = 2000; // 2秒动画
+            
+            function animate() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                draw();
+                
+                // 绘制动画中的质粒
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                
+                // 计算质粒位置（从外部飞入细胞）
+                const startX = centerX + 150;
+                const startY = centerY + 150;
+                const endX = centerX;
+                const endY = centerY;
+                
+                const plasmidX = startX + (endX - startX) * progress;
+                const plasmidY = startY + (endY - startY) * progress;
+                const plasmidSize = 40 * (1 - progress * 0.5);
+                
+                // 绘制质粒
+                drawPlasmid(plasmidX, plasmidY, plasmidSize);
+                
+                // 绘制运动轨迹
+                ctx.strokeStyle = colors.highlight + '80';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                ctx.moveTo(startX, startY);
+                ctx.lineTo(plasmidX, plasmidY);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                if (progress < 1) {
+                    animationId = requestAnimationFrame(animate);
+                } else {
+                    // 动画完成
+                    state.transformed = true;
+                    animationPlaying = false;
+                    document.getElementById('playBtn').disabled = false;
+                    
+                    // 更新步骤信息
+                    updateStepInfo();
+                    
+                    // 播放成功音效（模拟）
+                    playSuccessSound();
+                    
+                    draw();
+                }
+            }
+            
+            animate();
+        }
+        
+        // 开始检测
+        function startTest() {
+            if (currentStep !== 4) return;
+            
+            // 第一步：添加抗生素
+            state.showAntibiotic = true;
+            draw();
+            
+            // 杀死未转化的细菌
+            setTimeout(() => {
+                state.bacteria.forEach(bacteria => {
+                    if (!bacteria.transformed) {
+                        bacteria.alive = false;
+                    }
+                });
+                draw();
+                
+                // 第二步：UV照射
+                setTimeout(() => {
+                    state.showAntibiotic = false;
+                    state.showUV = true;
+                    
+                    // 让转化的细菌发光
+                    state.bacteria.forEach(bacteria => {
+                        if (bacteria.transformed && bacteria.alive) {
+                            bacteria.glowing = true;
+                        }
+                    });
+                    draw();
+                    
+                    // 完成检测
+                    setTimeout(() => {
+                        state.tested = true;
+                        showHint('✓ 检测完成！成功筛选出表达目标基因的细菌。');
+                        
+                        // 显示完成消息
+                        document.getElementById('completionMessage').classList.remove('hidden');
+                        
+                        // 显示测验
+                        document.getElementById('quizSection').classList.remove('hidden');
+                        
+                        // 播放成功音效（模拟）
+                        playSuccessSound();
+                    }, 2000);
+                }, 2000);
+            }, 2000);
+        }
+        
+        // 显示提示
+        function showHint(message) {
+            hintElement.textContent = message;
+            hintElement.classList.remove('hidden');
+            
+            // 居中显示
+            hintElement.style.left = '50%';
+            hintElement.style.top = '20px';
+            hintElement.style.transform = 'translateX(-50%)';
+            
+            // 3秒后隐藏
+            setTimeout(() => {
+                hintElement.classList.add('hidden');
+            }, 3000);
+        }
+        
+        // 在指定位置显示提示
+        function showHintAtPosition(x, y) {
+            // 根据位置显示不同的提示
+            if (currentStep === 1 && !state.dnaCut) {
+                const dnaY = canvas.height / 2;
+                if (Math.abs(y - dnaY) < 30) {
+                    hintElement.textContent = '将限制酶拖拽到这里切割DNA';
+                    hintElement.style.left = x + 'px';
+                    hintElement.style.top = (y - 40) + 'px';
+                    hintElement.classList.remove('hidden');
+                    return;
+                }
+            }
+            
+            // 默认隐藏提示
+            hintElement.classList.add('hidden');
+        }
+        
+        // 播放成功音效（模拟）
+        function playSuccessSound() {
+            // 在实际应用中，这里会播放音频文件
+            // 现在使用控制台日志模拟
+            console.log('播放成功音效');
+        }
+        
+        // 更新步骤信息
+        function updateStepInfo() {
+            const stepTitles = [
+                '步骤一：剪切DNA',
+                '步骤二：连接基因',
+                '步骤三：转入细胞',
+                '步骤四：检测表达'
+            ];
+            
+            const stepIcons = ['✂️', '🔗', '🦠', '🔬'];
+            
+            const stepDescriptions = [
+                '使用限制性内切酶在特定识别序列处切割DNA分子，产生黏性末端。',
+                '使用DNA连接酶将目标基因片段与质粒载体的黏性末端连接，形成重组DNA分子。',
+                '通过转化法将重组质粒导入细菌受体细胞中。',
+                '通过抗生素筛选和荧光蛋白表达检测，确认成功转入并表达目标基因的细胞。'
+            ];
+            
+            document.getElementById('stepTitle').textContent = stepTitles[currentStep - 1];
+            document.getElementById('stepIcon').textContent = stepIcons[currentStep - 1];
+            document.getElementById('stepDescription').textContent = stepDescriptions[currentStep - 1];
+        }
+        
+        // 更新步骤指示器
+        function updateStepIndicator() {
+            document.querySelectorAll('.step').forEach((step, index) => {
+                step.classList.remove('active', 'completed');
+                
+                const stepNum = index + 1;
+                if (stepNum === currentStep) {
+                    step.classList.add('active');
+                } else if (stepNum < currentStep) {
+                    step.classList.add('completed');
+                }
+            });
+            
+            // 更新按钮状态
+            document.getElementById('prevBtn').disabled = currentStep === 1;
+            document.getElementById('nextBtn').disabled = currentStep === 4;
+            document.getElementById('testBtn').classList.toggle('hidden', currentStep !== 4);
+            
+            // 更新工具箱显示
+            document.getElementById('toolbox').classList.toggle('hidden', currentStep > 2);
+            
+            // 更新步骤信息
+            updateStepInfo();
+            
+            // 重绘Canvas
+            draw();
+        }
+        
+        // 下一步
+        function nextStep() {
+            if (currentStep < 4) {
+                currentStep++;
+                updateStepIndicator();
+            }
+        }
+        
+        // 上一步
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateStepIndicator();
+            }
+        }
+        
+        // 切换动画播放
+        function toggleAnimation() {
+            if (currentStep === 3 && !state.transformed) {
+                playTransformationAnimation();
+            } else {
+                // 播放当前步骤的说明动画
+                animationPlaying = !animationPlaying;
+                
+                if (animationPlaying) {
+                    document.getElementById('playBtn').innerHTML = '<span>⏸</span> 暂停动画';
+                    // 这里可以添加步骤说明动画
+                } else {
+                    document.getElementById('playBtn').innerHTML = '<span>▶</span> 播放动画';
+                    if (animationId) {
+                        cancelAnimationFrame(animationId);
+                    }
+                }
+            }
+        }
+        
+        // 重置动画
+        function resetAnimation() {
+            currentStep = 1;
+            state.dnaCut = false;
+            state.geneConnected = false;
+            state.transformed = false;
+            state.tested = false;
+            state.selectedTool = null;
+            state.dragging = false;
+            state.dragObject = null;
+            state.showAntibiotic = false;
+            state.showUV = false;
+            
+            // 重置细菌
+            initBacteria();
+            
+            // 重置UI
+            document.querySelectorAll('.tool').forEach(tool => tool.classList.remove('active'));
+            document.getElementById('completionMessage').classList.add('hidden');
+            document.getElementById('quizSection').classList.add('hidden');
+            
+            // 停止动画
+            animationPlaying = false;
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+            
+            document.getElementById('playBtn').innerHTML = '<span>▶</span> 播放动画';
+            document.getElementById('playBtn').disabled = false;
+            
+            updateStepIndicator();
+        }
+        
+        // 初始化测验
+        function initQuiz() {
+            const quizOptions = document.querySelectorAll('.quiz-option');
+            quizOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const answer = this.dataset.answer;
+                    
+                    // 移除所有状态
+                    quizOptions.forEach(opt => {
+                        opt.classList.remove('correct', 'incorrect');
+                    });
+                    
+                    // 检查答案（B是正确答案）
+                    if (answer === 'B') {
+                        this.classList.add('correct');
+                        showHint('✓ 回答正确！限制性内切酶是基因工程的"分子剪刀"。');
+                    } else {
+                        this.classList.add('incorrect');
+                        showHint('✗ 回答错误。限制性内切酶才是用来切割DNA的工具。');
+                        
+                        // 显示正确答案
+                        document.querySelector('.quiz-option[data-answer="B"]').classList.add('correct');
+                    }
+                });
+            });
+        }
+        
+        // 页面加载完成后初始化
+        window.addEventListener('load', () => {
+            initCanvas();
+            initQuiz();
+            updateStepIndicator();
+        });
+    </script>
+</body>
+</html>

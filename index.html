@@ -410,6 +410,52 @@
             border-color: rgba(240, 147, 251, 0.5);
         }
 
+        .subject-card.physics::before {
+            background: var(--accent-gradient);
+        }
+
+        .subject-card.physics:hover {
+            border-color: rgba(79, 172, 254, 0.6);
+        }
+
+        .subject-card.physics .subject-icon {
+            background: var(--accent-gradient);
+        }
+
+        .subject-card.physics .subject-cta {
+            background: rgba(79, 172, 254, 0.1);
+            border-color: rgba(79, 172, 254, 0.3);
+            color: #4facfe;
+        }
+
+        .subject-card.physics:hover .subject-cta {
+            background: rgba(79, 172, 254, 0.2);
+            border-color: rgba(79, 172, 254, 0.5);
+        }
+
+        .subject-card.biology::before {
+            background: var(--success-gradient);
+        }
+
+        .subject-card.biology:hover {
+            border-color: rgba(67, 233, 123, 0.6);
+        }
+
+        .subject-card.biology .subject-icon {
+            background: var(--success-gradient);
+        }
+
+        .subject-card.biology .subject-cta {
+            background: rgba(67, 233, 123, 0.1);
+            border-color: rgba(67, 233, 123, 0.3);
+            color: #43e97b;
+        }
+
+        .subject-card.biology:hover .subject-cta {
+            background: rgba(67, 233, 123, 0.2);
+            border-color: rgba(67, 233, 123, 0.5);
+        }
+
         /* Features Section */
         .features {
             margin-bottom: 5rem;
@@ -628,14 +674,14 @@
         <div class="stat-card">
             <div class="stat-content">
                 <div class="stat-icon">📚</div>
-                <div class="stat-number">81</div>
+                <div class="stat-number">172</div>
                 <div class="stat-label">教学动画</div>
             </div>
         </div>
         <div class="stat-card">
             <div class="stat-content">
                 <div class="stat-icon">🎯</div>
-                <div class="stat-number">2</div>
+                <div class="stat-number">4</div>
                 <div class="stat-label">学科领域</div>
             </div>
         </div>
@@ -700,6 +746,56 @@
                         <div class="subject-stat">
                             <span class="subject-stat-icon">🏷️</span>
                             <span>10 个分类</span>
+                        </div>
+                    </div>
+                    <div class="subject-cta">
+                        <span>开始学习</span>
+                        <span>→</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Physics -->
+            <a href="./物理/index.html" class="subject-card physics">
+                <div class="subject-content">
+                    <div class="subject-icon">⚛️</div>
+                    <h3 class="subject-title">物理</h3>
+                    <p class="subject-description">
+                        物理现象与定律的可视化教学动画，包含力学、电磁学、光学、热学、原子物理等领域的经典实验与原理演示，揭示物理世界的奥秘。
+                    </p>
+                    <div class="subject-stats">
+                        <div class="subject-stat">
+                            <span class="subject-stat-icon">📊</span>
+                            <span>50 个动画</span>
+                        </div>
+                        <div class="subject-stat">
+                            <span class="subject-stat-icon">🏷️</span>
+                            <span>5 个分类</span>
+                        </div>
+                    </div>
+                    <div class="subject-cta">
+                        <span>开始学习</span>
+                        <span>→</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Biology -->
+            <a href="./生物/index.html" class="subject-card biology">
+                <div class="subject-content">
+                    <div class="subject-icon">🧬</div>
+                    <h3 class="subject-title">生物</h3>
+                    <p class="subject-description">
+                        生命活动规律与微观机制的可视化教学动画，涵盖分子细胞、遗传进化、稳态调节、生态环境等核心内容，探索生命的奇迹。
+                    </p>
+                    <div class="subject-stats">
+                        <div class="subject-stat">
+                            <span class="subject-stat-icon">📊</span>
+                            <span>41 个动画</span>
+                        </div>
+                        <div class="subject-stat">
+                            <span class="subject-stat-icon">🏷️</span>
+                            <span>5 个分类</span>
                         </div>
                     </div>
                     <div class="subject-cta">

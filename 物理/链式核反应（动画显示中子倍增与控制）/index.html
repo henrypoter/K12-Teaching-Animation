@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>链式核反应：中子倍增与控制</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            color: #e0f7fa;
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 30, 60, 0.7);
+            border-radius: 15px;
+            border: 1px solid rgba(64, 224, 208, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            color: #4fc3f7;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .subtitle {
+            color: #80deea;
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .animation-section {
+            flex: 3;
+            min-width: 300px;
+            background: rgba(13, 27, 42, 0.85);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(64, 224, 208, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .animation-container {
+            flex: 1;
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #0a1929;
+            border: 2px solid rgba(41, 98, 255, 0.1);
+        }
+        
+        #reactionCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .control-panel {
+            flex: 2;
+            min-width: 300px;
+            background: rgba(13, 27, 42, 0.85);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(64, 224, 208, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .panel-section {
+            background: rgba(0, 30, 60, 0.5);
+            border-radius: 10px;
+            padding: 15px;
+            border-left: 4px solid #2962ff;
+        }
+        
+        .panel-title {
+            color: #82b1ff;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .panel-title i {
+            font-size: 1.5rem;
+        }
+        
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            color: #bbdefb;
+        }
+        
+        .control-value {
+            color: #4fc3f7;
+            font-weight: bold;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            -webkit-appearance: none;
+            background: linear-gradient(to right, #1565c0, #4fc3f7);
+            border-radius: 4px;
+            outline: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #bbdefb;
+            cursor: pointer;
+            border: 2px solid #0d47a1;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+        
+        .buttons-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #2962ff, #448aff);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 120px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(135deg, #2979ff, #82b1ff);
+        }
+        
+        button:active {
+            transform: translateY(1px);
+        }
+        
+        button.reset {
+            background: linear-gradient(135deg, #d32f2f, #f44336);
+        }
+        
+        button.reset:hover {
+            background: linear-gradient(135deg, #f44336, #ff7961);
+        }
+        
+        button.preset {
+            background: linear-gradient(135deg, #00796b, #009688);
+        }
+        
+        button.preset:hover {
+            background: linear-gradient(135deg, #009688, #4db6ac);
+        }
+        
+        .status-display {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .status-item {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .status-label {
+            font-size: 0.9rem;
+            color: #bbdefb;
+            margin-bottom: 5px;
+        }
+        
+        .status-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #4fc3f7;
+        }
+        
+        .k-status {
+            font-size: 1.2rem;
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 5px;
+            font-weight: bold;
+        }
+        
+        .k-subcritical {
+            background-color: rgba(33, 150, 243, 0.3);
+            color: #81d4fa;
+            border: 1px solid #29b6f6;
+        }
+        
+        .k-critical {
+            background-color: rgba(76, 175, 80, 0.3);
+            color: #a5d6a7;
+            border: 1px solid #4caf50;
+        }
+        
+        .k-supercritical {
+            background-color: rgba(244, 67, 54, 0.3);
+            color: #ffab91;
+            border: 1px solid #f44336;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+        
+        .legend-text {
+            font-size: 0.9rem;
+            color: #bbdefb;
+        }
+        
+        .info-section {
+            background: rgba(13, 27, 42, 0.85);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(64, 224, 208, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+        
+        .info-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .info-card {
+            background: rgba(0, 30, 60, 0.5);
+            border-radius: 10px;
+            padding: 15px;
+            border-left: 4px solid #ff9800;
+        }
+        
+        .info-card h3 {
+            color: #ffb74d;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .info-card p {
+            color: #e0f7fa;
+            font-size: 0.95rem;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #80deea;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .controls-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>链式核反应：中子倍增与控制</h1>
+            <p class="subtitle">通过交互式动画直观理解核裂变链式反应的原理、临界状态与控制方法</p>
+        </header>
+        
+        <div class="main-content">
+            <section class="animation-section">
+                <h2 class="panel-title">反应堆核心模拟</h2>
+                <div class="animation-container">
+                    <canvas id="reactionCanvas"></canvas>
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #78909c;"></div>
+                        <div class="legend-text">铀-235 核</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #ff5252;"></div>
+                        <div class="legend-text">中子</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #69f0ae;"></div>
+                        <div class="legend-text">裂变碎片</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #000000;"></div>
+                        <div class="legend-text">控制棒（中子吸收体）</div>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="control-panel">
+                <div class="panel-section">
+                    <h2 class="panel-title">动画控制</h2>
+                    <div class="buttons-row">
+                        <button id="playBtn">▶ 播放</button>
+                        <button id="pauseBtn">⏸ 暂停</button>
+                        <button id="stepBtn">⏭ 单步执行</button>
+                        <button id="resetBtn" class="reset">↺ 重置</button>
+                    </div>
+                    
+                    <div class="control-group">
+                        <div class="control-label">
+                            <span>动画速度</span>
+                            <span class="control-value" id="speedValue">1.0x</span>
+                        </div>
+                        <input type="range" id="speedSlider" min="0.1" max="3" step="0.1" value="1">
+                    </div>
+                </div>
+                
+                <div class="panel-section">
+                    <h2 class="panel-title">反应参数</h2>
+                    <div class="controls-grid">
+                        <div class="control-group">
+                            <div class="control-label">
+                                <span>初始中子数</span>
+                                <span class="control-value" id="initialNeutronsValue">3</span>
+                            </div>
+                            <input type="range" id="initialNeutronsSlider" min="1" max="10" step="1" value="3">
+                        </div>
+                        
+                        <div class="control-group">
+                            <div class="control-label">
+                                <span>每个裂变产生中子数</span>
+                                <span class="control-value" id="neutronsPerFissionValue">2.4</span>
+                            </div>
+                            <input type="range" id="neutronsPerFissionSlider" min="0.5" max="3.5" step="0.1" value="2.4">
+                        </div>
+                        
+                        <div class="control-group">
+                            <div class="control-label">
+                                <span>中子逃逸概率</span>
+                                <span class="control-value" id="escapeProbValue">10%</span>
+                            </div>
+                            <input type="range" id="escapeProbSlider" min="0" max="30" step="1" value="10">
+                        </div>
+                        
+                        <div class="control-group">
+                            <div class="control-label">
+                                <span>控制棒插入深度</span>
+                                <span class="control-value" id="controlRodValue">50%</span>
+                            </div>
+                            <input type="range" id="controlRodSlider" min="0" max="100" step="1" value="50">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="panel-section">
+                    <h2 class="panel-title">预设场景</h2>
+                    <div class="buttons-row">
+                        <button id="startupBtn" class="preset">启动反应</button>
+                        <button id="stableBtn" class="preset">稳定运行</button>
+                        <button id="shutdownBtn" class="preset">紧急停堆</button>
+                        <button id="bombBtn" class="preset">不可控链式反应</button>
+                    </div>
+                </div>
+                
+                <div class="panel-section">
+                    <h2 class="panel-title">反应状态</h2>
+                    <div class="status-display">
+                        <div class="status-item">
+                            <div class="status-label">倍增系数 (k)</div>
+                            <div class="status-value" id="kValue">1.00</div>
+                            <div id="kStatus" class="k-status k-critical">临界</div>
+                        </div>
+                        
+                        <div class="status-item">
+                            <div class="status-label">当前中子数</div>
+                            <div class="status-value" id="currentNeutrons">3</div>
+                        </div>
+                        
+                        <div class="status-item">
+                            <div class="status-label">总裂变次数</div>
+                            <div class="status-value" id="totalFissions">0</div>
+                        </div>
+                        
+                        <div class="status-item">
+                            <div class="status-label">模拟功率</div>
+                            <div class="status-value" id="powerLevel">0%</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        <section class="info-section">
+            <h2 class="panel-title">核心概念说明</h2>
+            <div class="info-content">
+                <div class="info-card">
+                    <h3>核裂变与链式反应</h3>
+                    <p>铀-235原子核吸收一个中子后变得不稳定，分裂成两个中等质量的原子核（裂变碎片），同时释放出大量能量和2-3个新的中子。这些新中子又能引发周围其他铀核的裂变，从而形成自持的链式反应。</p>
+                </div>
+                
+                <div class="info-card">
+                    <h3>临界状态 (k值)</h3>
+                    <p>倍增系数k = 新一代中子数 / 上一代中子数：<br>
+                    • k = 1 (临界)：反应稳定进行，中子数保持不变<br>
+                    • k > 1 (超临界)：反应加速，中子数指数增长<br>
+                    • k < 1 (次临界)：反应衰减，中子数逐渐减少</p>
+                </div>
+                
+                <div class="info-card">
+                    <h3>反应控制原理</h3>
+                    <p>控制棒由镉、硼等强中子吸收材料制成。通过调节控制棒插入反应堆的深度，可以改变中子的吸收率，从而精确控制倍增系数k值，实现反应堆的启动、功率调节和安全停堆。</p>
+                </div>
+            </div>
+        </section>
+        
+        <footer>
+            <p>教学动画 | 链式核反应模拟 | 交互式物理教学工具</p>
+            <p>提示：拖动控制棒滑块或使用预设场景按钮来观察不同条件下链式反应的变化</p>
+        </footer>
+    </div>
+
+    <script>
+        // 获取Canvas元素和上下文
+        const canvas = document.getElementById('reactionCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 设置Canvas尺寸
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+        }
+        
+        // 初始调整尺寸
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // 物理参数
+        let params = {
+            // 反应参数
+            initialNeutrons: 3,
+            neutronsPerFission: 2.4,
+            escapeProbability: 0.10, // 10%
+            controlRodDepth: 0.5, // 50%
+            
+            // 动画状态
+            isPlaying: false,
+            animationSpeed: 1.0,
+            currentNeutrons: 3,
+            totalFissions: 0,
+            generation: 0,
+            kValue: 1.0,
+            
+            // 模拟状态
+            lastNeutronCount: 3,
+            powerLevel: 0,
+            reactionState: 'critical' // 'subcritical', 'critical', 'supercritical'
+        };
+        
+        // 反应堆核心中的铀核
+        const uraniumNuclei = [];
+        // 活动中的中子
+        let neutrons = [];
+        // 裂变碎片
+        let fissionFragments = [];
+        // 控制棒位置
+        let controlRod = { x: 0, y: 0, width: 0, height: 0 };
+        
+        // 初始化反应堆
+        function initReactor() {
+            // 清空数组
+            uraniumNuclei.length = 0;
+            neutrons.length = 0;
+            fissionFragments.length = 0;
+            
+            // 创建铀核网格
+            const gridSize = 8;
+            const cellWidth = canvas.width / (gridSize + 2);
+            const cellHeight = canvas.height / (gridSize + 2);
+            
+            for (let i = 0; i < gridSize; i++) {
+                for (let j = 0; j < gridSize; j++) {
+                    uraniumNuclei.push({
+                        x: cellWidth * (i + 1.5),
+                        y: cellHeight * (j + 1.5),
+                        radius: Math.min(cellWidth, cellHeight) * 0.3,
+                        active: true, // 是否可裂变
+                        fissionCount: 0 // 记录裂变次数（用于视觉反馈）
+                    });
+                }
+            }
+            
+            // 初始化中子
+            for (let i = 0; i < params.initialNeutrons; i++) {
+                spawnNeutron();
+            }
+            
+            // 设置控制棒位置
+            controlRod.width = canvas.width * 0.08;
+            controlRod.height = canvas.height * params.controlRodDepth;
+            controlRod.x = canvas.width / 2 - controlRod.width / 2;
+            controlRod.y = canvas.height - controlRod.height;
+            
+            // 重置参数
+            params.currentNeutrons = params.initialNeutrons;
+            params.totalFissions = 0;
+            params.generation = 0;
+            params.lastNeutronCount = params.initialNeutrons;
+            params.powerLevel = 0;
+            updateKValue();
+            
+            // 更新UI显示
+            updateUI();
+        }
+        
+        // 生成一个新的中子
+        function spawnNeutron() {
+            // 随机起始位置（在反应堆区域内）
+            const x = canvas.width * 0.2 + Math.random() * canvas.width * 0.6;
+            const y = canvas.height * 0.2 + Math.random() * canvas.height * 0.6;
+            
+            // 随机速度方向
+            const angle = Math.random() * Math.PI * 2;
+            const speed = 2 + Math.random() * 2;
+            
+            neutrons.push({
+                x: x,
+                y: y,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                radius: 4,
+                age: 0,
+                maxAge: 100 + Math.random() * 50, // 中子寿命
+                generation: params.generation
+            });
+        }
+        
+        // 生成裂变碎片
+        function spawnFissionFragments(x, y) {
+            // 两个碎片飞向不同方向
+            for (let i = 0; i < 2; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = 1 + Math.random() * 2;
+                
+                fissionFragments.push({
+                    x: x,
+                    y: y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    radius: 8 + Math.random() * 4,
+                    age: 0,
+                    maxAge: 60 + Math.random() * 30, // 碎片存在时间
+                    color: i === 0 ? '#69f0ae' : '#ffd740'
+                });
+            }
+        }
+        
+        // 更新k值计算
+        function updateKValue() {
+            // 简化的k值计算：考虑裂变产生的中子、控制棒吸收和中子逃逸
+            let baseK = params.neutronsPerFission;
+            
+            // 控制棒吸收效应（插入越深，吸收越多）
+            const absorption = params.controlRodDepth * 0.7;
+            
+            // 中子逃逸效应
+            const escape = params.escapeProbability;
+            
+            // 计算有效k值
+            params.kValue = baseK * (1 - absorption) * (1 - escape);
+            
+            // 确定反应状态
+            if (params.kValue < 0.95) {
+                params.reactionState = 'subcritical';
+            } else if (params.kValue > 1.05) {
+                params.reactionState = 'supercritical';
+            } else {
+                params.reactionState = 'critical';
+            }
+            
+            // 更新功率水平（基于k值和当前中子数）
+            params.powerLevel = Math.min(100, Math.max(0, 
+                params.powerLevel * 0.9 + (params.currentNeutrons / 50) * 10));
+        }
+        
+        // 更新UI显示
+        function updateUI() {
+            // 更新数值显示
+            document.getElementById('kValue').textContent = params.kValue.toFixed(2);
+            document.getElementById('currentNeutrons').textContent = params.currentNeutrons;
+            document.getElementById('totalFissions').textContent = params.totalFissions;
+            document.getElementById('powerLevel').textContent = Math.round(params.powerLevel) + '%';
+            
+            // 更新k值状态显示
+            const kStatusElement = document.getElementById('kStatus');
+            kStatusElement.textContent = 
+                params.reactionState === 'subcritical' ? '次临界' :
+                params.reactionState === 'supercritical' ? '超临界' : '临界';
+            
+            // 更新CSS类
+            kStatusElement.className = 'k-status';
+            kStatusElement.classList.add(
+                params.reactionState === 'subcritical' ? 'k-subcritical' :
+                params.reactionState === 'supercritical' ? 'k-supercritical' : 'k-critical'
+            );
+            
+            // 更新滑块值显示
+            document.getElementById('initialNeutronsValue').textContent = params.initialNeutrons;
+            document.getElementById('neutronsPerFissionValue').textContent = params.neutronsPerFission.toFixed(1);
+            document.getElementById('escapeProbValue').textContent = Math.round(params.escapeProbability * 100) + '%';
+            document.getElementById('controlRodValue').textContent = Math.round(params.controlRodDepth * 100) + '%';
+            document.getElementById('speedValue').textContent = params.animationSpeed.toFixed(1) + 'x';
+        }
+        
+        // 模拟一个动画帧
+        function simulateFrame() {
+            if (!params.isPlaying) return;
+            
+            // 更新控制棒位置
+            controlRod.height = canvas.height * params.controlRodDepth;
+            controlRod.y = canvas.height - controlRod.height;
+            
+            // 更新k值
+            updateKValue();
+            
+            // 处理中子
+            const newNeutrons = [];
+            
+            for (let i = neutrons.length - 1; i >= 0; i--) {
+                const neutron = neutrons[i];
+                
+                // 更新位置
+                neutron.x += neutron.vx * params.animationSpeed;
+                neutron.y += neutron.vy * params.animationSpeed;
+                neutron.age++;
+                
+                // 检查是否与边界碰撞
+                if (neutron.x < 0 || neutron.x > canvas.width) {
+                    neutron.vx *= -1;
+                    neutron.x = Math.max(0, Math.min(canvas.width, neutron.x));
+                }
+                
+                if (neutron.y < 0 || neutron.y > canvas.height) {
+                    neutron.vy *= -1;
+                    neutron.y = Math.max(0, Math.min(canvas.height, neutron.y));
+                }
+                
+                // 检查是否被控制棒吸收
+                if (neutron.x > controlRod.x && 
+                    neutron.x < controlRod.x + controlRod.width &&
+                    neutron.y > controlRod.y) {
+                    // 中子被吸收，不加入新中子数组
+                    continue;
+                }
+                
+                // 检查中子逃逸（基于概率）
+                if (Math.random() < params.escapeProbability) {
+                    // 中子逃逸，不加入新中子数组
+                    continue;
+                }
+                
+                // 检查中子寿命
+                if (neutron.age > neutron.maxAge) {
+                    // 中子衰变，不加入新中子数组
+                    continue;
+                }
+                
+                // 检查是否与铀核碰撞
+                let collided = false;
+                for (let j = 0; j < uraniumNuclei.length; j++) {
+                    const nucleus = uraniumNuclei[j];
+                    
+                    if (!nucleus.active) continue;
+                    
+                    const dx = neutron.x - nucleus.x;
+                    const dy = neutron.y - nucleus.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < neutron.radius + nucleus.radius) {
+                        // 发生裂变！
+                        nucleus.active = false; // 暂时标记为不可裂变（模拟裂变后）
+                        nucleus.fissionCount = 30; // 设置裂变视觉效果持续时间
+                        
+                        // 产生裂变碎片
+                        spawnFissionFragments(nucleus.x, nucleus.y);
+                        
+                        // 增加裂变计数
+                        params.totalFissions++;
+                        
+                        // 产生新的中子（基于每个裂变产生的中子数）
+                        const newNeutronCount = Math.floor(params.neutronsPerFission + Math.random() - 0.5);
+                        for (let n = 0; n < newNeutronCount; n++) {
+                            // 新中子从裂变位置产生
+                            const angle = Math.random() * Math.PI * 2;
+                            const speed = 2 + Math.random() * 2;
+                            
+                            newNeutrons.push({
+                                x: nucleus.x,
+                                y: nucleus.y,
+                                vx: Math.cos(angle) * speed,
+                                vy: Math.sin(angle) * speed,
+                                radius: 4,
+                                age: 0,
+                                maxAge: 100 + Math.random() * 50,
+                                generation: params.generation + 1
+                            });
+                        }
+                        
+                        collided = true;
+                        break;
+                    }
+                }
+                
+                // 如果未碰撞，保留中子
+                if (!collided) {
+                    newNeutrons.push(neutron);
+                }
+            }
+            
+            // 更新中子数组
+            neutrons = newNeutrons;
+            params.currentNeutrons = neutrons.length;
+            
+            // 如果中子数为0且反应正在衰减，重新生成一些中子
+            if (neutrons.length === 0 && params.kValue < 1 && params.isPlaying) {
+                for (let i = 0; i < params.initialNeutrons; i++) {
+                    spawnNeutron();
+                }
+                params.currentNeutrons = params.initialNeutrons;
+            }
+            
+            // 如果k>1且中子数较少，额外生成一些中子模拟反应增长
+            if (params.kValue > 1.1 && neutrons.length < 20 && Math.random() < 0.1) {
+                spawnNeutron();
+                params.currentNeutrons++;
+            }
+            
+            // 更新裂变碎片
+            for (let i = fissionFragments.length - 1; i >= 0; i--) {
+                const fragment = fissionFragments[i];
+                
+                fragment.x += fragment.vx * params.animationSpeed;
+                fragment.y += fragment.vy * params.animationSpeed;
+                fragment.age++;
+                
+                // 移除过期的碎片
+                if (fragment.age > fragment.maxAge) {
+                    fissionFragments.splice(i, 1);
+                }
+            }
+            
+            // 恢复铀核的活性（模拟新的铀核）
+            for (let i = 0; i < uraniumNuclei.length; i++) {
+                const nucleus = uraniumNuclei[i];
+                if (nucleus.fissionCount > 0) {
+                    nucleus.fissionCount--;
+                    if (nucleus.fissionCount === 0) {
+                        nucleus.active = true;
+                    }
+                }
+            }
+            
+            // 更新代计数（如果所有中子都是新一代）
+            if (neutrons.length > 0 && neutrons.every(n => n.generation > params.generation)) {
+                params.generation++;
+                params.lastNeutronCount = params.currentNeutrons;
+            }
+            
+            // 更新UI
+            updateUI();
+        }
+        
+        // 绘制场景
+        function drawScene() {
+            // 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制反应堆背景
+            ctx.fillStyle = 'rgba(10, 25, 41, 0.9)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制反应堆容器（网格）
+            ctx.strokeStyle = 'rgba(41, 98, 255, 0.2)';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(canvas.width * 0.1, canvas.height * 0.1, 
+                          canvas.width * 0.8, canvas.height * 0.8);
+            
+            // 绘制铀核
+            for (const nucleus of uraniumNuclei) {
+                // 铀核颜色：根据是否活跃和裂变状态
+                if (nucleus.fissionCount > 0) {
+                    // 裂变中的铀核（发光效果）
+                    const intensity = nucleus.fissionCount / 30;
+                    ctx.fillStyle = `rgba(255, 215, 64, ${intensity})`;
+                    
+                    // 绘制光晕
+                    ctx.beginPath();
+                    ctx.arc(nucleus.x, nucleus.y, nucleus.radius * 2, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, 215, 64, ${intensity * 0.3})`;
+                    ctx.fill();
+                } else if (nucleus.active) {
+                    ctx.fillStyle = '#78909c'; // 活跃的铀核
+                } else {
+                    ctx.fillStyle = '#546e7a'; // 不活跃的铀核
+                }
+                
+                // 绘制铀核
+                ctx.beginPath();
+                ctx.arc(nucleus.x, nucleus.y, nucleus.radius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 铀核边框
+                ctx.strokeStyle = '#b0bec5';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
+            
+            // 绘制裂变碎片
+            for (const fragment of fissionFragments) {
+                ctx.fillStyle = fragment.color;
+                ctx.beginPath();
+                ctx.arc(fragment.x, fragment.y, fragment.radius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 碎片轨迹
+                ctx.beginPath();
+                ctx.moveTo(fragment.x, fragment.y);
+                ctx.lineTo(fragment.x - fragment.vx * 5, fragment.y - fragment.vy * 5);
+                ctx.strokeStyle = fragment.color + '80';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+            
+            // 绘制中子
+            for (const neutron of neutrons) {
+                // 中子颜色：根据代次略有不同
+                const generationColor = Math.min(255, 150 + neutron.generation * 10);
+                ctx.fillStyle = `rgb(255, ${Math.max(80, 255 - neutron.generation * 20)}, ${Math.max(80, 255 - neutron.generation * 20)})`;
+                
+                ctx.beginPath();
+                ctx.arc(neutron.x, neutron.y, neutron.radius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 中子轨迹
+                ctx.beginPath();
+                ctx.moveTo(neutron.x, neutron.y);
+                ctx.lineTo(neutron.x - neutron.vx * 3, neutron.y - neutron.vy * 3);
+                ctx.strokeStyle = '#ff525280';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
+            
+            // 绘制控制棒
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(controlRod.x, controlRod.y, controlRod.width, controlRod.height);
+            
+            // 控制棒边框和标签
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(controlRod.x, controlRod.y, controlRod.width, controlRod.height);
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('控制棒', controlRod.x + controlRod.width / 2, controlRod.y + 20);
+            
+            // 绘制状态文本
+            ctx.fillStyle = '#e0f7fa';
+            ctx.font = '16px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText(`第 ${params.generation} 代中子`, 10, 30);
+            ctx.fillText(`反应状态: ${params.reactionState === 'subcritical' ? '次临界' : 
+                        params.reactionState === 'supercritical' ? '超临界' : '临界'}`, 10,
+<!--检测到代码截断，自动续写中...-->
+60);
+            ctx.fillText(`k = ${params.kValue.toFixed(2)}`, 10, 90);
+            
+            // 绘制功率指示条
+            const powerBarWidth = 200;
+            const powerBarHeight = 20;
+            const powerBarX = canvas.width - powerBarWidth - 20;
+            const powerBarY = 30;
+            
+            // 功率条背景
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+            ctx.fillRect(powerBarX, powerBarY, powerBarWidth, powerBarHeight);
+            
+            // 功率条填充（根据k值变色）
+            let powerColor;
+            if (params.reactionState === 'subcritical') {
+                powerColor = '#29b6f6';
+            } else if (params.reactionState === 'supercritical') {
+                powerColor = '#f44336';
+            } else {
+                powerColor = '#4caf50';
+            }
+            
+            ctx.fillStyle = powerColor;
+            ctx.fillRect(powerBarX, powerBarY, powerBarWidth * (params.powerLevel / 100), powerBarHeight);
+            
+            // 功率条边框和标签
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(powerBarX, powerBarY, powerBarWidth, powerBarHeight);
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('功率水平', powerBarX + powerBarWidth / 2, powerBarY - 5);
+            ctx.fillText(`${Math.round(params.powerLevel)}%`, powerBarX + powerBarWidth / 2, powerBarY + powerBarHeight + 15);
+        }
+        
+        // 动画循环
+        function animate() {
+            simulateFrame();
+            drawScene();
+            requestAnimationFrame(animate);
+        }
+        
+        // 启动动画循环
+        animate();
+        
+        // 初始化反应堆
+        initReactor();
+        
+        // UI事件处理
+        document.getElementById('playBtn').addEventListener('click', () => {
+            params.isPlaying = true;
+        });
+        
+        document.getElementById('pauseBtn').addEventListener('click', () => {
+            params.isPlaying = false;
+        });
+        
+        document.getElementById('stepBtn').addEventListener('click', () => {
+            params.isPlaying = false;
+            simulateFrame();
+            drawScene();
+        });
+        
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            params.isPlaying = false;
+            initReactor();
+            drawScene();
+        });
+        
+        // 速度滑块
+        const speedSlider = document.getElementById('speedSlider');
+        speedSlider.addEventListener('input', () => {
+            params.animationSpeed = parseFloat(speedSlider.value);
+            updateUI();
+        });
+        
+        // 初始中子数滑块
+        const initialNeutronsSlider = document.getElementById('initialNeutronsSlider');
+        initialNeutronsSlider.addEventListener('input', () => {
+            params.initialNeutrons = parseInt(initialNeutronsSlider.value);
+            updateUI();
+        });
+        
+        // 每个裂变产生中子数滑块
+        const neutronsPerFissionSlider = document.getElementById('neutronsPerFissionSlider');
+        neutronsPerFissionSlider.addEventListener('input', () => {
+            params.neutronsPerFission = parseFloat(neutronsPerFissionSlider.value);
+            updateUI();
+        });
+        
+        // 中子逃逸概率滑块
+        const escapeProbSlider = document.getElementById('escapeProbSlider');
+        escapeProbSlider.addEventListener('input', () => {
+            params.escapeProbability = parseInt(escapeProbSlider.value) / 100;
+            updateUI();
+        });
+        
+        // 控制棒滑块
+        const controlRodSlider = document.getElementById('controlRodSlider');
+        controlRodSlider.addEventListener('input', () => {
+            params.controlRodDepth = parseInt(controlRodSlider.value) / 100;
+            updateUI();
+        });
+        
+        // 预设场景按钮
+        document.getElementById('startupBtn').addEventListener('click', () => {
+            // 启动反应：控制棒部分抽出，k略大于1
+            params.controlRodDepth = 0.3;
+            controlRodSlider.value = 30;
+            params.neutronsPerFission = 2.2;
+            neutronsPerFissionSlider.value = 2.2;
+            params.initialNeutrons = 3;
+            initialNeutronsSlider.value = 3;
+            params.isPlaying = true;
+            updateUI();
+        });
+        
+        document.getElementById('stableBtn').addEventListener('click', () => {
+            // 稳定运行：k=1
+            params.controlRodDepth = 0.5;
+            controlRodSlider.value = 50;
+            params.neutronsPerFission = 2.0;
+            neutronsPerFissionSlider.value = 2.0;
+            params.initialNeutrons = 5;
+            initialNeutronsSlider.value = 5;
+            params.isPlaying = true;
+            updateUI();
+        });
+        
+        document.getElementById('shutdownBtn').addEventListener('click', () => {
+            // 紧急停堆：控制棒完全插入，k远小于1
+            params.controlRodDepth = 1.0;
+            controlRodSlider.value = 100;
+            params.neutronsPerFission = 1.5;
+            neutronsPerFissionSlider.value = 1.5;
+            params.isPlaying = true;
+            updateUI();
+        });
+        
+        document.getElementById('bombBtn').addEventListener('click', () => {
+            // 不可控链式反应：无控制棒，k远大于1
+            params.controlRodDepth = 0.0;
+            controlRodSlider.value = 0;
+            params.neutronsPerFission = 3.0;
+            neutronsPerFissionSlider.value = 3.0;
+            params.escapeProbability = 0.05;
+            escapeProbSlider.value = 5;
+            params.initialNeutrons = 2;
+            initialNeutronsSlider.value = 2;
+            params.isPlaying = true;
+            updateUI();
+            
+            // 显示警告
+            alert('警告：此模式模拟不可控链式反应（如核弹原理）。在核电站中，通过多重安全措施确保不会发生这种情况。');
+        });
+        
+        // 初始UI更新
+        updateUI();
+        
+        // 添加键盘快捷键
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case ' ':
+                    // 空格键切换播放/暂停
+                    params.isPlaying = !params.isPlaying;
+                    e.preventDefault();
+                    break;
+                case 'r':
+                case 'R':
+                    // R键重置
+                    params.isPlaying = false;
+                    initReactor();
+                    drawScene();
+                    e.preventDefault();
+                    break;
+                case 'ArrowUp':
+                    // 上箭头增加速度
+                    params.animationSpeed = Math.min(3, params.animationSpeed + 0.1);
+                    speedSlider.value = params.animationSpeed;
+                    updateUI();
+                    e.preventDefault();
+                    break;
+                case 'ArrowDown':
+                    // 下箭头降低速度
+                    params.animationSpeed = Math.max(0.1, params.animationSpeed - 0.1);
+                    speedSlider.value = params.animationSpeed;
+                    updateUI();
+                    e.preventDefault();
+                    break;
+            }
+        });
+        
+        // 添加画布点击交互：在点击位置生成中子
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            // 在点击位置生成一个中子
+            const angle = Math.random() * Math.PI * 2;
+            const speed = 2 + Math.random() * 2;
+            
+            neutrons.push({
+                x: x,
+                y: y,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                radius: 4,
+                age: 0,
+                maxAge: 100 + Math.random() * 50,
+                generation: params.generation
+            });
+            
+            params.currentNeutrons = neutrons.length;
+            updateUI();
+        });
+    </script>
+</body>
+</html>

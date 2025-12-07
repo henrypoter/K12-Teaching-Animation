@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>动作电位传导与盐跃式传导教学动画</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: #f0f0f0;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        h1 {
+            color: #4A90E2;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
+        
+        .subtitle {
+            color: #50C878;
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .animation-section {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background: rgba(10, 20, 30, 0.8);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        
+        #mainCanvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 150px;
+        }
+        
+        .control-group h3 {
+            color: #4A90E2;
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        button {
+            padding: 10px 15px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        button:hover {
+            background: #34495e;
+            transform: translateY(-2px);
+        }
+        
+        button.active {
+            background: #4A90E2;
+            box-shadow: 0 0 10px rgba(74, 144, 226, 0.5);
+        }
+        
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .speed-control label {
+            white-space: nowrap;
+        }
+        
+        input[type="range"] {
+            width: 120px;
+            height: 6px;
+            -webkit-appearance: none;
+            background: #34495e;
+            border-radius: 3px;
+            outline: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #50C878;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        
+        .info-panel {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .info-panel h2 {
+            color: #4A90E2;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .info-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .info-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #4A90E2;
+        }
+        
+        .info-box h3 {
+            color: #50C878;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .info-box p {
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+        
+        .info-box ul {
+            padding-left: 20px;
+            line-height: 1.6;
+        }
+        
+        .info-box li {
+            margin-bottom: 5px;
+        }
+        
+        .step-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .step-btn {
+            flex: 1;
+            min-width: 120px;
+            background: #2c3e50;
+        }
+        
+        .step-btn.active {
+            background: #FFD700;
+            color: #333;
+        }
+        
+        @media (max-width: 768px) {
+            .info-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            .control-group {
+                min-width: 100%;
+            }
+            
+            .canvas-container {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>兴奋在神经纤维上的传导</h1>
+            <p class="subtitle">动作电位去极化-复极化过程与盐跃式传导动画演示</p>
+        </header>
+        
+        <div class="main-content">
+            <section class="animation-section">
+                <div class="canvas-container">
+                    <canvas id="mainCanvas"></canvas>
+                </div>
+                
+                <div class="controls">
+                    <div class="control-group">
+                        <h3>传导模式</h3>
+                        <div class="btn-group">
+                            <button id="modeContinuous" class="active">连续传导</button>
+                            <button id="modeSaltatory">盐跃传导</button>
+                            <button id="modeCompare">对比模式</button>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <h3>动画控制</h3>
+                        <div class="btn-group">
+                            <button id="btnPlay">播放</button>
+                            <button id="btnPause">暂停</button>
+                            <button id="btnReset">重置</button>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <h3>播放速度</h3>
+                        <div class="speed-control">
+                            <label for="speedControl">速度:</label>
+                            <input type="range" id="speedControl" min="0.5" max="3" step="0.1" value="1">
+                            <span id="speedValue">1.0x</span>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <h3>显示选项</h3>
+                        <div class="btn-group">
+                            <button id="toggleIons" class="active">离子流动</button>
+                            <button id="togglePotential" class="active">电位曲线</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="step-controls">
+                    <button class="step-btn" data-step="0">静息状态</button>
+                    <button class="step-btn" data-step="1">阈值刺激</button>
+                    <button class="step-btn" data-step="2">Na⁺内流(去极化)</button>
+                    <button class="step-btn" data-step="3">动作电位峰值</button>
+                    <button class="step-btn" data-step="4">K⁺外流(复极化)</button>
+                    <button class="step-btn" data-step="5">钠钾泵恢复</button>
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #4A90E2;"></div>
+                        <span>钠离子 (Na⁺)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #50C878;"></div>
+                        <span>钾离子 (K⁺)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: linear-gradient(to right, #FF416C, #FFD700, #9C27B0);"></div>
+                        <span>动作电位波</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #00CED1;"></div>
+                        <span>髓鞘</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #FFD700;"></div>
+                        <span>郎飞结</span>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="info-panel">
+                <h2>动作电位传导原理</h2>
+                <div class="info-content">
+                    <div class="info-box">
+                        <h3>动作电位过程</h3>
+                        <p>动作电位是神经细胞膜电位的快速、短暂反转，是神经信号传导的基础。</p>
+                        <ul>
+                            <li><strong>静息电位</strong>：膜内-70mV，由K⁺外流和钠钾泵维持</li>
+                            <li><strong>去极化</strong>：刺激使膜电位达到阈值(-55mV)，电压门控Na⁺通道开放，Na⁺快速内流</li>
+                            <li><strong>复极化</strong>：Na⁺通道失活，K⁺通道开放，K⁺外流使膜电位恢复</li>
+                            <li><strong>超极化</strong>：短暂超过静息电位，随后钠钾泵工作恢复离子平衡</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="info-box">
+                        <h3>盐跃式传导</h3>
+                        <p>在有髓鞘神经纤维上，动作电位以"跳跃"方式在郎飞结之间传导，速度大大加快。</p>
+                        <ul>
+                            <li><strong>髓鞘</strong>：由施旺细胞形成，绝缘轴突，防止离子漏出</li>
+                            <li><strong>郎飞结</strong>：髓鞘间的裸露区域，富含电压门控离子通道</li>
+                            <li><strong>传导机制</strong>：动作电位在结处产生，电信号在髓鞘下快速被动传导至下一个郎飞结</li>
+                            <li><strong>优势</strong>：传导速度快（可达120m/s），能量效率高</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        // 获取Canvas和上下文
+        const canvas = document.getElementById('mainCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 设置Canvas尺寸
+        function resizeCanvas() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        }
+        
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        
+        // 动画状态
+        let animationId = null;
+        let isPlaying = true;
+        let speed = 1.0;
+        let mode = 'continuous'; // 'continuous', 'saltatory', 'compare'
+        let showIons = true;
+        let showPotential = true;
+        
+        // 动画参数
+        let time = 0;
+        const axonLength = canvas.width * 0.8;
+        const axonY = canvas.height / 2;
+        const axonRadius = 20;
+        
+        // 动作电位波参数
+        const apWave = {
+            position: 0,
+            width: 80,
+            speed: 2,
+            colorStops: [
+                {color: '#9C27B0', pos: 0},    // 紫色 - 静息/超极化
+                {color: '#FF416C', pos: 0.3},  // 红色 - 去极化
+                {color: '#FFD700', pos: 0.5},  // 黄色 - 峰值
+                {color: '#FF416C', pos: 0.7},  // 红色 - 复极化
+                {color: '#9C27B0', pos: 1}     // 紫色 - 恢复
+            ]
+        };
+        
+        // 离子参数
+        const ions = {
+            na: {color: '#4A90E2', radius: 4, count: 30, positions: []},
+            k: {color: '#50C878', radius: 4, count: 30, positions: []}
+        };
+        
+        // 髓鞘参数
+        const myelinSegments = [];
+        const segmentLength = 60;
+        const nodeGap = 30;
+        
+        // 电位曲线参数
+        const potentialData = [];
+        const maxPotentialPoints = 200;
+        
+        // 步骤控制
+        let currentStep = 0;
+        const steps = [
+            {name: "静息状态", time: 0, description: "膜电位-70mV，Na⁺通道关闭，K⁺通道部分开放"},
+            {name: "阈值刺激", time: 50, description: "刺激使膜电位达到阈值-55mV，Na⁺通道开始开放"},
+            {name: "Na⁺内流", time: 100, description: "Na⁺快速内流，膜电位迅速上升至+30mV"},
+            {name: "动作电位峰值", time: 150, description: "膜电位达到峰值，Na⁺通道开始失活"},
+            {name: "K⁺外流", time: 200, description: "K⁺外流，膜电位下降，进入复极化"},
+            {name: "钠钾泵恢复", time: 250, description: "钠钾泵工作，恢复离子浓度梯度"}
+        ];
+        
+        // 初始化髓鞘段
+        function initMyelinSegments() {
+            myelinSegments.length = 0;
+            const startX = (canvas.width - axonLength) / 2;
+            
+            for (let i = 0; i < axonLength / (segmentLength + nodeGap); i++) {
+                const segment = {
+                    x: startX + i * (segmentLength + nodeGap),
+                    length: segmentLength,
+                    color: '#00CED1'
+                };
+                myelinSegments.push(segment);
+            }
+        }
+        
+        // 初始化离子位置
+        function initIons() {
+            ions.na.positions = [];
+            ions.k.positions = [];
+            
+            const startX = (canvas.width - axonLength) / 2;
+            
+            // 初始化Na⁺离子（主要在膜外）
+            for (let i = 0; i < ions.na.count; i++) {
+                ions.na.positions.push({
+                    x: startX + Math.random() * axonLength,
+                    y: axonY - axonRadius - 10 - Math.random() * 30,
+                    vx: 0,
+                    vy: 0,
+                    active: false
+                });
+            }
+            
+            // 初始化K⁺离子（主要在膜内）
+            for (let i = 0; i < ions.k.count; i++) {
+                ions.k.positions.push({
+                    x: startX + Math.random() * axonLength,
+                    y: axonY + axonRadius + 10 + Math.random() * 30,
+                    vx: 0,
+                    vy: 0,
+                    active: false
+                });
+            }
+        }
+        
+        // 绘制神经纤维
+        function drawAxon() {
+            const startX = (canvas.width - axonLength) / 2;
+            const endX = startX + axonLength;
+            
+            // 绘制轴突膜
+            ctx.beginPath();
+            ctx.rect(startX, axonY - axonRadius, axonLength, axonRadius * 2);
+            ctx.fillStyle = 'rgba(200, 200, 200, 0.3)';
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(240, 240, 240, 0.8)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 根据模式绘制髓鞘或连续膜
+            if (mode === 'saltatory' || mode === 'compare') {
+                // 绘制髓鞘段
+                myelinSegments.forEach(segment => {
+                    ctx.beginPath();
+                    ctx.rect(segment.x, axonY - axonRadius - 5, segment.length, axonRadius * 2 + 10);
+                    ctx.fillStyle = segment.color;
+                    ctx.fill();
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                    
+                    // 绘制郎飞结（髓鞘间隙）
+                    ctx.beginPath();
+                    ctx.rect(segment.x + segment.length, axonY - axonRadius, nodeGap, axonRadius * 2);
+                    ctx.fillStyle = 'rgba(255, 215, 0, 0.3)';
+                    ctx.fill();
+                    ctx.strokeStyle = '#FFD700';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    
+                    // 标记郎飞结
+                    ctx.fillStyle = '#FFD700';
+                    ctx.font = '12px Arial';
+                    ctx.fillText('郎飞结', segment.x + segment.length + 5, axonY - axonRadius - 10);
+                });
+            }
+            
+            // 标记轴突方向
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = '14px Arial';
+            ctx.fillText('轴突方向 →', endX - 80, axonY - axonRadius - 20);
+        }
+        
+        // 绘制动作电位波
+        function drawActionPotentialWave() {
+            const startX = (canvas.width - axonLength) / 2;
+            const waveX = startX + apWave.position;
+            
+            // 创建动作电位波渐变
+            const gradient = ctx.createLinearGradient(waveX, axonY - axonRadius - 40, waveX + apWave.width, axonY - axonRadius - 40);
+            apWave.colorStops.forEach(stop => {
+                gradient.addColorStop(stop.pos, stop.color);
+            });
+            
+            // 绘制波
+            ctx.beginPath();
+            ctx.moveTo(waveX, axonY - axonRadius - 20);
+            ctx.bezierCurveTo(
+                waveX + apWave.width * 0.3, axonY - axonRadius - 60,
+                waveX + apWave.width * 0.7, axonY - axonRadius - 60,
+                waveX + apWave.width, axonY - axonRadius - 20
+            );
+            ctx.lineTo(waveX + apWave.width, axonY - axonRadius - 10);
+            ctx.bezierCurveTo(
+                waveX + apWave.width * 0.7, axonY - axonRadius - 30,
+                waveX + apWave.width * 0.3, axonY - axonRadius - 30,
+                waveX, axonY - axonRadius - 10
+            );
+            ctx.closePath();
+            
+            ctx.fillStyle = gradient;
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            
+            // 标记动作电位
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = '12px Arial';
+            ctx.fillText('动作电位', waveX + apWave.width/2 - 25, axonY - axonRadius - 70);
+        }
+        
+        // 绘制离子
+        function drawIons() {
+            if (!showIons) return;
+            
+            // 绘制Na⁺离子
+            ions.na.positions.forEach(ion => {
+                ctx.beginPath();
+                ctx.arc(ion.x, ion.y, ions.na.radius, 0, Math.PI * 2);
+                ctx.fillStyle = ions.na.color;
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                
+                // 标记Na⁺符号
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = '10px Arial';
+                ctx.fillText('Na⁺', ion.x - 8, ion.y + 15);
+            });
+            
+            // 绘制K⁺离子
+            ions.k.positions.forEach(ion => {
+                ctx.beginPath();
+                ctx.arc(ion.x, ion.y, ions.k.radius, 0, Math.PI * 2);
+                ctx.fillStyle = ions.k.color;
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+                
+                // 标记K⁺符号
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = '10px Arial';
+                ctx.fillText('K⁺', ion.x - 6, ion.y + 15);
+            });
+        }
+        
+        // 绘制电位曲线
+        function drawPotentialCurve() {
+            if (!showPotential) return;
+            
+            const curveY = axonY + axonRadius + 100;
+            const startX = (canvas.width - axonLength) / 2;
+            const scaleX = axonLength / maxPotentialPoints;
+            
+            // 绘制坐标轴
+            ctx.beginPath();
+            ctx.moveTo(startX, curveY);
+            ctx.lineTo(startX + axonLength, curveY);
+            ctx.moveTo(startX, curveY - 80);
+            ctx.lineTo(startX, curveY + 20);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            
+            // 绘制静息电位线
+            ctx.beginPath();
+            ctx.setLineDash([5, 5]);
+            ctx.moveTo(startX, curveY - 40);
+            ctx.lineTo(startX + axonLength, curveY - 40);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // 标记坐标轴
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.font = '12px Arial';
+            ctx.fillText('膜电位(mV)', startX - 10, curveY - 90);
+            ctx.fillText('+30', startX - 20, curveY - 80);
+            ctx.fillText('0', startX - 10, curveY - 40);
+            ctx.fillText('-70', startX - 20, curveY);
+            
+            // 绘制电位曲线
+            if (potentialData.length > 1) {
+                ctx.beginPath();
+                ctx.moveTo(startX, curveY - 40);
+                
+                potentialData.forEach((point, index) => {
+                    const x = startX + index * scaleX;
+                    const y = curveY - 40 + point;
+                    if (index === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                });
+                
+                ctx.strokeStyle = '#FF416C';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+                
+                // 标记当前电位值
+                if (potentialData.length > 0) {
+                    const currentPotential = potentialData[potentialData.length - 1];
+                    const potentialText = currentPotential > 0 ? `+${currentPotential}` : currentPotential.toString();
+                    ctx.fillStyle = '#FFD700';
+                    ctx.font = '14px Arial';
+                    ctx.fillText(`${potentialText}mV`, startX + axonLength - 60, curveY - 60);
+                }
+            }
+            
+            // 标记曲线
+            ctx.fillStyle = '#FF416C';
+            ctx.font = '14px Arial';
+            ctx.fillText('膜电位变化曲线', startX + axonLength/2 - 50, curveY + 40);
+        }
+        
+        // 更新离子位置
+        function updateIons() {
+            const startX = (canvas.width - axonLength) / 2;
+            const waveStart = startX + apWave.position;
+            const waveEnd = waveStart + apWave.width;
+            
+            // 更新Na⁺离子
+            ions.na.positions.forEach(ion => {
+                // 如果离子在动作电位波附近，则激活
+                if (ion.x > waveStart - 30 && ion.x < waveEnd + 30) {
+                    ion.active = true;
+                    
+                    // 在去极化阶段，Na⁺向膜内移动
+                    if (ion.x > waveStart && ion.x < waveStart + apWave.width * 0.5) {
+                        ion.vy = -0.5 * speed;
+                    }
+                    // 在复极化阶段，Na⁺停止移动
+                    else {
+                        ion.vy = 0;
+                    }
+                } else {
+                    ion.active = false;
+                    ion.vy = 0;
+                }
+                
+                // 更新位置
+                ion.y += ion.vy;
+                
+                // 边界检查
+                if (ion.y < axonY - axonRadius - 40) {
+                    ion.y = axonY - axonRadius - 40;
+                }
+            });
+            
+            // 更新K⁺离子
+            ions.k.positions.forEach(ion => {
+                // 如果离子在动作电位波附近，则激活
+                if (ion.x > waveStart - 30 && ion.x < waveEnd + 30) {
+                    ion.active = true;
+                    
+                    // 在复极化阶段，K⁺向膜外移动
+                    if (ion.x > waveStart + apWave.width * 0.3 && ion.x < waveStart + apWave.width * 0.8) {
+                        ion.vy = 0.5 * speed;
+                    } else {
+                        ion.vy = 0;
+                    }
+                } else {
+                    ion.active = false;
+                    ion.vy = 0;
+                }
+                
+                // 更新位置
+                ion.y += ion.vy;
+                
+                // 边界检查
+                if (ion.y > axonY + axonRadius + 40) {
+                    ion.y = axonY + axonRadius + 40;
+                }
+            });
+        }
+        
+        // 更新动作电位波位置
+        function updateActionPotentialWave() {
+            // 根据模式调整速度
+            let waveSpeed = apWave.speed * speed;
+            if (mode === 'saltatory') {
+                waveSpeed *= 3; // 盐跃传导更快
+            }
+            
+            // 更新波位置
+            apWave.position += waveSpeed;
+            
+            // 如果波到达末端，重置位置
+            if (apWave.position > axonLength) {
+                apWave.position = 0;
+                potentialData.length = 0;
+            }
+            
+            // 在盐跃传导模式下，波只在郎飞结处可见
+            if (mode === 'saltatory') {
+                // 检查波是否在郎飞结处
+                let atNode = false;
+                myelinSegments.forEach(segment => {
+                    const nodeX = segment.x + segment.length;
+                    if (apWave.position + (canvas.width - axonLength)/2 > nodeX - 20 && 
+                        apWave.position + (canvas.width - axonLength)/2 < nodeX + nodeGap + 20) {
+                        atNode = true;
+                    }
+                });
+                
+                // 如果不在郎飞结处，隐藏波
+                if (!atNode) {
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+        
+        // 更新电位数据
+        function updatePotentialData() {
+            // 计算当前电位值（基于波的位置）
+            const waveProgress = (apWave.position % axonLength) / axonLength;
+            let potentialValue = 0;
+            
+            if (waveProgress < 0.2) {
+                potentialValue = -70; // 静息电位
+            } else if (waveProgress < 0.4) {
+                potentialValue = -70 + (waveProgress - 0.2) * 500; // 去极化
+            } else if (waveProgress < 0.6) {
+                potentialValue = 30; // 峰值
+            } else if (waveProgress < 0.8) {
+                potentialValue = 30 - (waveProgress - 0.6) * 500; // 复极化
+            } else {
+                potentialValue = -70 - (waveProgress - 0.8) * 50; // 超极化
+            }
+            
+            // 添加新数据点
+            potentialData.push(potentialValue);
+            
+            // 保持数据点数量不超过最大值
+            if (potentialData.length > maxPotentialPoints) {
+                potentialData.shift();
+            }
+        }
+        
+        // 绘制对比模式
+        function drawCompareMode() {
+            // 保存当前状态
+            const originalMode = mode;
+            const originalPosition = apWave.position;
+            
+            // 绘制上半部分：连续传导
+            ctx.save();
+            ctx.translate(0, -canvas.height/4);
+            mode = 'continuous';
+            drawAxon();
+            if (updateActionPotentialWave()) {
+                drawActionPotentialWave();
+            }
+            drawIons();
+            ctx.restore();
+            
+            // 绘制下半部分：盐跃传导
+            ctx.save();
+            ctx.translate(0, canvas.height/4);
+            mode = 'saltatory';
+            drawAxon();
+            if (updateActionPotentialWave()) {
+                drawActionPotentialWave();
+            }
+            drawIons();
+            ctx.restore();
+            
+            // 恢复原始状态
+            mode = originalMode;
+            apWave.position = originalPosition;
+            
+            // 添加标签
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = '16px Arial';
+            ctx.fillText('连续传导', canvas.width/2 - 100, canvas.height/2 - 120);
+            ctx.fillText('盐跃传导', canvas.width/2 - 100, canvas.height/2 + 120);
+        }
+        
+        // 主绘制函数
+        function draw() {
+            // 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制背景
+            ctx.fillStyle = 'rgba(10, 20, 30, 0.8)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            if (mode === 'compare') {
+                drawCompareMode();
+            } else {
+                // 绘制神经纤维
+                drawAxon();
+                
+                // 更新并绘制动作电位波
+                const waveVisible = updateActionPotentialWave();
+                if (waveVisible) {
+                    drawActionPotentialWave();
+                }
+                
+                // 更新并绘制离子
+                updateIons();
+                drawIons();
+            }
+            
+            // 绘制电位曲线
+            drawPotentialCurve();
+            
+            // 更新电位数据
+            updatePotentialData();
+            
+            // 显示当前模式信息
+            ctx.fillStyle = '#4A90E2';
+            ctx.font = '16px Arial';
+            let modeText = '';
+            if (mode === 'continuous') modeText = '连续传导模式';
+            if (mode === 'saltatory') modeText = '盐跃传导模式';
+            if (mode === 'compare') modeText = '对比模式';
+            ctx.fillText(modeText, 20, 30);
+            
+            // 显示当前步骤信息
+            if (currentStep < steps.length) {
+                ctx.fillStyle = '#50C878';
+                ctx.font = '14px Arial';
+                ctx.fillText(`当前步骤: ${steps[currentStep].name}`, 20, 55);
+                ctx.fillText(steps[currentStep].description, 20, 75);
+            }
+            
+            // 更新时间
+            time += speed;
+            
+            // 自动推进步骤
+            if (isPlaying && time % 50 < speed) {
+                const stepProgress = (apWave.position % axonLength) / axonLength;
+                currentStep = Math.min(Math.floor(stepProgress * 6), 5);
+                
+                // 更新步骤按钮状态
+                document.querySelectorAll('.step-btn').forEach((btn, index) => {
+                    if (index === currentStep) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            }
+        }
+        
+        // 动画循环
+        function animate() {
+            draw();
+            animationId = requestAnimationFrame(animate);
+        }
+        
+        // 初始化
+        function init() {
+            initMyelinSegments();
+            initIons();
+            animate();
+            
+            // 设置初始步骤
+            document.querySelectorAll('.step-btn')[0].classList.add('active');
+        }
+        
+        // 事件监听器
+        document.getElementById('modeContinuous').addEventListener('click', () => {
+            mode = 'continuous';
+            document.getElementById('modeContinuous').classList.add('active');
+            document.getElementById('modeSaltatory').classList.remove('active');
+            document.getElementById('modeCompare').classList.remove('active');
+            apWave.position = 0;
+            potentialData.length = 0;
+        });
+        
+        document.getElementById('modeSaltatory').addEventListener('click', () => {
+            mode = 'saltatory';
+            document.getElementById('modeContinuous').classList.remove('active');
+            document.getElementById('modeSaltatory').classList.add('active');
+            document.getElementById('modeCompare').classList.remove('active');
+            apWave.position = 0;
+            potentialData.length = 0;
+        });
+        
+        document.getElementById('modeCompare').addEventListener('click', () => {
+            mode = 'compare';
+            document.getElementById('modeContinuous').classList.remove('active');
+            document.getElementById('modeSaltatory').classList.remove('active');
+            document.getElementById('modeCompare').classList.add('active');
+        });
+        
+        document.getElementById('btnPlay').addEventListener('click', () => {
+            isPlaying = true;
+        });
+        
+        document.getElementById('btnPause').addEventListener('click', () => {
+            isPlaying = false;
+        });
+        
+        document.getElementById('btnReset').addEventListener('click', () => {
+            apWave.position = 0;
+            potentialData.length = 0;
+            time = 0;
+            currentStep = 0;
+            initIons();
+            
+            // 重置步骤按钮
+            document.querySelectorAll('.step-btn').forEach((btn, index) => {
+                if (index === 0) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        });
+        
+        document.getElementById('speedControl').addEventListener('input', (e) => {
+            speed = parseFloat(e.target.value);
+            document.getElementById('speedValue').textContent = speed.toFixed(1) + 'x';
+        });
+        
+        document.getElementById('toggleIons').addEventListener('click', (e) => {
+            showIons = !showIons;
+            e.target.classList.toggle('active');
+        });
+        
+        document.getElementById('togglePotential').addEventListener('click', (e) => {
+            showPotential = !showPotential;
+            e.target.classList.toggle('active');
+        });
+        
+        // 步骤控制
+        document
+<!--检测到代码截断，自动续写中...-->
+.querySelectorAll('.step-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const step = parseInt(e.target.getAttribute('data-step'));
+                currentStep = step;
+                
+                // 根据步骤设置动画位置
+                const stepProgress = step / 6;
+                apWave.position = stepProgress * axonLength;
+                
+                // 更新电位数据以匹配步骤
+                potentialData.length = 0;
+                for (let i = 0; i < maxPotentialPoints; i++) {
+                    const progress = i / maxPotentialPoints;
+                    let potentialValue = -70;
+                    
+                    if (progress < stepProgress) {
+                        if (progress < 0.2) {
+                            potentialValue = -70;
+                        } else if (progress < 0.4) {
+                            potentialValue = -70 + (progress - 0.2) * 500;
+                        } else if (progress < 0.6) {
+                            potentialValue = 30;
+                        } else if (progress < 0.8) {
+                            potentialValue = 30 - (progress - 0.6) * 500;
+                        } else {
+                            potentialValue = -70 - (progress - 0.8) * 50;
+                        }
+                        potentialData.push(potentialValue);
+                    }
+                }
+                
+                // 更新离子位置以匹配步骤
+                initIons();
+                const startX = (canvas.width - axonLength) / 2;
+                const waveStart = startX + apWave.position;
+                const waveEnd = waveStart + apWave.width;
+                
+                ions.na.positions.forEach(ion => {
+                    if (ion.x > waveStart - 30 && ion.x < waveEnd + 30) {
+                        if (step >= 2 && step <= 3) { // Na⁺内流阶段
+                            ion.y = axonY - axonRadius - 15;
+                        }
+                    }
+                });
+                
+                ions.k.positions.forEach(ion => {
+                    if (ion.x > waveStart - 30 && ion.x < waveEnd + 30) {
+                        if (step >= 4 && step <= 5) { // K⁺外流阶段
+                            ion.y = axonY + axonRadius + 15;
+                        }
+                    }
+                });
+                
+                // 更新按钮状态
+                document.querySelectorAll('.step-btn').forEach(b => {
+                    b.classList.remove('active');
+                });
+                e.target.classList.add('active');
+            });
+        });
+        
+        // 键盘控制
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case ' ':
+                    isPlaying = !isPlaying;
+                    e.preventDefault();
+                    break;
+                case 'r':
+                case 'R':
+                    apWave.position = 0;
+                    potentialData.length = 0;
+                    time = 0;
+                    currentStep = 0;
+                    initIons();
+                    break;
+                case 'ArrowRight':
+                    apWave.position = Math.min(apWave.position + 10, axonLength);
+                    break;
+                case 'ArrowLeft':
+                    apWave.position = Math.max(apWave.position - 10, 0);
+                    break;
+                case '1':
+                    mode = 'continuous';
+                    document.getElementById('modeContinuous').classList.add('active');
+                    document.getElementById('modeSaltatory').classList.remove('active');
+                    document.getElementById('modeCompare').classList.remove('active');
+                    break;
+                case '2':
+                    mode = 'saltatory';
+                    document.getElementById('modeContinuous').classList.remove('active');
+                    document.getElementById('modeSaltatory').classList.add('active');
+                    document.getElementById('modeCompare').classList.remove('active');
+                    break;
+                case '3':
+                    mode = 'compare';
+                    document.getElementById('modeContinuous').classList.remove('active');
+                    document.getElementById('modeSaltatory').classList.remove('active');
+                    document.getElementById('modeCompare').classList.add('active');
+                    break;
+            }
+        });
+        
+        // 工具提示
+        const tooltip = document.createElement('div');
+        tooltip.style.cssText = `
+            position: absolute;
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1000;
+            border: 1px solid #4A90E2;
+            max-width: 250px;
+        `;
+        document.body.appendChild(tooltip);
+        
+        // 为关键元素添加工具提示
+        const tooltipElements = [
+            {selector: '#modeContinuous', text: '在无髓鞘神经纤维上，动作电位沿膜连续传导，速度较慢'},
+            {selector: '#modeSaltatory', text: '在有髓鞘神经纤维上，动作电位在郎飞结间跳跃传导，速度更快'},
+            {selector: '#modeCompare', text: '同时比较连续传导和盐跃传导两种模式'},
+            {selector: '#toggleIons', text: '显示/隐藏钠离子和钾离子的流动动画'},
+            {selector: '#togglePotential', text: '显示/隐藏膜电位变化曲线图'}
+        ];
+        
+        tooltipElements.forEach(item => {
+            const element = document.querySelector(item.selector);
+            if (element) {
+                element.addEventListener('mouseenter', (e) => {
+                    tooltip.textContent = item.text;
+                    tooltip.style.opacity = '1';
+                    const rect = e.target.getBoundingClientRect();
+                    tooltip.style.left = rect.left + 'px';
+                    tooltip.style.top = (rect.top - 40) + 'px';
+                });
+                
+                element.addEventListener('mouseleave', () => {
+                    tooltip.style.opacity = '0';
+                });
+            }
+        });
+        
+        // 初始化动画
+        init();
+        
+        // 添加键盘快捷键提示
+        const shortcutInfo = document.createElement('div');
+        shortcutInfo.style.cssText = `
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #50C878;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            border: 1px solid #50C878;
+            z-index: 100;
+        `;
+        shortcutInfo.innerHTML = `
+            <strong>键盘快捷键:</strong><br>
+            空格: 播放/暂停<br>
+            R: 重置动画<br>
+            1: 连续传导模式<br>
+            2: 盐跃传导模式<br>
+            3: 对比模式
+        `;
+        document.body.appendChild(shortcutInfo);
+        
+        // 添加加载完成提示
+        setTimeout(() => {
+            console.log('动作电位传导动画已加载完成！');
+            console.log('设计特点:');
+            console.log('1. 三种传导模式: 连续、盐跃、对比');
+            console.log('2. 同步显示: 离子流动 + 动作电位波 + 电位曲线');
+            console.log('3. 交互控制: 播放速度、步骤控制、显示选项');
+            console.log('4. 教学信息: 详细原理说明和步骤分解');
+        }, 1000);
+    </script>
+</body>
+</html>

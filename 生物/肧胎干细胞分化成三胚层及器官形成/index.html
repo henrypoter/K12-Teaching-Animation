@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>胚胎干细胞分化与器官形成</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .animation-panel {
+            flex: 3;
+            min-width: 300px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        #animationCanvas {
+            display: block;
+            width: 100%;
+            height: 500px;
+            background: #f8fafc;
+        }
+        
+        .controls-panel {
+            flex: 1;
+            min-width: 250px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            padding: 25px;
+        }
+        
+        .stage-navigation {
+            margin-bottom: 30px;
+        }
+        
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            border-bottom: 2px solid #4A90E2;
+            padding-bottom: 8px;
+        }
+        
+        .stage-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .stage-btn {
+            padding: 14px 18px;
+            border: none;
+            border-radius: 10px;
+            background: #f1f5f9;
+            color: #475569;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            position: relative;
+            padding-left: 50px;
+        }
+        
+        .stage-btn:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+        
+        .stage-btn.active {
+            background: #4A90E2;
+            color: white;
+            box-shadow: 0 4px 10px rgba(74, 144, 226, 0.3);
+        }
+        
+        .stage-btn::before {
+            content: '';
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #94a3b8;
+        }
+        
+        .stage-btn.active::before {
+            background: white;
+        }
+        
+        .stage-btn:nth-child(1)::before { background: #6366f1; }
+        .stage-btn:nth-child(2)::before { background: #4A90E2; }
+        .stage-btn:nth-child(3)::before { background: #D0021B; }
+        .stage-btn:nth-child(4)::before { background: #F5A623; }
+        .stage-btn:nth-child(5)::before { background: #7ED321; }
+        
+        .animation-controls {
+            margin-bottom: 30px;
+        }
+        
+        .control-buttons {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .ctrl-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #4A90E2;
+            color: white;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .ctrl-btn:hover {
+            background: #3a7bc8;
+            transform: translateY(-2px);
+        }
+        
+        .ctrl-btn.reset {
+            background: #94a3b8;
+        }
+        
+        .ctrl-btn.reset:hover {
+            background: #7c8a9c;
+        }
+        
+        .legend {
+            margin-bottom: 25px;
+        }
+        
+        .legend-items {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .color-box {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        
+        .ectoderm-color { background: #4A90E2; }
+        .mesoderm-color { background: #D0021B; }
+        .endoderm-color { background: #F5A623; }
+        
+        .interactive-section {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .organ-drag-game {
+            margin-top: 20px;
+        }
+        
+        .target-zones {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            gap: 15px;
+        }
+        
+        .target-zone {
+            flex: 1;
+            min-height: 120px;
+            border: 3px dashed #cbd5e1;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .target-zone.highlight {
+            border-color: #4A90E2;
+            background: rgba(74, 144, 226, 0.05);
+        }
+        
+        .zone-label {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .organ-pool {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 10px;
+        }
+        
+        .organ-item {
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: grab;
+            transition: all 0.3s ease;
+            background: white;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+        }
+        
+        .organ-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        .organ-icon {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+        
+        .organ-name {
+            font-size: 0.8rem;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 500;
+            display: none;
+        }
+        
+        .feedback.correct {
+            background: rgba(126, 211, 33, 0.1);
+            color: #2d5a27;
+            border: 1px solid #7ED321;
+            display: block;
+        }
+        
+        .feedback.incorrect {
+            background: rgba(208, 2, 27, 0.1);
+            color: #8a1a1a;
+            border: 1px solid #D0021B;
+            display: block;
+        }
+        
+        .info-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #4A90E2;
+            max-width: 600px;
+        }
+        
+        .info-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+        
+        .info-description {
+            color: #475569;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #64748b;
+            font-size: 0.9rem;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .target-zones {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>胚胎干细胞分化与器官形成</h1>
+            <p class="subtitle">探索从全能干细胞到三胚层，再到人体器官的奇妙发育过程</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="animation-panel">
+                <canvas id="animationCanvas"></canvas>
+                <div class="info-panel">
+                    <div class="info-title" id="infoTitle">胚胎干细胞分化</div>
+                    <div class="info-description" id="infoDescription">点击左侧阶段按钮或使用下方控制按钮开始探索胚胎发育过程</div>
+                </div>
+            </div>
+            
+            <div class="controls-panel">
+                <div class="stage-navigation">
+                    <h2>发育阶段</h2>
+                    <div class="stage-buttons">
+                        <button class="stage-btn active" data-stage="0">1. 干细胞与分化</button>
+                        <button class="stage-btn" data-stage="1">2. 囊胚形成</button>
+                        <button class="stage-btn" data-stage="2">3. 原肠胚形成</button>
+                        <button class="stage-btn" data-stage="3">4. 三胚层建立</button>
+                        <button class="stage-btn" data-stage="4">5. 器官分化</button>
+                    </div>
+                </div>
+                
+                <div class="animation-controls">
+                    <h2>动画控制</h2>
+                    <div class="control-buttons">
+                        <button class="ctrl-btn" id="playBtn">播放</button>
+                        <button class="ctrl-btn" id="pauseBtn">暂停</button>
+                        <button class="ctrl-btn reset" id="resetBtn">重置</button>
+                    </div>
+                </div>
+                
+                <div class="legend">
+                    <h2>三胚层图例</h2>
+                    <div class="legend-items">
+                        <div class="legend-item">
+                            <div class="color-box ectoderm-color"></div>
+                            <span>外胚层 - 神经系统、表皮等</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-box mesoderm-color"></div>
+                            <span>中胚层 - 肌肉、骨骼、心脏等</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="color-box endoderm-color"></div>
+                            <span>内胚层 - 消化系统、呼吸系统等</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="interactive-section">
+            <h2>知识探索：器官与胚层匹配</h2>
+            <p>将下面的器官拖拽到其起源的胚层区域中</p>
+            
+            <div class="organ-drag-game">
+                <div class="target-zones">
+                    <div class="target-zone" id="ectodermZone" data-layer="ectoderm">
+                        <div class="zone-label">外胚层</div>
+                        <div class="zone-desc">神经系统、表皮等</div>
+                    </div>
+                    <div class="target-zone" id="mesodermZone" data-layer="mesoderm">
+                        <div class="zone-label">中胚层</div>
+                        <div class="zone-desc">肌肉、骨骼、心脏等</div>
+                    </div>
+                    <div class="target-zone" id="endodermZone" data-layer="endoderm">
+                        <div class="zone-label">内胚层</div>
+                        <div class="zone-desc">消化系统、呼吸系统等</div>
+                    </div>
+                </div>
+                
+                <div class="organ-pool" id="organPool">
+                    <!-- 器官将通过JS动态生成 -->
+                </div>
+                
+                <div class="feedback" id="feedback"></div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>教学动画设计 | 胚胎发育过程可视化 | 适用于高中及大学生物学学习</p>
+        </footer>
+    </div>
+
+    <script>
+        // 获取Canvas和上下文
+        const canvas = document.getElementById('animationCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 设置Canvas尺寸
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+        }
+        
+        // 初始调整尺寸
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // 动画状态
+        let currentStage = 0;
+        let animationProgress = 0;
+        let isPlaying = false;
+        let lastTime = 0;
+        const stageDurations = [4000, 5000, 6000, 5000, 6000]; // 每个阶段的持续时间(ms)
+        
+        // 阶段信息
+        const stageInfo = [
+            {
+                title: "干细胞与分化",
+                description: "胚胎干细胞具有全能性，能够自我更新并分化为各种细胞类型。图中展示了干细胞分裂和早期分化的过程。"
+            },
+            {
+                title: "囊胚形成",
+                description: "受精卵经过多次分裂形成囊胚，包含内细胞团和滋养层。内细胞团将发育为胚胎本体。"
+            },
+            {
+                title: "原肠胚形成",
+                description: "通过细胞迁移和重排，形成具有三个胚层（外、中、内胚层）的原肠胚。这是器官形成的基础。"
+            },
+            {
+                title: "三胚层建立",
+                description: "三个胚层已清晰建立：外胚层（蓝色）、中胚层（红色）、内胚层（黄色）。各胚层将分化为特定器官系统。"
+            },
+            {
+                title: "器官分化",
+                description: "各胚层开始分化为器官原基：外胚层形成神经管和表皮；中胚层形成体节、心脏等；内胚层形成原始消化管等。"
+            }
+        ];
+        
+        // 更新信息面板
+        function updateInfoPanel() {
+            document.getElementById('infoTitle').textContent = stageInfo[currentStage].title;
+            document.getElementById('infoDescription').textContent = stageInfo[currentStage].description;
+        }
+        
+        // 绘制函数
+        function draw() {
+            // 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 根据当前阶段和进度绘制
+            switch(currentStage) {
+                case 0: drawStage0(); break;
+                case 1: drawStage1(); break;
+                case 2: drawStage2(); break;
+                case 3: drawStage3(); break;
+                case 4: drawStage4(); break;
+            }
+        }
+        
+        // 阶段0: 干细胞与分化
+        function drawStage0() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = 80;
+            
+            // 绘制背景圆形
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius + 10, 0, Math.PI * 2);
+            ctx.fillStyle = '#f1f5f9';
+            ctx.fill();
+            
+            // 根据进度绘制干细胞分裂过程
+            const progress = animationProgress / stageDurations[0];
+            
+            if (progress < 0.5) {
+                // 单个干细胞
+                const scale = 0.8 + 0.2 * Math.sin(progress * Math.PI * 4);
+                drawStemCell(centerX, centerY, radius * scale, '#6366f1');
+                
+                // 绘制"全能性"文字
+                ctx.font = 'bold 18px Arial';
+                ctx.fillStyle = '#6366f1';
+                ctx.textAlign = 'center';
+                ctx.fillText('全能干细胞', centerX, centerY - radius - 30);
+            } else {
+                // 分裂为两个细胞
+                const offset = (progress - 0.5) * 100;
+                const cellRadius = radius * 0.7;
+                
+                // 第一个细胞
+                drawStemCell(centerX - offset, centerY, cellRadius, '#4A90E2');
+                
+                // 第二个细胞（颜色开始分化）
+                const colorMix = (progress - 0.5) * 2;
+                const r = Math.floor(74 + (208 - 74) * colorMix);
+                const g = Math.floor(144 + (2 - 144) * colorMix);
+                const b = Math.floor(226 + (27 - 226) * colorMix);
+                const color = `rgb(${r}, ${g}, ${b})`;
+                
+                drawStemCell(centerX + offset, centerY, cellRadius, color);
+                
+                // 绘制箭头和"分化"文字
+                ctx.font = 'bold 16px Arial';
+                ctx.fillStyle = '#475569';
+                ctx.textAlign = 'center';
+                ctx.fillText('分化开始', centerX, centerY - radius - 30);
+            }
+        }
+        
+        // 绘制干细胞
+        function drawStemCell(x, y, radius, color) {
+            // 细胞主体
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+            
+            // 细胞核
+            ctx.beginPath();
+            ctx.arc(x, y, radius * 0.4, 0, Math.PI * 2);
+            ctx.fillStyle = '#ffffff';
+            ctx.fill();
+            
+            // 细胞核细节
+            ctx.beginPath();
+            ctx.arc(x, y, radius * 0.2, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+            
+            // 细胞膜
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, Math.PI * 2);
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+        
+        // 阶段1: 囊胚形成
+        function drawStage1() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const progress = animationProgress / stageDurations[1];
+            
+            // 绘制囊胚
+            const blastRadius = 120;
+            
+            // 外层（滋养层）
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, blastRadius, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(100, 150, 200, 0.3)';
+            ctx.fill();
+            ctx.strokeStyle = '#4A90E2';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 内细胞团（根据进度显示）
+            const innerCellRadius = 40;
+            const innerY = centerY - blastRadius * 0.3;
+            
+            if (progress > 0.3) {
+                const innerProgress = Math.min(1, (progress - 0.3) / 0.7);
+                
+                // 绘制内细胞团
+                ctx.beginPath();
+                ctx.arc(centerX, innerY, innerCellRadius * innerProgress, 0, Math.PI * 2);
+                ctx.fillStyle = '#4A90E2';
+                ctx.fill();
+                
+                // 绘制内细胞团中的细胞
+                const cellCount = 3;
+                for (let i = 0; i < cellCount; i++) {
+                    const angle = (i / cellCount) * Math.PI * 2;
+                    const cellX = centerX + Math.cos(angle) * innerCellRadius * 0.5 * innerProgress;
+                    const cellY = innerY + Math.sin(angle) * innerCellRadius * 0.5 * innerProgress;
+                    
+                    ctx.beginPath();
+                    ctx.arc(cellX, cellY, 12 * innerProgress, 0, Math.PI * 2);
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fill();
+                }
+                
+                // 标注
+                if (progress > 0.5) {
+                    ctx.font = '14px Arial';
+                    ctx.fillStyle = '#475569';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('内细胞团', centerX, innerY - innerCellRadius - 15);
+                    ctx.fillText('滋养层', centerX, centerY + blastRadius + 20);
+                }
+            }
+        }
+        
+        // 阶段2: 原肠胚形成
+        function drawStage2() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const progress = animationProgress / stageDurations[2];
+            
+            // 绘制原肠胚形成过程
+            const embryoRadius = 130;
+            
+            // 根据进度绘制细胞迁移和胚层形成
+            if (progress < 0.5) {
+                // 早期原肠胚 - 细胞开始迁移
+                const migrationProgress = progress * 2;
+                
+                // 绘制外层细胞
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, embryoRadius, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(74, 144, 226, 0.2)';
+                ctx.fill();
+                ctx.strokeStyle = '#4A90E2';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // 绘制迁移的细胞（向内凹陷）
+                const invaginationDepth = migrationProgress * 50;
+                ctx.beginPath();
+                ctx.arc(centerX, centerY + invaginationDepth, embryoRadius * 0.7, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(245, 166, 35, 0.3)';
+                ctx.fill();
+                
+                // 绘制迁移箭头
+                if (migrationProgress > 0.2) {
+                    drawArrow(centerX, centerY + embryoRadius * 0.8, centerX, centerY + embryoRadius * 0.8 + 40, '#D0021B');
+                    ctx.font = '14px Arial';
+                    ctx.fillStyle = '#475569';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('细胞迁移', centerX, centerY + embryoRadius * 0.8 + 60);
+                }
+            } else {
+                // 后期原肠胚 - 三胚层形成
+                const layerProgress = (progress - 0.5) * 2;
+                
+                // 绘制外胚层（蓝色）
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, embryoRadius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(74, 144, 226, ${0.2 + 0.3 * layerProgress})`;
+                ctx.fill();
+                
+                // 绘制中胚层（红色）
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, embryoRadius * 0.7, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(208, 2, 27, ${0.2 + 0.3 * layerProgress})`;
+                ctx.fill();
+                
+                // 绘制内胚层（黄色）
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, embryoRadius * 0.4, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(245, 166, 35, ${0.2 + 0.3 * layerProgress})`;
+                ctx.fill();
+                
+                // 绘制标注
+                if (layerProgress > 0.5) {
+                    ctx.font = '14px Arial';
+                    ctx.fillStyle = '#475569';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('外胚层', centerX, centerY - embryoRadius - 15);
+                    ctx.fillText('中胚层', centerX + embryoRadius * 0.7, centerY);
+                    ctx.fillText('内胚层', centerX, centerY + embryoRadius * 0.4 + 20);
+                }
+            }
+        }
+        
+        // 阶段3: 三胚层建立
+        function drawStage3() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const progress = animationProgress / stageDurations[3];
+            
+            // 绘制清晰的三胚层结构
+            const layerRadius = 140;
+            
+            // 外胚层（蓝色）
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, layerRadius, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(74, 144, 226, 0.4)';
+            ctx.fill();
+            ctx.strokeStyle = '#4A90E2';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            // 中胚层（红色）
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, layerRadius * 0.65, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(208, 2, 27, 0.4)';
+            ctx.fill();
+            ctx.strokeStyle = '#D0021B';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            // 内胚层（黄色）
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, layerRadius * 0.3, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(245, 166, 35, 0.4)';
+            ctx.fill();
+            ctx.strokeStyle = '#F5A623';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            // 绘制胚层名称
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'center';
+            
+            ctx.fillStyle = '#4A90E2';
+            ctx.fillText('外胚层', centerX, centerY - layerRadius - 20);
+            
+            ctx.fillStyle = '#D0021B';
+            ctx.fillText('中胚层', centerX + layerRadius * 0.65 + 30, centerY);
+            
+            ctx.fillStyle = '#F5A623';
+            ctx.fillText('内胚层', centerX, centerY + layerRadius * 0.3 + 30);
+            
+            // 绘制衍生器官图标（根据进度显示）
+            if (progress > 0.5) {
+                const iconProgress = (progress - 0.5) * 2;
+                
+                // 外胚层衍生图标（大脑）
+                drawOrganIcon(centerX, centerY - layerRadius * 0.8, '🧠', '大脑', '#4A90E2', iconProgress);
+                
+                // 中胚层衍生图标（心脏）
+                drawOrganIcon(centerX + layerRadius * 0.5, centerY, '❤️', '心脏', '#D0021B', iconProgress);
+                
+                // 内胚层衍生图标（肝脏）
+                drawOrganIcon(centerX, centerY + layerRadius * 0.5, '🫁', '肺', '#F5A623', iconProgress);
+            }
+        }
+        
+        // 阶段4: 器官分化
+        function drawStage4() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const progress = animationProgress / stageDurations[4];
+            
+            // 绘制胚胎轮廓
+            const embryoWidth = 180;
+            const embryoHeight = 250;
+            
+            // 胚胎主体
+            ctx.beginPath();
+            ctx.ellipse(centerX, centerY, embryoWidth/2, embryoHeight/2, 0, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(240, 240, 240, 0.8)';
+            ctx.fill();
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 根据进度绘制器官原基
+            const organProgress = Math.min(1, progress * 1.5);
+            
+            // 外胚层器官：神经管（大脑和脊髓）
+            if (organProgress > 0.1) {
+                const neuralProgress = Math.min(1, (organProgress - 0.1) / 0.9);
+                
+                // 绘制神经管
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY - embryoHeight * 0.4);
+                ctx.bezierCurveTo(
+                    centerX + embryoWidth * 0.2 * neuralProgress, 
+                    centerY - embryoHeight * 0.2, 
+                    centerX + embryoWidth * 0.15 * neuralProgress, 
+                    centerY + embryoHeight * 0.2, 
+                    centerX, 
+                    centerY + embryoHeight * 0.3
+                );
+                ctx.bezierCurveTo(
+                    centerX - embryoWidth * 0.15 * neuralProgress, 
+                    centerY + embryoHeight * 0.2, 
+                    centerX - embryoWidth * 0.2 * neuralProgress, 
+                    centerY - embryoHeight * 0.2, 
+                    centerX, 
+                    centerY - embryoHeight * 0.4
+                );
+                ctx.closePath();
+                ctx.fillStyle = `rgba(74, 144, 226, ${0.3 + 0.4 * neuralProgress})`;
+                ctx.fill();
+                
+                // 标注
+                if (neuralProgress > 0.7) {
+                    ctx.font = '14px Arial';
+                    ctx.fillStyle = '#4A90E2';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('神经管', centerX, centerY - embryoHeight * 0.45);
+                }
+            }
+            
+            // 中胚层器官：体节和心脏
+            if (organProgress > 0.3) {
+                const mesodermProgress = Math.min(1, (organProgress - 0.3) / 0.7);
+                
+                // 绘制体节（沿中线两侧）
+                const somiteCount = 8;
+                for (let i = 0; i < somiteCount; i++) {
+                    const yPos = centerY - embryoHeight * 0.2 + i * 25;
+                    const size = 12 * mesodermProgress;
+                    
+                    // 左侧体节
+                    ctx.beginPath();
+                    ctx.arc(centerX - embryoWidth * 0.25, yPos, size, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(208, 2, 27, ${0.4 + 0.3 * mesodermProgress})`;
+                    ctx.fill();
+                    
+                    // 右侧体节
+                    ctx.beginPath();
+                    ctx.arc(centerX + embryoWidth * 0.25, yPos, size, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(208, 2, 27, ${0.4 + 0.3 * mesodermProgress})`;
+                    ctx.fill();
+                }
+                
+                // 绘制心脏原基
+                if (mesodermProgress > 0.5) {
+                    const heartSize = 20 * mesodermProgress;
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY - embryoHeight * 0.1, heartSize, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(208, 2, 27, ${0.6 * mesodermProgress})`;
+                    ctx.fill();
+                    
+                    // 标注
+                    if (mesodermProgress > 0.7) {
+                        ctx.font = '14px Arial';
+                        ctx.fillStyle = '#D0021B';
+                        ctx.textAlign = 'center';
+                        ctx.fillText('心脏原基', centerX, centerY - embryoHeight * 0.1 - heartSize - 10);
+                        ctx.fillText('体节', centerX - embryoWidth * 0.25 - 25, centerY - embryoHeight * 0.2);
+                    }
+                }
+            }
+            
+            // 内胚层器官：原始消化管
+            if (organProgress > 0.5) {
+                const endodermProgress = Math.min(1, (organProgress - 0.5) / 0.5);
+                
+                // 绘制原始消化管
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY - embryoHeight * 0.1);
+                ctx.bezierCurveTo(
+                    centerX + embryoWidth * 0.1 * endodermProgress, 
+                    centerY, 
+                    centerX + embryoWidth * 0.08 * endodermProgress, 
+                    centerY + embryoHeight * 0.2, 
+                    centerX, 
+                    centerY + embryoHeight * 0.25
+                );
+                ctx.bezierCurveTo(
+                    centerX - embryoWidth * 0.08 * endodermProgress, 
+                    centerY + embryoHeight * 0.2, 
+                    centerX - embryoWidth * 0.1 * endodermProgress, 
+                    centerY, 
+                    centerX, 
+                    centerY - embryoHeight * 0.1
+                );
+                ctx.closePath();
+                ctx.fillStyle = `rgba(245, 166, 35, ${0.3 + 0.4 * endodermProgress})`;
+                ctx.fill();
+                
+                // 标注
+                if (endodermProgress > 0.7) {
+                    ctx.font = '14px Arial';
+                    ctx.fillStyle = '#F5A623';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('原始消化管', centerX, centerY + embryoHeight * 0.3);
+                }
+            }
+        }
+        
+        // 绘制箭头
+        function drawArrow(fromX, fromY, toX, toY, color) {
+            const headlen = 10;
+            const dx = toX - fromX;
+            const dy = toY - fromY;
+            const angle = Math.atan2(dy, dx);
+            
+            ctx.beginPath();
+            ctx.moveTo(fromX, fromY);
+            ctx.lineTo(toX, toY);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.move
+<!--检测到代码截断，自动续写中...-->
+to(toX, toY);
+            ctx.lineTo(toX - headlen * Math.cos(angle - Math.PI / 6), toY - headlen * Math.sin(angle - Math.PI / 6));
+            ctx.moveTo(toX, toY);
+            ctx.lineTo(toX - headlen * Math.cos(angle + Math.PI / 6), toY - headlen * Math.sin(angle + Math.PI / 6));
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+        
+        // 绘制器官图标
+        function drawOrganIcon(x, y, emoji, name, color, progress) {
+            const alpha = Math.min(1, progress * 2);
+            
+            // 绘制背景圆
+            ctx.beginPath();
+            ctx.arc(x, y, 30, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255, 255, 255, ${0.8 * alpha})`;
+            ctx.fill();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 绘制emoji
+            ctx.font = `24px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(emoji, x, y - 5);
+            
+            // 绘制名称
+            ctx.font = `12px Arial`;
+            ctx.fillStyle = color;
+            ctx.fillText(name, x, y + 20);
+        }
+        
+        // 动画循环
+        function animate(timestamp) {
+            if (!lastTime) lastTime = timestamp;
+            const deltaTime = timestamp - lastTime;
+            lastTime = timestamp;
+            
+            if (isPlaying) {
+                animationProgress += deltaTime;
+                
+                // 如果当前阶段完成，自动进入下一阶段
+                if (animationProgress >= stageDurations[currentStage]) {
+                    if (currentStage < stageDurations.length - 1) {
+                        currentStage++;
+                        animationProgress = 0;
+                        updateStageButtons();
+                        updateInfoPanel();
+                    } else {
+                        // 最后一个阶段完成后停止
+                        isPlaying = false;
+                        document.getElementById('playBtn').textContent = '重新播放';
+                    }
+                }
+                
+                draw();
+            }
+            
+            requestAnimationFrame(animate);
+        }
+        
+        // 开始动画循环
+        requestAnimationFrame(animate);
+        
+        // 阶段按钮事件
+        document.querySelectorAll('.stage-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const stage = parseInt(this.getAttribute('data-stage'));
+                currentStage = stage;
+                animationProgress = 0;
+                updateStageButtons();
+                updateInfoPanel();
+                draw();
+            });
+        });
+        
+        // 更新阶段按钮状态
+        function updateStageButtons() {
+            document.querySelectorAll('.stage-btn').forEach((button, index) => {
+                if (index === currentStage) {
+                    button.classList.add('active');
+                } else {
+                    button.classList.remove('active');
+                }
+            });
+        }
+        
+        // 控制按钮事件
+        document.getElementById('playBtn').addEventListener('click', function() {
+            isPlaying = true;
+            if (this.textContent === '重新播放') {
+                currentStage = 0;
+                animationProgress = 0;
+                this.textContent = '播放';
+                updateStageButtons();
+                updateInfoPanel();
+            }
+        });
+        
+        document.getElementById('pauseBtn').addEventListener('click', function() {
+            isPlaying = false;
+        });
+        
+        document.getElementById('resetBtn').addEventListener('click', function() {
+            currentStage = 0;
+            animationProgress = 0;
+            isPlaying = false;
+            updateStageButtons();
+            updateInfoPanel();
+            draw();
+            document.getElementById('playBtn').textContent = '播放';
+        });
+        
+        // 初始化信息面板
+        updateInfoPanel();
+        
+        // 交互游戏：器官与胚层匹配
+        const organs = [
+            { id: 1, name: '大脑', emoji: '🧠', correctLayer: 'ectoderm' },
+            { id: 2, name: '脊髓', emoji: '🦴', correctLayer: 'ectoderm' },
+            { id: 3, name: '表皮', emoji: '👁️', correctLayer: 'ectoderm' },
+            { id: 4, name: '心脏', emoji: '❤️', correctLayer: 'mesoderm' },
+            { id: 5, name: '肌肉', emoji: '💪', correctLayer: 'mesoderm' },
+            { id: 6, name: '骨骼', emoji: '🦴', correctLayer: 'mesoderm' },
+            { id: 7, name: '肝脏', emoji: '🫀', correctLayer: 'endoderm' },
+            { id: 8, name: '肺', emoji: '🫁', correctLayer: 'endoderm' },
+            { id: 9, name: '胰腺', emoji: '🥕', correctLayer: 'endoderm' }
+        ];
+        
+        const organPool = document.getElementById('organPool');
+        const feedback = document.getElementById('feedback');
+        let draggedOrgan = null;
+        
+        // 生成器官元素
+        organs.forEach(organ => {
+            const organElement = document.createElement('div');
+            organElement.className = 'organ-item';
+            organElement.setAttribute('data-id', organ.id);
+            organElement.setAttribute('data-layer', organ.correctLayer);
+            organElement.setAttribute('draggable', 'true');
+            
+            organElement.innerHTML = `
+                <div class="organ-icon">${organ.emoji}</div>
+                <div class="organ-name">${organ.name}</div>
+            `;
+            
+            organElement.addEventListener('dragstart', handleDragStart);
+            organElement.addEventListener('dragend', handleDragEnd);
+            
+            organPool.appendChild(organElement);
+        });
+        
+        // 目标区域事件
+        const targetZones = document.querySelectorAll('.target-zone');
+        targetZones.forEach(zone => {
+            zone.addEventListener('dragover', handleDragOver);
+            zone.addEventListener('dragenter', handleDragEnter);
+            zone.addEventListener('dragleave', handleDragLeave);
+            zone.addEventListener('drop', handleDrop);
+        });
+        
+        // 拖拽事件处理函数
+        function handleDragStart(e) {
+            draggedOrgan = this;
+            this.style.opacity = '0.5';
+            e.dataTransfer.setData('text/plain', this.getAttribute('data-id'));
+        }
+        
+        function handleDragEnd() {
+            this.style.opacity = '1';
+            draggedOrgan = null;
+            targetZones.forEach(zone => zone.classList.remove('highlight'));
+        }
+        
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+        
+        function handleDragEnter(e) {
+            e.preventDefault();
+            this.classList.add('highlight');
+        }
+        
+        function handleDragLeave() {
+            this.classList.remove('highlight');
+        }
+        
+        function handleDrop(e) {
+            e.preventDefault();
+            this.classList.remove('highlight');
+            
+            const organId = e.dataTransfer.getData('text/plain');
+            const organElement = document.querySelector(`.organ-item[data-id="${organId}"]`);
+            const correctLayer = organElement.getAttribute('data-layer');
+            const targetLayer = this.getAttribute('data-layer');
+            
+            // 检查是否正确
+            if (correctLayer === targetLayer) {
+                feedback.textContent = `正确！${organElement.querySelector('.organ-name').textContent}确实起源于${getLayerName(targetLayer)}`;
+                feedback.className = 'feedback correct';
+                
+                // 将器官移动到目标区域
+                const clone = organElement.cloneNode(true);
+                clone.style.cursor = 'default';
+                clone.style.opacity = '0.7';
+                clone.draggable = false;
+                this.appendChild(clone);
+                
+                // 从器官池中移除
+                organElement.style.display = 'none';
+                
+                // 检查是否所有器官都已正确放置
+                checkGameCompletion();
+            } else {
+                feedback.textContent = `不正确。${organElement.querySelector('.organ-name').textContent}起源于${getLayerName(correctLayer)}，而不是${getLayerName(targetLayer)}`;
+                feedback.className = 'feedback incorrect';
+            }
+            
+            // 3秒后隐藏反馈
+            setTimeout(() => {
+                feedback.className = 'feedback';
+            }, 3000);
+        }
+        
+        function getLayerName(layerKey) {
+            switch(layerKey) {
+                case 'ectoderm': return '外胚层';
+                case 'mesoderm': return '中胚层';
+                case 'endoderm': return '内胚层';
+                default: return '';
+            }
+        }
+        
+        function checkGameCompletion() {
+            const remainingOrgans = document.querySelectorAll('.organ-item:not([style*="display: none"])');
+            if (remainingOrgans.length === 0) {
+                feedback.textContent = '恭喜！所有器官都已正确归类！你已掌握三胚层与器官起源的关系。';
+                feedback.className = 'feedback correct';
+            }
+        }
+        
+        // 初始化绘制
+        draw();
+    </script>
+</body>
+</html>
