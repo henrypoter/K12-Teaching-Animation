@@ -45,11 +45,11 @@
 
 本项目已部署到 GitHub Pages，可以通过以下链接访问：
 
-- **主页**: `https://[你的用户名].github.io/K12-Teaching-Animation/`
-- **信息技术**: `https://[你的用户名].github.io/K12-Teaching-Animation/信息技术/`
-- **化学**: `https://[你的用户名].github.io/K12-Teaching-Animation/化学/`
-- **物理**: `https://[你的用户名].github.io/K12-Teaching-Animation/物理/`
-- **生物**: `https://[你的用户名].github.io/K12-Teaching-Animation/生物/`
+- **主页**: `https://henrypoter.github.io/K12-Teaching-Animation/`
+- **信息技术**: `https://henrypoter.github.io/K12-Teaching-Animation/信息技术/`
+- **化学**: `https://henrypoter.github.io/K12-Teaching-Animation/化学/`
+- **物理**: `https://henrypoter.github.io/K12-Teaching-Animation/物理/`
+- **生物**: `https://henrypoter.github.io/K12-Teaching-Animation/生物/`
 
 ## 📁 项目结构
 
@@ -95,7 +95,7 @@ K12-Teaching-Animation/
 
 1. 克隆项目到本地
 ```bash
-git clone https://github.com/[你的用户名]/K12-Teaching-Animation.git
+git clone https://github.com/henrypoter/K12-Teaching-Animation.git
 ```
 
 2. 使用任意HTTP服务器运行，例如：
